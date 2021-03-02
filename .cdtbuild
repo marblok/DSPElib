@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?fileVersion 3.1.0?>
+
+<ManagedProjectBuildInfo>
+<project id="DSP_lib.cdt.managedbuild.target.gnu.cygwin.exe.1397521702" name="Executable (Gnu on Windows)" projectType="cdt.managedbuild.target.gnu.cygwin.exe">
+<configuration artifactExtension="exe" artifactName="DSP_lib" cleanCommand="rm -rf" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.cygwin.exe.debug.17291556" name="Debug" parent="cdt.managedbuild.config.gnu.cygwin.exe.debug">
+<toolChain id="cdt.managedbuild.toolchain.gnu.cygwin.exe.debug.234362462" name="%ToolChainName.Dbg" superClass="cdt.managedbuild.toolchain.gnu.cygwin.exe.debug">
+<tool id="cdt.managedbuild.tool.gnu.c.compiler.cygwin.exe.debug.2123956198" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.cygwin.exe.debug"/>
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug.1368321068" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug">
+<option id="gnu.cpp.compiler.option.include.paths.1120098132" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="../src/include"/>
+<listOptionValue builtIn="false" value="../src/include/dbg"/>
+</option>
+<option id="gnu.cpp.compiler.option.preprocessor.def.592789968" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+<listOptionValue builtIn="false" value="WIN32"/>
+</option>
+</tool>
+<tool id="cdt.managedbuild.tool.gnu.c.linker.cygwin.exe.debug.2901820" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.cygwin.exe.debug"/>
+<tool id="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.exe.debug.379764858" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.exe.debug">
+<option id="gnu.cpp.link.option.libs.1187239549" superClass="gnu.cpp.link.option.libs" valueType="libs">
+<listOptionValue builtIn="false" value="winmm"/>
+</option>
+</tool>
+<tool id="cdt.managedbuild.tool.gnu.assembler.cygwin.exe.debug.1170013367" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.cygwin.exe.debug"/>
+<macros/>
+</toolChain>
+<resourceConfiguration exclude="true" id="cdt.managedbuild.config.gnu.cygwin.exe.debug.17291556./DSP_lib/examples/hello.cpp" name="hello.cpp" rcbsApplicability="disable" resourcePath="/DSP_lib/examples/hello.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug.1368321068./DSP_lib/examples/hello.cpp">
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug.1368321068./DSP_lib/examples/hello.cpp" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug.1368321068"/>
+</resourceConfiguration>
+<resourceConfiguration exclude="true" id="cdt.managedbuild.config.gnu.cygwin.exe.debug.17291556./DSP_lib/examples/mulirate.cpp" name="mulirate.cpp" rcbsApplicability="disable" resourcePath="/DSP_lib/examples/multirate.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug.1368321068./DSP_lib/examples/mulirate.cpp">
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug.1368321068./DSP_lib/examples/mulirate.cpp" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug.1368321068"/>
+</resourceConfiguration>
+<resourceConfiguration exclude="true" id="cdt.managedbuild.config.gnu.cygwin.exe.debug.17291556./DSP_lib/examples/processing_block_example.cpp" name="processing_block_example.cpp" rcbsApplicability="disable" resourcePath="/DSP_lib/examples/processing_block_example.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug.1368321068./DSP_lib/examples/processing_block_example.cpp">
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug.1368321068./DSP_lib/examples/processing_block_example.cpp" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug.1368321068"/>
+</resourceConfiguration>
+<resourceConfiguration exclude="true" id="cdt.managedbuild.config.gnu.cygwin.exe.debug.17291556./DSP_lib/examples/source_block_example.cpp" name="source_block_example.cpp" rcbsApplicability="disable" resourcePath="/DSP_lib/examples/source_block_example.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug.1368321068./DSP_lib/examples/source_block_example.cpp">
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug.1368321068./DSP_lib/examples/source_block_example.cpp" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug.1368321068"/>
+</resourceConfiguration>
+</configuration>
+<configuration artifactExtension="exe" artifactName="DSP_lib" cleanCommand="rm -rf" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.cygwin.exe.release.1093548847" name="Release" parent="cdt.managedbuild.config.gnu.cygwin.exe.release">
+<toolChain id="cdt.managedbuild.toolchain.gnu.cygwin.exe.release.1261248964" name="%ToolChainName.Rel" superClass="cdt.managedbuild.toolchain.gnu.cygwin.exe.release">
+<tool command="gcc" id="cdt.managedbuild.tool.gnu.c.compiler.cygwin.exe.release.1116067732" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.cygwin.exe.release"/>
+<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release.2090335724" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release">
+<option id="gnu.cpp.compiler.option.include.paths.372823983" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="../src/include"/>
+<listOptionValue builtIn="false" value="../src/include/rls"/>
+</option>
+<option id="gnu.cpp.compiler.option.preprocessor.def.1764714070" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+<listOptionValue builtIn="false" value="WIN32"/>
+</option>
+</tool>
+<tool command="gcc" id="cdt.managedbuild.tool.gnu.c.linker.cygwin.exe.release.764786615" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.cygwin.exe.release"/>
+<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.exe.release.1542686123" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.exe.release">
+<option id="gnu.cpp.link.option.libs.577959329" superClass="gnu.cpp.link.option.libs" valueType="libs">
+<listOptionValue builtIn="false" value="winmm"/>
+</option>
+<option id="gnu.cpp.link.option.strip.1180913660" superClass="gnu.cpp.link.option.strip" value="true" valueType="boolean"/>
+</tool>
+<tool command="as" id="cdt.managedbuild.tool.gnu.assembler.cygwin.exe.release.669982153" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.cygwin.exe.release"/>
+<macros/>
+</toolChain>
+<resourceConfiguration exclude="true" id="cdt.managedbuild.config.gnu.cygwin.exe.release.1093548847./DSP_lib/examples/hello.cpp" name="hello.cpp" rcbsApplicability="disable" resourcePath="/DSP_lib/examples/hello.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release.2090335724./DSP_lib/examples/hello.cpp">
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release.2090335724./DSP_lib/examples/hello.cpp" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release.2090335724"/>
+</resourceConfiguration>
+<resourceConfiguration exclude="true" id="cdt.managedbuild.config.gnu.cygwin.exe.release.1093548847./DSP_lib/examples/mulirate.cpp" name="mulirate.cpp" rcbsApplicability="disable" resourcePath="/DSP_lib/examples/multirate.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release.2090335724./DSP_lib/examples/mulirate.cpp">
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release.2090335724./DSP_lib/examples/mulirate.cpp" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release.2090335724"/>
+</resourceConfiguration>
+<resourceConfiguration exclude="true" id="cdt.managedbuild.config.gnu.cygwin.exe.release.1093548847./DSP_lib/examples/processing_block_example.cpp" name="processing_block_example.cpp" rcbsApplicability="disable" resourcePath="/DSP_lib/examples/processing_block_example.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release.2090335724./DSP_lib/examples/processing_block_example.cpp">
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release.2090335724./DSP_lib/examples/processing_block_example.cpp" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release.2090335724"/>
+</resourceConfiguration>
+<resourceConfiguration exclude="true" id="cdt.managedbuild.config.gnu.cygwin.exe.release.1093548847./DSP_lib/examples/source_block_example.cpp" name="source_block_example.cpp" rcbsApplicability="disable" resourcePath="/DSP_lib/examples/source_block_example.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release.2090335724./DSP_lib/examples/source_block_example.cpp">
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release.2090335724./DSP_lib/examples/source_block_example.cpp" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release.2090335724"/>
+</resourceConfiguration>
+</configuration>
+<configuration artifactExtension="exe" artifactName="DSP_lib" cleanCommand="rm -rf" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.cygwin.exe.debug.551569525" name="Debug_with_profiling" parent="cdt.managedbuild.config.gnu.cygwin.exe.debug">
+<toolChain id="cdt.managedbuild.toolchain.gnu.cygwin.exe.debug.2011237859" name="%ToolChainName.Dbg" superClass="cdt.managedbuild.toolchain.gnu.cygwin.exe.debug">
+<tool id="cdt.managedbuild.tool.gnu.c.compiler.cygwin.exe.debug.1721303604" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.cygwin.exe.debug"/>
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug.70780062" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug">
+<option id="gnu.cpp.compiler.option.include.paths.1238403069" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="../src/include"/>
+</option>
+<option id="gnu.cpp.compiler.option.preprocessor.def.615161200" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+<listOptionValue builtIn="false" value="WIN32"/>
+</option>
+<option id="gnu.cpp.compiler.option.debugging.gprof.1141767448" superClass="gnu.cpp.compiler.option.debugging.gprof" value="true" valueType="boolean"/>
+<option id="gnu.cpp.compiler.option.debugging.prof.771957419" superClass="gnu.cpp.compiler.option.debugging.prof" value="false" valueType="boolean"/>
+</tool>
+<tool id="cdt.managedbuild.tool.gnu.c.linker.cygwin.exe.debug.236758141" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.cygwin.exe.debug"/>
+<tool id="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.exe.debug.1690688429" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.exe.debug">
+<option id="gnu.cpp.link.option.libs.2076466570" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
+<listOptionValue builtIn="false" value="gmon"/>
+<listOptionValue builtIn="false" value="winmm"/>
+</option>
+<option id="gnu.cpp.link.option.other.1493698542" superClass="gnu.cpp.link.option.other"/>
+<option id="gnu.cpp.link.option.userobjs.1490876215" superClass="gnu.cpp.link.option.userobjs" valueType="userObjs">
+<listOptionValue builtIn="false" value="-pg"/>
+</option>
+</tool>
+<tool id="cdt.managedbuild.tool.gnu.assembler.cygwin.exe.debug.1022274203" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.cygwin.exe.debug"/>
+</toolChain>
+</configuration>
+<configuration artifactExtension="exe" artifactName="DSP_lib" cleanCommand="rm -rf" description="" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.cygwin.exe.debug.574923979" name="Debug Linux" parent="cdt.managedbuild.config.gnu.cygwin.exe.debug">
+<toolChain id="cdt.managedbuild.toolchain.gnu.cygwin.exe.debug.1081450139" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.cygwin.exe.debug">
+<tool id="cdt.managedbuild.tool.gnu.c.compiler.cygwin.exe.debug.1309993848" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.cygwin.exe.debug"/>
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug.1365884438" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug">
+<option id="gnu.cpp.compiler.option.include.paths.378274513" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="../src/include"/>
+<listOptionValue builtIn="false" value="../src/include/dbg"/>
+</option>
+<option id="gnu.cpp.compiler.option.preprocessor.def.64484670" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+<listOptionValue builtIn="false" value="linux_i32"/>
+</option>
+</tool>
+<tool id="cdt.managedbuild.tool.gnu.c.linker.cygwin.exe.debug.96663977" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.cygwin.exe.debug"/>
+<tool id="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.exe.debug.495457774" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.exe.debug">
+<option id="gnu.cpp.link.option.libs.1568527441" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs"/>
+</tool>
+<tool id="cdt.managedbuild.tool.gnu.assembler.cygwin.exe.debug.2011321471" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.cygwin.exe.debug"/>
+<macros/>
+</toolChain>
+<resourceConfiguration exclude="true" id="cdt.managedbuild.config.gnu.cygwin.exe.debug.574923979./DSP_lib/examples/hello.cpp" name="hello.cpp" rcbsApplicability="disable" resourcePath="/DSP_lib/examples/hello.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug.1365884438./DSP_lib/examples/hello.cpp">
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug.1365884438./DSP_lib/examples/hello.cpp" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug.1365884438"/>
+</resourceConfiguration>
+<resourceConfiguration exclude="true" id="cdt.managedbuild.config.gnu.cygwin.exe.debug.574923979./DSP_lib/examples/mulirate.cpp" name="mulirate.cpp" rcbsApplicability="disable" resourcePath="/DSP_lib/examples/multirate.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug.1365884438./DSP_lib/examples/mulirate.cpp">
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug.1365884438./DSP_lib/examples/mulirate.cpp" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.debug.1365884438"/>
+</resourceConfiguration>
+</configuration>
+<configuration artifactExtension="exe" artifactName="DSP_lib" cleanCommand="rm -rf" description="" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser" id="cdt.managedbuild.config.gnu.cygwin.exe.release.373346313" name="Release Linux" parent="cdt.managedbuild.config.gnu.cygwin.exe.release">
+<toolChain id="cdt.managedbuild.toolchain.gnu.cygwin.exe.release.2095541855" name="GCC Tool Chain" superClass="cdt.managedbuild.toolchain.gnu.cygwin.exe.release">
+<tool command="gcc" id="cdt.managedbuild.tool.gnu.c.compiler.cygwin.exe.release.1457465647" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.cygwin.exe.release"/>
+<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release.934207954" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release">
+<option id="gnu.cpp.compiler.option.include.paths.950520726" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+<listOptionValue builtIn="false" value="../src/include"/>
+<listOptionValue builtIn="false" value="../src/include/rls"/>
+</option>
+<option id="gnu.cpp.compiler.option.preprocessor.def.1985711746" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
+<listOptionValue builtIn="false" value="linux_i32"/>
+</option>
+</tool>
+<tool command="gcc" id="cdt.managedbuild.tool.gnu.c.linker.cygwin.exe.release.502853649" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.cygwin.exe.release"/>
+<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.exe.release.439891481" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.cygwin.exe.release">
+<option id="gnu.cpp.link.option.libs.607959782" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs"/>
+<option id="gnu.cpp.link.option.strip.1855109157" name="Omit all symbol information (-s)" superClass="gnu.cpp.link.option.strip" value="true" valueType="boolean"/>
+</tool>
+<tool command="as" id="cdt.managedbuild.tool.gnu.assembler.cygwin.exe.release.890751444" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.cygwin.exe.release"/>
+<macros/>
+</toolChain>
+<resourceConfiguration exclude="true" id="cdt.managedbuild.config.gnu.cygwin.exe.release.373346313./DSP_lib/examples/hello.cpp" name="hello.cpp" rcbsApplicability="disable" resourcePath="/DSP_lib/examples/hello.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release.934207954./DSP_lib/examples/hello.cpp">
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release.934207954./DSP_lib/examples/hello.cpp" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release.934207954"/>
+</resourceConfiguration>
+<resourceConfiguration exclude="true" id="cdt.managedbuild.config.gnu.cygwin.exe.release.373346313./DSP_lib/examples/mulirate.cpp" name="mulirate.cpp" rcbsApplicability="disable" resourcePath="/DSP_lib/examples/multirate.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release.934207954./DSP_lib/examples/mulirate.cpp">
+<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release.934207954./DSP_lib/examples/mulirate.cpp" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.exe.release.934207954"/>
+</resourceConfiguration>
+</configuration>
+<macros/>
+</project>
+</ManagedProjectBuildInfo>

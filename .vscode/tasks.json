@@ -1,0 +1,129 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    // https://code.visualstudio.com/docs/editor/tasks
+    // ${command:cpptools.activeConfigName}
+    "tasks": [
+        {
+            "label": "Build DSPElib",
+            "type": "shell",
+            "command": "make build -f src/Makefile.main VS_CFG=${command:cpptools.activeConfigName}",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Clean DSPElib",
+            "type": "shell",
+            "command": "make clean -f src/Makefile.main VS_CFG=${command:cpptools.activeConfigName}",
+            "group": "build",
+            "presentation": {
+                "echo": true
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Install DSPElib",
+            "type": "shell",
+            "command": "make install_library -f src/Makefile.main VS_CFG=${command:cpptools.activeConfigName}",
+            "group": "build",
+            "presentation": {
+                "echo": true
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "build examples Windows",
+            "type": "shell",
+            "command": "make -f makefile-m64",
+            "group": "build",
+            "presentation": {
+                "echo": true
+            },
+            "options": {"cwd" : "./examples"},
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "clean examples Windows",
+            "type": "shell",
+            "command": "make clean -f makefile-m64",
+            "group": "build",
+            "presentation": {
+                "echo": true
+            },
+            "options": {"cwd" : "./examples"},
+            "problemMatcher": "$gcc"
+        },
+    /*
+        {
+            "label": "build DBG linux",
+            "type": "shell",
+            "command": "make Debug -f Makefile.linux",
+            "group": "build",
+            "presentation": {
+                "echo": true
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "build DBG Windows",
+            "type": "shell",
+            "command": "make Debug -f src/Makefile.win",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "build RLS Windows",
+            "type": "shell",
+            "command": "make Release -f src/Makefile.win",
+            "group": "build",
+            "presentation": {
+                "echo": true
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "install library Windows",
+            "type": "shell",
+            "command": "make install_library -f src/Makefile.win",
+            "group": "build",
+            "presentation": {
+                "echo": true
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "clean Linux",
+            "type": "shell",
+            "command": "make clean -f Makefile.linux",
+            "group": "build",
+            "presentation": {
+                "echo": true
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "clean Windows",
+            "type": "shell",
+            "command": "make clean -f src/Makefile.win",
+            "group": "build",
+            "presentation": {
+                "echo": true
+            },
+            "problemMatcher": "$gcc"
+        },
+*/
+   ]
+}

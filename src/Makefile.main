@@ -1,0 +1,34 @@
+# (View > Command Palette) => "Convert Indentation to Tabs"
+
+ifeq ($(VS_CFG),Windows-Debug)
+	MAKEFILE = "src/Makefile.win"
+	MODE = Debug
+endif
+ifeq ($(VS_CFG),Windows-Release)
+	MAKEFILE = "src/Makefile.win"
+	MODE = Release
+endif
+ifeq ($(VS_CFG),Linux-Debug)
+	MAKEFILE = "src/Makefile.linux"
+	MODE = Debug
+endif
+ifeq ($(VS_CFG),Linux-Release)
+	MAKEFILE = "src/Makefile.linux"
+	MODE = Release
+endif
+
+build: 
+	@echo "Building $(VS_CFG)"
+	@echo $(VS_CFG): $(MODE) // $(MAKEFILE)
+	make $(MODE) -f $(MAKEFILE)
+
+clean: 
+	@echo "test"
+	@echo $(VS_CFG): $(MODE) // $(MAKEFILE)
+	make clean -f $(MAKEFILE)
+
+install_library:
+	@echo "test"
+	@echo $(VS_CFG): $(MODE) // $(MAKEFILE)
+	make install_library -f $(MAKEFILE)
+

@@ -1,0 +1,1 @@
+"c:\Program Files (x86)\cccc\cccc" --lang=c++ src\Main.* examples\*.cpp examples\*.h src\cpp\*.cpp src\cpp\*.h src\include\*.cpp src\include\*.h src\include\dbg\*.cpp src\include\dbg\*.h  src\include\rls\*.cpp src\include\rls\*.h

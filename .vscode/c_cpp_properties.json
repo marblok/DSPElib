@@ -1,0 +1,77 @@
+{
+    "configurations": [
+        // For Makefile.main to work avoid spaces in "name"
+        {
+            "name": "Windows-Release",
+            "includePath": [
+                "${workspaceFolder}/src/**"
+            ],
+            "defines": [
+                "WIN32",
+                "__DEBUG__=0"
+            ],
+            "compilerPath": "d:/CodeBlocks_20_03/MinGW/bin/gcc.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "gcc-x64"
+        },
+        {
+            "name": "Windows-Debug",
+            "includePath": [
+                "${workspaceFolder}/src/**"
+            ],
+            "defines": [
+                "WIN32",
+                "__DEBUG__=1"
+            ],
+            "compilerPath": "d:/CodeBlocks_20_03/MinGW/bin/gcc.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "gcc-x64"
+        },
+        {
+            "name": "Windows-Examples_DBG",
+            "includePath": [
+                "${workspaceFolder}/examples/**",
+                "${workspaceFolder}/src/include/**"
+            ],
+            "defines": [
+                "WIN32",
+                "__DEBUG__=1"
+            ],
+            "compilerPath": "d:/CodeBlocks_20_03/MinGW/bin/gcc.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "gcc-x64"
+        },
+        {
+            "name": "Linux-Release",
+            "includePath": [
+                "${workspaceFolder}/src/**"
+            ],
+            "defines": [
+                "LINUX",
+                "__DEBUG__=0"
+            ],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "gcc-x64"
+        },
+        {
+            "name": "Linux-Debug",
+            "includePath": [
+                "${workspaceFolder}/src/**"
+            ],
+            "defines": [
+                "LINUX",
+                "__DEBUG__=1"
+            ],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "gcc-x64"
+        }
+    ],
+    "version": 4
+}

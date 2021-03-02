@@ -1,0 +1,48 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) DSPElib Windows — uruchamianie",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/out_win_dbg/DSPElib.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/out_win_dbg",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+//            "miDebuggerPath": "d:/CodeBlocks_20_03/MinGW/bin/gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "Włącz formatowanie kodu dla gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build DBG Windows"
+        },
+        {
+            "name": "(gdb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "wprowadź nazwę programu, na przykład ${workspaceFolder}/a.out",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Włącz formatowanie kodu dla gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}
