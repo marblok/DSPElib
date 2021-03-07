@@ -2743,9 +2743,9 @@ int main(int argc, char*argv[])
   DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file);
   DSP::log.SetLogFileName("DSPElib_test_log.txt");
 
-  DSP::log << "test DSP_log" << endl;
-  DSP::log << "test DSP_log(2)" << DSP::LogMode::second << "2" << endl;
-  DSP::log << DSP::LogMode::Error << "test DSP_log error" << endl;
+  DSP::log << "test DSP::log" << endl;
+  DSP::log << "test DSP::log(2)" << DSP::LogMode::second << "2" << endl;
+  DSP::log << DSP::LogMode::Error << "test DSP::log error" << endl;
 
   DSP::log << "Starting SolveMatrix test" << endl;
   for (auto i=0; i<3; i++) {

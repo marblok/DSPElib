@@ -837,7 +837,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
     Memorized_OUT_LinesVolumes = NULL;
 
     #ifdef __DEBUG__
-      DSP::log << "TAudioMixer::TAudioMixer","Not supported on this platform");
+      DSP::log << DSP::LogMode::Error << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << "Not supported on this platform" << endl;
     #endif
 
   #endif
@@ -1059,7 +1059,7 @@ void TAudioMixer::MemorizeMixerSettings_WAVEIN(void)
     MixerSettingsMemorized_WAVEIN=false;
 
     #ifdef __DEBUG__
-      DSP::log << "TAudioMixer::MemorizeMixerSettings_WAVEIN","Not yet implemented on this platform");
+      DSP::log << DSP::LogMode::Error << "TAudioMixer::MemorizeMixerSettings_WAVEIN" << DSP::LogMode::second << "Not yet implemented on this platform" << endl;
     #endif
 
   #endif
@@ -1084,7 +1084,7 @@ void TAudioMixer::ForgetMixerSettings_WAVEIN(void)
   #else
 
     #ifdef __DEBUG__
-      DSP::log << "TAudioMixer::ForgetMixerSettings_WAVEIN","Not yet implemented on this platform");
+      DSP::log << DSP::LogMode::Error << "TAudioMixer::ForgetMixerSettings_WAVEIN" << DSP::LogMode::second << "Not yet implemented on this platform" << endl;
     #endif
 
   #endif
@@ -1168,7 +1168,7 @@ void TAudioMixer::RestoreMixerSettings_WAVEIN(void)
   #else
 
     #ifdef __DEBUG__
-      DSP::log << "TAudioMixer::RestoreMixerSettings_WAVEIN","Not yet implemented on this platform");
+      DSP::log << DSP::LogMode::Error << "TAudioMixer::RestoreMixerSettings_WAVEIN" << DSP::LogMode::second << "Not yet implemented on this platform" << endl;
     #endif
 
   #endif
@@ -2557,7 +2557,7 @@ double TAudioMixer::GetDestLineVolume(int LineNo, int Channel)
     (void)Channel; // unused 
 
     #ifdef __DEBUG__
-      DSP::log << "TAudioMixer::GetDestLineVolume","Not yet implemented on this platform");
+      DSP::log << DSP::LogMode::Error << "TAudioMixer::GetDestLineVolume" << DSP::LogMode::second << "Not yet implemented on this platform" << endl;
     #endif
 
     return -2.0; // NO CONTROLS
@@ -2739,7 +2739,7 @@ const string TAudioMixer::GetMixerControlType(DWORD dwControlType)
     (void)dwControlType; // unused 
 
     #ifdef __DEBUG__
-      DSP::log << "TAudioMixer::GetMixerControlType","Not yet implemented on this platform");
+      DSP::log << DSP::LogMode::Error << "TAudioMixer::GetMixerControlType" << DSP::LogMode::second << "Not yet implemented on this platform" << endl;
     #endif
 
     return NULL;

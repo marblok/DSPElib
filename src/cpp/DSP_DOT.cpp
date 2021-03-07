@@ -1394,7 +1394,7 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
         {
           // push clock up
           // 1. find where to place this clock
-          for (int ind2 = ind-1; ind2 >= 0; ind2--)
+          for (long ind2 = ind-1; ind2 >= 0; ind2--)
           { // bubble up the clock // slow but simple
             if (ClocksList[ind2+1]->cycle_length < ClocksList[ind2]->cycle_length)
             { // ind2+1 <== here this clock should be
