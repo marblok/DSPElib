@@ -2,7 +2,6 @@ out_linux_dbg
 out_linux_rls
 out_win_dbg
 out_win_rls
-.vscode/c_cpp_properties.json
 examples/asynchronous_CT.exe
 examples/asynchronous_CT.o
 examples/asynchronous.exe
