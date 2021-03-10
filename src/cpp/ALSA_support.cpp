@@ -27,35 +27,35 @@ ALSA_object_t::~ALSA_object_t()
 void ALSA_object_t::log_alsa_data() {
   int val;
   //! \TODO create DSP_lib logging object with << 
-  DSP_log << "ALSA library version: " << SND_LIB_VERSION_STR << endl;
+  DSP::log << "ALSA library version: " << SND_LIB_VERSION_STR << endl;
 
-  DSP_log << endl;
-  DSP_log << "PCM stream types:" << endl;
+  DSP::log << endl;
+  DSP::log << "PCM stream types:" << endl;
   for (val = 0; val <= SND_PCM_STREAM_LAST; val++)
-    DSP_log << "  " << snd_pcm_stream_name((snd_pcm_stream_t)val) << endl;
+    DSP::log << "  " << snd_pcm_stream_name((snd_pcm_stream_t)val) << endl;
 
-  DSP_log << endl;
-  DSP_log << "PCM access types:" << endl;
+  DSP::log << endl;
+  DSP::log << "PCM access types:" << endl;
   for (val = 0; val <= SND_PCM_ACCESS_LAST; val++)
-    DSP_log << "  " << snd_pcm_access_name((snd_pcm_access_t)val) << endl;
+    DSP::log << "  " << snd_pcm_access_name((snd_pcm_access_t)val) << endl;
 
-  DSP_log << endl;
-  DSP_log << "PCM formats:" << endl;
+  DSP::log << endl;
+  DSP::log << "PCM formats:" << endl;
   for (val = 0; val <= SND_PCM_FORMAT_LAST; val++)
     if (snd_pcm_format_name((snd_pcm_format_t)val) != NULL)
-      DSP_log << "  " << snd_pcm_format_name((snd_pcm_format_t)val) <<
+      DSP::log << "  " << snd_pcm_format_name((snd_pcm_format_t)val) <<
         "(" << snd_pcm_format_description((snd_pcm_format_t)val) << ")" << endl;
 
-  DSP_log << endl;
-  DSP_log << "PCM subformats:" << endl;
+  DSP::log << endl;
+  DSP::log << "PCM subformats:" << endl;
   for (val = 0; val <= SND_PCM_SUBFORMAT_LAST; val++)
-    DSP_log << "  " << snd_pcm_subformat_name((snd_pcm_subformat_t)val) <<
+    DSP::log << "  " << snd_pcm_subformat_name((snd_pcm_subformat_t)val) <<
       "(" << snd_pcm_subformat_description((snd_pcm_subformat_t)val) << ")" << endl;
 
-  DSP_log << endl;
-  DSP_log << "PCM states:" << endl;
+  DSP::log << endl;
+  DSP::log << "PCM states:" << endl;
   for (val = 0; val <= SND_PCM_STATE_LAST; val++)
-    DSP_log << "  " << snd_pcm_state_name((snd_pcm_state_t)val) << endl;
+    DSP::log << "  " << snd_pcm_state_name((snd_pcm_state_t)val) << endl;
 }
 
 
@@ -80,7 +80,7 @@ int ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, int no_of_chan
     close_alsa_device();
 
   // ==================================================== //
-  DSP_log << "Opening ALSA device" << endl;
+  DSP::log << "Opening ALSA device" << endl;
 
   {
     //! \TODO Test mode:	Open mode (see SND_PCM_NONBLOCK, SND_PCM_ASYNC)
@@ -88,7 +88,7 @@ int ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, int no_of_chan
     rc = snd_pcm_open(&handle, "default",
                       stream_type, 0);
     if (rc < 0) {
-      DSP_log << "unable to open pcm device: " << snd_strerror(rc) << endl;
+      DSP::log << "unable to open pcm device: " << snd_strerror(rc) << endl;
       //exit(1);
       return -1;
     }
@@ -123,7 +123,7 @@ int ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, int no_of_chan
     /* Write the parameters to the driver */
     rc = snd_pcm_hw_params(alsa_handle, params);
     if (rc < 0) {
-      DSP_log << "unable to set hw parameters: " << snd_strerror(rc) << endl;
+      DSP::log << "unable to set hw parameters: " << snd_strerror(rc) << endl;
       //snd_pcm_hw_params_free(params);
       close_alsa_device();
       //exit(1);
@@ -136,82 +136,82 @@ int ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, int no_of_chan
 
   /* Display information about the PCM interface */
 
-  DSP_log << "PCM handle name = '" << snd_pcm_name(alsa_handle) << "'" << endl;
+  DSP::log << "PCM handle name = '" << snd_pcm_name(alsa_handle) << "'" << endl;
 
-  DSP_log << "PCM state = " << snd_pcm_state_name(snd_pcm_state(alsa_handle)) << endl;
+  DSP::log << "PCM state = " << snd_pcm_state_name(snd_pcm_state(alsa_handle)) << endl;
 
   snd_pcm_hw_params_get_access(hw_params, (snd_pcm_access_t *) &val);
-  DSP_log << "access type = " << snd_pcm_access_name((snd_pcm_access_t)val) << endl;
+  DSP::log << "access type = " << snd_pcm_access_name((snd_pcm_access_t)val) << endl;
 
   snd_pcm_format_t format;
   snd_pcm_hw_params_get_format(hw_params, &format);
-  DSP_log << "format = '" << snd_pcm_format_name(format) << "' "
+  DSP::log << "format = '" << snd_pcm_format_name(format) << "' "
     << "(" << snd_pcm_format_description(format) << ")" << endl;
 
   snd_pcm_hw_params_get_subformat(hw_params, (snd_pcm_subformat_t *)&val);
-  DSP_log << "subformat = '" << snd_pcm_subformat_name((snd_pcm_subformat_t)val) << "' "
+  DSP::log << "subformat = '" << snd_pcm_subformat_name((snd_pcm_subformat_t)val) << "' "
     << "(" << snd_pcm_subformat_description((snd_pcm_subformat_t)val) << ")" << endl;
 
   snd_pcm_hw_params_get_channels(hw_params, &val);
-  DSP_log << "channels = " << val << endl;
+  DSP::log << "channels = " << val << endl;
 
   snd_pcm_hw_params_get_rate(hw_params, &val, &dir);
-  DSP_log << "rate = " << val << " bps" << endl;
+  DSP::log << "rate = " << val << " bps" << endl;
 
   snd_pcm_hw_params_get_period_time(hw_params, &val, &dir);
-  DSP_log << "period time = " << val << " us" << endl;
+  DSP::log << "period time = " << val << " us" << endl;
 
   snd_pcm_hw_params_get_period_size(hw_params, &frames, &dir);
-  DSP_log << "period size = " << (int) frames << " frames" << endl;
+  DSP::log << "period size = " << (int) frames << " frames" << endl;
 
   snd_pcm_hw_params_get_buffer_time(hw_params, &val, &dir);
-  DSP_log << "buffer time = " << val << " us" << endl;
+  DSP::log << "buffer time = " << val << " us" << endl;
 
   snd_pcm_hw_params_get_buffer_size(hw_params, (snd_pcm_uframes_t *) &val);
-  DSP_log << "buffer size = " << val << " frames" << endl;
+  DSP::log << "buffer size = " << val << " frames" << endl;
 
   snd_pcm_hw_params_get_periods(hw_params, &val, &dir);
-  DSP_log << "periods per buffer = " << val << " frames" << endl;
+  DSP::log << "periods per buffer = " << val << " frames" << endl;
 
   snd_pcm_hw_params_get_rate_numden(hw_params, &val, &val2);
-  DSP_log << "exact rate = " << val << "/" << val2 << " bps" << endl;
+  DSP::log << "exact rate = " << val << "/" << val2 << " bps" << endl;
 
 
   val = snd_pcm_hw_params_get_sbits(hw_params);
-  DSP_log << "significant bits = " << val << endl;
+  DSP::log << "significant bits = " << val << endl;
 
   snd_pcm_hw_params_get_tick_time(hw_params, &val, &dir); // deprecated !!!
-  DSP_log << "tick time = " << val << " us" << endl;
+  DSP::log << "tick time = " << val << " us" << endl;
 
   val = snd_pcm_hw_params_is_batch(hw_params);
-  DSP_log << "is batch = " << val << endl;
+  DSP::log << "is batch = " << val << endl;
 
   val = snd_pcm_hw_params_is_block_transfer(hw_params);
-  DSP_log << "is block transfer = " << val << endl;
+  DSP::log << "is block transfer = " << val << endl;
 
   val = snd_pcm_hw_params_is_double(hw_params);
-  DSP_log << "is double = " << val << endl;
+  DSP::log << "is double = " << val << endl;
 
   val = snd_pcm_hw_params_is_half_duplex(hw_params);
-  DSP_log << "is half duplex = " << val << endl;
+  DSP::log << "is half duplex = " << val << endl;
 
   val = snd_pcm_hw_params_is_joint_duplex(hw_params);
-  DSP_log <<"is joint duplex = " << val << endl;
+  DSP::log <<"is joint duplex = " << val << endl;
 
   val = snd_pcm_hw_params_can_overrange(hw_params);
-  DSP_log << "can overrange = " << val << endl;
+  DSP::log << "can overrange = " << val << endl;
 
   val = snd_pcm_hw_params_can_mmap_sample_resolution(hw_params);
-  DSP_log << "can mmap = " << val << endl;
+  DSP::log << "can mmap = " << val << endl;
 
   val = snd_pcm_hw_params_can_pause(hw_params);
-  DSP_log << "can pause = " << val << endl;
+  DSP::log << "can pause = " << val << endl;
 
   val = snd_pcm_hw_params_can_resume(hw_params);
-  DSP_log << "can resume = " << val << endl;
+  DSP::log << "can resume = " << val << endl;
 
   val = snd_pcm_hw_params_can_sync_start(hw_params);
-  DSP_log << "can sync start = " << val << endl;
+  DSP::log << "can sync start = " << val << endl;
 
   //snd_pcm_hw_params_free(params);
 //  There are two ways of allocating such structures:
@@ -238,8 +238,8 @@ void ALSA_object_t::get_params(snd_pcm_uframes_t &frames, unsigned int &period_t
   snd_pcm_hw_params_get_period_time(hw_params, &period_time, &dir);
 }
 
-int ALSA_object_t::pcm_writei(const void *buffer, snd_pcm_uframes_t &frames) {
-  int rc = snd_pcm_writei(alsa_handle, buffer, frames);
+snd_pcm_sframes_t ALSA_object_t::pcm_writei(const void *buffer, snd_pcm_uframes_t &frames) {
+  snd_pcm_sframes_t rc = snd_pcm_writei(alsa_handle, buffer, frames);
   if (rc == -EPIPE) {
     /* EPIPE means underrun */
     fprintf(stderr, "underrun occurred\n");
@@ -247,10 +247,10 @@ int ALSA_object_t::pcm_writei(const void *buffer, snd_pcm_uframes_t &frames) {
   } else if (rc < 0) {
     fprintf(stderr,
             "error from writei: %s\n",
-            snd_strerror(rc));
+            snd_strerror(int(rc)));
   }  else if (rc != (int)frames) {
     fprintf(stderr,
-            "short write, write %d frames\n", rc);
+            "short write, write %d frames\n", int(rc));
   }
   return rc;
 }
@@ -270,7 +270,7 @@ void ALSA_object_t::close_alsa_device(bool do_drain, bool use_log) {
   }
 
   if (use_log == true) {
-    DSP_log << "ALSA PCM sound closed" << endl;
+    DSP::log << "ALSA PCM sound closed" << endl;
   }
 }
 

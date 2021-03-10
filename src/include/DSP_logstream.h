@@ -103,7 +103,7 @@
       };
 
     //  template <class charT, class Traits>
-    //  inline basic_ostream<charT,Traits>& operator<< (basic_ostream<charT,Traits>& os, const DSP_LogMode& log_mode) {
+    //  inline basic_ostream<charT,Traits>& operator<< (basic_ostream<charT,Traits>& os, const DSP::logMode& log_mode) {
       inline ostream& operator<< (ostream& os, const LogMode& log_mode) {
          logstream *p;
          try {

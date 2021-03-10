@@ -32,7 +32,7 @@ public:
     void close_alsa_device(bool do_drain = false, bool use_log = false);
 
     void get_params(snd_pcm_uframes_t &frames, unsigned int &period_time);
-    int pcm_writei(const void *buffer, snd_pcm_uframes_t &frames);
+    snd_pcm_sframes_t pcm_writei(const void *buffer, snd_pcm_uframes_t &frames);
 
     //! object constructor
     ALSA_object_t();

@@ -61,7 +61,7 @@
         {
             "name": "Linux-Debug",
             "includePath": [
-                "${workspaceFolder}/src/**"
+                "${workspaceFolder}/src/include/**"
             ],
             "defines": [
                 "LINUX",
