@@ -2,7 +2,8 @@
 # Run: make Debug 
 CC=g++
 # comflag = -m32
-comflag = -m64
+# comflag = -m64
+comflag = $(COMFLAG)
 com_ver = MinGW-W64_8.1.0
 
 # INSTALL_DIR_ROOT = e:/Eclipse_Mars/workspace/_DSPE_lib_minGW_

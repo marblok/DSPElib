@@ -4,7 +4,7 @@
 # Run: make Debug 
 CC=g++
 #comflag = -m32
-comflag =
+comflag = $(COMFLAG)
 OUT_DIR_RLS = ./out_linux_rls
 OUT_DIR_DBG = ./out_linux_dbg
 
