@@ -59,7 +59,7 @@ string DSP_lib_version_string()
 //***************************************************//
 //  Misc functions
 //***************************************************//
-unsigned long DSPf_gcd(unsigned long a, unsigned long b)
+unsigned long DSP::f::gcd(unsigned long a, unsigned long b)
 {
   unsigned long r;
 
@@ -73,12 +73,12 @@ unsigned long DSPf_gcd(unsigned long a, unsigned long b)
   return a;
 }
 
-//void DSPf_SolveMatrixEqu(int Size, //Size of matrix equation
+//void DSP::f::SolveMatrixEqu(int Size, //Size of matrix equation
 //                    DSP_float_ptr A_in, //matrix coeffitients (row after row)
 //                    DSP_float_ptr X,    //vector reserved for solution
 //                    DSP_float_ptr B_in) //right-hand side quantities vector
 // Solves matrix equation using Gaussian elimination with backsubstitution
-void DSPf_SolveMatrixEqu(
+void DSP::f::SolveMatrixEqu(
                     const vector<DSP_float_vector> &A_in, //!matrix coefficients (table of rows)
                     DSP_float_vector &X,    //!vector reserved for solution
                     const DSP_float_vector &B_in) //!right-hand side quantities vector
@@ -90,7 +90,7 @@ void DSPf_SolveMatrixEqu(
   DSP_float_vector B; //vector B
   unsigned int Size = (unsigned int)(B_in.size());
   if (Size != A_in.size()) {
-    DSP::log << DSP::LogMode::Error << "DSPf_SolveMatrixEqu" << DSP::LogMode::second << "Size mismatch of matrix A_in and vector B_in" << endl;
+    DSP::log << DSP::LogMode::Error << "DSP::f::SolveMatrixEqu" << DSP::LogMode::second << "Size mismatch of matrix A_in and vector B_in" << endl;
     return;
   }
   else {
@@ -149,7 +149,7 @@ void DSPf_SolveMatrixEqu(
   }
 };
 
-void DSPf_SolveMatrixEqu_prec(
+void DSP::f::SolveMatrixEqu_prec(
     const vector<DSP_float_vector> &A_in, //!matrix coefficients (table of rows)
     DSP_float_vector &X_in,    //!vector reserved for solution
     const DSP_float_vector &B_in) //right-hand side quantities vector
@@ -161,7 +161,7 @@ void DSPf_SolveMatrixEqu_prec(
   DSP_prec_float_vector B; //vector B
   unsigned int Size = (unsigned int)(B_in.size());
   if (Size != A_in.size()) {
-    DSP::log << DSP::LogMode::Error << "DSPf_SolveMatrixEqu_prec" << DSP::LogMode::second << "Size mismatch of matrix A_in and vector B_in" << endl;
+    DSP::log << DSP::LogMode::Error << "DSP::f::SolveMatrixEqu_prec" << DSP::LogMode::second << "Size mismatch of matrix A_in and vector B_in" << endl;
     return;
   }
   else {
@@ -230,7 +230,7 @@ void DSPf_SolveMatrixEqu_prec(
     X_in[i]= DSP_float(X[i]);
 };
 
-void DSPf_SolveMatrixEqu_prec(
+void DSP::f::SolveMatrixEqu_prec(
                         const vector<DSP_prec_float_vector> &A_in, //!matrix coefficients (table of rows)
                         DSP_prec_float_vector &X_in,    //!vector reserved for solution
                         const DSP_prec_float_vector &B_in, //right-hand side quantities vector
@@ -245,7 +245,7 @@ void DSPf_SolveMatrixEqu_prec(
   DSP_prec_float_vector B; //vector B
   unsigned int Size = (unsigned int)(B_in.size());
   if (Size != A_in.size()) {
-    DSP::log << DSP::LogMode::Error << "DSPf_SolveMatrixEqu_prec" << DSP::LogMode::second << "Size mismatch of matrix A_in and vector B_in" << endl;
+    DSP::log << DSP::LogMode::Error << "DSP::f::SolveMatrixEqu_prec" << DSP::LogMode::second << "Size mismatch of matrix A_in and vector B_in" << endl;
     return;
   }
   else {
@@ -385,8 +385,8 @@ void DSPf_SolveMatrixEqu_prec(
 };
 
 #ifndef _MSC_VER
-//! \bug problem with DSPf_MakeDir(".", "outputs")
-bool DSPf_MakeDir(const string &dir_name, const string &parent_dir)
+//! \bug problem with DSP::f::MakeDir(".", "outputs")
+bool DSP::f::MakeDir(const string &dir_name, const string &parent_dir)
 {
   string full_name;
   DIR *temp_dir;
@@ -405,7 +405,7 @@ bool DSPf_MakeDir(const string &dir_name, const string &parent_dir)
     if (temp_dir == NULL)
     {
       #ifdef __DEBUG__
-        DSP::log << DSP::LogMode::Error << "DSPf_MakeDir" << DSP::LogMode::second << "Parent directory does not exist" << endl;
+        DSP::log << DSP::LogMode::Error << "DSP::f::MakeDir" << DSP::LogMode::second << "Parent directory does not exist" << endl;
       #endif
       return false;
     }
@@ -432,7 +432,7 @@ bool DSPf_MakeDir(const string &dir_name, const string &parent_dir)
   if (temp_dir == NULL)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "DSPf_MakeDir" << DSP::LogMode::second << "Could not create directory" << endl;
+      DSP::log << DSP::LogMode::Error << "DSP::f::MakeDir" << DSP::LogMode::second << "Could not create directory" << endl;
     #endif
     return false;
   }
@@ -456,8 +456,8 @@ bool checkIfDirectoryExists(const string& dirname) {
   return _dir_exists;
 }
 
-//! \bug problem with DSPf_MakeDir(".", "outputs")
-bool DSPf_MakeDir(const string& dir_name, const string& parent_dir)
+//! \bug problem with DSP::f::MakeDir(".", "outputs")
+bool DSP::f::MakeDir(const string& dir_name, const string& parent_dir)
 {
 	string full_name;
 
@@ -475,7 +475,7 @@ bool DSPf_MakeDir(const string& dir_name, const string& parent_dir)
 		if (_dir_exists == false)
 		{
 #ifdef __DEBUG__
-			DSP::log << DSP::LogMode::Error << "DSPf_MakeDir", "Parent directory does not exist");
+			DSP::log << DSP::LogMode::Error << "DSP::f::MakeDir", "Parent directory does not exist");
 #endif
 			return false;
 		}
@@ -486,7 +486,7 @@ bool DSPf_MakeDir(const string& dir_name, const string& parent_dir)
 	if (_mkdir(full_name.c_str()) != 0)
 	{
 #ifdef __DEBUG__
-		DSP::log << DSP::LogMode::Error << "DSPf_MakeDir", "Could not create directory");
+		DSP::log << DSP::LogMode::Error << "DSP::f::MakeDir", "Could not create directory");
 #endif
 		return false;
 	}
@@ -496,7 +496,7 @@ bool DSPf_MakeDir(const string& dir_name, const string& parent_dir)
 
 
 // Splits directory name into bits and tries to create it
-void DSPf_MakeDir_Ex(const string &dir_name)
+void DSP::f::MakeDir_Ex(const string &dir_name)
 {
   string sub_dir;
   string parent_subdir;
@@ -593,7 +593,7 @@ void DSPf_MakeDir_Ex(const string &dir_name)
       sub_dir = "";
 
     // create parent subdir
-    if (DSPf_MakeDir(parent_subdir, parent_dir) == true)
+    if (DSP::f::MakeDir(parent_subdir, parent_dir) == true)
     {
       parent_dir += "/";
       parent_dir += parent_subdir;
@@ -614,7 +614,7 @@ static const double rel_error= 1E-12; //calculate 12 significant figures
 // = 2/sqrt(pi)*[x - x^3/3 + x^5/5*2! - x^7/7*3! + ...]
 // = 1-erfc(x)
 // http://www.digitalmars.com/archives/cplusplus/3634.html
-double DSPf_erf(double x)
+double DSP::f::erf(double x)
 {
   static const double two_sqrtpi= 1.128379167095512574; // 2/sqrt(pi)
   if (fabs(x) > 2.2)
@@ -643,7 +643,7 @@ double DSPf_erf(double x)
 // = 1-erf(x)
 //expression inside [] is a continued fraction so '+' means add to denominator only
 // http://www.digitalmars.com/archives/cplusplus/3634.html
-double DSPf_erfc(double x)
+double DSP::f::erfc(double x)
 {
   static const double one_sqrtpi= 0.564189583547756287; // 1/sqrt(pi)
   if (fabs(x) < 2.2)
@@ -678,20 +678,20 @@ double DSPf_erfc(double x)
 */
 
 // Symbol error rate estimation for QPSK
-DSP_float DSPf_SER4QPSK(DSP_float SNR_lin)
+DSP_float DSP::f::SER4QPSK(DSP_float SNR_lin)
 {
   //QPSK: SER_est=1/2*erfc(sqrt(SNR_lin_all/2)); SER_est=SER_est*2
   return (DSP_float)erfc(sqrt(SNR_lin/2));
 }
 
 // Bit error rate estimation for QPSK
-DSP_float DSPf_BER4BPSK(DSP_float SNR_lin)
+DSP_float DSP::f::BER4BPSK(DSP_float SNR_lin)
 {
   //BPSK: BER_est=1/2*erfc(sqrt(SNR_lin_all));
   return (DSP_float)erfc(sqrt(SNR_lin))/2;
 }
 
-void DSPf_normalise_window(int size, DSP_float_ptr buffer)
+void DSP::f::normalise_window(int size, DSP_float_ptr buffer)
 {
   int n;
   DSP_float sum = 0.0;
@@ -709,7 +709,7 @@ void DSPf_normalise_window(int size, DSP_float_ptr buffer)
 }
 
 // Blackman window
-void DSPf_Blackman(int size, DSP_float_ptr buffer, bool normalize)
+void DSP::f::Blackman(int size, DSP_float_ptr buffer, bool normalize)
 {
   int n;
 
@@ -721,11 +721,11 @@ void DSPf_Blackman(int size, DSP_float_ptr buffer, bool normalize)
   }
 
   if (normalize == true)
-    DSPf_normalise_window(size, buffer);
+    DSP::f::normalise_window(size, buffer);
 }
 
 // Hamming window
-void DSPf_Hamming(int size, DSP_float_ptr buffer, bool normalize)
+void DSP::f::Hamming(int size, DSP_float_ptr buffer, bool normalize)
 {
   int n;
 
@@ -736,11 +736,11 @@ void DSPf_Hamming(int size, DSP_float_ptr buffer, bool normalize)
   }
 
   if (normalize == true)
-    DSPf_normalise_window(size, buffer);
+    DSP::f::normalise_window(size, buffer);
 }
 
 // von Hann window
-void DSPf_Hann(int size, DSP_float_ptr buffer, bool normalize)
+void DSP::f::Hann(int size, DSP_float_ptr buffer, bool normalize)
 {
   int n;
 
@@ -751,11 +751,11 @@ void DSPf_Hann(int size, DSP_float_ptr buffer, bool normalize)
   }
 
   if (normalize == true)
-    DSPf_normalise_window(size, buffer);
+    DSP::f::normalise_window(size, buffer);
 }
 
 // Rectangular window
-void DSPf_Rectangular(int size, DSP_float_ptr buffer, bool normalize)
+void DSP::f::Rectangular(int size, DSP_float_ptr buffer, bool normalize)
 {
   int n;
 
@@ -765,11 +765,11 @@ void DSPf_Rectangular(int size, DSP_float_ptr buffer, bool normalize)
   }
 
   if (normalize == true)
-    DSPf_normalise_window(size, buffer);
+    DSP::f::normalise_window(size, buffer);
 }
 
 // Bartlett window (zero valued end-points)
-void DSPf_Bartlett(int size, DSP_float_ptr buffer, bool normalize)
+void DSP::f::Bartlett(int size, DSP_float_ptr buffer, bool normalize)
 {
   int n;
 
@@ -780,11 +780,11 @@ void DSPf_Bartlett(int size, DSP_float_ptr buffer, bool normalize)
   }
 
   if (normalize == true)
-    DSPf_normalise_window(size, buffer);
+    DSP::f::normalise_window(size, buffer);
 }
 
 // Triangular window (zero valued end-points)
-void DSPf_Triangular(int size, DSP_float_ptr buffer, bool normalize)
+void DSP::f::Triangular(int size, DSP_float_ptr buffer, bool normalize)
 {
   int n;
 
@@ -795,11 +795,11 @@ void DSPf_Triangular(int size, DSP_float_ptr buffer, bool normalize)
   }
 
   if (normalize == true)
-    DSPf_normalise_window(size, buffer);
+    DSP::f::normalise_window(size, buffer);
 }
 
 // Bartlett-Hann window
-void DSPf_Bartlett_Hann(int size, DSP_float_ptr buffer, bool normalize)
+void DSP::f::Bartlett_Hann(int size, DSP_float_ptr buffer, bool normalize)
 {
   int n;
 
@@ -811,18 +811,18 @@ void DSPf_Bartlett_Hann(int size, DSP_float_ptr buffer, bool normalize)
   }
 
   if (normalize == true)
-    DSPf_normalise_window(size, buffer);
+    DSP::f::normalise_window(size, buffer);
 }
 
 // Gauss window
-void DSPf_Gauss(int size, DSP_float_ptr buffer, DSP_float sigma, bool normalize)
+void DSP::f::Gauss(int size, DSP_float_ptr buffer, DSP_float sigma, bool normalize)
 {
   int n;
 
   if (sigma > 0.5)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "DSPf_Gauss" << DSP::LogMode::second << "Sigma must be less or equal 0.5" << endl;
+      DSP::log << DSP::LogMode::Error << "DSP::f::Gauss" << DSP::LogMode::second << "Sigma must be less or equal 0.5" << endl;
     #endif
     return;
   }
@@ -833,11 +833,11 @@ void DSPf_Gauss(int size, DSP_float_ptr buffer, DSP_float sigma, bool normalize)
   }
 
   if (normalize == true)
-    DSPf_normalise_window(size, buffer);
+    DSP::f::normalise_window(size, buffer);
 }
 
 // Nuttall window, continuous first derivative
-void DSPf_Nuttall(int size, DSP_float_ptr buffer, bool normalize)
+void DSP::f::Nuttall(int size, DSP_float_ptr buffer, bool normalize)
 {
   int n;
 
@@ -850,11 +850,11 @@ void DSPf_Nuttall(int size, DSP_float_ptr buffer, bool normalize)
   }
 
   if (normalize == true)
-    DSPf_normalise_window(size, buffer);
+    DSP::f::normalise_window(size, buffer);
 }
 
 // Blackman-Harris window, continuous first derivative
-void DSPf_Blackman_Harris(int size, DSP_float_ptr buffer, bool normalize)
+void DSP::f::Blackman_Harris(int size, DSP_float_ptr buffer, bool normalize)
 {
   int n;
 
@@ -867,11 +867,11 @@ void DSPf_Blackman_Harris(int size, DSP_float_ptr buffer, bool normalize)
   }
 
   if (normalize == true)
-    DSPf_normalise_window(size, buffer);
+    DSP::f::normalise_window(size, buffer);
 }
 
 // Blackman-Nuttall window
-void DSPf_Blackman_Nuttall(int size, DSP_float_ptr buffer, bool normalize)
+void DSP::f::Blackman_Nuttall(int size, DSP_float_ptr buffer, bool normalize)
 {
   int n;
 
@@ -884,11 +884,11 @@ void DSPf_Blackman_Nuttall(int size, DSP_float_ptr buffer, bool normalize)
   }
 
   if (normalize == true)
-    DSPf_normalise_window(size, buffer);
+    DSP::f::normalise_window(size, buffer);
 }
 
 //Flat top window
-void DSPf_Flat_top(int size, DSP_float_ptr buffer, bool normalize)
+void DSP::f::Flat_top(int size, DSP_float_ptr buffer, bool normalize)
 {
   int n;
 
@@ -902,7 +902,7 @@ void DSPf_Flat_top(int size, DSP_float_ptr buffer, bool normalize)
   }
 
   if (normalize == true)
-    DSPf_normalise_window(size, buffer);
+    DSP::f::normalise_window(size, buffer);
 }
 
 // Normalized sinc function
@@ -911,7 +911,7 @@ void DSPf_Flat_top(int size, DSP_float_ptr buffer, bool normalize)
  *
  * \f$x(t) = \frac{\sin({\pi}x)}{{\pi}x)\f$
  */
-void DSPf_sinc(int size, DSP_float_ptr buffer)
+void DSP::f::sinc(int size, DSP_float_ptr buffer)
 {
   int n;
   DSP_float tmp, x;
@@ -943,7 +943,7 @@ void DSPf_sinc(int size, DSP_float_ptr buffer)
 }
 
 template <typename T>
-void DSPf_sinc(const DSP_float_vector& arguments, vector<T>& output_buffer) {
+void DSP::f::sinc(const DSP_float_vector& arguments, vector<T>& output_buffer) {
   unsigned int n;
   DSP_float x;
   output_buffer.resize(arguments.size());
@@ -976,15 +976,15 @@ void DSPf_sinc(const DSP_float_vector& arguments, vector<T>& output_buffer) {
     }
   }
 }
-template void DSPf_sinc<DSP_float>(const DSP_float_vector& arguments, DSP_float_vector& output_buffer);
-template void DSPf_sinc<DSP_complex>(const DSP_float_vector& arguments, DSP_complex_vector& output_buffer);
+template void DSP::f::sinc<DSP_float>(const DSP_float_vector& arguments, DSP_float_vector& output_buffer);
+template void DSP::f::sinc<DSP_complex>(const DSP_float_vector& arguments, DSP_complex_vector& output_buffer);
 
 
 
 // Normalized sinc function
 /* \f$x(t) = \frac{\sin({\pi}x)}{{\pi}x)\f$
  */
-DSP_float DSPf_sinc(DSP_float x)
+DSP_float DSP::f::sinc(DSP_float x)
 {
   DSP_float tmp, y;
 
@@ -1014,7 +1014,7 @@ DSP_float DSPf_sinc(DSP_float x)
 // Normalized sinc function
 /* \f$x(t) = \frac{\sin({\pi}x)}{{\pi}x)\f$
  */
-DSP_prec_float DSPf_sinc_prec(DSP_prec_float x)
+DSP_prec_float DSP::f::sinc_prec(DSP_prec_float x)
 {
   DSP_prec_float tmp, y;
 
@@ -1043,7 +1043,7 @@ DSP_prec_float DSPf_sinc_prec(DSP_prec_float x)
 
 
 // returns sample size in bytes for given sample type
-int SampleType2SampleSize(DSP::e::SampleType type)
+int DSP::f::SampleType2SampleSize(DSP::e::SampleType type)
 {
   switch (type)
   {
@@ -1079,7 +1079,7 @@ int SampleType2SampleSize(DSP::e::SampleType type)
  *
  * \todo Add to the documentation
  */
-void DSPf_LPF_LS (int N, DSP_float fp, DSP_float fs, DSP_float_ptr h_buffer, DSP_float Ws)
+void DSP::f::LPF_LS (int N, DSP_float fp, DSP_float fs, DSP_float_ptr h_buffer, DSP_float Ws)
 {
   DSP_prec_float L;
   int Nodd, temp;
@@ -1109,7 +1109,7 @@ void DSPf_LPF_LS (int N, DSP_float fp, DSP_float fs, DSP_float_ptr h_buffer, DSP
   b.resize(temp, 0.0);
   b[0] = b0;
   for (ind_1 = Nodd; ind_1 < temp; ind_1++)
-    b[ind_1] += fp*DSPf_sinc_prec((2*(ind_1+0.5)-Nodd)*fp);
+    b[ind_1] += fp*DSP::f::sinc_prec((2*(ind_1+0.5)-Nodd)*fp);
 
 
   G.resize(temp);
@@ -1124,15 +1124,15 @@ void DSPf_LPF_LS (int N, DSP_float fp, DSP_float fs, DSP_float_ptr h_buffer, DSP
       // warto�� na diagonalnej odejmnij od kolumny
       // kolumna ind_2: diag = 2*ind_2 + + 1 - Nodd
       I2 = -ind_2 + ind_1;
-      G[ind_1][ind_2] += (.5* fp*(DSPf_sinc_prec(2*DSP_float(I1)*fp)+DSPf_sinc_prec(2*DSP_float(I2)*fp)));
-      G[ind_1][ind_2] += (.5*0.5*(DSPf_sinc_prec(2*I1*0.5)+DSPf_sinc_prec(2*I2*0.5))
-                         -.5* fs*(DSPf_sinc_prec(DSP_float(2*I1)*fs)+DSPf_sinc_prec(DSP_float(2*I2)*fs)) )
+      G[ind_1][ind_2] += (.5* fp*(DSP::f::sinc_prec(2*DSP_float(I1)*fp)+DSP::f::sinc_prec(2*DSP_float(I2)*fp)));
+      G[ind_1][ind_2] += (.5*0.5*(DSP::f::sinc_prec(2*I1*0.5)+DSP::f::sinc_prec(2*I2*0.5))
+                         -.5* fs*(DSP::f::sinc_prec(DSP_float(2*I1)*fs)+DSP::f::sinc_prec(DSP_float(2*I2)*fs)) )
                         * (Ws*Ws);
     }
 
   // solve equation
 //  a.resize(temp);
-  DSPf_SolveMatrixEqu_prec(G,    //matrix coefficients (row after row)
+  DSP::f::SolveMatrixEqu_prec(G,    //matrix coefficients (row after row)
                            a,    //vector reserved for solution
                            b,    //right-hand side quantities vector
                            2);  // do pivot rows&cols or we get badly scaled matrix
@@ -1156,24 +1156,5 @@ void DSPf_LPF_LS (int N, DSP_float fp, DSP_float fs, DSP_float_ptr h_buffer, DSP
       }
     }
   }
-}
-
-int strncmpi(const char* str1, const char* str2, int N)
-{
-  int result;
-
-  result=0;
-  for (int ind=0; ind<N; ind++)
-  {
-    if ((str1[ind]==0) && (str2[ind]==0))
-      break;
-
-    if (toupper(str1[ind])!=toupper(str2[ind]))
-    {
-      result=1;
-      break;
-    }
-  }
-  return result;
 }
 

@@ -584,10 +584,10 @@ unsigned long DSP::Clock::Execute(DSP::Clock_ptr ReferenceClock,
               if (timeout_counter > MAX_timeout_counter)
                 break;
 
-              /*! \todo_later in the future use DSPf_Sleep(0)
+              /*! \todo_later in the future use DSP::f::Sleep(0)
                *  and real time measurement for timeout detection
                */
-              DSPf_Sleep(1); //wait just a bit
+              DSP::f::Sleep(1); //wait just a bit
               //AllDone=false;
               //and one more go
 
@@ -1440,7 +1440,7 @@ void DSP::Clock::UpdateCycleLengths(DSP::Clock_ptr RootParentClock)
             if ((global_cycle_lengths[CurrentClock->MasterClockIndex] % clocks_out[ind]->cycle_length) != 0)
             {
               global_cycle_lengths[CurrentClock->MasterClockIndex]*=(clocks_out[ind]->cycle_length /
-                DSPf_gcd(global_cycle_lengths[CurrentClock->MasterClockIndex], clocks_out[ind]->cycle_length));
+                DSP::f::gcd(global_cycle_lengths[CurrentClock->MasterClockIndex], clocks_out[ind]->cycle_length));
             }
           }
 
@@ -1483,7 +1483,7 @@ unsigned long DSP::Clock::CalculateNewCycle(//DSP::Clock_ptr MasterClock,
 
   NewCycleLength=old_cycle*M;
 
-  global_multiplier=L/DSPf_gcd(NewCycleLength,L);
+  global_multiplier=L/DSP::f::gcd(NewCycleLength,L);
   NewCycleLength*=global_multiplier;
   NewCycleLength/=L;
 

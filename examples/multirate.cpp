@@ -108,10 +108,10 @@ int main(int argn, char *args[])
     h_LPF_resample.resize(N_LPF_resample, 0.0);
     
     // design LPF filter with gain equal L
-    DSPf_Hann(N_LPF_resample, h_LPF_resample.data(), true);
+    DSP::f::Hann(N_LPF_resample, h_LPF_resample.data(), true);
     for (int n = 0; n < N_LPF_resample; n++)
     {
-      h_LPF_resample[n] *= DSPf_sinc((DSP_M_PIx1*3000)/(L*Fp1)*(n-N_LPF_resample/2)); 
+      h_LPF_resample[n] *= DSP::f::sinc((DSP_M_PIx1*3000)/(L*Fp1)*(n-N_LPF_resample/2)); 
       h_LPF_resample[n] *= 4.48; 
       h_LPF_resample[n] *= L; 
     }

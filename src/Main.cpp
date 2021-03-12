@@ -37,7 +37,7 @@ int main1(int argc, char*argv)
 
   //Wczytanie sygnau z pliku wav  (w tym weryfikacja zgodności parametrw)
   Fs=48000;
-  if (DSPf_GetWAVEfileParams(InputFileName, ".", &temp_WAVEparams))
+  if (DSP::f::GetWAVEfileParams(InputFileName, ".", &temp_WAVEparams))
   {
     if (temp_WAVEparams.nSamplesPerSec!=Fs)
     {
@@ -481,7 +481,7 @@ long int CheckFs(const char *WaveName, const char *Dir)
 {
   T_WAVEchunk WaveParams;
 
-  if (DSPf_GetWAVEfileParams(WaveName, Dir, &WaveParams))
+  if (DSP::f::GetWAVEfileParams(WaveName, Dir, &WaveParams))
     return WaveParams.nSamplesPerSec;
   return 0;
 }
@@ -493,7 +493,7 @@ int ReadResamplerCoef(const char *name, const char *dir)
   int N_LPF;
 
   //ignore filter specification details
-  DSPf_ReadCoefficientsFromFile(&temp, 1,
+  DSP::f::ReadCoefficientsFromFile(&temp, 1,
     name, dir, DSP::e::SampleType::ST_float,2*sizeof(float));
   FilterOffset=(int)temp;
   FilterOffset*=5;
@@ -501,7 +501,7 @@ int ReadResamplerCoef(const char *name, const char *dir)
 
   temp=0.0;
   //read filter response length
-  DSPf_ReadCoefficientsFromFile(&temp, 1,
+  DSP::f::ReadCoefficientsFromFile(&temp, 1,
     name, dir, DSP::e::SampleType::ST_float,DWORD(FilterOffset*sizeof(float)));
   N_LPF=(int)temp;
 
@@ -516,7 +516,7 @@ long int ReadResamplerCoef(const char *name, const char *dir,
   int FilterOffset;
   int N_LPF;
 
-  DSPf_ReadCoefficientsFromFile(&temp, 1,
+  DSP::f::ReadCoefficientsFromFile(&temp, 1,
     name, dir, DSP::e::SampleType::ST_float,0);
   Fs=(long int)temp;
 
@@ -525,14 +525,14 @@ long int ReadResamplerCoef(const char *name, const char *dir,
 //  M1=(int)temp;
 
   //ignore filter specification details
-  DSPf_ReadCoefficientsFromFile(&temp, 1,
+  DSP::f::ReadCoefficientsFromFile(&temp, 1,
     name, dir, DSP::e::SampleType::ST_float,2*sizeof(float));
   FilterOffset=(int)temp;
   FilterOffset*=5;
   FilterOffset+=3;
 
   //read filter response length
-  DSPf_ReadCoefficientsFromFile(&temp, 1,
+  DSP::f::ReadCoefficientsFromFile(&temp, 1,
     name, dir, DSP::e::SampleType::ST_float,DWORD(FilterOffset*sizeof(float)));
   N_LPF=(int)temp;
 
@@ -540,7 +540,7 @@ long int ReadResamplerCoef(const char *name, const char *dir,
     return 0;
 
   // read filter coefficients
-  DSPf_ReadCoefficientsFromFile(h_LPF, N_LPF,
+  DSP::f::ReadCoefficientsFromFile(h_LPF, N_LPF,
     name, dir, DSP::e::SampleType::ST_float,DWORD((FilterOffset+1)*sizeof(float)));
   return Fs;
 }
@@ -551,7 +551,7 @@ int ReadIIRCoef(const char *name, const char *dir)
   DWORD ile;
 
   temp=0.0;
-  ile=DSPf_ReadCoefficientsFromFile(&temp, 1,
+  ile=DSP::f::ReadCoefficientsFromFile(&temp, 1,
                   name, dir, DSP::e::SampleType::ST_float, 0);
   assert(ile > 0);
 
@@ -563,12 +563,12 @@ int ReadIIRCoef(const char *name, const char *dir, int Order,
 { //returns mean bandpass group delay (int)
   DSP_float temp;
 
-  DSPf_ReadCoefficientsFromFile((DSP_float_ptr)A, 2*(Order+1),
+  DSP::f::ReadCoefficientsFromFile((DSP_float_ptr)A, 2*(Order+1),
     name, dir, DSP::e::SampleType::ST_float, sizeof(float));
-  DSPf_ReadCoefficientsFromFile((DSP_float_ptr)B, 2*(Order+1),
+  DSP::f::ReadCoefficientsFromFile((DSP_float_ptr)B, 2*(Order+1),
     name, dir, DSP::e::SampleType::ST_float, DWORD((2*(Order+1)+1)*sizeof(float)));
 
-  DSPf_ReadCoefficientsFromFile(&temp, 1,
+  DSP::f::ReadCoefficientsFromFile(&temp, 1,
     name, dir, DSP::e::SampleType::ST_float, DWORD((4*(Order+1)+1)*sizeof(float)));
 
   return (int)temp;
@@ -1179,7 +1179,7 @@ int test_4()
 //  char filename[]="test.wav";
 //  char dir_name[]=".";
 
-//  DSPf_SetLogState(DSP_LS_console | DSP_LS_file | DSP_LS_errors_only);
+//  DSP::f::SetLogState(DSP_LS_console | DSP_LS_file | DSP_LS_errors_only);
   DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file_append);
   DSP::log.SetLogFileName("log_file.log");
 
@@ -1412,7 +1412,7 @@ int test_4()
   /*************************************************************/
   // saving control signals to files
   /*************************************************************/
-  DSPf_MakeDir("outputs");
+  DSP::f::MakeDir("outputs");
   DSPu_FILEoutput MainHeterOut("outputs/MainHeter.out", DSP::e::SampleType::ST_float, 2);
   DSPu_FILEoutput FileInOut("outputs/FileIn.out", DSP::e::SampleType::ST_float, 1);
   DSPu_FILEoutput LPF_HilbertOut("outputs/LPF_Hilbert.out", DSP::e::SampleType::ST_float, 2);
@@ -2040,7 +2040,7 @@ int test_11()
   /*************************************************************/
   // Log file setup
   DSP::log.SetLogFileName("log_file.log");
-  //DSPf_SetLogState(DSP_LS_file | DSP_LS_console);
+  //DSP::f::SetLogState(DSP_LS_file | DSP_LS_console);
   DSP::log.SetLogState(DSP::E_LS_Mode::LS_file);
 
   DSP::log << DSP_lib_version_string() << endl << endl;
@@ -2410,13 +2410,13 @@ int test_SolveMatrix(int mode) {
   }
   switch (mode) {
     case 0:
-      DSP::log << "DSPf_SolveMatrixEqu(A_in, X, B_in);" << endl;
-      DSPf_SolveMatrixEqu(A_in, X, B_in);
+      DSP::log << "DSP::f::SolveMatrixEqu(A_in, X, B_in);" << endl;
+      DSP::f::SolveMatrixEqu(A_in, X, B_in);
       break;
 
     case 1:
-      DSP::log << "DSPf_SolveMatrixEqu_prec(A_in, X, B_in);" << endl;
-      DSPf_SolveMatrixEqu_prec(A_in, X, B_in);
+      DSP::log << "DSP::f::SolveMatrixEqu_prec(A_in, X, B_in);" << endl;
+      DSP::f::SolveMatrixEqu_prec(A_in, X, B_in);
       break;
 
     default:
@@ -2438,7 +2438,7 @@ int test_SolveMatrix(int mode) {
     DSP::log << ss.str() << endl;
   }
 
-//  \TODO test also DSPf_LPF_LS();
+//  \TODO test also DSP::f::LPF_LS();
 
 //  DSP_float A_in[]= {3.0, 1.0, 1.0,
 //                     0.5, 1.0, 1.5,
@@ -2492,18 +2492,18 @@ int test_SolveMatrix_prec(int mode) {
   }
   switch (mode) {
     case 0:
-      DSP::log << "DSPf_SolveMatrixEqu_prec(A_in, X, B_in, 0);" << endl;
-      DSPf_SolveMatrixEqu_prec(A_in, X, B_in, 0);
+      DSP::log << "DSP::f::SolveMatrixEqu_prec(A_in, X, B_in, 0);" << endl;
+      DSP::f::SolveMatrixEqu_prec(A_in, X, B_in, 0);
       break;
 
     case 1:
-      DSP::log << "DSPf_SolveMatrixEqu_prec(A_in, X, B_in, 1);" << endl;
-      DSPf_SolveMatrixEqu_prec(A_in, X, B_in, 1);
+      DSP::log << "DSP::f::SolveMatrixEqu_prec(A_in, X, B_in, 1);" << endl;
+      DSP::f::SolveMatrixEqu_prec(A_in, X, B_in, 1);
       break;
 
     case 2:
-      DSP::log << "DSPf_SolveMatrixEqu_prec(A_in, X, B_in, 2);" << endl;
-      DSPf_SolveMatrixEqu_prec(A_in, X, B_in, 2);
+      DSP::log << "DSP::f::SolveMatrixEqu_prec(A_in, X, B_in, 2);" << endl;
+      DSP::f::SolveMatrixEqu_prec(A_in, X, B_in, 2);
       break;
 
     default:
@@ -2525,7 +2525,7 @@ int test_SolveMatrix_prec(int mode) {
     DSP::log << ss.str() << endl;
   }
 
-//  \TODO test also DSPf_LPF_LS();
+//  \TODO test also DSP::f::LPF_LS();
 
 //  DSP_float A_in[]= {3.0, 1.0, 1.0,
 //                     0.5, 1.0, 1.5,
@@ -2739,7 +2739,7 @@ int test_ZPSTC_cw_3()
 
 int main(int argc, char*argv[])
 {
-  //  DSPf_SetLogState(DSP_LS_console | DSP_LS_file);
+  //  DSP::f::SetLogState(DSP_LS_console | DSP_LS_file);
   DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file);
   DSP::log.SetLogFileName("DSPElib_test_log.txt");
 
@@ -2754,7 +2754,7 @@ int main(int argc, char*argv[])
   for (auto i=0; i<4; i++) {
     test_SolveMatrix_prec(i);
   }
-  //! \TODO test DSPf_LPF_LS
+  //! \TODO test DSP::f::LPF_LS
   DSP::log << DSP::LogMode::pause << "Finished SolveMatrix test" << endl;
 
   DSP::log << "Starting SymbolMapper test" << endl;

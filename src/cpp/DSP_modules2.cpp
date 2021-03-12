@@ -171,7 +171,7 @@ void DSPu_BPSK_SNR_estimator::InputExecute(INPUT_EXECUTE_ARGS)
  *
  * \warning in this version Buffer is overwritten
  */
-void DSPf_PSK_SNR_estimator(int buffer_size, DSP_float_ptr buffer,
+void DSP::f::PSK_SNR_estimator(int buffer_size, DSP_float_ptr buffer,
                             DSP_float &BPSK_SNR, DSP_float &QPSK_SNR)
 {
   DSP_float s_re_abs, s_im_abs;
@@ -240,7 +240,7 @@ void DSPf_PSK_SNR_estimator(int buffer_size, DSP_float_ptr buffer,
  *
  * \warning This version preserves input buffer
  */
-void DSPf_PSK_SNR_estimator2(int buffer_size, DSP_float_ptr buffer,
+void DSP::f::PSK_SNR_estimator2(int buffer_size, DSP_float_ptr buffer,
                              DSP_float &BPSK_SNR, DSP_float &QPSK_SNR)
 {
   DSP_float s_re_abs, s_im_abs;
@@ -593,7 +593,7 @@ void DSPu_DynamicCompressor::InputExecute_complex(INPUT_EXECUTE_ARGS)
 //
 //  if (InputClock == NULL)
 //  {
-//    DSPf_ErrorMessage("DSPu_Farrow", "Undefined InputClock (AutoUpdate not implemented yet)");
+//    DSP::f::ErrorMessage("DSPu_Farrow", "Undefined InputClock (AutoUpdate not implemented yet)");
 //    return;
 //  }
 //  else
@@ -649,14 +649,14 @@ void DSPu_DynamicCompressor::InputExecute_complex(INPUT_EXECUTE_ARGS)
 ////  std::stringstream ss;
 ////  ss <<"Farrow coefficients" << std::endl;
 ////  ss <<" Farrow_len = " << Farrow_len << ", N_FSD = " << N_FSD << std::endl;
-////  DSPf_InfoMessage(ss.str().c_str());
+////  DSP::f::InfoMessage(ss.str().c_str());
 //  for (ind = 0; ind < Farrow_len; ind++)
 //    for (ind2 = 0; ind2 < N_FSD; ind2++)
 //    {
 //      Farrow_coefs[ind][ind2] = Farrow_coefs_in[ind2][ind];
 ////      ss = std::stringstream("");
 ////      ss <<" Farrow_coefs[ = " << ind << "][" << ind2 << "]=" << Farrow_coefs[ind][ind2] << std::endl;
-////      DSPf_InfoMessage(ss.str().c_str());
+////      DSP::f::InfoMessage(ss.str().c_str());
 //    }
 //
 //  // work as if sample and delay are ready
@@ -762,14 +762,14 @@ DSPu_Farrow::DSPu_Farrow(const bool& IsComplex, const vector<DSP_float_vector>& 
   //  std::stringstream ss;
   //  ss <<"Farrow coefficients" << std::endl;
   //  ss <<" Farrow_len = " << Farrow_len << ", N_FSD = " << N_FSD << std::endl;
-  //  DSPf_InfoMessage(ss.str().c_str());
+  //  DSP::f::InfoMessage(ss.str().c_str());
   for (ind = 0; ind < Farrow_len; ind++)
     for (ind2 = 0; ind2 < N_FSD; ind2++)
     {
       Farrow_coefs[ind][ind2] = Farrow_coefs_in[ind2][ind];
       //      ss = std::stringstream("");
       //      ss <<" Farrow_coefs[ = " << ind << "][" << ind2 << "]=" << Farrow_coefs[ind][ind2] << std::endl;
-      //      DSPf_InfoMessage(ss.str().c_str());
+      //      DSP::f::InfoMessage(ss.str().c_str());
     }
 
   // work as if sample and delay are ready
@@ -830,14 +830,14 @@ void DSPu_Farrow::InputExecute_cplx(INPUT_EXECUTE_ARGS)
     {
       THIS->InputSampleReady = true;
       THIS->NoOfInputsProcessed = THIS->InitialNoOfInputsProcessed;
-      //DSPf_InfoMessage(const_cast < char* > (THIS->GetName()), "PROCESS: InputSampleReady == true !!!");
+      //DSP::f::InfoMessage(const_cast < char* > (THIS->GetName()), "PROCESS: InputSampleReady == true !!!");
     }
   }
   else
   {
     THIS->epsilon = value;
     THIS->DelayReady = true;
-    //DSPf_InfoMessage(const_cast < char* > (THIS->GetName()), "PROCESS: DelayReady == true !!!");
+    //DSP::f::InfoMessage(const_cast < char* > (THIS->GetName()), "PROCESS: DelayReady == true !!!");
   }
 }
 
@@ -849,13 +849,13 @@ void DSPu_Farrow::InputExecute_real(INPUT_EXECUTE_ARGS)
   { //update buffer
     ((DSP_float *)(THIS->Buffer))[THIS->N_FSD-1] = value;
     THIS->InputSampleReady = true;
-    //DSPf_InfoMessage(const_cast < char* > (THIS->GetName()), "PROCESS: InputSampleReady == true !!!");
+    //DSP::f::InfoMessage(const_cast < char* > (THIS->GetName()), "PROCESS: InputSampleReady == true !!!");
   }
   else
   {
     THIS->epsilon = value;
     THIS->DelayReady = true;
-    //DSPf_InfoMessage(const_cast < char* > (THIS->GetName()), "PROCESS: DelayReady == true !!!");
+    //DSP::f::InfoMessage(const_cast < char* > (THIS->GetName()), "PROCESS: DelayReady == true !!!");
   }
 }
 #undef THIS
@@ -910,11 +910,11 @@ bool DSPu_Farrow::OutputExecute(OUTPUT_EXECUTE_ARGS)
   /*
   if (THIS->InputSampleReady == false)
   {
-    DSPf_ErrorMessage(const_cast < char* > (THIS->GetName()), "InputSampleReady == false !!!");
+    DSP::f::ErrorMessage(const_cast < char* > (THIS->GetName()), "InputSampleReady == false !!!");
   }
   if (THIS->DelayReady == false)
   {
-    DSPf_ErrorMessage(const_cast < char* > (THIS->GetName()), "DelayReady == false !!!");
+    DSP::f::ErrorMessage(const_cast < char* > (THIS->GetName()), "DelayReady == false !!!");
   }
   */
   return false; //wait for input signals
@@ -947,12 +947,12 @@ void DSPu_Farrow::Notify(DSP::Clock_ptr clock) //, bool State)
 //      ((DSP_complex_ptr)Buffer)[N_FSD-1].im = 200.0;
     }
     InputSampleReady = false;
-    //DSPf_InfoMessage(const_cast < char* > (this->GetName()), "NOTIFY: InputSampleReady == false !!!");
+    //DSP::f::InfoMessage(const_cast < char* > (this->GetName()), "NOTIFY: InputSampleReady == false !!!");
   }
   if (InputClocks[NoOfInputs-1] == clock)
   { // new delay value is expected in this cycle
     DelayReady = false;
-    //DSPf_InfoMessage(const_cast < char* > (this->GetName()), "NOTIFY: DelayReady == false !!!");
+    //DSP::f::InfoMessage(const_cast < char* > (this->GetName()), "NOTIFY: DelayReady == false !!!");
   }
 }
 
@@ -1912,7 +1912,7 @@ unsigned int getConstellation(
 
 //          stringstream ss;
 //          ss << "constellation[" << ind << "]={" << setprecision(2) << constellation[ind].re << "," << constellation[ind].im << "}; n=" << n;
-//          DSPf_InfoMessage(ss.str());
+//          DSP::f::InfoMessage(ss.str());
 
           n ^= mask;
           //mask <<= 1u;
@@ -2418,7 +2418,7 @@ void DSPu_SymbolDemapper::InputExecute_constellation(INPUT_EXECUTE_ARGS)
     bit = (symbol_index & mask);
   }
 
-//  DSPf_InfoMessage(ss.str());
+//  DSP::f::InfoMessage(ss.str());
 }
 #undef  THIS_
 

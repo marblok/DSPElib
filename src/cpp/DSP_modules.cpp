@@ -3032,7 +3032,7 @@ bool DSP::Block::GetMultirateFactorsFromClocks(
 
     //L = out_L / in_L;  M = out_M / in_M;
     L = out_L * in_M ; M = out_M * in_L;
-    gcd = DSPf_gcd(L, M);
+    gcd = DSP::f::gcd(L, M);
     L /= gcd; M /= gcd;
     */
 
@@ -3041,7 +3041,7 @@ bool DSP::Block::GetMultirateFactorsFromClocks(
     unsigned long int gcd;
     cycle_length_in = InputClock->cycle_length;
     cycle_length_out = OutputClock->cycle_length;
-    gcd = DSPf_gcd(cycle_length_out, cycle_length_in);
+    gcd = DSP::f::gcd(cycle_length_out, cycle_length_in);
     L = cycle_length_in/gcd;
     M = cycle_length_out/gcd;
   }

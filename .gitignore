@@ -24,3 +24,7 @@ examples/socket_server_2.exe
 examples/socket_server_2.o
 examples/socket_server.exe
 examples/socket_server.o
+examples/asynchronous_CT.dot
+examples/echo.dot
+examples/log_file.log
+examples/test_out.wav

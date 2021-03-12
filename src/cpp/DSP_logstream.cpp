@@ -12,7 +12,7 @@ using namespace std;
 
 #include "DSP_logstream.h"
 
-#include <DSP_misc.h> // DSPf_ErrorMessage and DSPf_InfoMessage
+#include <DSP_misc.h> // DSP::f::ErrorMessage and DSP::f::InfoMessage
 
 namespace DSP
 {
@@ -132,13 +132,13 @@ namespace DSP
          */
         void InfoMessage(const string &source = "", const string &message = "");
         // //! returns size of text buffer required for the given message
-        //int DSPf_GetMessageLength(bool IsError, const char *source, const char *message = NULL);
+        //int DSP::f::GetMessageLength(bool IsError, const char *source, const char *message = NULL);
 
-        //! Returns error message in format used in DSPf_ErrorMessage.
-        /*!  See also ::DSPf_GetErrorMessage, ::DSPf_GetInfoMessage.
+        //! Returns error message in format used in DSP::f::ErrorMessage.
+        /*!  See also ::DSP::f::GetErrorMessage, ::DSP::f::GetInfoMessage.
          */
         string GetErrorMessage(const string &source, const string &message = "");
-        //! Returns informational message in format used in DSPf_InfoMessage.
+        //! Returns informational message in format used in DSP::f::InfoMessage.
         /*!  See also ::GetMessageLength.
          */
         string GetInfoMessage(const string &source, const string &message = "");

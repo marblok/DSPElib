@@ -62,7 +62,7 @@ DSP_socket::DSP_socket(const string &address_with_port, bool run_as_client, DWOR
     /*
     while (TryConnect(0x00000000) == false)
     {
-      DSPf_Sleep(10);
+      DSP::f::Sleep(10);
     }
     */
   }
@@ -74,7 +74,7 @@ DSP_socket::DSP_socket(const string &address_with_port, bool run_as_client, DWOR
     /*
     while (TryAcceptConnection() == false)
     {
-      DSPf_Sleep(10);
+      DSP::f::Sleep(10);
     }
     */
   }
@@ -435,7 +435,7 @@ bool DSP_socket::TryConnect(DWORD SerwerObjectID)
       case WSAEINVAL:
         // connection not ready yet
         current_socket_state &= DSP_socket_timeout_mask;
-        DSPf_Sleep(0);
+        DSP::f::Sleep(0);
         return false;
         break;
 
@@ -542,7 +542,7 @@ bool DSP_socket::WaitForConnection(bool stop_on_fail)
     if (stop_on_fail == true)
       break;
 
-    DSPf_Sleep(10);
+    DSP::f::Sleep(10);
   }
   return rs;
 }
@@ -949,7 +949,7 @@ bool DSPu_SOCKETinput::ReadConnectionData(void)
   {
     do
     {
-      DSPf_Sleep(0);
+      DSP::f::Sleep(0);
 
       FD_ZERO(&readfds);
       FD_SET(ConnectSocket, &readfds);
@@ -1319,7 +1319,7 @@ bool DSPu_SOCKEToutput::SendConnectionData(void)
     FD_ZERO(&writefds);
     FD_SET(ConnectSocket, &writefds);
     res = select(0, NULL, &writefds, NULL, &timeout);
-    DSPf_Sleep(0);
+    DSP::f::Sleep(0);
     if (res == 0)
       current_socket_state |= DSP_socket_timeout;
   }

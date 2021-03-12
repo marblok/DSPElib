@@ -28,7 +28,7 @@
 
 //*****************************************************//
 //*****************************************************//
-DWORD DSPf_ReadCoefficientsFromFile(DSP_float *Buffer, DWORD N,
+DWORD DSP::f::ReadCoefficientsFromFile(DSP_float *Buffer, DWORD N,
                      const string &FileName, const string &FileDir,
                      DSP::e::SampleType type,
                      DWORD offset)
@@ -93,7 +93,7 @@ DWORD DSPf_ReadCoefficientsFromFile(DSP_float *Buffer, DWORD N,
     #ifdef __DEBUG__
       else
       {
-        DSP::log << DSP::LogMode::Error << "DSPf_ReadCoefficientsFromFile" << DSP::LogMode::second << "ReadCoefficientsFromFile wrong offset" << endl;
+        DSP::log << DSP::LogMode::Error << "DSP::f::ReadCoefficientsFromFile" << DSP::LogMode::second << "ReadCoefficientsFromFile wrong offset" << endl;
       }
     #endif
     fclose(plik);
@@ -230,7 +230,7 @@ void DSPu_Vacuum::InputExecute(INPUT_EXECUTE_ARGS)
 //*****************************************************//
 //*****************************************************//
 // Determines file type by filename extension
-DSP::e::FileType DSPf_FileExtToFileType(const string &filename)
+DSP::e::FileType DSP::f::FileExtToFileType(const string &filename)
 {
   DSP::e::FileType FileType;
   int ind;
@@ -2441,7 +2441,7 @@ void DSPu_FILEoutput::raw_FlushBuffer(void)
 
 //*****************************************************//
 //*****************************************************//
-bool DSPf_GetWAVEfileParams(const string &FileName, const string &FileDir,
+bool DSP::f::GetWAVEfileParams(const string &FileName, const string &FileDir,
                            T_WAVEchunk_ptr WAVEparams)
 {
   string tekst;
@@ -2467,7 +2467,7 @@ bool DSPf_GetWAVEfileParams(const string &FileName, const string &FileDir,
   {
     #ifdef __DEBUG__
     {
-      DSP::log << DSP::LogMode::Error << "DSPf_GetWAVEfileParams" << DSP::LogMode::second
+      DSP::log << DSP::LogMode::Error << "DSP::f::GetWAVEfileParams" << DSP::LogMode::second
         << "This (" << FileName << ") is not PCM WAVE file or file is corrupted !!!" << endl;
     }
     #endif
@@ -3091,6 +3091,26 @@ bool T_WAVEchunk::WAVEinfo(FILE *hIn)
   return true;
 }
 
+
+int T_WAVEchunk::strncmpi(const char* str1, const char* str2, int N)
+{
+  int result;
+
+  result=0;
+  for (int ind=0; ind<N; ind++)
+  {
+    if ((str1[ind]==0) && (str2[ind]==0))
+      break;
+
+    if (toupper(str1[ind])!=toupper(str2[ind]))
+    {
+      result=1;
+      break;
+    }
+  }
+  return result;
+}
+
 bool T_WAVEchunk::FindDATA(FILE *hIn)
 {
   DWORD BytesRead_temp;
@@ -3425,7 +3445,7 @@ inline void CDirectXInput::SourceDescription(TStringList *Text)
   // ****************************************************** //
   // ****************************************************** //
   // Issues error message and returns true if error detected
-  bool DSPf_AudioCheckError(MMRESULT result)
+  bool DSP::f::AudioCheckError(MMRESULT result)
   {
     #ifdef __DEBUG__
       switch (result)
@@ -3495,7 +3515,7 @@ inline void CDirectXInput::SourceDescription(TStringList *Text)
   };
 #endif
 
-DWORD DSPf_GetAudioBufferSize(unsigned long SamplingFreq, DSPe_AudioBufferType type)
+DWORD DSP::f::GetAudioBufferSize(unsigned long SamplingFreq, DSPe_AudioBufferType type)
 {
   DWORD size;
 
@@ -3516,7 +3536,7 @@ DWORD DSPf_GetAudioBufferSize(unsigned long SamplingFreq, DSPe_AudioBufferType t
 //  size / DSP_ReferenceFs == new_size / SamplingFreq
 #ifdef __DEBUG__
   if ((SamplingFreq * size) / DSP_ReferenceFs > UINT32_MAX){
-    DSP::log << DSP::LogMode::Error << "DSPf_GetAudioBufferSize" << DSP::LogMode::second
+    DSP::log << DSP::LogMode::Error << "DSP::f::GetAudioBufferSize" << DSP::LogMode::second
        << "Buffer size (" << (SamplingFreq * size) / DSP_ReferenceFs << ") > UINT32_MAX" << endl;
   }
 #endif
@@ -3633,16 +3653,16 @@ DWORD DSPf_GetAudioBufferSize(unsigned long SamplingFreq, DSPe_AudioBufferType t
   #endif
             result=waveInUnprepareHeader(Current->hWaveIn,
               &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-            DSPf_AudioCheckError(result);
+            DSP::f::AudioCheckError(result);
             // ignore data
 
             //add put back into recording queue
             result=waveInPrepareHeader(Current->hWaveIn,
               &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-            DSPf_AudioCheckError(result);
+            DSP::f::AudioCheckError(result);
             result=waveInAddBuffer(Current->hWaveIn,
               &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-            DSPf_AudioCheckError(result);
+            DSP::f::AudioCheckError(result);
 
             Current->NextBufferInd++; Current->NextBufferInd %= 2; //just two buffers
           }
@@ -3653,7 +3673,7 @@ DWORD DSPf_GetAudioBufferSize(unsigned long SamplingFreq, DSPe_AudioBufferType t
               //copy data
               result=waveInUnprepareHeader(Current->hWaveIn,
                 &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-              DSPf_AudioCheckError(result);
+              DSP::f::AudioCheckError(result);
 
               Sample=Current->InBuffers[Current->EmptyBufferIndex];
               // ************************************************** //
@@ -3677,10 +3697,10 @@ DWORD DSPf_GetAudioBufferSize(unsigned long SamplingFreq, DSPe_AudioBufferType t
               //add put back into recording queue
               result=waveInPrepareHeader(Current->hWaveIn,
                 &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-              DSPf_AudioCheckError(result);
+              DSP::f::AudioCheckError(result);
               result=waveInAddBuffer(Current->hWaveIn,
                 &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-              DSPf_AudioCheckError(result);
+              DSP::f::AudioCheckError(result);
 
               Current->NextBufferInd++; Current->NextBufferInd %= 2; //just two buffers
             }
@@ -3757,16 +3777,16 @@ DWORD DSPf_GetAudioBufferSize(unsigned long SamplingFreq, DSPe_AudioBufferType t
   #endif
             result=waveInUnprepareHeader(Current->hWaveIn,
               &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-            DSPf_AudioCheckError(result);
+            DSP::f::AudioCheckError(result);
             // ignore data
 
             //add put back into recording queue
             result=waveInPrepareHeader(Current->hWaveIn,
               &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-            DSPf_AudioCheckError(result);
+            DSP::f::AudioCheckError(result);
             result=waveInAddBuffer(Current->hWaveIn,
               &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-            DSPf_AudioCheckError(result);
+            DSP::f::AudioCheckError(result);
 
             Current->NextBufferInd++; Current->NextBufferInd %= 2; //just two buffers
           }
@@ -3777,7 +3797,7 @@ DWORD DSPf_GetAudioBufferSize(unsigned long SamplingFreq, DSPe_AudioBufferType t
               //copy data
               result=waveInUnprepareHeader(Current->hWaveIn,
                 &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-              DSPf_AudioCheckError(result);
+              DSP::f::AudioCheckError(result);
 
               Sample=Current->InBuffers[Current->EmptyBufferIndex];
               // ************************************************** //
@@ -3801,10 +3821,10 @@ DWORD DSPf_GetAudioBufferSize(unsigned long SamplingFreq, DSPe_AudioBufferType t
               //add put back into recording queue
               result=waveInPrepareHeader(Current->hWaveIn,
                 &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-              DSPf_AudioCheckError(result);
+              DSP::f::AudioCheckError(result);
               result=waveInAddBuffer(Current->hWaveIn,
                 &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-              DSPf_AudioCheckError(result);
+              DSP::f::AudioCheckError(result);
 
               Current->NextBufferInd++; Current->NextBufferInd %= 2; //just two buffers
             }
@@ -3945,7 +3965,7 @@ void DSPu_AudioOutput::Init(unsigned long SamplingFreq,
       break;
   }
 
-  audio_outbuffer_size = DSPf_GetAudioBufferSize(SamplingFreq, DSP_AB_OUT);
+  audio_outbuffer_size = DSP::f::GetAudioBufferSize(SamplingFreq, DSP_AB_OUT);
 
   #ifdef WINMMAPI
     //Wypeniamy struktur wfx
@@ -3972,7 +3992,7 @@ void DSPu_AudioOutput::Init(unsigned long SamplingFreq,
         Current_CallbackInstance, //CallbackInstance,
         CALLBACK_FUNCTION | WAVE_ALLOWSYNC | WAVE_FORMAT_DIRECT //| WAVE_MAPPED //CALLBACK_NULL
         );
-    if (DSPf_AudioCheckError(result) == false)
+    if (DSP::f::AudioCheckError(result) == false)
     { // everything  is ok
       waveHeaderOut = new WAVEHDR[DSP_NoOfAudioOutputBuffers];
       WaveOutBufferLen=wfx.wf.nBlockAlign*audio_outbuffer_size;
@@ -3997,7 +4017,7 @@ void DSPu_AudioOutput::Init(unsigned long SamplingFreq,
 
         result=waveOutPrepareHeader(hWaveOut,
           &(waveHeaderOut[ind]), sizeof(WAVEHDR));
-        DSPf_AudioCheckError(result);
+        DSP::f::AudioCheckError(result);
         waveHeaderOut[ind].dwFlags= WHDR_DONE; // WHDR_BEGINLOOP | WHDR_ENDLOOP;
       }
     }
@@ -4132,7 +4152,7 @@ void DSPu_AudioInput::Init(DSP::Clock_ptr ParentClock,
       break;
   }
 
-  audio_inbuffer_size = DSPf_GetAudioBufferSize(SamplingFreq, DSP_AB_IN);
+  audio_inbuffer_size = DSP::f::GetAudioBufferSize(SamplingFreq, DSP_AB_IN);
 
   #ifdef WINMMAPI
     //Wypeniamy struktur wfx
@@ -4159,7 +4179,7 @@ void DSPu_AudioInput::Init(DSP::Clock_ptr ParentClock,
         Current_CallbackInstance, //CallbackInstance,
         CALLBACK_FUNCTION | WAVE_FORMAT_DIRECT //| WAVE_MAPPED //CALLBACK_NULL
         );
-    if (DSPf_AudioCheckError(result) == false)
+    if (DSP::f::AudioCheckError(result) == false)
     { // no errors
       waveHeaderIn = new WAVEHDR[2];
       WaveInBufferLen=wfx.wf.nBlockAlign*audio_inbuffer_size;
@@ -4188,7 +4208,7 @@ void DSPu_AudioInput::Init(DSP::Clock_ptr ParentClock,
 
       result=waveInPrepareHeader(hWaveIn,
         &(waveHeaderIn[0]), sizeof(WAVEHDR));
-      DSPf_AudioCheckError(result);
+      DSP::f::AudioCheckError(result);
     //  waveHeaderIn[0].dwFlags= WHDR_DONE; // WHDR_BEGINLOOP | WHDR_ENDLOOP;
 
       waveHeaderIn[1].lpData=(char *)(WaveInBuffers[1]);
@@ -4198,7 +4218,7 @@ void DSPu_AudioInput::Init(DSP::Clock_ptr ParentClock,
 
       result=waveInPrepareHeader(hWaveIn,
         &(waveHeaderIn[1]), sizeof(WAVEHDR));
-      DSPf_AudioCheckError(result);
+      DSP::f::AudioCheckError(result);
     //  waveHeaderIn[1].dwFlags= WHDR_DONE; // WHDR_BEGINLOOP | WHDR_ENDLOOP;
     }
     else
@@ -4247,12 +4267,12 @@ DSPu_AudioOutput::~DSPu_AudioOutput()
 
     #ifdef WINMMAPI
       result = waveOutReset(hWaveOut);
-      DSPf_AudioCheckError(result);
+      DSP::f::AudioCheckError(result);
       for (ind=0; ind< DSP_NoOfAudioOutputBuffers; ind++)
       {
         result=waveOutUnprepareHeader(hWaveOut,
           &(waveHeaderOut[ind]), sizeof(WAVEHDR));
-        DSPf_AudioCheckError(result);
+        DSP::f::AudioCheckError(result);
       }
 
       #ifdef AUDIO_DEBUG_MESSAGES_ON
@@ -4262,7 +4282,7 @@ DSPu_AudioOutput::~DSPu_AudioOutput()
       while (result==WAVERR_STILLPLAYING)
       {
       //    #ifdef WINBASEAPI
-        DSPf_Sleep(100);
+        DSP::f::Sleep(100);
       //    #else
       //      sleep(100);
       //    #endif
@@ -4271,7 +4291,7 @@ DSPu_AudioOutput::~DSPu_AudioOutput()
         #endif
         result=waveOutClose(hWaveOut);
       }
-      DSPf_AudioCheckError(result);
+      DSP::f::AudioCheckError(result);
     #endif
 
 
@@ -4331,13 +4351,13 @@ DSPu_AudioInput::~DSPu_AudioInput()
 
     #ifdef WINMMAPI
       result = waveInReset(hWaveIn);
-      DSPf_AudioCheckError(result);
+      DSP::f::AudioCheckError(result);
       result=waveInUnprepareHeader(hWaveIn,
         &(waveHeaderIn[0]), sizeof(WAVEHDR));
-      DSPf_AudioCheckError(result);
+      DSP::f::AudioCheckError(result);
       result=waveInUnprepareHeader(hWaveIn,
         &(waveHeaderIn[1]), sizeof(WAVEHDR));
-      DSPf_AudioCheckError(result);
+      DSP::f::AudioCheckError(result);
 
       #ifdef AUDIO_DEBUG_MESSAGES_ON
         DSP::log << "DSPu_AudioInput" << DSP::LogMode::second << "Closing DSPu_AudioInput" << endl;
@@ -4346,7 +4366,7 @@ DSPu_AudioInput::~DSPu_AudioInput()
       while (result==WAVERR_STILLPLAYING)
       {
       //    #ifdef WINBASEAPI
-        DSPf_Sleep(100);
+        DSP::f::Sleep(100);
       //    #else
       //      sleep(100);
       //    #endif
@@ -4355,7 +4375,7 @@ DSPu_AudioInput::~DSPu_AudioInput()
         #endif
         result=waveInClose(hWaveIn);
       }
-      DSPf_AudioCheckError(result);
+      DSP::f::AudioCheckError(result);
     #endif
 
     // 2) Free buffers
@@ -4423,7 +4443,7 @@ void DSPu_AudioOutput::FlushBuffer(void)
     {
       result=waveOutUnprepareHeader(hWaveOut,
         &(waveHeaderOut[NextBufferInd]), sizeof(WAVEHDR));
-      DSPf_AudioCheckError(result);
+      DSP::f::AudioCheckError(result);
 
       Sample=OutBuffer;
       // ************************************************** //
@@ -4473,7 +4493,7 @@ void DSPu_AudioOutput::FlushBuffer(void)
 
       result=waveOutPrepareHeader(hWaveOut,
         &(waveHeaderOut[NextBufferInd]), sizeof(WAVEHDR));
-      DSPf_AudioCheckError(result);
+      DSP::f::AudioCheckError(result);
 
       if (IsPlayingNow == false)
       {
@@ -4483,7 +4503,7 @@ void DSPu_AudioOutput::FlushBuffer(void)
           {
             result=waveOutWrite(hWaveOut,
               &(waveHeaderOut[ind]), sizeof(WAVEHDR));
-            DSPf_AudioCheckError(result);
+            DSP::f::AudioCheckError(result);
           }
           IsPlayingNow = true;
         }
@@ -4493,7 +4513,7 @@ void DSPu_AudioOutput::FlushBuffer(void)
       {
         result=waveOutWrite(hWaveOut,
           &(waveHeaderOut[NextBufferInd]), sizeof(WAVEHDR));
-        DSPf_AudioCheckError(result);
+        DSP::f::AudioCheckError(result);
       }
       NextBufferInd++;
       NextBufferInd %= DSP_NoOfAudioOutputBuffers;
@@ -4506,7 +4526,7 @@ void DSPu_AudioOutput::FlushBuffer(void)
   #ifdef AUDIO_DEBUG_MESSAGES_ON
       DSP::log << "DSPu_AudioOutput" << DSP::LogMode::second << "Waiting for free output buffer" << endl;
   #endif
-      DSPf_Sleep(0);
+      DSP::f::Sleep(0);
     }
   }
   #endif // WINMMAPI
@@ -4660,10 +4680,10 @@ bool DSPu_AudioInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
 
       result=waveInAddBuffer(DSP_THIS->hWaveIn,
             &(DSP_THIS->waveHeaderIn[0]), sizeof(WAVEHDR));
-      DSPf_AudioCheckError(result);
+      DSP::f::AudioCheckError(result);
       result=waveInAddBuffer(DSP_THIS->hWaveIn,
             &(DSP_THIS->waveHeaderIn[1]), sizeof(WAVEHDR));
-      DSPf_AudioCheckError(result);
+      DSP::f::AudioCheckError(result);
 
       DSP_THIS->NextBufferInd = 0; //first buffer first
       DSP_THIS->EmptyBufferIndex = 2; //simulate two full buffers
@@ -4672,7 +4692,7 @@ bool DSPu_AudioInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
       DSP_THIS->BufferIndex = 0;
 
       result=waveInStart(DSP_THIS->hWaveIn);
-      DSPf_AudioCheckError(result);
+      DSP::f::AudioCheckError(result);
       DSP_THIS->IsRecordingNow = true;
       //now just wait for buffer to fill up
       // which should call waveInProc
@@ -5569,9 +5589,9 @@ bool DSPu_OutputBuffer::OutputExecute(OUTPUT_EXECUTE_ARGS)
 class DSPi_ExternalSleep
 {
   private:
-    friend void DSPf_SetSleepFunction(DSPf_ExternalSleep_ptr new_function);
+    friend void DSP::f::SetSleepFunction(DSP::ExternalSleep_ptr new_function);
 
-    DSPf_ExternalSleep_ptr tmp_external_function;
+    DSP::ExternalSleep_ptr tmp_external_function;
   public:
     void Sleep(DWORD time)
     {
@@ -5591,7 +5611,7 @@ class DSPi_ExternalSleep
           }
         #else
           #ifndef __MINGW32__
-            //#error DSPf_Sleep not implemented on this platform
+            //#error DSP::f::Sleep not implemented on this platform
             timespec timeOUT, remains;
 
             timeOUT.tv_sec = time / 1000;
@@ -5612,12 +5632,12 @@ class DSPi_ExternalSleep
     }
 } DSPo_SleepObject;
 
-void DSPf_SetSleepFunction(DSPf_ExternalSleep_ptr new_function)
+void DSP::f::SetSleepFunction(DSP::ExternalSleep_ptr new_function)
 {
   DSPo_SleepObject.tmp_external_function = new_function;
 }
 
-void DSPf_Sleep(DWORD time)
+void DSP::f::Sleep(DWORD time)
 {
   DSPo_SleepObject.Sleep(time);
 
@@ -5643,7 +5663,7 @@ void DSPf_Sleep(DWORD time)
       );
 * /
   #else
-    #error DSPf_Sleep not implemented on this platform
+    #error DSP::f::Sleep not implemented on this platform
   #endif
 */
 }
@@ -5713,7 +5733,7 @@ bool DSP::LoadCoef::Open(const string &Filename, const string &Dir)
     }
 
     // info.type, ... update
-    this->sample_size = SampleType2SampleSize(this->sample_type);
+    this->sample_size = DSP::f::SampleType2SampleSize(this->sample_type);
     if (this->sample_dim == 1)
       this->type = DSP::e::LoadCoef_Type::real;
     if (this->sample_dim == 2)
@@ -5952,7 +5972,7 @@ FILE * CreateFLTfile(const string &filename, const unsigned int &NoOfChannels = 
 }
 
 // Saves to *.flt file len samples from real valued vector
-bool DSPf_SaveVector(const string &filename, const DSP_float_vector &vector, const unsigned int &Fp)
+bool DSP::f::SaveVector(const string &filename, const DSP_float_vector &vector, const unsigned int &Fp)
 {
   FILE *FileHandle = CreateFLTfile(filename, 1U, Fp);
 
@@ -5967,7 +5987,7 @@ bool DSPf_SaveVector(const string &filename, const DSP_float_vector &vector, con
   return false;
 }
 // Saves to *.flt file len samples from complex valued vector
-bool DSPf_SaveVector(const string &filename, const DSP_complex_vector &vector, const unsigned int &Fp)
+bool DSP::f::SaveVector(const string &filename, const DSP_complex_vector &vector, const unsigned int &Fp)
 {
   FILE *FileHandle = CreateFLTfile(filename, 2U, Fp);
 

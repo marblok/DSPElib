@@ -93,25 +93,28 @@ class DSPu_BPSK_SNR_estimator : public DSP::Block
     ~DSPu_BPSK_SNR_estimator(void);
 };
 
-//! SNR estimation for PSK modulation (BPSK & QPSK) based on complex symbol samples
-/*! 1) buffer_size is in symbols
- *  2) buffer contains 2*buffer_size floating point values (real & imag)
- *
- * \warning in this version Buffer is overwrited
- *
- */
-void DSPf_PSK_SNR_estimator(int buffer_size, DSP_float_ptr buffer,
+namespace DSP {
+  namespace f {
+    //! SNR estimation for PSK modulation (BPSK & QPSK) based on complex symbol samples
+    /*! 1) buffer_size is in symbols
+    *  2) buffer contains 2*buffer_size floating point values (real & imag)
+    *
+    * \warning in this version Buffer is overwrited
+    *
+    */
+    void PSK_SNR_estimator(int buffer_size, DSP_float_ptr buffer,
                             DSP_float &BPSK_SNR, DSP_float &QPSK_SNR);
-//! SNR estimation for PSK modulation (BPSK & QPSK) based on complex symbol samples
-/*! 1) buffer_size is in symbols
- *  2) buffer contains 2*buffer_size floating point values (real & imag)
- *
- * \warning in this version preserves input buffer
- *
- */
-void DSPf_PSK_SNR_estimator2(int buffer_size, DSP_float_ptr buffer,
-                             DSP_float &BPSK_SNR, DSP_float &QPSK_SNR);
-
+    //! SNR estimation for PSK modulation (BPSK & QPSK) based on complex symbol samples
+    /*! 1) buffer_size is in symbols
+    *  2) buffer contains 2*buffer_size floating point values (real & imag)
+    *
+    * \warning in this version preserves input buffer
+    *
+    */
+    void PSK_SNR_estimator2(int buffer_size, DSP_float_ptr buffer,
+                            DSP_float &BPSK_SNR, DSP_float &QPSK_SNR);
+  }
+}
 
 /**************************************************/
 //! DynamicCompressor - changes input signal dynamic

@@ -205,10 +205,12 @@ typedef void (*DSPu_buffer_callback_ptr)(unsigned int,
  */
 typedef void (*DSPu_notify_callback_ptr)(DSP::Component_ptr, unsigned int);
 
-//! Pointer to the external sleep function implementation
-/*! void func(DWORD time)
- */
-typedef void (*DSPf_ExternalSleep_ptr)(DWORD);
+namespace DSP {
+  //! Pointer to the external sleep function implementation
+  /*! void func(DWORD time)
+  */
+  typedef void (*ExternalSleep_ptr)(DWORD);
+}
 
 #define M_PIx1  3.14159265358979323846264338328
 #define M_PIx2  6.28318530718058647692528676656

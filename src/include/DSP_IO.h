@@ -65,6 +65,30 @@ enum DSPe_AudioBufferType {DSP_AB_none=0, DSP_AB_IN=1, DSP_AB_OUT=2};
  */
 #define DSP_NoOfAudioOutputBuffers 3
 
+namespace DSP {
+  namespace f { //! Special functions namespace
+    DWORD ReadCoefficientsFromFile(DSP_float *Buffer, DWORD N, const string &FileName, const string &FileDir, DSP::e::SampleType type, DWORD offset);
+    bool GetWAVEfileParams(const string &FileName, const string &FileDir, T_WAVEchunk_ptr WAVEparams);
+    //! Determines file type by filename extension
+    DSP::e::FileType FileExtToFileType(const string &filename);
+
+    //! This function adds the ability to get wav file params before DSP::Block creation
+    /*! Returns false if the file cannot be opened.
+    *
+    * \ingroup load_func
+    */
+    bool GetWAVEfileParams(const string &FileName, const string &FileDir, T_WAVEchunk_ptr WAVEparams);
+
+    //! returns audio buffer size for given Fs based on reference values given for DSP_ReferenceFs
+    DWORD GetAudioBufferSize(unsigned long SamplingFreq, DSPe_AudioBufferType type);
+
+    #ifdef WINMMAPI
+      //! Issues error message and returns true if error detected
+      bool AudioCheckError(MMRESULT result);
+    #endif
+  }
+}
+
 //! Reads coefficients from file.
 /*! Reads N coefficients from file Filename (in directory DirName)
  *  to the Buffer.\n
@@ -82,7 +106,7 @@ enum DSPe_AudioBufferType {DSP_AB_none=0, DSP_AB_IN=1, DSP_AB_OUT=2};
  *
  * \ingroup load_func
  */
-DWORD DSPf_ReadCoefficientsFromFile(DSP_float *Buffer, DWORD N,
+DWORD DSP::f::ReadCoefficientsFromFile(DSP_float *Buffer, DWORD N,
                      const string &FileName, const string &FileDir,
                      DSP::e::SampleType type=DSP::e::SampleType::ST_float,
                      DWORD offset=0);
@@ -126,15 +150,12 @@ class T_WAVEchunk
     // zeruj stan
     void clear();
 
-    friend bool DSPf_GetWAVEfileParams(const string &FileName, const string &FileDir, T_WAVEchunk_ptr WAVEparams);
+    friend bool DSP::f::GetWAVEfileParams(const string &FileName, const string &FileDir, T_WAVEchunk_ptr WAVEparams);
+  
+  private:
+    int strncmpi(const char* str1, const char* str2, int N);
 };
 
-//! This function adds the ability to get wav file params before DSP::Block creation
-/*! Returns false if the file cannot be opened.
- *
- * \ingroup load_func
-*/
-bool DSPf_GetWAVEfileParams(const string &FileName, const string &FileDir, T_WAVEchunk_ptr WAVEparams);
 
 #define FLT_header_LEN 8
 /*! DSP::e::FileType::FT_flt : floating point content file header
@@ -352,8 +373,6 @@ class DSPu_WaveInput : public DSP::File, public DSP::Source//: public CAudioInpu
 //    void SourceDescription(TStringList *);
 };
 
-//! Determines file type by filename extension
-DSP::e::FileType DSPf_FileExtToFileType(const string &filename);
 
 // ***************************************************** //
 // ***************************************************** //
@@ -894,14 +913,6 @@ class DSPu_AudioOutput : public DSP::Block
 
 //    void SourceDescription(TStringList *);
 };
-
-//! returns audio buffer size for given Fs based on reference values given for DSP_ReferenceFs
-DWORD DSPf_GetAudioBufferSize(unsigned long SamplingFreq, DSPe_AudioBufferType type);
-
-#ifdef WINMMAPI
-  //! Issues error message and returns true if error detected
-  bool DSPf_AudioCheckError(MMRESULT result);
-#endif
 
 
 //************************************************************//

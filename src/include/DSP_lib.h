@@ -11,7 +11,7 @@
 
 #define DSP_VER_MAJOR 0
 #define DSP_VER_MINOR 19
-#define DSP_VER_BUILD 14 // !!! without zeroes before, else this will be treated as octal number
+#define DSP_VER_BUILD 15 // !!! without zeroes before, else this will be treated as octal number
 #define DSP_VER_YEAR  2021
 #define DSP_VER       DSP_VER_MAJOR.DSP_VER_MINOR.DSP_VER_BUILD
 
@@ -102,6 +102,9 @@ struct DSP_libver
  * \todo <b>2012.04.17</b> Check if DSPu_FIR variant for I-FIR shaping filter is implemented on the basis
  *                         of cyclic buffer and not based on memcpy
  *
+ * - ver. 0.19.015 - <b>2021.03.12</b> Changed: type DSPf_ExternalSleep_ptr moved into DSP namespace:  DSP::ExternalSleep_ptr
+ *                                     Changed: moved strncmpi inside the T_WAVEchunk class
+ *                                     Changed: moved DSPf_* functions into DSP::f:: namespace: DSP::f::*
  * - ver. 0.19.014 - <b>2021.02.18</b> Changed: enum DSPe_SampleType moved into DSP::e namespace:  DSP::e::SampleType
  *                                     Changed: enum DSPe_FileType moved into DSP::e namespace:  DSP::e::FileType
  *                                     Changed: enum DSPe_AM_MutedState moved into DSP::e namespace:  DSP::e::AM_MutedState
@@ -122,11 +125,11 @@ struct DSP_libver
  * - ver. 0.19.005 - <b>2020.09.07</b> Changed: DSP_input and DSP_output moved into DSP namespace: DSP::input and DSP::output
  * - ver. 0.19.004 - <b>2020.09.07</b> Changed: DSP_clock moved into DSP namespace DSP::Clock 
  * - ver. 0.19.003 - <b>2020.09.07</b> Changed: Added DSP::logstream and DSP::log global object for logging management 
- *                                              DSPf_InfoMessage is replaced with DSP::log << "source" << DSP::LogMode::second << "message" << endl;
- *                                              DSPf_ErrorMessage is replaced with DSP::log << DSP::LogMode::Error << "source" << DSP::LogMode::second << "message" << endl;
- *                                              DSPf_SetLogState and DSPf_SetLogFileName are replaced with DSP::log.SetLogState and DSP::log.SetLogFileName
+ *                                              DSP::f::InfoMessage is replaced with DSP::log << "source" << DSP::LogMode::second << "message" << endl;
+ *                                              DSP::f::ErrorMessage is replaced with DSP::log << DSP::LogMode::Error << "source" << DSP::LogMode::second << "message" << endl;
+ *                                              DSP::f::SetLogState and DSP::f::SetLogFileName are replaced with DSP::log.SetLogState and DSP::log.SetLogFileName
  *                                     Fixed: DSP::log Error message with no pause in console even if source and message are empty
- *                                     Changed: Started moving DSP_*, DSPf_*, DSPu_* to DSP namespace. First is DSP_logstream.cpp/h with DSP::logstream class.
+ *                                     Changed: Started moving DSP_*, DSP::f::*, DSPu_* to DSP namespace. First is DSP_logstream.cpp/h with DSP::logstream class.
  * - ver. 0.19.001 - <b>2020.08.31</b> Changed: Unified source code filenames prefixes to "DSP_"
  * - ver. 0.19.000 - <b>2020.08.19</b> Changed: Linux compilation and code correction to eliminate compilation warnings
  * ======================================================================================================================================
@@ -138,8 +141,8 @@ struct DSP_libver
  * - ver. 0.18.015 - <b>2020.02.23</b> Added: DSP::e::SampleType DSP::e::SampleType::ST_tchar for text output from DSPu_FILEoutput
  * - ver. 0.18.014 - <b>2020.02.22</b> Changed: DSPu_Farrow constructor as an input uses vector of vectors instead of array of arrays
  * - ver. 0.18.013 - <b>2020.02.15</b> Fixed: DSPu_FILEinput::ReadSegmentToBuffer raw_buffer type changed to uint8_t *
- *                                     Added: DSPf_sinc<DSP_float>(const DSP_float_vector& arguments, DSP_float_vector& output_buffer);
- *                                     Added: DSPf_sinc<DSP_complex>(const DSP_float_vector& arguments, DSP_complex_vector& output_buffer);
+ *                                     Added: DSP::f::sinc<DSP_float>(const DSP_float_vector& arguments, DSP_float_vector& output_buffer);
+ *                                     Added: DSP::f::sinc<DSP_complex>(const DSP_float_vector& arguments, DSP_complex_vector& output_buffer);
  * - ver. 0.18.012 - <b>2019.03.17</b> Fixed: DSP_clock::UpdateSamplingRates uses now GlobalSamplingRate which is set for current clock in DSP_clock::SetSamplingRate
  *                                     Added: DSP_clock::UpdateGlobalSamplingRate
  *                                     Fixed: DSP_clock::~DSP_clock() updates ParentClocks if necessary
@@ -184,7 +187,7 @@ struct DSP_libver
  * - ver. 0.16.07 - <b>2016.06.12</b> Fix DSP::Block::SetBlockInputClock - proper setting of GroupClock in ClockGroups in Release version
  * - ver. 0.16.08 - <b>2016.11.01</b> Fix DSPu_GardnerSampling - proper setting of GroupClock in ClockGroups
  *                                    Fix DSPu_Zeroinserter and DSPu_RawDecimator - corrected output clock group name
- * - ver. 0.16.09 - <b>2016.11.10</b> Added DSPf_SaveVector.
+ * - ver. 0.16.09 - <b>2016.11.10</b> Added DSP::f::SaveVector.
  * - ver. 0.16.17 - <b>2017.02.01</b> Fix DSPu_PCCC - constant inputs support correction.
  *
  *
@@ -223,8 +226,8 @@ struct DSP_libver
  *    .
  * - ver. 0.15.28 - <b>2010.05.21</b>
  *    - FIXED  DSPu_FILEinput::OpenFile
- *    - FIXED  DSPf_MakeDir
- *    - ADDED  DSPf_MakeDir_Ex
+ *    - FIXED  DSP::f::MakeDir
+ *    - ADDED  DSP::f::MakeDir_Ex
  *    - FIXED  DSPu_FILEinput, DSPu_FILEoutput - improved support in case of problems with file opening
  *    - ADDED  Macros: UNUSED_ARGUMENT, UNUSED_DEBUG_ARGUMENT and UNUSED_RELEASE_ARGUMENT
  *    - FIXED  DSP::MacroStack::RemoveMacroFromList
@@ -280,7 +283,7 @@ struct DSP_libver
  *   - FIXED DSPu_TimingErrorDetector::InputExecute_cplx_odd
  *   .
  * - ver. 0.13.032 - <b>2010.02.25</b>
- *   - CHANGED Renames DSPf_prec_sinc to DSPf_sinc_prec
+ *   - CHANGED Renames DSP::f::prec_sinc to DSP::f::sinc_prec
  *   .
  * - ver. 0.13.031 - <b>2010.02.24</b>
  *   - FIXED ~DSP::Component - automatically remove output blocks after the component is unregistered
@@ -327,8 +330,8 @@ struct DSP_libver
  *   - FIXED TAudioMixer::SetSourceLineVolume now works for LineNo != AM_MasterControl
  *   - FIXED DSPu_MORSEkey::LoadCodeTable problem when file does not exist
  *   - CHANGED ::DSP_Message_callback_ptr prototype - no unprocessed messages are fed to this function
- *   - CHANGED ::DSPf_InfoMessage, ::DSPf_ErrorMessage - now log callback function can block logging to console and file
- *   - ADDED ::DSPf_GetMessageLength, ::DSPf_GetInfoMessage, ::DSPf_GetErrorMessage
+ *   - CHANGED ::DSP::f::InfoMessage, ::DSP::f::ErrorMessage - now log callback function can block logging to console and file
+ *   - ADDED ::DSP::f::GetMessageLength, ::DSP::f::GetInfoMessage, ::DSP::f::GetErrorMessage
  *   .
  * - ver. 0.13.011 - <b>2008.11.06</b>
  *   - ADDED DSPu_FILEinput::OpenFile for changing or opening file during processing
@@ -374,9 +377,9 @@ struct DSP_libver
  *   .
  * - ver. 0.11.033 - <b>2008.10.01</b>
  *   - NEW: functions
- *    - DSPf_prec_sinc(DSP_prec_float)
- *   - CHANGED DSPf_SolveMatrixEqu_prec - added use_pivote modes
- *   - FIXED DSPf_LPF_LS use improved pivote mode in DSPf_SolveMatrixEqu_prec
+ *    - DSP::f::prec_sinc(DSP_prec_float)
+ *   - CHANGED DSP::f::SolveMatrixEqu_prec - added use_pivote modes
+ *   - FIXED DSP::f::LPF_LS use improved pivote mode in DSP::f::SolveMatrixEqu_prec
  *   .
  * - ver. 0.11.032 - <b>2008.09.29</b>
  *   - FIXED DSP::Component::GetComponentNodeParams_DOTfile buffer overflow problem
@@ -386,12 +389,12 @@ struct DSP_libver
  * - ver. 0.11.031 - <b>2008.08.23</b>
  *   - ADDED DSP::e::FileType::FT_wav format support to DSPu_FILEinput
  *   - ADDED DSPu_FILEinput::GetHeader
- *   - ADDED DSPf_FileExtToFileType function
+ *   - ADDED DSP::f::FileExtToFileType function
  *   - CHANGED DSP_IO all ftell and tseek calls replaced with ftello64 and fseeko64
  *   .
  * - ver. 0.11.025 - <b>2008.07.27</b>
- *   - ADDED DSPf_LPF_LS - LP FIR LS filter design
- *   - ADDED second variant of DSPf_SolveMatrixEqu_prec
+ *   - ADDED DSP::f::LPF_LS - LP FIR LS filter design
+ *   - ADDED second variant of DSP::f::SolveMatrixEqu_prec
  *   - FIXED DSPu_FILEoutput: File type DSP::e::FileType::FT_flt now works correctly, previously it was the same as for DSP::e::FileType::FT_flt_no_scaling
  *   - ADDED DSPu_FILEoutput::WriteSegmentFromBuffer
  *   .
@@ -654,8 +657,8 @@ struct DSP_libver
  *   - CHANGED DSPu_Addition now can be created with real or complex weighting coefficients.
  *   .
  * - ver. 0.08.000 - <b>2008.03.20</b>
- *   - CHANGED functions SPf_LoadCoefficients_CheckType, DSPf_LoadCoefficients_CheckSize
- *     and DSPf_LoadCoefficients_FIR are now obsolete. Use members of DSP_LoadCoef_Info instead.
+ *   - CHANGED functions SPf_LoadCoefficients_CheckType, DSP::f::LoadCoefficients_CheckSize
+ *     and DSP::f::LoadCoefficients_FIR are now obsolete. Use members of DSP_LoadCoef_Info instead.
  *   .
  *
  * - ver. 0.06.xxx - <b>2006.07.10</b> Branches concept removed
@@ -742,8 +745,8 @@ struct DSP_libver
  *   - ADDED:   DSP_clock::ListOfAllComponents - lists all existing components (regardless of related clock)
  *   .
  * - ver. 0.07.047 - <b>2006.08.20</b>
- *   - CHANGED: DSPf_InfoMessage - support for source == NULL.
- *     DSPf_InfoMessage() enters new line now.
+ *   - CHANGED: DSP::f::InfoMessage - support for source == NULL.
+ *     DSP::f::InfoMessage() enters new line now.
  *   - CHANGED: DSPu_Amplifier - added support complex and multivalued inputs.
  *   - CHANGED: DSPu_FILEoutput
  *    -# InputExecute_uchar - input values limited to <-1.0, +1.0>
@@ -763,13 +766,13 @@ struct DSP_libver
  *   .
  * - ver. 0.07.058 - <b>2006.09.07</b>
  *   - FIXED: DSPu_WaveInput - info message in DEBUG mode when file does not exist
- *   - FIXED: DSPf_ErroMessage - "Press ENTER" message in console mode
+ *   - FIXED: DSP::f::ErroMessage - "Press ENTER" message in console mode
  *   .
  * - ver. 0.07.075 - <b>2006.09.08</b>
  *   - ADDED: DSPu_Accumulator
  *   - ADDED: DSPu_Differator::SetInitialState
  *   - ADDED: DSPu_Const
- *   - ADDED: DSPf_NoOfErrors(bool Reset)
+ *   - ADDED: DSP::f::NoOfErrors(bool Reset)
  *   - NEW: New simplified OutputClock setup and source's registration scheme
  *     - ADDED: DSP::Source::RegisterOutputClock(DSP_clock_ptr, int)
  *     - ADDED: DSP::Source::RegisterClockForNotification(DSP_clock_ptr)
@@ -784,8 +787,8 @@ struct DSP_libver
  *   - CHANGED: time windows normalisation (window was normalised by mean value
  *              instead of sum of all samples)
  *   - NEW: functions
- *    - DSPf_sinc(DSP_float)
- *    - DSPf_sinc(int, DSP_float_ptr)
+ *    - DSP::f::sinc(DSP_float)
+ *    - DSP::f::sinc(int, DSP_float_ptr)
  *   - CHANGED: removed some remainings of branches concept
  *   .
  * - ver. 0.07.081 - <b>2007.05.12</b>
@@ -867,9 +870,9 @@ struct DSP_libver
  *   .
  *
  * - ver. 0.07.104 - <b>2008.03.19</b>
- *   - ADDED DSPf_LoadCoefficients_FIR - added possibility to read files with
+ *   - ADDED DSP::f::LoadCoefficients_FIR - added possibility to read files with
  *     multiple impulse responses stored inside.
- *   - FIXED typo in DSP_misc.h : DSPf_LoadCoefficients_IIR - complex version
+ *   - FIXED typo in DSP_misc.h : DSP::f::LoadCoefficients_IIR - complex version
  *   .
  *
  *
@@ -1002,7 +1005,7 @@ string DSP_lib_version_string();
  *  - \ref DSP_units_list_page
  *  - \ref DSP_fnc_list_page
  *  - \ref lib_use_LOG
- *  - Audio input/output (::DSPf_Sleep, ::DSPf_SetSleepFunction and wxWidgets)
+ *  - Audio input/output (::DSP::f::Sleep, ::DSP::f::SetSleepFunction and wxWidgets)
  *  - Audio mixer (TAudioMixer)
  *  - T_WAVEchunk
  *  - Examples
@@ -1456,13 +1459,13 @@ string DSP_lib_version_string();
  *
  * \page lib_use_LOG LOG functions and DEBUG info
  *   \section lib_LOG_setup Setting up LOG
- *     - DSPf_SetLogState(DSPe_LS_Mode Mode)
- *     - DSPf_GetLogState()
+ *     - DSP::f::SetLogState(DSPe_LS_Mode Mode)
+ *     - DSP::f::GetLogState()
  *     - ::DSPe_LS_Mode
- *     - DSPf_NoOfErrors(bool reset)
- *     - DSPf_SetLogState(DSPe_LS_Mode mode)
- *     - DSPf_SetLogFileName(char *LOG_filename);
- *     - DSPf_SetLogFunctionPtr(DSP_Message_callback_ptr function_ptr)
+ *     - DSP::f::NoOfErrors(bool reset)
+ *     - DSP::f::SetLogState(DSPe_LS_Mode mode)
+ *     - DSP::f::SetLogFileName(char *LOG_filename);
+ *     - DSP::f::SetLogFunctionPtr(DSP_Message_callback_ptr function_ptr)
  *     - ::DSP_Message_callback_ptr
  *     .
  *   \section lib_LOG_dbg DEBUG info
@@ -1475,9 +1478,9 @@ string DSP_lib_version_string();
  *      - can list all existing blocks (for example to check if there are some not deleted blocks after clean up process)
  *      .
  *   \section lib_LOG_usr User LOG messages
- *     - DSPf_InfoMessage(char *source, char *message)
- *     - DSPf_ErrorMessage(char *source, char *message)
- *     - DSPf_Message(int IsError, char *source, char *message)
+ *     - DSP::f::InfoMessage(char *source, char *message)
+ *     - DSP::f::ErrorMessage(char *source, char *message)
+ *     - DSP::f::Message(int IsError, char *source, char *message)
  *     .
  *   \section lib_LOG_wx Working with wxWidgets
  *   .
@@ -1581,36 +1584,36 @@ string DSP_lib_version_string();
  *  Last update: DSP_lib ver. 0.08.009 <b>2008.03.25</b> file DSP_lib.h
  *
  *  \section LOG_fnc LOG related functions
- *   -# DSPf_GetLogState()
- *   -# DSPf_ErrorMessage()
- *   -# DSPf_InfoMessage()
- *   -# DSPf_Message()
- *   -# DSPf_NoOfErrors()
- *   -# DSPf_SetLogFileName()
- *   -# DSPf_SetLogFunctionPtr()
- *   -# DSPf_SetLogState()
+ *   -# DSP::f::GetLogState()
+ *   -# DSP::f::ErrorMessage()
+ *   -# DSP::f::InfoMessage()
+ *   -# DSP::f::Message()
+ *   -# DSP::f::NoOfErrors()
+ *   -# DSP::f::SetLogFileName()
+ *   -# DSP::f::SetLogFunctionPtr()
+ *   -# DSP::f::SetLogState()
  *   .
  *  \section time_fnc Timing functions
- *   -# DSPf_SetSleepFunction()
- *   -# DSPf_Sleep()
+ *   -# DSP::f::SetSleepFunction()
+ *   -# DSP::f::Sleep()
  *   .
  *  \section wind_fnc Time windows
- *   -# DSPf_Bartlett()
- *   -# DSPf_Bartlett_Hann()
- *   -# DSPf_Blackman()
- *   -# DSPf_Blackman_Harris()
- *   -# DSPf_Blackman_Nuttall()
- *   -# DSPf_Flat_top()
- *   -# DSPf_Gauss()
- *   -# DSPf_Hamming()
- *   -# DSPf_Hann()
- *   -# DSPf_Nuttall()
- *   -# DSPf_Rectangular()
- *   -# DSPf_Triangular()
+ *   -# DSP::f::Bartlett()
+ *   -# DSP::f::Bartlett_Hann()
+ *   -# DSP::f::Blackman()
+ *   -# DSP::f::Blackman_Harris()
+ *   -# DSP::f::Blackman_Nuttall()
+ *   -# DSP::f::Flat_top()
+ *   -# DSP::f::Gauss()
+ *   -# DSP::f::Hamming()
+ *   -# DSP::f::Hann()
+ *   -# DSP::f::Nuttall()
+ *   -# DSP::f::Rectangular()
+ *   -# DSP::f::Triangular()
  *   .
  *  \section misc_DSP_fnc Miscellaneous DSP functions
- *   -# DSPf_sinc(DSP_float)
- *   -# DSPf_sinc(int, DSP_float_ptr)
+ *   -# DSP::f::sinc(DSP_float)
+ *   -# DSP::f::sinc(int, DSP_float_ptr)
  *   .
  *  \section load_fnc Loading coefficients
  *   -# DSP_LoadCoef class for loading coeffients from files
@@ -1623,30 +1626,30 @@ string DSP_lib_version_string();
  *     -# DSP_LoadCoef::Load
  *     .
  *     \note Functions listed below are now OBSOLETE
- *      -# DSPf_LoadCoeffi1cients_IIR()
- *      -# DSPf_LoadCoefficients_CheckSize()
- *      -# DSPf_LoadCoefficients_CheckType()
- *      -# DSPf_LoadCoefficients_FIR()
- *      -# DSPf_LoadCoefficients_IIR()
+ *      -# DSP::f::LoadCoeffi1cients_IIR()
+ *      -# DSP::f::LoadCoefficients_CheckSize()
+ *      -# DSP::f::LoadCoefficients_CheckType()
+ *      -# DSP::f::LoadCoefficients_FIR()
+ *      -# DSP::f::LoadCoefficients_IIR()
  *      .
- *   -# DSPf_ReadCoefficientsFromFile()
+ *   -# DSP::f::ReadCoefficientsFromFile()
  *   .
  *  \section math_fnc Math functions
- *   -# DSPf_gcd()
- *   -# DSPf_SolveMatrixEqu()
- *   -# DSPf_SolveMatrixEqu_prec()
+ *   -# DSP::f::gcd()
+ *   -# DSP::f::SolveMatrixEqu()
+ *   -# DSP::f::SolveMatrixEqu_prec()
  *   .
  *  \section file_fnc Files related functions
- *   -# DSPf_MakeDir()
- *   -# DSPf_GetAudioBufferSize()
- *   -# DSPf_GetWAVEfileParams()
- *   -# DSPf_SaveVector()
+ *   -# DSP::f::MakeDir()
+ *   -# DSP::f::GetAudioBufferSize()
+ *   -# DSP::f::GetWAVEfileParams()
+ *   -# DSP::f::SaveVector()
  *   .
  *  \section mod_fnc Modulations related functions
- *   -# DSPf_BER4BPSK()
- *   -# DSPf_SER4QPSK()
- *   -# DSPf_PSK_SNR_estimator()
- *   -# DSPf_PSK_SNR_estimator2()
+ *   -# DSP::f::BER4BPSK()
+ *   -# DSP::f::SER4QPSK()
+ *   -# DSP::f::PSK_SNR_estimator()
+ *   -# DSP::f::PSK_SNR_estimator2()
  *   .
  *
  */

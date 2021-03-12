@@ -192,7 +192,7 @@ class DSP::name
  *  \note
  *  <b>2.</b> Names of enumeration types should begin with <b>DSPe_</b>.
  *  \note
- *  <b>3.</b> Names of auxiliary functions should begin with <b>DSPf_</b>.
+ *  <b>3.</b> Names of auxiliary functions should begin with <b>DSP::f::</b>.
  *  \note
  *  <b>4.</b> Names of auxiliary objects should begin with <b>DSPo_</b>.
  *
