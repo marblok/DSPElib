@@ -1827,13 +1827,13 @@ void FFTout_clbk(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP_float_pt
   //int counter;
   dsp_buffer = (DSPu_OutputBuffer *)Caller->Convert2Block();
 
-  if (NoOfInputs == DSP_Callback_Init)
+  if (NoOfInputs == DSP::c::Callback_Init)
   {
     buffer_size = dsp_buffer->GetBufferSize(2);
     read_buffer = new DSP_float[buffer_size];
     return;
   }
-  if (NoOfInputs == DSP_Callback_Delete)
+  if (NoOfInputs == DSP::c::Callback_Delete)
   {
     delete [] read_buffer;
     read_buffer = NULL;
@@ -2234,12 +2234,12 @@ void BufferCallback(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP_float
   UNUSED_ARGUMENT(NoOfOutputs);
   UNUSED_ARGUMENT(UserDataPtr);
 
-  if (NoOfInputs == DSP_Callback_Init)
+  if (NoOfInputs == DSP::c::Callback_Init)
   {
     read_buffer = new DSP_float[buffer_size];
     return;
   }
-  if (NoOfInputs == DSP_Callback_Delete)
+  if (NoOfInputs == DSP::c::Callback_Delete)
   {
     delete [] read_buffer;
     read_buffer = NULL;

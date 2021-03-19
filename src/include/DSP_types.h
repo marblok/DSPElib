@@ -166,10 +166,10 @@ namespace DSP {
  *
  * This callback function apart from calls when input samples are
  * to be processed is called two additional times:
- *  -# call from block constructor with NoOfInputs = DSP_Callback_Init;
+ *  -# call from block constructor with NoOfInputs = DSP::c::Callback_Init;
  *  this is when the user can initiate UserData structure
  *  and set its pointer to UserDataPtr.
- *  -# call from block destructor with NoOfInputs = DSP_Callback_Delete;
+ *  -# call from block destructor with NoOfInputs = DSP::c::Callback_Delete;
  *  this is when the user can free UserData structure.
  *
  */
@@ -189,10 +189,10 @@ typedef void (*DSPu_callback_ptr)(unsigned int, DSP_float_ptr,
  *
  * This callback function apart from calls when input samples are
  * to be processed is called two additional times:
- *  -# call from block constructor with NoOfInputs = DSP_Callback_Init;
+ *  -# call from block constructor with NoOfInputs = DSP::c::Callback_Init;
  *  this is when the user can initiate UserData structure
  *  and set its pointer to UserDataPtr.
- *  -# call from block destructor with NoOfInputs = DSP_Callback_Delete;
+ *  -# call from block destructor with NoOfInputs = DSP::c::Callback_Delete;
  *  this is when the user can free UserData structure.
  *
  */
@@ -450,21 +450,25 @@ enum DSPe_Modulation_type {
 enum DSPe_buffer_type {DSP_standard       = 0,
                        DSP_cyclic         = 1,
                        DSP_stop_when_full = 2};
-#define CallbackID_mask  0x00ffffff
-#define CallbackID_signal_mask  0xff000000
-#define CallbackID_signal_start 0x01ffffff
-#define CallbackID_signal_stop  0x02ffffff
+
+namespace DSP {
+  namespace c {
+    const uint32_t CallbackID_mask = 0x00ffffff;
+    const uint32_t CallbackID_signal_mask = 0xff000000;
+    const uint32_t CallbackID_signal_start = 0x01ffffff;
+    const uint32_t CallbackID_signal_stop  = 0x02ffffff;
 
 //#define UINT_MAX 0xffffffff
-#define MaxOutputIndex (UINT_MAX-2)
-#define MaxInputIndex  (UINT_MAX-2)
+    const uint32_t MaxOutputIndex = (UINT_MAX-2);
+    const uint32_t MaxInputIndex  = (UINT_MAX-2);
 //! DSP::Block::FindOutputIndex_by_InputIndex constants
-#define DSP_Callback_Init (UINT_MAX)
-#define DSP_Callback_Delete (UINT_MAX-1)
-#define FO_TheOnlyOutput (UINT_MAX-1)
-#define FO_NoOutput      (UINT_MAX)
-#define FO_NoInput       (UINT_MAX)
-
+    const uint32_t Callback_Init = (UINT_MAX);
+    const uint32_t Callback_Delete = (UINT_MAX-1);
+    const uint32_t FO_TheOnlyOutput = (UINT_MAX-1);
+    const uint32_t FO_NoOutput      = (UINT_MAX);
+    const uint32_t FO_NoInput       = (UINT_MAX);
+  }
+}
 
 namespace DSP {
 //! Pointer to the DSP::Block input callback function

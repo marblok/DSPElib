@@ -4797,7 +4797,7 @@ DSPu_InputBuffer::DSPu_InputBuffer(DSP::Clock_ptr ParentClock, int BufferSize_in
 
   NotificationsStep = NotificationsStep_in;
   NotificationFunction_ptr = func_ptr;
-  UserCallbackID = (CallbackIdentifier & CallbackID_mask);
+  UserCallbackID = (CallbackIdentifier & DSP::c::CallbackID_mask);
 
   if ((ParentClock != NULL) && (func_ptr != NULL))
   {
@@ -4833,13 +4833,13 @@ DSPu_InputBuffer::DSPu_InputBuffer(DSP::Clock_ptr ParentClock, int BufferSize_in
   }
 
   if (NotificationFunction_ptr != NULL)
-  	(*NotificationFunction_ptr)(this, CallbackID_signal_start | UserCallbackID);
+  	(*NotificationFunction_ptr)(this, DSP::c::CallbackID_signal_start | UserCallbackID);
 }
 
 DSPu_InputBuffer::~DSPu_InputBuffer(void)
 {
   if (NotificationFunction_ptr != NULL)
-  	(*NotificationFunction_ptr)(this, CallbackID_signal_stop | UserCallbackID);
+  	(*NotificationFunction_ptr)(this, DSP::c::CallbackID_signal_stop | UserCallbackID);
 
   if (Buffer != NULL)
     delete [] Buffer;
@@ -5025,7 +5025,7 @@ DSPu_OutputBuffer::DSPu_OutputBuffer(unsigned int BufferSize_in, unsigned int No
   NotificationFunction_ptr = func_ptr;
   CallbackFunction_ptr = NULL;
   UserData_ptr = NULL;
-  UserCallbackID = (CallbackIdentifier & CallbackID_mask);
+  UserCallbackID = (CallbackIdentifier & DSP::c::CallbackID_mask);
 
   if ((ParentClock != NULL) && (func_ptr != NULL))
   {
@@ -5040,7 +5040,7 @@ DSPu_OutputBuffer::DSPu_OutputBuffer(unsigned int BufferSize_in, unsigned int No
   Execute_ptr = &InputExecute;
 
   if (NotificationFunction_ptr != NULL)
-  	(*NotificationFunction_ptr)(this, CallbackID_signal_start | UserCallbackID);
+  	(*NotificationFunction_ptr)(this, DSP::c::CallbackID_signal_start | UserCallbackID);
 }
 
 DSPu_OutputBuffer::DSPu_OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in,
@@ -5108,7 +5108,7 @@ DSPu_OutputBuffer::DSPu_OutputBuffer(unsigned int BufferSize_in, unsigned int No
 
   if (CallbackFunction_ptr != NULL)
   {
-    (*CallbackFunction_ptr)(DSP_Callback_Init, NoOfOutputs, NULL, &UserData_ptr, UserCallbackID, this);
+    (*CallbackFunction_ptr)(DSP::c::Callback_Init, NoOfOutputs, NULL, &UserData_ptr, UserCallbackID, this);
   }
 }
 
@@ -5162,23 +5162,23 @@ DSPu_OutputBuffer::DSPu_OutputBuffer(unsigned int BufferSize_in, unsigned int No
   NotificationFunction_ptr = NULL;
   CallbackFunction_ptr = func_ptr;
   UserData_ptr = NULL;
-  UserCallbackID = (CallbackID_mask & CallbackIdentifier);
+  UserCallbackID = (DSP::c::CallbackID_mask & CallbackIdentifier);
 
   Execute_ptr = &InputExecute;
   OutputExecute_ptr = &OutputExecute;
 
   if (CallbackFunction_ptr != NULL)
   {
-    (*CallbackFunction_ptr)(DSP_Callback_Init, NoOfOutputs, NULL, &UserData_ptr, UserCallbackID, this);
+    (*CallbackFunction_ptr)(DSP::c::Callback_Init, NoOfOutputs, NULL, &UserData_ptr, UserCallbackID, this);
   }
 }
 
 DSPu_OutputBuffer::~DSPu_OutputBuffer(void)
 {
   if (NotificationFunction_ptr != NULL)
-  	(*NotificationFunction_ptr)(this, CallbackID_signal_stop | UserCallbackID);
+  	(*NotificationFunction_ptr)(this, DSP::c::CallbackID_signal_stop | UserCallbackID);
   if (CallbackFunction_ptr != NULL)
-    (*CallbackFunction_ptr)(DSP_Callback_Delete, NoOfOutputs, NULL, &UserData_ptr, UserCallbackID, this);
+    (*CallbackFunction_ptr)(DSP::c::Callback_Delete, NoOfOutputs, NULL, &UserData_ptr, UserCallbackID, this);
 
   if (Buffer != NULL)
   {

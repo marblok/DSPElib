@@ -940,7 +940,7 @@ bool DSP::_connect_class::splitconnect(const DSP::output &output, const DSP::inp
     // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
     source_block = output.component;    source_block_output_no = output.Outputs[ind];
     sourceCopy = source_block->Convert2Copy();
-    source_output_block = NULL; source_output_block_input_no = FO_NoOutput;
+    source_output_block = NULL; source_output_block_input_no = DSP::c::FO_NoOutput;
     is_source_output_clear = true;
 
     if (sourceCopy != NULL)
@@ -4808,8 +4808,8 @@ void DSPu_Switch::Init(bool IsInputComplex,
   State = new DSP_float[InputsNo*ValuesPerOutput];
 
   LastInputInd=ValuesPerOutput*InputsNo-1; //index starts from 0
-  InputSelectionInd=FO_NoInput;
-  OutputSelectionInd=FO_NoOutput;
+  InputSelectionInd = DSP::c::FO_NoInput;
+  OutputSelectionInd = DSP::c::FO_NoOutput;
   /*
   if (UseSelectorInputs == true)
   {
@@ -4841,8 +4841,8 @@ void DSPu_Switch::Init(bool IsInputComplex,
 */
     SetNoOfInputs(ValuesPerOutput*InputsNo,false);
 /*  } */
-  SelectedInputNo=FO_NoInput;
-  SelectedOutputNo=FO_NoOutput;
+  SelectedInputNo  = DSP::c::FO_NoInput;
+  SelectedOutputNo = DSP::c::FO_NoOutput;
   MaxSelectedInputNo=InputsNo-1;
   MaxSelectedOutputNo=OutputsNo-1;
 
@@ -4895,9 +4895,9 @@ void DSPu_Switch::Select(unsigned int InputIndex, unsigned int OutputIndex)
   SelectedOutputNo = OutputIndex;
 
   if (SelectedInputNo > MaxSelectedInputNo)
-    SelectedInputNo = FO_NoInput;
+    SelectedInputNo = DSP::c::FO_NoInput;
   if (SelectedOutputNo > MaxSelectedOutputNo)
-    SelectedOutputNo = FO_NoOutput;
+    SelectedOutputNo = DSP::c::FO_NoOutput;
   /*
   if (SelectedInputNo < MinSelectedIndexNo)
     SelectedInputNo = MinSelectedIndexNo;
@@ -4944,7 +4944,7 @@ void DSPu_Switch::InputExecute(INPUT_EXECUTE_ARGS)
    if (SelectedOutputNo < MinSelectedIndexNo)
      SelectedOutputNo = MinSelectedIndexNo;
 */
-    if ((((DSPu_Switch *)block)->SelectedInputNo != FO_NoInput) && (((DSPu_Switch *)block)->SelectedOutputNo != FO_NoOutput))
+    if ((((DSPu_Switch *)block)->SelectedInputNo != DSP::c::FO_NoInput) && (((DSPu_Switch *)block)->SelectedOutputNo != DSP::c::FO_NoOutput))
     {
       if (((DSPu_Switch *)block)->ValuesPerOutput == 1)
       {
@@ -8826,7 +8826,7 @@ DSPu_MyFunction::DSPu_MyFunction(unsigned int NumberOfInputs, unsigned int Numbe
 
   // -# call from block constructor with NoOfInputs = -1;
   //  this is when the user can initiate UserData structure
-  (*UserFunction_ptr)(DSP_Callback_Init, NULL, 0, NULL, &UserData, UserCallbackID, this);
+  (*UserFunction_ptr)(DSP::c::Callback_Init, NULL, 0, NULL, &UserData, UserCallbackID, this);
 
   Execute_ptr = &InputExecute;
 }
@@ -8835,7 +8835,7 @@ DSPu_MyFunction::~DSPu_MyFunction(void)
 {
   //  -# call from block destructor with NoOfInputs = -2;
   //  this is when the user can free UserData structure
-  (*UserFunction_ptr)(DSP_Callback_Delete, NULL, 0, NULL, &UserData, UserCallbackID, this);
+  (*UserFunction_ptr)(DSP::c::Callback_Delete, NULL, 0, NULL, &UserData, UserCallbackID, this);
 
   if (InputData != NULL)
     delete [] InputData;
@@ -10474,12 +10474,12 @@ unsigned int DSP::Block::FindOutputIndex_by_InputIndex(unsigned int InputIndex)
       	if (InputIndex == temp->OutputBlocks_InputNo[ind2])
       	{
       		if (temp->NoOfOutputs == 1)
-      			return FO_TheOnlyOutput;
+      			return DSP::c::FO_TheOnlyOutput;
       		return ind2;
       	}
     }
   }
-  return FO_NoOutput;
+  return DSP::c::FO_NoOutput;
 }
 
 
@@ -10879,7 +10879,7 @@ DSPu_Copy::DSPu_Copy(unsigned int NoOfInputs_in)
   for (ind = 0; ind < NoOfInputs; ind++)
   {
     InputBlocks[ind] = NULL;
-    InputBlocks_OutputNo[ind] = FO_NoInput;
+    InputBlocks_OutputNo[ind] = DSP::c::FO_NoInput;
   }
 
   indexes.resize(NoOfInputs);
@@ -10985,7 +10985,7 @@ bool DSPu_Copy::SetCopyOutput(unsigned int OutputNo, DSP::Block_ptr block, unsig
 bool DSPu_Copy::GetOutput(unsigned int OutputNo, DSP::Component_ptr &output_block, unsigned int &output_block_InputNo)
 {
   output_block = NULL;
-  output_block_InputNo = FO_NoInput;
+  output_block_InputNo = DSP::c::FO_NoInput;
 
   if (OutputNo < NoOfOutputs)
   {
@@ -11008,7 +11008,7 @@ bool DSPu_Copy::GetOutput(unsigned int OutputNo, DSP::Component_ptr &output_bloc
 bool DSPu_Copy::GetCopyOutput(unsigned int OutputNo, DSP::Block_ptr &output_block, unsigned int &output_block_InputNo)
 {
   output_block = NULL;
-  output_block_InputNo = FO_NoInput;
+  output_block_InputNo = DSP::c::FO_NoInput;
 
   if (OutputNo < NoOfOutputs)
   {
@@ -11117,7 +11117,7 @@ bool DSPu_Copy::SetCopyInput(unsigned int InputNo, DSP::Component_ptr block, uns
 bool DSPu_Copy::GetCopyInput(unsigned int InputNo, DSP::Component_ptr &input_block, unsigned int &input_block_OutputNo)
 {
   input_block = NULL;
-  input_block_OutputNo = FO_NoOutput;
+  input_block_OutputNo = DSP::c::FO_NoOutput;
 
   if (InputNo < NoOfInputs)
   {
@@ -11478,7 +11478,7 @@ unsigned int DSP::Macro::GetMacroInputNo(DSP::Component_ptr output_block, unsign
   }
 
 
-  return FO_NoInput;
+  return DSP::c::FO_NoInput;
 }
 
 //! Returns clock assigned to macro external output number OutputNo

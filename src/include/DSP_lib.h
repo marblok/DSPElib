@@ -11,7 +11,7 @@
 
 #define DSP_VER_MAJOR 0
 #define DSP_VER_MINOR 19
-#define DSP_VER_BUILD 15 // !!! without zeroes before, else this will be treated as octal number
+#define DSP_VER_BUILD 16 // !!! without zeroes before, else this will be treated as octal number
 #define DSP_VER_YEAR  2021
 #define DSP_VER       DSP_VER_MAJOR.DSP_VER_MINOR.DSP_VER_BUILD
 
@@ -410,7 +410,7 @@ struct DSP_libver
  * - ver. 0.11.018 - <b>2008.07.08</b>
  *   - CHANGED type DSPu_callback_ptr used in MyFunction and DSPu_OutputBuffer
  *      number of input and outputs are now of the type <unsigned int>
- *   - ADDED new constants DSP_Callback_Init and DSP_Callback_Delete
+ *   - ADDED new constants DSP::c::Callback_Init and DSP::c::Callback_Delete
  *     identifying initial and final call to callback function.
  *   - CHANGED example callbacks.cpp
  *   .

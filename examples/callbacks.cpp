@@ -10,12 +10,12 @@ DSP_float_ptr read_buffer = NULL;
 
 void BufferCallback(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP_float_ptr OutputSamples, DSP::void_ptr *UserDataPtr, unsigned int UserDefinedIdentifier, DSP::Component_ptr Caller)
 {
-  if (NoOfInputs == DSP_Callback_Init)
+  if (NoOfInputs == DSP::c::Callback_Init)
   {
     read_buffer = new DSP_float[buffer_size];
     return;
   }
-  if (NoOfInputs == DSP_Callback_Delete)
+  if (NoOfInputs == DSP::c::Callback_Delete)
   {
     delete [] read_buffer;
     read_buffer = NULL;
