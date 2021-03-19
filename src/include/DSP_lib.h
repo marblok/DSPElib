@@ -936,10 +936,17 @@ string DSP_lib_version_string();
 
 /*! \mainpage Digital Signal Processing Engine Documentation
  *
- *  <b>Digital Signal Processing Engine</b>
- *   Copyright (C) 2005-2018  Marek Blok
+ *  <b>Digital Signal Processing Engine</b> 2005-2021
  *
- * \ref lib_license
+ *  This project is licensed under GNU General Public License v3.0. 
+ *  \ref lib_license
+ *
+ * \section lib_lic_author Engine author
+ *   The author of the <b>Digital Signal Processing Engine</b> library is Marek Blok.
+ *
+ *   Author's email addresses: \par
+ *    Marek.Blok@pg.edu.pl \n
+ *    Marek.Blok@eti.pg.edu.pl
  *
  * <b>Digital Signal Processing Engine</b> is the library
  * designed to help in easy and fast DSP multirate algorithms
@@ -999,6 +1006,10 @@ string DSP_lib_version_string();
  *  - visual DSP algorithm edition
  *  .
  *
+ * \section lib_license Library lincensing information
+ *  This project is licensed under GNU General Public License v3.0. 
+ *  \include{doc} ..\LICENSE
+ * 
  * \section main_lib_users For library users
  *  - \ref lib_linking
  *  - \ref lib_use_alg
@@ -1030,49 +1041,6 @@ string DSP_lib_version_string();
  *  - \ref devel_source_block_ex
  *  - \ref DSP::Block_page
  *  .
- *
- * \page lib_license Digital Signal Processing Engine License (2008.03.25)
- *
-  <b>Digital Signal Processing Engine</b>
-  Copyright (C) 2005-2018  Marek Blok
-
-  \section lib_lic_author Engine author
-    The author of the <b>Digital Signal Processing Engine</b> library
-    is Marek Blok.
-
-    Author's email addresses: \par
-     Marek.Blok@eti.pg.edu.pl \n
-     Marek.Blok@pg.edu.pl
-
-
-  \section lib_lic_usage Digital Signal Processing Engine usage
-
-  You can use the <b>Digital Signal Processing Engine</b> library only
-  to create non-commercial programs. If you want to distribute
-  such a program the fact of using the library must be clearly stated
-  in your program and its documentation.
-
-  This library is distributed in the hope that it will be useful,
-  but <b>WITHOUT ANY WARRANTY</b>.
-
-  \note BECAUSE THE LIBRARY IS LICENSED FOR NON-COMMERCIAL USE FREE OF CHARGE,
-  THERE IS NO WARRANTY FOR THE PROGRAM. THE LIBRARY IS PROVIDED "AS IS"
-  WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING,
-  BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-  FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND
-  PERFORMANCE OF THE LIBRARY IS WITH YOU. SHOULD THE LIBRARY PROVE DEFECTIVE,
-  YOU ASSUME THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
-
-  \section lib_lic_ditr Digital Signal Processing Engine distribution
-
-  You can distribute copies of <b>Digital Signal Processing Engine</b>
-  (and charge for this service if you wish) only without modifications
-  and only together with library documentation and an appropriate
-  copyright notice. Additional files can be added to the
-  distribution on the condition that they are clearly distinguishable.
-  Additional files must carry prominent notices stating that you
-  added the files.
-
  *
  * \page lib_linking Linking with Digital Signal Processing Engine (MinGW)
  *

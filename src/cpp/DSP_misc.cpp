@@ -48,7 +48,7 @@ string DSP_lib_version_string()
            "DSP Engine ver. " << int(VersionData.major)
                        << "." << setw(2) << setfill('0') << int(VersionData.minor)
                        << "." << setw(3) << setfill('0') << VersionData.build
-        << " Copyright (C) 2005-" << DSP_VER_YEAR
+        << " 2005-" << DSP_VER_YEAR
         << " Marek Blok";
 #endif
   return tekst.str();
