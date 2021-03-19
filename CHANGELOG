@@ -1,0 +1,785 @@
+
+- ver. 0.19.016 - <b>2021.03.19</b> Changed: Some of the #defines changed into consts and moved into DSP::c:: namespace
+	-	 DSP_Callback_Init => DSP::c::Callback_Init
+	-	DSP_Callback_Delete => DSP::c::Callback_Delete
+	-	CallbackID_mask => DSP::c::CallbackID_mask
+	-	CallbackID_signal_start => DSP::c::CallbackID_signal_start
+	-	CallbackID_signal_stop => DSP::c::CallbackID_signal_stop
+	-	CallbackID_mask => DSP::c::CallbackID_mask
+	-	FO_NoOutput => DSP::c::FO_NoOutput
+	-	FO_NoInput => DSP::c::FO_NoInput
+	-	FO_TheOnlyOutput => DSP::c::FO_TheOnlyOutput
+	-	MaxOutputIndex => DSP::c::MaxOutputIndex
+- ver. 0.19.015 - <b>2021.03.12</b> Changed: type DSPf_ExternalSleep_ptr moved into DSP namespace:  DSP::ExternalSleep_ptr
+                                     Changed: moved strncmpi inside the T_WAVEchunk class
+                                     Changed: moved DSPf_* functions into DSP::f:: namespace: DSP::f::*
+ - ver. 0.19.014 - <b>2021.02.18</b> Changed: enum DSPe_SampleType moved into DSP::e namespace:  DSP::e::SampleType
+                                     Changed: enum DSPe_FileType moved into DSP::e namespace:  DSP::e::FileType
+                                     Changed: enum DSPe_AM_MutedState moved into DSP::e namespace:  DSP::e::AM_MutedState
+                                     Changed: AM_MasterControl; AM_PCMwaveFile; AM_PCMwaveFileON; AM_PCMwaveFileOFF moved into DSP namespace
+ - ver. 0.19.013 - <b>2021.02.17</b> Changed: Class DSP::LoadCoef moved into DSP namespace: DSP::LoadCoef
+                                     Changed: enum DSPe_LoadCoef_Type moved into DSP::e namespace:  DSP::e::LoadCoef_Type
+ - ver. 0.19.012 - <b>2021.01.28</b> Added: Added DSP::LogMode::pause and DSP::LogMode::pause_off
+                                            Allows for pause in Info mode and skipping pause in Error mode.
+ - ver. 0.19.011 - <b>2021.01.20</b> Fixed: Main.cpp addapted to library changes
+ - ver. 0.19.010 - <b>2021.01.18</b> Changed: DSP_rand moved into DSP namespace: DSP::Rand
+                                     Changed: DSP_file moved into DSP namespace: DSP:File
+ - ver. 0.19.009 - <b>2021.01.18</b> Changed: DSP_block moved into DSP namespace: DSP::Block
+                                     Changed: DSP_source moved into DSP namespace: DSP:Source
+                                     Changed: DSP_component moved into DSP namespace: DSP:Component
+                                     Changed: DSP_macro moved into DSP namespace: DSP:Macro
+ - ver. 0.19.007 - <b>2020.09.08</b> Changed: DSP_connect  i DSP_splitconnect made unavailable for library user; now only << and >> operators can be used to connect blocks
+ - ver. 0.19.006 - <b>2020.09.08</b> Changed: DSP_name moved into DSP namespace: DSP::name
+ - ver. 0.19.005 - <b>2020.09.07</b> Changed: DSP_input and DSP_output moved into DSP namespace: DSP::input and DSP::output
+ - ver. 0.19.004 - <b>2020.09.07</b> Changed: DSP_clock moved into DSP namespace DSP::Clock 
+ - ver. 0.19.003 - <b>2020.09.07</b> Changed: Added DSP::logstream and DSP::log global object for logging management 
+                                              DSP::f::InfoMessage is replaced with DSP::log << "source" << DSP::LogMode::second << "message" << endl;
+                                              DSP::f::ErrorMessage is replaced with DSP::log << DSP::LogMode::Error << "source" << DSP::LogMode::second << "message" << endl;
+                                              DSP::f::SetLogState and DSP::f::SetLogFileName are replaced with DSP::log.SetLogState and DSP::log.SetLogFileName
+                                     Fixed: DSP::log Error message with no pause in console even if source and message are empty
+                                     Changed: Started moving DSP_*, DSP::f::*, DSPu_* to DSP namespace. First is DSP_logstream.cpp/h with DSP::logstream class.
+ - ver. 0.19.001 - <b>2020.08.31</b> Changed: Unified source code filenames prefixes to "DSP_"
+ - ver. 0.19.000 - <b>2020.08.19</b> Changed: Linux compilation and code correction to eliminate compilation warnings
+ ======================================================================================================================================
+ - ver. 0.18.020 - <b>2020.04.22</b> Fixed: DSPu_Vacuum - meaning of "in" depends now on NoOfInputs
+ - ver. 0.18.019 - <b>2020.03.17</b> Fixed: DSPu_PSKencoder change input's names from "in0" and "in1" to "in1" and "in2"
+ - ver. 0.18.018 - <b>2020.03.01</b> Fixed: DSPu_MORSEkey::OutputExecute AsciiText update
+ - ver. 0.18.017 - <b>2020.02.29</b> Changed: Conditional WINVER and _WIN32_WINNT definition in DSPsockets.h
+ - ver. 0.18.016 - <b>2020.02.25</b> Added: Support for port number in DSP_socket, DSPu_SOCKETinput and DSPu_SOCKEToutput
+ - ver. 0.18.015 - <b>2020.02.23</b> Added: DSP::e::SampleType DSP::e::SampleType::ST_tchar for text output from DSPu_FILEoutput
+ - ver. 0.18.014 - <b>2020.02.22</b> Changed: DSPu_Farrow constructor as an input uses vector of vectors instead of array of arrays
+ - ver. 0.18.013 - <b>2020.02.15</b> Fixed: DSPu_FILEinput::ReadSegmentToBuffer raw_buffer type changed to uint8_t
+                                     Added: DSP::f::sinc<DSP_float>(const DSP_float_vector& arguments, DSP_float_vector& output_buffer);
+                                     Added: DSP::f::sinc<DSP_complex>(const DSP_float_vector& arguments, DSP_complex_vector& output_buffer);
+ - ver. 0.18.012 - <b>2019.03.17</b> Fixed: DSP_clock::UpdateSamplingRates uses now GlobalSamplingRate which is set for current clock in DSP_clock::SetSamplingRate
+                                     Added: DSP_clock::UpdateGlobalSamplingRate
+                                     Fixed: DSP_clock::~DSP_clock() updates ParentClocks if necessary
+ - ver. 0.18.011 - <b>2018.11.20</b> Added: TAudioMixer::MemorizeMixerSettings_OUT - detailed logging in DEBUG mode
+ - ver. 0.18.010 - <b>2018.11.19</b> Fixed: DSP::Component::ListOfAllComponents - detects NoOfOutputs == 0 in source blocks
+ - ver. 0.18.009 - <b>2018.04.15</b> Changed: Added reversed_order parameter to DSPu_Parallel2Serial.
+ - ver. 0.18.008 - <b>2018.03.21</b> Changed: DSPu_SymbolMapper converted into single rate block, it can be used with DSPuSerial2Parallel block to get the original behavior of DSPu_SymbolMapper.
+ - ver. 0.18.008 - <b>2018.03.22</b> Changed: DSPu_SymbolDemapper converted into single rate block, it can be used with DSPuParallel2Serial block to get the original behavior of DSPu_SymbolDemapper.
+
+ - ver. 0.18.007 - <b>2018.03.19</b> Added: DSPu_Parallel2Serial and DSPu_Serial2Parallel
+ - ver. 0.18.007 - <b>2018.03.20</b> Added: DSP::Component has now method Input() returning nullptr and issuing info message to log in DEBUG mode
+                                     This allows to store DSP::Block and DSP::Source components in the same DSP::Component table and connect then without need for conversion.
+ - ver. 0.18.006 - <b>2018.03.18</b> Fix: getConstellation - DSP_MT_PSK uses Gray coding
+ - ver. 0.18.006 - <b>2018.03.18</b> Fix: DSPu_SymbolDemapper - do not produce output bits before receiving first symbol
+ - ver. 0.18.005 - <b>2018.03.08</b> Added DSP_output::<< operator which can replace DSP::_connect_class::connect
+ - ver. 0.18.004 - <b>2018.03.08</b> Added DSP_output::>> operator which can replace DSP::_connect_class::connect
+ - ver. 0.18.003 - <b>2018.03.07</b> Converted to vectors: ConstantInputValues, IsConstantInput, InputClocks
+ - ver. 0.18.002 - <b>2018.03.07</b> Fix in DSP_clock::SchemeToDOTfile for clocks_group generation
+ - ver. 0.18.001 - <b>2018.03.07</b> Removed DSP_Input_ptr and DSP_Output_ptr; Added DSP_Input::is_null() and DSP_Output::is_null()
+ - ver. 0.18.001 - <b>2018.03.07</b> DSP_Input and DSP_Output store indexes in vectors
+ - ver. 0.18.000 - <b>2018.03.06</b> Removed limit for number of inputs and outputs
+ - ver. 0.18.000 - <b>2018.03.06</b> Use of string instead of char []
+ - ver. 0.18.000 - <b>2018.03.06</b> DefineInputs DefineOutputs: change from array to vector of line numbers
+ - ver. 0.17.23 - <b>2018.03.05</b> Migration from char to string in DSP_AudioMixer, DSP_DOT, DSP_IO, ... modules
+ - ver. 0.17.22 - <b>2018.03.01</b> Using map.count instead of map.at with try/catch in DSP_clock_groups::AddOutputs2Group
+ - ver. 0.17.21 - <b>2018.03.01</b> Modified DSPu_SymbolMapper and DSPu_SymbolDemapper (added constellation_phase_offset).
+ - ver. 0.17.20 - <b>2017.05.23</b> Added DSPu_SymbolMapper and DSPu_SymbolDemapper.
+ - ver. 0.17.19 - <b>2017.03.22</b> Fixed DSPu_FILEinput filename as string.
+ - ver. 0.17.18 - <b>2017.03.22</b> Fixed DSPu_FILEoutput filename as string.
+ - ver. 0.17.17 - <b>2017.03.22</b> Added DSPu_FILEinput error message when file could not be opened correctly.
+ - ver. 0.17.16 - <b>2017.03.21</b> Changed DSP_LoadCoef now reads coefficients into DSP_*_vector.
+ - ver. 0.17.15 - <b>2017.03.21</b> Fix DSPu_SamplingRateConversion input for complex values.
+ - ver. 0.17.12 - <b>2017.03.18</b> Removed DSP_FILE_NAME_LEN; Use of string instead of char in DSP_lib.h.
+ - ver. 0.17.11 - <b>2017.03.17</b> Use of string instead of char in names and DSPu_MorseKey.
+
+ - ver. 0.16.00 - <b>2016.04.22</b> DSP::Block::SetBlockInputClock with support for clocks groups in block.
+ - ver. 0.16.01 - <b>2016.04.22</b> Modernization of DSPu_SamplingRateConversion and DSPu_GardnerSampling.
+ - ver. 0.16.02 - <b>2016.06.02</b> DSPu_GardnerSampling - added support for OQPSK synchronization
+ - ver. 0.16.04 - <b>2016.06.03</b> DSPu_GardnerSampling - fix for better options support; A number of clocks groups definitions added.
+ - ver. 0.16.05 - <b>2016.06.07</b> DSPu_FILEoutput - added Flush() method.
+ - ver. 0.16.06 - <b>2016.06.10</b> Fix in DSP::Source::SetNoOfOutputs.
+ - ver. 0.16.07 - <b>2016.06.12</b> Fix DSP::Block::SetBlockInputClock - proper setting of GroupClock in ClockGroups in Release version
+ - ver. 0.16.08 - <b>2016.11.01</b> Fix DSPu_GardnerSampling - proper setting of GroupClock in ClockGroups
+                                    Fix DSPu_Zeroinserter and DSPu_RawDecimator - corrected output clock group name
+ - ver. 0.16.09 - <b>2016.11.10</b> Added DSP::f::SaveVector.
+ - ver. 0.16.17 - <b>2017.02.01</b> Fix DSPu_PCCC - constant inputs support correction.
+
+
+ - ver. 0.15.38 - <b>2016.01.26</b> Small code corrections.
+
+ - ver. 0.15.36 - <b>2012.05.04</b>
+    - ADDED DBPSK and DEBPSK support for DSPu_PSKdecoder
+    - FIXED DSPu_OutputBuffer::InputExecute and DSPu_OutputBuffer::InputExecute_with_outputs
+    - FIXED DSPu_OutputBuffer::FlushBuffer for bit modes (RawBuffer requires one additional safety byte
+    .
+ - ver. 0.15.35 - <b>2012.04.27</b>
+    - CHANGED  DSP_Fourier
+      - FFT uses FFTshiftON (needs testing)
+      - added DFT
+      .
+    - ADDED DSPu_FFT - block computing DFT (or radix-2 FFT when applicable)
+    - ADDED DSPu_Zeroinserter implementation for complex inputs
+    - CHANGED DSP::Block::GetMultirateFactorsFromClocks
+    - CHANGED Added mode parameter to DSPu_OutputBuffer:GetBufferSize
+    - FIXED DSPu_OutputBuffer - mode with output and notification clock now works
+       correctly as the mixed block.
+    - FIXED DSPu_PSKdecoder - fix for QPSK modulations
+    - FIXED DSPu_FILEoutput::FlashBuffer() - fix for sampel size < 8 in bits
+    .
+ - ver. 0.15.34 - <b>2012.03.27</b>
+    - CHANGED  DSPu_FIR - split InputExecute into several optimized procedures
+    - ADDED DSPu_FIR::InputExecute_RI_RH_L - shaping filter for I-FIR filter implementation
+    .
+ - ver. 0.15.33 - <b>2012.03.19</b>
+    - ADDED  DSPu_OutputBuffer::AccessBuffer
+    - ADDED  DSPu_OutputBuffer::GetBufferSize
+    .
+ - ver. 0.15.32 - <b>2012.03.06</b>
+    - ADDED  DSPu_FIR - support for polyphase decomposition of input impulse response
+    - FIXED  DSPu_PSKencoder - corrected number of input for complex modulations
+    .
+ - ver. 0.15.28 - <b>2010.05.21</b>
+    - FIXED  DSPu_FILEinput::OpenFile
+    - FIXED  DSP::f::MakeDir
+    - ADDED  DSP::f::MakeDir_Ex
+    - FIXED  DSPu_FILEinput, DSPu_FILEoutput - improved support in case of problems with file opening
+    - ADDED  Macros: UNUSED_ARGUMENT, UNUSED_DEBUG_ARGUMENT and UNUSED_RELEASE_ARGUMENT
+    - FIXED  DSP::MacroStack::RemoveMacroFromList
+    - FIXED  DSPu_DCO support for max frequency deviation
+    .
+ - ver. 0.15.014 - <b>2010.04.16</b>
+   - CHANGED DSPu_Copy::SetCopyInput - added support for Copy chains
+   - CHANGED DSPu_Copy::SetCopyOutput - added support for Copy chains
+   - ADDED   DSPu_Copy::GetOutput
+   - ADDED   DSP::Macro::GetMacroInputNo
+   - CHANGED Improved DOT macro support
+   .
+ - ver. 0.15.003 - <b>2010.04.12</b>
+   - ADDED DSP::Macro::DefineInput and DSP::Macro::DefineOutput.
+   - CHANGED Macro input will use internally and externally the same names. The same is with macro output.
+   - CHANGED renamed DSP::Macro::MacroInput to DSP::Macro::MacroInput_block
+   - CHANGED renamed DSP::Macro::MacroOutput to DSP::Macro::MacroOutput_block
+   - CHANGED renamed DSP::Macro::InputOutput() to DSP::Macro::MacroInput()
+   - CHANGED renamed DSP::Macro::OutputInput() to DSP::Macro::MacroOutput()
+   - ADDED DSP::Component::UndefineInput(NULL) deletes all input definitions
+   - ADDED DSP::Component::UndefineOutput(NULL) deletes all output definitions
+   - CHANGED example makefile improvements
+   - CHANGED macro_example.cpp updated
+ .
+ - ver. 0.15.001 - <b>2010.04.08</b>
+   - ADDED Introduced macros: OUTPUT_EXECUTE_ARGS, OUTPUT_EXECUTE_PTR
+   - CHANGED In debug mode OutputExecute callbacks skip the last parameter (calling clock pointer)
+ .
+ - ver. 0.15.000 - <b>2010.04.08</b>
+   - ADDED Introduced macros: INPUT_EXECUTE_ARGS, EXECUTE_PTR, EXECUTE_INPUT_CALLBACK
+   - CHANGED In debug mode InputExecute callbacks skip the last parameter (calling block pointer)
+ .
+
+ - ver. 0.14.004 - <b>2010.04.02</b>
+   - CHANGED Moved DOT file generation code into separate cpp module
+   - FIXED Implemented minimal Macro for DOT support with merged autosplitters
+   .
+ - ver. 0.14.001 - <b>2010.03.31</b>
+   - CHANGED alpha support for new DSPu_Copy rules
+   .
+ - ver. 0.14.000 - <b>2010.03.24</b>
+   - CHANGED DSPu_Copy - rules modification - protection against double auto splitters
+     - ADDED new DSP::Component::IsOutputConnectedToThisInput2 in addition to DSP::Component::IsOutputConnectedToThisInput
+     - NEW new version of DSP::_connect_class::splitconnect (changed name of deprecated version DSP::_connect_class::splitconnect_old)
+     .
+   .
+ .
+
+ - ver. 0.13.035 - <b>2010.03.15</b>
+   - FIXED TAudioMixer - support for USB SBPlay!
+   .
+ - ver. 0.13.033 - <b>2010.03.04</b>
+   - FIXED DSPu_TimingErrorDetector::InputExecute_cplx_odd
+   .
+ - ver. 0.13.032 - <b>2010.02.25</b>
+   - CHANGED Renames DSP::f::prec_sinc to DSP::f::sinc_prec
+   .
+ - ver. 0.13.031 - <b>2010.02.24</b>
+   - FIXED ~DSP::Component - automatically remove output blocks after the component is unregistered
+     (important if there is cascade of blocks with AutoFree on)
+   - ADDED examples/macro_example.cpp
+   .
+ - ver. 0.13.030 - <b>2010.02.24</b>
+   - FIXED DSP::Macro DOT input lines numbering
+   .
+ - ver. 0.13.029 - <b>2010.02.19</b>
+   - CHANGED  DSP::Component::SetOutput - refactored error checking procedures
+   .
+ - ver. 0.13.028 - <b>2010.02.19</b>
+   - FIXED DSPu_Splitter::GetComponentEdgeParams_DOTfile - DOT plot output lines
+     color generation:
+     - for single input: color depends on output index
+     - for multiple inputs: color depends on input index
+     .
+   .
+ - ver. 0.13.027 - <b>2010.02.08</b>
+   - FIXED DSPu_SOCKEToutput - now waits if socket not ready to read
+     (eg. if output reads data slower than we can generate them)
+   .
+ - ver. 0.13.026 - <b>2009.06.15</b>
+   - ADDED DSPu_FILEinput::SkipSamples
+   .
+ - ver. 0.13.025 - <b>2008.12.15</b>
+   - ADDED DSP::File::SetOffset
+   - ADDED DSP::File::SetSkip
+   - CHANGED parameters order in DSPu_FILEinput class constructor
+   .
+ - ver. 0.13.022 - <b>2008.11.28</b>
+   - ADDED DSPu_AudioInput::GetNoOfFreeBuffers and DSPu_AudioInput::GetNoOfBuffers
+   - CHANGED callbacks and notification IDs now are unsigned int instead of int
+   .
+ - ver. 0.13.019 - <b>2008.11.16</b>
+   - FIXED Minor fixes in TAudioMixer set and get volume functions.
+   - ADDED DSPu_MORSEkey::SetKeyState.
+   - CHANGED DSPu_FILEoutput::WriteSegmentFromBuffer added skip parameter
+   - CHANGED DSPu_FILEinput::ReadSegmentToBuffer added pad_size parameter
+   - ADDED DSPu_FILEinput - option for autodetection of number of channels
+   .
+ - ver. 0.13.014 - <b>2008.11.13</b>
+   - FIXED TAudioMixer::SetSourceLineVolume now works for LineNo != AM_MasterControl
+   - FIXED DSPu_MORSEkey::LoadCodeTable problem when file does not exist
+   - CHANGED ::DSP_Message_callback_ptr prototype - no unprocessed messages are fed to this function
+   - CHANGED ::DSP::f::InfoMessage, ::DSP::f::ErrorMessage - now log callback function can block logging to console and file
+   - ADDED ::DSP::f::GetMessageLength, ::DSP::f::GetInfoMessage, ::DSP::f::GetErrorMessage
+   .
+ - ver. 0.13.011 - <b>2008.11.06</b>
+   - ADDED DSPu_FILEinput::OpenFile for changing or opening file during processing
+   - CHANGED DSPu_FILEinput constructor parameters order
+   - ADDED in DSP_lib.h definitions of DSP_VER_MAJOR, DSP_VER_MINOR, DSP_VER_BUILD and DSP_VER
+   - ADDED DSPu_MORSEkey:GetDotLength
+   .
+ - ver. 0.13.009 - <b>2008.11.03</b>
+   - CHANGED DSPu_MORSEkey constructor
+   - ADDED DSPu_MORSEkey::AddString
+   - ADDED DSPu_MORSEkey::AddChar
+   - ADDED DSPu_MORSEkey::SetKeyingSpeed
+   - CHANGED DSP_socket::TryConnect - implemented nonblocking version
+   .
+ - ver. 0.13.005 - <b>2008.10.31</b>
+   - CHANGED DSPu_InputBuffer added cyclic parameter and optimized support for single channel buffers
+   - ADDED DSPu_rand::randu
+   - ADDED DSPu_rand::randn
+   - FIXED DOT_plot generation for DSPu_ClockTrigger
+   - ADDED DOT_plot supports now '"' in labels
+   - FIXED DSPu_IIR should work correctly with Na = 1 and Nb = 0
+   - CHANGED DSPu_IIR introduced four optimized InputExecute procedures instead of one universal
+   - ADDED DSPu_IIR::SetCoefs
+   .
+ - ver. 0.12.008 - <b>2008.10.24</b>
+   - FIXED DSPu_SOCKEToutput DSP::e::SampleType::ST_short support
+   .
+ - ver. 0.12.006 - <b>2008.10.19</b>
+   - NEW DSP_socket::GetSocketStatus
+   - FIXED DSP_socked on server objects deletion listen socked has
+       been closed but it hasn't been marked as closed
+   .
+ - ver. 0.12.003 - <b>2008.10.07</b>
+   - NEW module DSPmodule_misc
+   - NEW DSPu_MORSEkey
+   .
+ - ver. 0.12.001 - <b>2008.10.06</b>
+   - NEW DSP_socket base class for DSPu_SOCKETinput and DSPu_SOCKEToutput
+   - NEW DSPu_SOCKETinput
+   - NEW DSPu_SOCKEToutput
+   - NEW optional library DSPsockets. See examples.
+   - NEW examples socket_client.cpp and socket_server.cpp
+   .
+ - ver. 0.11.033 - <b>2008.10.01</b>
+   - NEW: functions
+    - DSP::f::prec_sinc(DSP_prec_float)
+   - CHANGED DSP::f::SolveMatrixEqu_prec - added use_pivote modes
+   - FIXED DSP::f::LPF_LS use improved pivote mode in DSP::f::SolveMatrixEqu_prec
+   .
+ - ver. 0.11.032 - <b>2008.09.29</b>
+   - FIXED DSP::Component::GetComponentNodeParams_DOTfile buffer overflow problem
+   - FIXED DSP::Component::ComponentToDOTfile automatically increases allocated
+      buffer for ComponentNodeParams returned by DSP::Component::GetComponentNodeParams_DOTfile
+   .
+ - ver. 0.11.031 - <b>2008.08.23</b>
+   - ADDED DSP::e::FileType::FT_wav format support to DSPu_FILEinput
+   - ADDED DSPu_FILEinput::GetHeader
+   - ADDED DSP::f::FileExtToFileType function
+   - CHANGED DSP_IO all ftell and tseek calls replaced with ftello64 and fseeko64
+   .
+ - ver. 0.11.025 - <b>2008.07.27</b>
+   - ADDED DSP::f::LPF_LS - LP FIR LS filter design
+   - ADDED second variant of DSP::f::SolveMatrixEqu_prec
+   - FIXED DSPu_FILEoutput: File type DSP::e::FileType::FT_flt now works correctly, previously it was the same as for DSP::e::FileType::FT_flt_no_scaling
+   - ADDED DSPu_FILEoutput::WriteSegmentFromBuffer
+   .
+ - ver. 0.11.021 - <b>2008.07.13</b>
+   - ADDED New type: DSPu_buffer_callback_ptr - DSPu_OutputBuffer callback function
+   - ADDED DSPu_FILEinput::GetRawBufferSize
+   - ADDED DSPu_FILEinput::GetFltBufferSize
+   - ADDED DSPu_FILEinput::ReadSegmentToBuffer
+   .
+ - ver. 0.11.019 - <b>2008.07.09</b>
+   - ADDED DSPu_Quantizer - only 1-bit version implemented
+   .
+ - ver. 0.11.018 - <b>2008.07.08</b>
+   - CHANGED type DSPu_callback_ptr used in MyFunction and DSPu_OutputBuffer
+      number of input and outputs are now of the type <unsigned int>
+   - ADDED new constants DSP_Callback_Init and DSP_Callback_Delete
+     identifying initial and final call to callback function.
+   - CHANGED example callbacks.cpp
+   .
+ - ver. 0.11.017 - <b>2008.07.08</b>
+   - CHANGED DSP::Component::DOT_DrawAsMacro now supports separate macro graphs
+   - CHANGED DSP_clock::SchemeToDOTfile now supports separate macro graphs
+   .
+ - ver. 0.11.015 - <b>2008.07.07</b>
+   - ADDED DSP::Macro updated for macro support in DOT graph
+   - CHANGED DSP_clock::SchemeToDOTfile now supports macros
+   .
+ - ver. 0.11.013 - <b>2008.07.06</b>
+   - CHANGED DSP_clock::SchemeToDOTfile update to prepare for macro support
+   .
+ - ver. 0.11.012 - <b>2008.07.06</b>
+   - CHANGED updated DSP::Macro concept
+     - ADDED DSP::Macro::MacroInitStarted
+     - ADDED DSP::Macro::MacroInitFinished
+     - ADDED DSP::MacroStack::AddMacroToList
+     - ADDED DSP::MacroStack::RemoveMacroFromList
+     - CHANGED DSP::Component now stores information about macros to
+           which given component belong. This is done only in DEBUG mode.
+     .
+   .
+ - ver. 0.11.009 - <b>2008.07.05</b>
+   - FIXED DSPu_Copy - several fixes
+   - FIXED DSP::Component::CheckInputsOfAllComponents - improved error detection code
+   - CHANGED DSP::Component::LogInnerState
+   - CHANGED DSP::Component::IsOutputConnectedToThisInput to incorporate DSPu_Copy component idea
+   - CHANGED DSP::Component::SetOutput to incorporate DSPu_Copy component idea
+   - ADDED DSP::Component::UndefineOutput and DSP::Block::UndefineInput
+   - CHANGED DSP::Component::DefineOutput now redefines output when name conflict is detected
+   - CHANGED DSP::Block::DefineInput now redefines input when name conflict is detected
+   - ADDED basic support for macro components
+     - DSP::Macro class
+     - DSP::MacroStack class
+     .
+   .
+ - ver. 0.11.004 - <b>2008.07.04</b>
+   - REMOVED obsolete function  DSP::_connect_class::connect_to_block
+   - ADDED DSPu_Copy block
+   - FIXED Error checking in DSP::Component::SetOutput
+   - CHANGED DSP::Component::SetOutput - implemented support for DSPu_Copy transparent connections
+   - ADDED new DSP::Component: DSP_CT_copy == DSPu_Copy block
+   .
+ - ver. 0.11.001 - <b>2008.06.30</b> FIX equivalent to lost 0.11.000 version based on 0.10.018
+   - FIXED all inputs and output indexing is now always of "unsigned int" type
+   - CHANGED DSPu_Switch - removed UseOFFstate parameter
+   - ADDED MaxOutputIndex, MaxInputIndex
+   - CHANGED DSP::Block::FindOutputIndex_by_InputIndex - now uses FO_TheOnlyOutput and FO_NoOutput
+   - FIXED DSPu_Vacuum with complex inputs Execute_ptr is now set correctly
+   .
+ - ver. 0.10.018 - <b>2008.06.14</b>
+   - ADDED DSPu_LFSR source block
+   - ADDED DSPu_LFSR_tester processing block
+   .
+ - ver. 0.10.015 - <b>2008.06.06</b>
+   - ADDED DSP_clock::SetSamplingRate
+   - ADDED DSP_clock::GetSamplingRate
+   .
+ - ver. 0.10.014 - <b>2008.06.04</b>
+   - ADDED  Notification are now present in dot graph generation
+   - ADDED  multirate blocks that are not source nor registered
+            for notification have the parent clock indicated
+   .
+ - ver. 0.10.012 - <b>2008.05.31</b>
+   - CHANGED DSPu_RawDecimator - redesigned processing
+   - FIXED DSP_clock::Execute - corrected procedure for clocks swaping when sources are not ready
+   .
+ - ver. 0.10.010 - <b>2008.05.30</b>
+   - CHANGED DSPu_Demultiplexer is now a regular block instead of mixed block
+   - FIXED   DSPu_Demultiplexer outputs names indexing
+   - FIXED   DSPu_Multiplexer inputs and outputs names indexing
+   - FIXED   DSPu_Demultiplexer can now work with DSPu_Multiplexer
+   .
+ - ver. 0.10.009 - <b>2008.05.28</b>
+   - FIXED DSPu_Multiplexer IsComplex is now interpreted correctly
+   - FIXED DSPu_Multiplexer State now reserves place for all input samples instead of just one
+   - FIXED DSPu_Multiplexer::OutputExecute <= now outputs all samples instead of just one
+   .
+ - ver. 0.10.008 - <b>2008.05.10</b>
+   - ADDED DSP::Rand - base class for components using random generator.
+   .
+ - ver. 0.10.007 - <b>2008.05.07</b>
+   - CHANGED When MasterClock is destroyed but clocks realted to this one still
+             exist the new one is elected.
+   - CHANGED Slots in MasterClocks table now can reused.
+   - UPDATE Several minor updates to code and documentation.
+   .
+ - ver. 0.10.006 - <b>2008.05.07</b>
+   - CHANGED updated inputs and outputs names for DSPu_Multiplexer and DSPu_Demultiplexer.
+   .
+ - ver. 0.10.005 - <b>2008.05.05</b>
+   - CHANGED redesigned DOT file generation algorithm.
+   - CHANGED DOT support: components use shape=records.
+   .
+ - ver. 0.10.002 - <b>2008.04.30</b>
+   - ADDED class DSP_Clock_trigger - must be used as a base class for components
+           activating signal activated clocks.
+   - CHANGED DSP_clock::GetAlgorithmClocks can now also list signal activated clocks.
+   - ADDED DSP_clock::SchemeToDOTfile.
+   .
+ - ver. 0.10.000 - <b>2008.04.26</b>
+   - CHANGED updated clocks processing procedure in DSP_clock::Execute
+   - CHANGED DSP_clock::Execute - if no source have been processed for active clocks
+             signal activated clocks will be processed before next attempt instead of
+             giving up.
+   - CHANGED DSP_clock::Execute - preparations for next clock cycle only if
+             previous processing have been succesfull.
+   - CHANGED DSP_clock::Execute - signal activated clocks processing can be postponed
+             until other clocks are processed.
+   .
+ - ver. 0.09.006 - <b>2008.04.22</b>
+   - CHANGED DSPu_MyFunction - redefined "out" and "in" inputs.
+   .
+ - ver. 0.09.005 - <b>2008.04.21</b>
+   - FIXED DSPu_OutputBuffer
+     - buffer state was incorrectly updated when place for new sample was needed
+     - with full buffer place for new sample was prepared before notification call
+     - new place for input sample was prepared even DSPu_OutputBuffer::ReadBuffer
+       was called in notification with reset = -2
+     .
+   .
+ - ver. 0.09.004 - <b>2008.04.20</b>
+   - CHANGED DSP::Component::ListOfAllComponents additional info is displayed
+     - component index
+     - number of component inputs and outputs
+     - "mixed" sources are now marked as mixed insted of "source"
+     - automaticaly created blocks (DSPu_Splitter) are now marked as "auto" instead od "block"
+     .
+   .
+ - ver. 0.09.003 - <b>2008.04.17</b>
+   - CHANGED renamed DSP_PSK_type and DSP_SampleType to DSPe_PSK_type and DSP::e::SampleType.
+   - CHANGED DSPu_OutputBuffer class - now notification are based on clock notifications
+     - constructors' parameters changed.
+     - added possibility to use signal activated clock for callback function control.
+     - DSPu_OutputBuffer::ReadBuffer reset parameter changed.
+     - added additional calls to notification function (at the block construction and destruction).
+     .
+   - CHANGED DSPu_InputBuffer - added notifications support.
+   .
+ - ver. 0.09.000 - <b>2008.04.16</b>
+   - CHANGED Moved notification support from DSP::Source to DSP::Component.
+             Now each block not only source can be registered for notifications.
+   - CHANGED Blocks for notifications are no longer stored in the same table as sources for processing.
+   - CHANGED Old DSP_clock::Execute removed and is replaced by DSP_clock::Execute2.
+             There is no DSP_clock::Execute2 available use DSP_clock::Execute instead.
+   - CHANGED Updated multirate.cpp example.
+   .
+ - ver. 0.08.028 - <b>2008.04.15</b>
+   - ADDED DSPu_ClockTrigger - now "act" signal can determine number of clock cycles
+     for given clock activation.
+   .
+ - ver. 0.08.027 - <b>2008.04.13</b>
+   - CHANGED DSPu_FILEoutput removed samples to skip parameter from constructor.
+      The same result can be optained with DSPu_FILEoutput::BlockOutput or
+      with signal activated clock.
+   - FIXED DSPu_FILEoutput::ReOpen and DSPu_FILEoutput::BlockOutput support fix.
+   .
+ - ver. 0.08.026 - <b>2008.04.13</b>
+   - CHANGED removed DSP::Component::ProtectOutputClock, new rules in clocks correctness checking apply now:
+     -# output clocks of sources and mixed blocks won't be automaticly cleared
+     -# output clock correctness checking is based on DSP::Block::L_factor and DSP::Block::M_factor
+     -# DSP::Block::L_factor and DSP::Block::M_factor equal -1 mean that input and output clocks
+        are asynchronous and output clocks cannot be determined based on input clocks.
+     .
+   - ADDED DSP::Block::GetMultirateFactorsFromClocks
+   - CHANGED DSP::Block::SetBlockInputClock - if clocks differ
+     MasterClockIndex is also displayed to help identifying
+     asynchronous clocks.
+   - ADDED DSPu_FILEoutput::ReOpen.
+   - In release mode DSP_clock::ListOfAllComponents is completely silent now
+   - CHANGED modifications to DSPu_FILEoutput
+     - ADDED DSPu_FILEoutput::DSPu_FILEoutput(unsigned char NoOfChannels)
+     - ADDED DSPu_FILEoutput::ReOpen
+     - ADDED DSPu_FILEoutput::BlockOutput
+     .
+   .
+ - ver. 0.08.022 - <b>2008.04.10</b>
+   - CHANGED Moved IsMultirate, L_factor and M_factor variables
+      from DSP::Source to DSP::Block. This allows for multirate
+      block without need of mixed block implementation, simple
+      DSP::Block will suffice.
+   - CHANGER Modified DSPu_callback_ptr function specification. Added Caller pointer argument.
+   .
+ - ver. 0.08.020 - <b>2008.04.09</b>
+   - ADDED DSPu_OutputBuffer can now be created with callback function
+     which can generate output samples
+   .
+ - ver. 0.08.019 - <b>2008.04.08</b>
+   - ADDED static DSP::Component::CheckInputsOfAllComponents - check if all blocks inputs have been connected
+   - ADDED DSPu_Delay - implemented processing for complex and multivalued inputs
+   - FIX DSPu_Hold - fixed internal state swaping
+   - UPDATED new implementation of DSPu_SampleSelector
+   - UPDATED DSPu_DCO - added version with additional output: oscilatior instantaneous normalized frequency
+   - UPDATED Some documentation updated - mainly user defined components creation rules updated.
+   .
+ - ver. 0.08.014 - <b>2008.04.04</b>
+   - ADDED new abstract class DSP::File for common virtual members definitions for file sources
+   - UPDATED DSPu_FILEinput - added base class DSP::File
+   - UPDATED DSPu_WaveInput - added base class DSP::File
+   .
+ - ver. 0.08.013 - <b>2008.04.03</b>
+   - UPDATED DSPu_WaveInput - added support for 32-bit wav files
+   - UPDATED DSPu_FILEoutput - added support for 32-bit wav files
+   .
+ - ver. 0.08.011 - <b>2008.04.01</b>
+   - ADDED DSPu_Conjugation - complex conjugation block.
+   - CHANGED DSPu_Amplifier
+     - added possibility to use complex gain factor
+      (this allows for amplitude and phase change)
+     - changed inputs /outputs names
+     .
+   .
+ - ver. 0.08.010 - <b>2008.03.31</b>
+   - ADDED DSPu_Power - given power of input signals (real and complex(only integer nonnegative factors)).
+   .
+ - ver. 0.08.009 - <b>2008.03.25</b>
+   - CHANGED DSP_clock::ProcessSources - now sources registered
+     for notifications are ignored in processing.
+     OutputExecute function won't be called anymore.
+   - FIXED Notifications processing fixed
+   - FIXED Signal Activated clocks processing fixed -> fix in Execute2()
+   - ADDED Error message if source is registered for notification but the notification function
+     is not defined corectly.
+   - FIXED Notification function in DSPu_Hold fixed
+   - UPDATED Some documentation updates
+   - CHANGED Renamed DSP_LoadCoef_Info to DSP_LoadCoef
+   .
+ - ver. 0.08.006 - <b>2008.03.24</b>
+   - CHANGED "in1", "in2", ... input names for DSPu_Multiplication
+   - CHANGED DSPu_LoopDelay - added support for multiple input/output lines
+   - CHANGED DSPu_PCCC - added support for constant inputs
+   - ADDED DSPu_LoopDelay::SetState
+   - ADDED new mixed block DSPu_Farrow implementing Farrow structure.
+   .
+ - ver. 0.08.003 - <b>2008.03.21</b>
+   - ADDED DSPu_TimingErrorDetector block
+   - ADDED FILEtype parameter to DSPu_FILEinput
+   - CHANGED renamed DSP_FileType to DSP::e::FileType
+   - FIXED DSPu_Addition - fixed numbering of complex inputs
+   .
+ - ver. 0.08.001 - <b>2008.03.21</b>
+   - CHANGED DSPu_Addition now can be created with real or complex weighting coefficients.
+   .
+ - ver. 0.08.000 - <b>2008.03.20</b>
+   - CHANGED functions SPf_LoadCoefficients_CheckType, DSP::f::LoadCoefficients_CheckSize
+     and DSP::f::LoadCoefficients_FIR are now obsolete. Use members of DSP_LoadCoef_Info instead.
+   .
+
+ - ver. 0.06.xxx - <b>2006.07.10</b> Branches concept removed
+ - ver. 0.06.002 - <b>2006.07.10</b>
+  - NEW: DSP_clock::Execute2
+  - CHANGED: DSPu_Hold
+ - ver. 0.06.006 - <b>2006.07.27</b>
+  - NEW: Signal activated clocks concept replaces obsolete Branches idea
+  - NEW: Signal activated clocks support in DSP_clock::Execute2
+  - NEW: DSPu_ClockTrigger
+ - ver. 0.07.000 - <b>2006.07.31</b>
+  - NEW: new concept of block input execution method based on pointer to callback function
+   instead of function overloading
+  - NEW: new concept of source output execution (the same as for block input execution)
+ - ver. 0.07.003 - <b>2006.08.02</b>
+  - CHANGED: DSPu_SampleSelector - is no longer a mixed block
+   - OutputClock and ActivateOutputClock parameters
+   - Can work with OR as DSPu_ClockTrigger
+  - ADDED: DSPu_SampleSelector obsolete contructor compatible with previous version
+ - ver. 0.07.004 - <b>2006.08.04</b>
+  - CHANGED: void DSP::Component::SetNoOfOutputs(int No, bool reset)
+   - additional parameter: reset (default = true)
+   - if reset is false previous entries in OutputClocks and OutputBlocks
+     are preserved if possible
+   .
+  - CHANGED: DSPu_GardnerSampling
+   - previous constructor version is now obsolete (left only for backward code compatibility)
+   - new DSPu_GardnerSampling block properties
+    -# optional output - input sample symbol time offset (for eyediagram)
+    -# optional output signal for output clock activation
+    -# optional output clock activation
+    .
+   .
+  .
+ - ver. 0.07.010 - <b>2006.08.05</b>
+  - CHANGED: DSPu_GardnerSampling
+    -# new processing procedure
+    -# "offset" output now works
+    -# output samples are now generated half symbol rate earlier
+  .
+ - ver. 0.07.012 - <b>2006.08.07</b>
+   - ADDED: DSP_complex::multiply_by_conj
+   .
+ - ver. 0.07.014 - <b>2006.08.08</b>
+   - ADDED: DSPu_OutputBuffer::NoOfSamples
+   .
+ - ver. 0.07.018 - <b>2006.08.11</b>
+   - CHANGED: DSPu_Delay - added option IsBufferCyclic (default = true)
+    -# DSPu_CyclicDelay is now OBSOLETE
+    -# added macro DSPu_CyclicDelay to provide backward compatibility
+   .
+ - ver. 0.07.022 - <b>2006.08.12</b>
+   - CHANGED: constant inputs support concept
+    -# DSP::Block::IsUsingConstants is set only when DSP::Block::SetConstInput is used
+    -# DSP::Block::BlockAllowsForConstantInputs is set by DSP::Block::SetNoOfInputs
+    -# constant specific memory is reserved only when any of inputs is actually constant
+   - CHANGED: DSPu_DDScos::OutputExecute splited into separate case to improve performance
+   .
+ - ver. 0.07.025 - <b>2006.08.12</b>
+   - CHANGED: subsequent DSP::_connect_class::splitconnect call will increase number
+    of auto createf DSP_Splitter outputs instead to adding new one.
+    Should increase performance.
+   .
+ - ver. 0.07.029 - <b>2006.08.13</b>
+   - ADDED: DSPu_DynamicCompressor
+   .
+ - ver. 0.07.031 - <b>2006.08.13</b>
+   - CHANGED:
+    -# DSP::Component::Convert2Block is now public function
+    -# DSP::Component::Convert2Source is now public function
+   .
+ - ver. 0.07.033 - <b>2006.08.13</b>
+   - FIXED: DSPu_AudioInput - returning WAVEbuffer into the queue we skiping audio frame
+   .
+ - ver. 0.07.037 - <b>2006.08.14</b>
+   - CHANGED: Recoded DSPu_FILEoutput
+   .
+ - ver. 0.07.040 - <b>2006.08.19</b>
+   - CHANGED: Recoded DSPu_FILEoutput
+    -# Added support for WAV files (DSP::e::FileType::FT_wav)
+   .
+ - ver. 0.07.042 - <b>2006.08.19</b>
+   - CHANGED: DSP_clock::ListComponents(void) lists now components with NULL InputClocks[0]
+   - ADDED:   DSP_clock::ListOfAllComponents - lists all existing components (regardless of related clock)
+   .
+ - ver. 0.07.047 - <b>2006.08.20</b>
+   - CHANGED: DSP::f::InfoMessage - support for source == NULL.
+     DSP::f::InfoMessage() enters new line now.
+   - CHANGED: DSPu_Amplifier - added support complex and multivalued inputs.
+   - CHANGED: DSPu_FILEoutput
+    -# InputExecute_uchar - input values limited to <-1.0, +1.0>
+    -# InputExecute_short - input values limited to <-1.0, +1.0>
+    .
+ - ver. 0.07.054 - <b>2006.09.01</b>
+   - ADDED: DSPu_WaveInput::GetSamplingRate(void)
+   .
+ - ver. 0.07.055 - <b>2006.09.05</b>
+   - ADDED: DSP_clock::FreeClocks(DSP_clock_ptr Reference clock) is now implemented
+   .
+ - ver. 0.07.056 - <b>2006.09.06</b>
+   - NEW: First version compiling under Linux. No support for
+    -# DSPu_AudioOutput
+    -# ASPu_AudioInput
+    -# T_AudioMixer
+   .
+ - ver. 0.07.058 - <b>2006.09.07</b>
+   - FIXED: DSPu_WaveInput - info message in DEBUG mode when file does not exist
+   - FIXED: DSP::f::ErroMessage - "Press ENTER" message in console mode
+   .
+ - ver. 0.07.075 - <b>2006.09.08</b>
+   - ADDED: DSPu_Accumulator
+   - ADDED: DSPu_Differator::SetInitialState
+   - ADDED: DSPu_Const
+   - ADDED: DSP::f::NoOfErrors(bool Reset)
+   - NEW: New simplified OutputClock setup and source's registration scheme
+     - ADDED: DSP::Source::RegisterOutputClock(DSP_clock_ptr, int)
+     - ADDED: DSP::Source::RegisterClockForNotification(DSP_clock_ptr)
+     .
+   - NEW: New DSPu_FILEoutput options
+     - ADDED: DSP::e::FileType::FT_flt_no_scaling option (integer sample type are not scaled
+         to cover range [-1.0, 1.0)
+     - ADDED: DSP::e::SampleType::ST_int
+   .
+ - ver. 0.07.079 - <b>2006.09.24</b>
+   - ADDED: new time window generation funtions (see \ref wind_fnc)
+   - CHANGED: time windows normalisation (window was normalised by mean value
+              instead of sum of all samples)
+   - NEW: functions
+    - DSP::f::sinc(DSP_float)
+    - DSP::f::sinc(int, DSP_float_ptr)
+   - CHANGED: removed some remainings of branches concept
+   .
+ - ver. 0.07.081 - <b>2007.05.12</b>
+   - CHANGED: DSP_Fourier::absDFTR
+   - CHANGED: DSP_Fourier::absFFTR
+   .
+ - ver. 0.07.082 - <b>2007.05.13</b>
+   - CHANGED: DSPu_OutputBuffer - added notification callback function support
+   .
+ - ver. 0.07.083 - <b>2007.05.17</b>
+   - CHANGED: DSPu_OutputBuffer
+     - added CyclesToSkip_in in constructor
+     - added SetCyclesToSkip() function
+     - added SetCyclesToSkip_counter() function
+     .
+   .
+ - ver. 0.07.084 - <b>2007.05.17</b>
+   - CHANGED: DSPu_OutputBuffer
+     - changed CyclesToSkip_in into NotificationsStep_in in constructor
+     - changed SetCyclesToSkip() into SetNotificationsStep() function
+     - changed SetCyclesToSkip_counter() function, now it also updates NotificationsStep_counter
+     - changed ReadBuffer for cyclic buffer in reset mode.
+       Now it makes room only for new samples till next Notification
+       preserving last previously read ones. (Good for overlapping processing).
+     .
+   .
+ - ver. 0.07.088 - <b>2007.05.18</b>
+   - Fixed: DSPu_OutputBuffer::NoOfSamples function
+   .
+ - ver. 0.07.090 - <b>2007.06.02</b>
+   - CHANGED DSP::_connect_class::connect(DSP_output_ptr, DSP_input_ptr, bool)
+    - Added DSP::_connect_class::splitconnect behaviour.
+    - Changed default behaviour to DSP::_connect_class::splitconnect if output is used.
+    - AllowSplit == false returns old behaviour where error is issued is output is already used.
+    .
+   - CHANGED DSP::_connect_class::connect:
+     - bool DSP::_connect_class::connect(DSP_output_ptr output, DSP::Block_ptr DestinationBlock, int InputNo=0);
+     .
+    to
+     - bool DSP::_connect_class::connect_block(DSP_output_ptr output,  DSP::Block_ptr DestinationBlock, int InputNo=0);
+     .
+   .
+
+ - ver. 0.07.094 - <b>2007.07.31</b>
+   - CHANGED DSPu_PSKencoder
+    - Now complex output even for BPSK modulations.
+    - Added  DSP_QPSK_A and DSP_QPSK_B modulations support.
+   .
+   - ADDED DSPu_PSKdecoder
+    - Support for DSP_BPSK, DSP_QPSK_A and DSP_QPSK_B.
+   .
+ .
+
+ - ver. 0.07.100 - <b>2007.10.29</b>
+   - CHANGED TAudioMixer
+    - Provided support for audio cards, which use
+      separate mixer devices for input and output lines.
+    - Attempt to provide some support for audio cards with no input volume control.
+   - FIXED TAudioMixer
+    - When there is no input mixer control, mute for controls is converted into
+      activity state correctly
+   - ADDED TAudioMixer::SetSourceLineVolume function
+   - ADDED Support for AM_MasterControl in recording controls
+   - ADDED Memorizing master record control support in TAudioMixer::MemorizeMixerSettings_WAVEIN
+          and in TAudioMixer::RestoreMixerSettings_WAVEIN (just single channel.
+   .
+ .
+
+ - ver. 0.07.101 - <b>2007.10.30</b>
+   - ADDED Full debugging info logging in TAudioMixer constructor
+   - FIXED Several fixes in TAudioMixer constructor
+   .
+ .
+
+ - ver. 0.07.103 - <b>2007.11.01</b>
+   - ADDED Wave input/output device index can now be selected in TAudioMixer, DSPu_AudioInput, DSPu_AudioOutput
+   - ADDED static charGetWaveInDevName(UINT DevNo=WAVE_MAPPER );
+   - ADDED static charGetWaveOutDevName(UINT DevNo=WAVE_MAPPER );
+   .
+
+ - ver. 0.07.104 - <b>2008.03.19</b>
+   - ADDED DSP::f::LoadCoefficients_FIR - added possibility to read files with
+     multiple impulse responses stored inside.
+   - FIXED typo in DSP_misc.h : DSP::f::LoadCoefficients_IIR - complex version
+   .
+
