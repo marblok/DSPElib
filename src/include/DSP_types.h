@@ -31,6 +31,7 @@ using namespace std;
 #endif
 
 //---------------------------------------------------------------------------
+//! main DSPE library namespace
 namespace DSP {
   class output;
   //typedef DSP_output * DSP_output_ptr;
@@ -465,12 +466,12 @@ enum DSPe_buffer_type {DSP_standard       = 0,
 #define FO_NoInput       (UINT_MAX)
 
 
+namespace DSP {
 //! Pointer to the DSP::Block input callback function
 /*! void func(DSP::Block_ptr block, unsigned int InputNo, DSP_float value, DSP::Component *Caller)
  *
  *  \note In release mode last parameter (DSP::Component *) is skipped
  */
-namespace DSP {
 #ifdef __DEBUG__
   typedef void (*Block_Execute_ptr)(const DSP::Block_ptr, unsigned int, DSP_float, const DSP::Component_ptr);
 #else

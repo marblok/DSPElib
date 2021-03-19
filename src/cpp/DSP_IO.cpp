@@ -2792,12 +2792,12 @@ bool DSPu_WaveInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
     DSP_THIS->ReadAudioSegment();
   }
 
-  /* \todo_later Ponisze realizowa na wskazaniu przechowywanym w obiekcie, eby cigle
-   * nie przelicza, tylko po ReadAudioSegment powyej
-   * ustawia to wskazanie na AudioBuffer
-   * a tak po kadym odczycie zwiksza tak jak temp
+  /* \todo_later Teh below is done on the pointer stored in the object 
+   * so it wouldn't need continous recalculation
+   * and just after the ReadAudioSegment above
+   * sets the pointer to AudioBuffer and after each read increases just like temp.
    *
-   * Sprawdzi powysze rwnie dla DSPu_FILEinput
+   * Check the above also in case of DSPu_FILEinput
    */
   temp = DSP_THIS->AudioBuffer +
          DSP_THIS->BufferIndex * DSP_THIS->NoOfOutputs;

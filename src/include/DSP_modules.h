@@ -1259,10 +1259,10 @@ public:
  * allocated strings (tekst) should be used instead of static ones
  *
  *
- * \todo_later Stworzy� macro CreateDSPblock(Nazwa, parameters);
- * Kt�re tworzy�o by blok o takiej nazwie oraz funkcj� SetName
- * jednocze�nie ustawia�oby mu tak� nazw� (pytanie co z kontrola poprawno�ci
- * parametr�w oraz r�nymi listami parametr�w
+ * \todo_later Stworzyc macro CreateDSPblock(Nazwa, parameters);
+ * Ktore tworzylo by blok o takiej nazwie oraz funkcje SetName
+ * jednoczesnie ustawialoby mu taka nazwe (pytanie co z kontrola poprawnosci
+ * parametrow oraz ronymi listami parametrow
  *
  * \todo Precise control other clocks correctness should be established when
  * blocks are connected
@@ -1273,13 +1273,13 @@ public:
  *
  *
  * \todo_later Check whether this is still actual:
- * DSP_Buffor <- bufor wydajcy dane zgodnie z zegarem wyj?ciowym
- *    przyjmuj?cy dane asynchronicznie (niezalenie od zegara wyjciowego
- *    jeeli wystpi adanie prbki wyjciowej po pobraniu ostatniej
- *    pr�bki wyjciowej na wyj�cie powinna by podana ta sama prbka co
- *    poprzednio (PROBLEM: zegar wyjciowy mo?e by wywoany
- *    przed wywo泳aniem bloczka podajcego warto wejciow朹,
- *    ale rwnie mo?e by tak, e warto濜 wejciowa nie bdzie
+ * DSP_Buffor <- bufor wydajcy dane zgodnie z zegarem wyjsciowym
+ *    przyjmujacy dane asynchronicznie (niezalenie od zegara wyjciowego
+ *    jezeli wystpi adanie prbki wyjciowej po pobraniu ostatniej
+ *    probki wyjciowej na wyjscie powinna by podana ta sama probka co
+ *    poprzednio (PROBLEM: zegar wyjciowy moze by wywolany
+ *    przed wywolaniem bloczka podajacego warto wejciowa,
+ *    ale rowniez moze by tak, ze wartosc wejciowa nie bedzie
  *    podana na wejcie w tym cyklu zegara)
  */
 class DSP::Block : public virtual DSP::Component

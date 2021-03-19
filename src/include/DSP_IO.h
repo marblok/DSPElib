@@ -343,12 +343,7 @@ class DSPu_WaveInput : public DSP::File, public DSP::Source//: public CAudioInpu
     /*!  if file has more channels then zeros are set to excesive outputs
      *  if file has less channels then execive channels are discarded
      *
-     * \todo_later Realizowa na wskazaniu przechowywanym w obiekcie, eby ci濹gle
-     * nie przelicza, tylko po ReadAudioSegment powyej
-     * ustawia to wskazanie na AudioBuffer
-     * a tak po kadym odczycie zwiksza tak jak temp.
-     *
-     * Sprawdzi� to r�wnie� dla DSPu_FILEinput
+     * \todo_later Do this on the pointer stored in the object to avoid recalculation after ReadAudioSegment
      *
      */
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
