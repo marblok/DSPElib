@@ -118,12 +118,6 @@ int main1(int argc, char*argv)
   Clock1=Decymator1.GetOutputClock(0);
   Clock2=DSP::Clock::GetClock(Clock1,1,15); //This clock is needed before the block which creates it is created !!
 
-// / * \todo Przy pod?czaniu do wej?cia bloczka typu mixed sprawdza, zgodno zegarw
-// * dla wyjcia z zegarem wej?cia. Wymaga to przechowywania i przekazywania zegarw we
-// * wszystkich bloczkach. W oglnoci wskazane by?oby sprawdzanie zgodno?ci zegarw
-// * na wejciach wszystkich wielowej?ciowych bloczkw.
-// * /
-
   DSPu_LoopDelay  PilotFreqDelay(Clock2, 1);
 //  DSPu_Delay  PilotFreqDelay(1);
   PilotFreqDelay.DefineOutput("out", 0);

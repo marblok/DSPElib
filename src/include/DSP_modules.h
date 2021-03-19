@@ -1273,13 +1273,13 @@ public:
  *
  *
  * \todo_later Check whether this is still actual:
- * DSP_Buffor <- bufor wydajcy dane zgodnie z zegarem wyj?ciowym
- *    przyjmuj?cy dane asynchronicznie (niezalenie od zegara wyjciowego
- *    jeeli wystpi adanie prbki wyjciowej po pobraniu ostatniej
- *    pr�bki wyjciowej na wyj�cie powinna by podana ta sama prbka co
- *    poprzednio (PROBLEM: zegar wyjciowy mo?e by wywoany
- *    przed wywo泳aniem bloczka podajcego warto wejciow朹,
- *    ale rwnie mo?e by tak, e warto濜 wejciowa nie bdzie
+ * DSP_Buffor <- bufor wydajcy dane zgodnie z zegarem wyjsciowym
+ *    przyjmujacy dane asynchronicznie (niezalenie od zegara wyjciowego
+ *    jezeli wystpi adanie prbki wyjciowej po pobraniu ostatniej
+ *    probki wyjciowej na wyjscie powinna by podana ta sama probka co
+ *    poprzednio (PROBLEM: zegar wyjciowy moze by wywolany
+ *    przed wywolaniem bloczka podajacego warto wejciowa,
+ *    ale rowniez moze by tak, ze wartosc wejciowa nie bedzie
  *    podana na wejcie w tym cyklu zegara)
  */
 class DSP::Block : public virtual DSP::Component
