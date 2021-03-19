@@ -1008,7 +1008,7 @@ string DSP_lib_version_string();
  *
  * \section lib_license Library lincensing information
  *  This project is licensed under GNU General Public License v3.0. 
- *  \include{doc} ..\LICENSE
+ *  \ref lib_license_text
  * 
  * \section main_lib_users For library users
  *  - \ref lib_linking
@@ -1030,7 +1030,7 @@ string DSP_lib_version_string();
  *  .
  *
  * \section main_lib_info About library
- *  - \ref lib_license
+ *  - \ref lib_license_text
  *  - \link ver_data  Library version and major updates information \endlink
  *  - \ref DSP_units_list_page
  *  - \ref DSP_fnc_list_page
@@ -1041,6 +1041,11 @@ string DSP_lib_version_string();
  *  - \ref devel_source_block_ex
  *  - \ref DSP::Block_page
  *  .
+ *
+ * \page lib_license_text DSPE library license
+ *   This project is licensed under GNU General Public License v3.0. 
+ * 
+ *   \include{doc} "../LICENSE"
  *
  * \page lib_linking Linking with Digital Signal Processing Engine (MinGW)
  *
