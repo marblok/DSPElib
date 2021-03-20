@@ -30,3 +30,14 @@ examples/log_file.log
 examples/test_out.wav
 Doxydoc/latex
 Doxydoc/html
+examples/multirate.wav
+CHANGELOG
+examples/callbacks_scheme.dot
+examples/callbacks_scheme.gif
+examples/macro_DDS.dot
+examples/macro_DDS.gif
+examples/macro_unwraped.dot
+.gitignore
+examples/macro_unwraped.gif
+examples/macro_wraped.dot
+examples/macro_wraped.gif

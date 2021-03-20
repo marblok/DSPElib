@@ -476,7 +476,7 @@ void DSP::Component::ComponentEdgesToDOTfile(std::ofstream &dot_plik, const stri
  * Can be called for sources and mixed blocks but cannot call itself for sources & mixed blocks
  */
 void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
-          bool *ComponentDoneTable, long max_components_number,
+          vector<bool> &ComponentDoneTable, long max_components_number,
           bool *UsedMacrosTable, DSP::Macro_ptr *MacrosList, long macros_number,
           bool *UsedClocksTable, DSP::Clock_ptr *ClocksList, long clocks_number,
           DSP::Macro_ptr DrawnMacro, DSP::Clock_ptr clock_ptr)
@@ -1336,7 +1336,7 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
     DSP::Clock_ptr *ClocksList, temp_clock;
     bool *UsedClocksTable;
     long int max_components_number;
-    bool *ComponentDoneTable;
+    vector<bool> ComponentDoneTable;
     unsigned int macros_number;
     bool *UsedMacrosTable;
     DSP::Macro_ptr *MacrosList = NULL;
@@ -1357,7 +1357,7 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
     // reserve space for info whether given component
     // has been already saved
     max_components_number = DSP::Component::GetNoOfComponentsInTable();
-    ComponentDoneTable = new bool [max_components_number];
+    ComponentDoneTable.resize(max_components_number);
     for (long ind = 0; ind < max_components_number; ind ++)
       ComponentDoneTable[ind] = false;
 
@@ -1583,8 +1583,7 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
     }
 
     // *********************************** //
-    if (ComponentDoneTable != NULL)
-      delete [] ComponentDoneTable;
+    ComponentDoneTable.clear();
     if (ClocksList != NULL)
       delete [] ClocksList;
     if (UsedClocksTable != NULL)
@@ -1601,21 +1600,6 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
 }
 
 #if __DEBUG__ == 1
-  //!Saves components information to m-file
-  /*! For all components linked with this clock info is stored
-   *  in m-file format. Called from DSP::Clock::SchemeToMfile
-   */
-  void DSP::Clock::ClockComponentsToMfile(std::ofstream &m_plik, bool *ComponentDoneTable, long max_components_number)
-  {
-    unsigned long ind;
-
-    for (ind=0; ind<NoOfSources; ind++)
-    {
-      //    ((DSP::Component_ptr)SourcesTable[ind])->ComponentToMfile(m_plik);  // saves component and it's output blocks (except of source & mixed blocks) to m-file
-      SourcesTable[ind]->ComponentToMfile(m_plik, ComponentDoneTable, max_components_number);  // saves component and it's output blocks (except of source & mixed blocks) to m-file
-    }
-  }
-
   //!Saves components information to dot-file
   /*! For all components linked with this clock info is stored
    *  in dot-file format. Called from DSP::Clock::SchemeToDOTfile
@@ -1623,7 +1607,7 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
    * Returns true if any of the sources has been drawn.
    */
   bool DSP::Clock::ClockComponentsToDOTfile(std::ofstream &dot_plik,
-                             bool *ComponentDoneTable, long max_components_number,
+                             vector<bool> &ComponentDoneTable, long max_components_number,
                              bool *UsedMacrosTable, DSP::Macro_ptr *MacrosList, long macros_number,
                              bool *UsedClocksTable, DSP::Clock_ptr *ClocksList, long clocks_number,
                              DSP::Macro_ptr DrawnMacro)
@@ -1651,7 +1635,7 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
   }
 
   bool DSP::Clock::ClockNotificationsToDOTfile(std::ofstream &dot_plik,
-                             bool *ComponentDoneTable, long max_components_number)
+                             vector<bool> &ComponentDoneTable, long max_components_number)
                              //, bool *UsedClocksTable, DSP::Clock_ptr *ClocksList) long clocks_number)
   {
     unsigned long ind;

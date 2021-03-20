@@ -335,8 +335,8 @@ int test_1(int argc, char*argv[])
 
   DSP::Clock_ptr MasterClock, Fp1Zegar;
   MasterClock=NULL;
-  char InputName[]="test.wav";
-  char OutputName[]="output.flt";
+  string InputName="test.wav";
+  string OutputName="output.flt";
 //  DSPu_WaveInput WaveInput(InputName, ".", 1);
   DSPu_FILEinput WaveInput(MasterClock, InputName, 1, DSP::e::SampleType::ST_float);
   DSPu_FILEoutput FILEoutput(OutputName, DSP::e::SampleType::ST_float, 2);
@@ -360,9 +360,9 @@ int test_1(int argc, char*argv[])
   return 0;
 
 /*
-  char InputName[]="input.flt";
-  char CoefficientsName[]="hI_coef.flt";
-  char OutputName[]="output.flt";
+  string InputName="input.flt";
+  string CoefficientsName="hI_coef.flt";
+  string OutputName="output.flt";
   DSP::Clock_ptr Fp1Zegar, Fp2Zegar;
 
   int N_hI;
@@ -391,8 +391,8 @@ int test_1(int argc, char*argv[])
   // real input + complex coefficients // OK
   // complex input + real coefficients // OK
   // complex input + complex coefficients // OK
-  char InputName[]="delta.flt";
-  char InputName2[]="delta_im.flt";
+  string InputName="delta.flt";
+  string InputName2="delta_im.flt";
   DSP::Clock_ptr MainZegar;
 
   DSPu_FILEinput FILEinput(InputName);
@@ -539,7 +539,7 @@ long int ReadResamplerCoef(const char *name, const char *dir,
   return Fs;
 }
 
-int ReadIIRCoef(const char *name, const char *dir)
+int ReadIIRCoef(const string &name, const char *dir)
 { //Read IIR filter order
   DSP_float temp;
   DWORD ile;
@@ -552,7 +552,7 @@ int ReadIIRCoef(const char *name, const char *dir)
   return (int)temp;
 }
 
-int ReadIIRCoef(const char *name, const char *dir, int Order,
+int ReadIIRCoef(const string &name, const char *dir, int Order,
                 DSP_complex_ptr A, DSP_complex_ptr B)
 { //returns mean bandpass group delay (int)
   DSP_float temp;
@@ -581,7 +581,7 @@ void Process(long int Fs, const char *WaveName, const char *Dir)
 
   int IIR_order[5], IIR_delay[5];
   DSP_complex_ptr IIR_A[5], IIR_B[5];
-  char IIR_name[]="IIR_1.flt";
+  string IIR_name="IIR_1.flt";
 
   long czas0, czas1, czas2;
 
@@ -1562,7 +1562,7 @@ DSPu_Addition Sum;
   Sum.Output("out") >> FileOut2.Input("in");
 
 
-  DSP::Clock::SchemeToMfile(MasterClock, "test_scheme_file.m");
+  DSP::Clock::SchemeToDOTfile(MasterClock, "test_scheme_file.dot");
   for (int temp=0; temp<40; temp++)
   {
     DSP::Clock::Execute(MasterClock, Fp/8);

@@ -976,7 +976,7 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
        *
        */
       void ComponentToDOTfile(std::ofstream &dot_plik,
-            bool *ComponentDoneTable, long max_components_number,
+            vector<bool> &ComponentDoneTable, long max_components_number,
             bool *UsedMacrosTable, DSP::Macro_ptr *MacrosList, long macros_number,
             bool *UsedClocksTable, DSP::Clock_ptr *ClocksList, long clocks_number,
             DSP::Macro_ptr DrawnMacro = NULL,

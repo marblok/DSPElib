@@ -357,16 +357,6 @@ class DSP::Clock
                                  bool ReferenceClock_is_signal_activated=false);
 
   public:
-    //!Saves scheme information of the algorithm to m-file
-    /*! ReferenceClock - one of the clocks assotiated with
-     *  the algorithm which we want to store in
-     *  m-file format.
-     *
-     * \note This function is inactive in release mode.
-     *
-     */
-    static void SchemeToMfile(DSP::Clock_ptr ReferenceClock,
-                              const string &mfile_name);
     //!Saves scheme information of the algorithm to DOT-file
     /*! ReferenceClock - one of the clocks associated with
      *  the algorithm which we want to store in
@@ -386,17 +376,15 @@ class DSP::Clock
     private:
       //!Saves components information to m-file
       /*! For all components linked with this clock info is stored
-       *  in m-file format. Called from DSP::Clock::SchemeToMfile
+       *  in dot-file format. Called from DSP::Clock::SchemeToMfile
        */
-      void ClockComponentsToMfile(std::ofstream &m_plik,
-              bool *ComponentDoneTable, long max_components_number);
       bool ClockComponentsToDOTfile(std::ofstream &m_plik,
-              bool *ComponentDoneTable, long max_components_number,
+              vector<bool> &ComponentDoneTable, long max_components_number,
               bool *UsedMacrosTable, DSP::Macro_ptr *MacrosList, long macros_number,
               bool *UsedClocksTable, DSP::Clock_ptr *ClocksList, long clocks_number,
               DSP::Macro_ptr DrawnMacro);
       bool ClockNotificationsToDOTfile(std::ofstream &dot_plik,
-              bool *ComponentDoneTable, long max_components_number);
+              vector<bool> &ComponentDoneTable, long max_components_number);
               //bool *UsedClocksTable, DSP::Clock_ptr *ClocksList, long clocks_number);
   #endif
 

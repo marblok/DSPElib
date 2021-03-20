@@ -103,8 +103,6 @@ int main(int argn, char *args[])
   {
     // problem
     N_LPF_resample = L*21;
-//    h_LPF_resample = new DSP_float[N_LPF_resample];
-//    memset(h_LPF_resample, 0, N_LPF_resample*sizeof(DSP_float));
     h_LPF_resample.resize(N_LPF_resample, 0.0);
     
     // design LPF filter with gain equal L
@@ -123,7 +121,6 @@ int main(int argn, char *args[])
     coef_info.Load(h_LPF_resample);
   }
    
-//  Resampler_InOut = new DSPu_SamplingRateConversion(MasterClock, L, M, N_LPF_resample, h_LPF_resample);
   Resampler_InOut = new DSPu_SamplingRateConversion(false, MasterClock, L, M, h_LPF_resample);
   OutputClock = Resampler_InOut->GetOutputClock();
   
@@ -136,10 +133,7 @@ int main(int argn, char *args[])
       h_LPF_resample[n] /= M; 
       h_LPF_resample[n] *= L; 
   }
-//  Resampler_OutIn = new DSPu_SamplingRateConversion(OutputClock, L, M, N_LPF_resample, h_LPF_resample);
   Resampler_OutIn = new DSPu_SamplingRateConversion(false, OutputClock, L, M, h_LPF_resample);
-  
-//  delete [] h_LPF_resample; h_LPF_resample = NULL;
   
   /*************************************************************/
   // Output to the soundcard 

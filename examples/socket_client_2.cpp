@@ -65,8 +65,6 @@ int main(void)
   }
   while (in_socket.GetBytesRead() != 0);
 
-//  delete [] h_SRC;
-
   DSP::Clock::FreeClocks();
   return 0;
 }

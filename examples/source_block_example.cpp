@@ -15,7 +15,7 @@ class DSPu_Const : public DSP_source
 {
   private:
     DSP_float const_val;
-    DSP_float_ptr const_state;
+    DSP_float_vector const_state;
     
     static bool OutputExecute_one(DSP_source_ptr source, DSP::clock_ptr clock=NULL);
     static bool OutputExecute_many(DSP_source_ptr source, DSP::clock_ptr clock=NULL);
@@ -62,7 +62,7 @@ DSPu_Const::DSPu_Const(DSP::clock_ptr ParentClock,
   RegisterOutputClock(ParentClock);
 
   const_val = value;
-  const_state = NULL;
+  const_state.clear();
   
   OutputExecute_ptr = &OutputExecute_one;
 }
@@ -82,7 +82,7 @@ DSPu_Const::DSPu_Const(DSP::clock_ptr ParentClock,
   
   const_val = 0.0;
 
-  const_state = new DSP_float[2];
+  const_state.resize(2);
   const_state[0] = value_re;
   const_state[1] = value_im;
   
@@ -104,7 +104,7 @@ DSPu_Const::DSPu_Const(DSP::clock_ptr ParentClock,
   
   const_val = 0.0;
 
-  const_state = new DSP_float[2];
+  const_state.resize(2);
   const_state[0] = value.re;
   const_state[1] = value.im;
   
@@ -137,7 +137,7 @@ DSPu_Const::DSPu_Const(DSP::clock_ptr ParentClock,
   RegisterOutputClock(ParentClock);
   
   const_val = 0.0;
-  const_state = new DSP_float[NoOfOutputs_in];
+  const_state.resize(NoOfOutputs_in);
   for (ind = 0; ind < NoOfOutputs_in; ind++)
   {
     const_state[ind] = values[ind];
@@ -174,7 +174,7 @@ DSPu_Const::DSPu_Const(DSP::clock_ptr ParentClock,
   RegisterOutputClock(ParentClock);
   
   const_val = 0.0;
-  const_state = new DSP_float[2*NoOfOutputs_in];
+  const_state.resize(2*NoOfOutputs_in);
   for (ind = 0; ind < NoOfOutputs_in; ind++)
   {
     const_state[2*ind] = values[ind].re;
@@ -186,11 +186,7 @@ DSPu_Const::DSPu_Const(DSP::clock_ptr ParentClock,
 
 DSPu_Const::~DSPu_Const(void)
 {
-  if (const_state != NULL)
-  {
-    delete [] const_state;
-    const_state = NULL;
-  }
+  const_state.clear();
 }
 
 #define THIS_ ((DSPu_Const *)source)

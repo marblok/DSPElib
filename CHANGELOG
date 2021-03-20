@@ -1,3 +1,5 @@
+  - removed obsolete DSP::Clock::SchemeToMfile and related functions
+  - changed some pointers into vectors
 
 - ver. 0.19.016 - <b>2021.03.19</b> Changed: Some of the #defines changed into consts and moved into DSP::c:: namespace
 	-	 DSP_Callback_Init => DSP::c::Callback_Init

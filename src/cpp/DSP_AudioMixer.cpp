@@ -1411,9 +1411,8 @@ int TAudioMixer::GetActiveSourceLine(void)
   #ifdef WIN32
     int ind;
     MIXERCONTROLDETAILS MixerControlDetails;
-    MIXERCONTROLDETAILS_BOOLEAN *temp;
 
-    temp=new MIXERCONTROLDETAILS_BOOLEAN [Mixer_InputLinesNumber];
+    vector<MIXERCONTROLDETAILS_BOOLEAN> temp(Mixer_InputLinesNumber);
 
     //We should reread lines state
     if (InputMixer_support == true)
@@ -1423,7 +1422,7 @@ int TAudioMixer::GetActiveSourceLine(void)
       MixerControlDetails.cChannels=1; //one mixer ON/OFF control per channel
       MixerControlDetails.cMultipleItems=Mixer_InputLinesNumber;
       MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_BOOLEAN);
-      MixerControlDetails.paDetails=temp;
+      MixerControlDetails.paDetails=temp.data();
       rs=mixerGetControlDetails((HMIXEROBJ)hMixer_in, &MixerControlDetails, MIXER_GETCONTROLDETAILSF_VALUE);
 
       for (ind=0; ind<(int)Mixer_InputLinesNumber; ind++)
@@ -1441,7 +1440,7 @@ int TAudioMixer::GetActiveSourceLine(void)
           MixerControlDetails.cChannels=1; //one mixer ON/OFF control per channel
           MixerControlDetails.cMultipleItems=0; //single item
           MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_BOOLEAN);
-          MixerControlDetails.paDetails=temp+ind;
+          MixerControlDetails.paDetails=temp.data()+ind;
           rs=mixerGetControlDetails((HMIXEROBJ)hMixer_in, &MixerControlDetails, MIXER_GETCONTROLDETAILSF_VALUE);
         }
         else
@@ -1457,7 +1456,7 @@ int TAudioMixer::GetActiveSourceLine(void)
           break;
     }
 
-    delete [] temp;
+    temp.clear();
 
     if (ind==(int)Mixer_InputLinesNumber)
       ind=-1;

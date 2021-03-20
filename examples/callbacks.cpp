@@ -1,24 +1,23 @@
 /*! Simple Digital Signal Processing Engine usage example.
  * \author Marek Blok
  * \date 2008.05.28
- * \date updated 2021.01.18
+ * \date updated 2021.03.20
  */
 #include <DSP_lib.h>
 
 #define buffer_size 4
-DSP_float_ptr read_buffer = NULL;
+DSP_float_vector read_buffer;
 
 void BufferCallback(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP_float_ptr OutputSamples, DSP::void_ptr *UserDataPtr, unsigned int UserDefinedIdentifier, DSP::Component_ptr Caller)
 {
   if (NoOfInputs == DSP::c::Callback_Init)
   {
-    read_buffer = new DSP_float[buffer_size];
+    read_buffer.resize(buffer_size);
     return;
   }
   if (NoOfInputs == DSP::c::Callback_Delete)
   {
-    delete [] read_buffer;
-    read_buffer = NULL;
+    read_buffer.clear();
     return;
   }
 
@@ -26,7 +25,7 @@ void BufferCallback(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP_float
   int ind, counter;
 
   dsp_buffer = (DSPu_OutputBuffer *)Caller->Convert2Block();
-  counter = dsp_buffer->ReadBuffer(read_buffer,
+  counter = dsp_buffer->ReadBuffer(read_buffer.data(),
                                    buffer_size*sizeof(DSP_float), // read all samples
                                    -2,  // reset only NotificationsStep slots in buffer block
                                    DSP::e::SampleType::ST_float); // write to read_buffer in float format
