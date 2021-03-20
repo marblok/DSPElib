@@ -169,8 +169,7 @@ class DSP::Clock
     //! Returns all (in ClocksList) clocks of the algorithm linked with ReferenceClock
     /*! Generaly it means that returns all the clocks with the same MasterClock as ReferenceClock.
      *
-     * ClockList - pointer to list (allocated by user) where clocks' pointers will be stored \n
-     * clocks_number - number of available entries in ClockList \n
+     * ClockList - vector with list where clocks' pointers will be stored (appended) \n
      * FindSignalActivatedClocks - if <b>true</b> function will look for
      *   signal activated clock (clocks with different MasterClock).
      *
@@ -178,10 +177,9 @@ class DSP::Clock
      * Function returns actual number of stored clocks.
      * In case of error:
      *  returns -1: no clock where found
-     *  returns clocks_number +1: ClocksList was to short to store all clocks
      */
     static long GetAlgorithmClocks(DSP::Clock_ptr ReferenceClock,
-        DSP::Clock_ptr *ClocksList, unsigned long clocks_number, bool FindSignalActivatedClocks = false);
+        vector<DSP::Clock_ptr> &ClocksList, bool FindSignalActivatedClocks = false);
 
   private:
     //8) Jednokierunkowa lista obiekt�w DSP::Clock
@@ -380,8 +378,8 @@ class DSP::Clock
        */
       bool ClockComponentsToDOTfile(std::ofstream &m_plik,
               vector<bool> &ComponentDoneTable, long max_components_number,
-              bool *UsedMacrosTable, DSP::Macro_ptr *MacrosList, long macros_number,
-              bool *UsedClocksTable, DSP::Clock_ptr *ClocksList, long clocks_number,
+              vector<bool> &UsedMacrosTable, vector<DSP::Macro_ptr> &MacrosList, 
+              vector<bool> &UsedClocksTable, vector<DSP::Clock_ptr> &ClocksList, 
               DSP::Macro_ptr DrawnMacro);
       bool ClockNotificationsToDOTfile(std::ofstream &dot_plik,
               vector<bool> &ComponentDoneTable, long max_components_number);

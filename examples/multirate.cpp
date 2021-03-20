@@ -163,7 +163,8 @@ int main(int argn, char *args[])
   // check if there are signals 
   // connected to all inputs  
   DSP::Component::CheckInputsOfAllComponents();
-  
+  DSP::Clock::SchemeToDOTfile(MasterClock, "multirate.dot");
+
   // *********************************** // 
   // *********************************** //
   int SamplesInSegment = 512;

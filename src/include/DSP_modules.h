@@ -956,8 +956,6 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
   public:
 
     #ifdef __DEBUG__
-      void ComponentToMfile(std::ofstream &m_plik,
-            bool *ComponentDoneTable, long max_components_number);
       //! Returns component name used in DOTfile (empty on failure)
       string GetComponentName_DOTfile();
       /*! output_index - index of the rendered output
@@ -969,7 +967,7 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
       virtual bool UsePorts_DOTfile(void);
       //! Writes component edges to file
       void ComponentEdgesToDOTfile(std::ofstream &dot_plik, const string &this_name,
-          bool *UsedMacrosTable, DSP::Macro_ptr *MacrosList, long macros_number,
+          vector<bool> &UsedMacrosTable, vector<DSP::Macro_ptr> &MacrosList, 
           DSP::Macro_ptr DrawnMacro, unsigned int space_sep = 4);
       /*! Returns source name in first_source_name if first_source_name != NULL.
        *  User must reserve memory for it beforehand.
@@ -977,8 +975,8 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
        */
       void ComponentToDOTfile(std::ofstream &dot_plik,
             vector<bool> &ComponentDoneTable, long max_components_number,
-            bool *UsedMacrosTable, DSP::Macro_ptr *MacrosList, long macros_number,
-            bool *UsedClocksTable, DSP::Clock_ptr *ClocksList, long clocks_number,
+            vector<bool> &UsedMacrosTable, vector<DSP::Macro_ptr> &MacrosList,
+            vector<bool> &UsedClocksTable, vector<DSP::Clock_ptr> &ClocksList,
             DSP::Macro_ptr DrawnMacro = NULL,
             DSP::Clock_ptr clock_ptr = NULL);
   #endif
@@ -987,8 +985,7 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
   /* Notifications support    */
   /****************************/
   private:
-    DSP::Clock_ptr *NotificationClocks;
-    unsigned int NoOfNotificationClocks;
+    vector<DSP::Clock_ptr> NotificationClocks;
   public:
     //! Function called by main clocks' processing function at the begining of each cycle
     /*! It is called only for registered components. It's executed for each
@@ -1682,7 +1679,7 @@ class DSP::MacroStack
      * \warning The user must free MacroList table allocated
      *  by this function on his own.
      */
-    static unsigned int GetCurrentMacroList(DSP::Macro_ptr *&MacrosList);
+    static unsigned int GetCurrentMacroList(vector<DSP::Macro_ptr> &MacrosList);
 };
 
 //! User can derive class from this block to group several DSP components into single macro component
@@ -1715,7 +1712,7 @@ class DSP::Macro : public virtual DSP::name
 {
   #ifdef __DEBUG__
     friend void DSP::Component::ComponentEdgesToDOTfile(std::ofstream &, const string &,
-                      bool *, DSP::Macro_ptr *, long, DSP::Macro_ptr, unsigned int);
+                      vector<bool> &, vector<DSP::Macro_ptr> &, DSP::Macro_ptr, unsigned int);
   #endif
 
   private:

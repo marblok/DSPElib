@@ -329,11 +329,11 @@ bool DSP::Component::UsePorts_DOTfile(void)
 
 // Writes component edges to file
 void DSP::Component::ComponentEdgesToDOTfile(std::ofstream &dot_plik, const string &this_name,
-    bool *UsedMacrosTable, DSP::Macro_ptr *MacrosList, long macros_number,
+    vector<bool> &UsedMacrosTable, vector<DSP::Macro_ptr> &MacrosList,
     DSP::Macro_ptr DrawnMacro, unsigned int space_sep)
 {
   unsigned int ind, ind_sep;
-  long ind2;
+  unsigned long ind2;
   string that_name, text_buffer;
   DSP::Block_ptr temp_block;
   DSP::Macro_ptr current_macro;
@@ -359,7 +359,7 @@ void DSP::Component::ComponentEdgesToDOTfile(std::ofstream &dot_plik, const stri
 
           if (macro_input_no != DSP::c::FO_NoInput)
           {
-            for (ind2 = 0; ind2 < macros_number; ind2++)
+            for (ind2 = 0; ind2 < MacrosList.size(); ind2++)
             {
               if (MacrosList[ind2] == current_macro)
               {
@@ -477,8 +477,8 @@ void DSP::Component::ComponentEdgesToDOTfile(std::ofstream &dot_plik, const stri
  */
 void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
           vector<bool> &ComponentDoneTable, long max_components_number,
-          bool *UsedMacrosTable, DSP::Macro_ptr *MacrosList, long macros_number,
-          bool *UsedClocksTable, DSP::Clock_ptr *ClocksList, long clocks_number,
+          vector<bool> &UsedMacrosTable, vector<DSP::Macro_ptr> &MacrosList, 
+          vector<bool> &UsedClocksTable, vector<DSP::Clock_ptr> &ClocksList,
           DSP::Macro_ptr DrawnMacro, DSP::Clock_ptr clock_ptr)
 {
   unsigned int ind;
@@ -511,7 +511,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
   current_macro = DOT_DrawAsMacro(DrawnMacro);
   if (current_macro != NULL)
   {
-    for (ind2 = 0; ind2 < macros_number; ind2++)
+    for (ind2 = 0; ind2 < MacrosList.size(); ind2++)
     {
       if (MacrosList[ind2] == current_macro)
       {
@@ -564,7 +564,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
         if (OutputClocks[0] != NULL)
         {
           // update UsedClocksTable
-          for (ind2 = 0; ind2 < clocks_number; ind2++)
+          for (ind2 = 0; ind2 < ClocksList.size(); ind2++)
           {
             if(ClocksList[ind2] == OutputClocks[0])
               UsedClocksTable[ind2] = true;
@@ -588,8 +588,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
     // Define outgoing connections
     ///////////////////////////////
     ComponentEdgesToDOTfile(dot_plik, this_name,
-        UsedMacrosTable, MacrosList, macros_number,
-        DrawnMacro);
+        UsedMacrosTable, MacrosList, DrawnMacro);
   }
 
   for (ind=0; ind<NoOfOutputs; ind++)
@@ -611,8 +610,8 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
     // call this function for all output blocks except for sources & mixed blocks
     if (call_next) {
       temp_OUT->ComponentToDOTfile(dot_plik, ComponentDoneTable, max_components_number,
-                                   UsedMacrosTable, MacrosList, macros_number,
-                                   UsedClocksTable, ClocksList, clocks_number,
+                                   UsedMacrosTable, MacrosList,
+                                   UsedClocksTable, ClocksList,
                                    DrawnMacro);
     }
   }
@@ -1332,14 +1331,13 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
     // ********************************** //
     string tekst;
     std::ofstream dot_plik(dot_filename);
-    long int clocks_number, temp;
-    DSP::Clock_ptr *ClocksList, temp_clock;
-    bool *UsedClocksTable;
+    vector<DSP::Clock_ptr> ClocksList;
+    DSP::Clock_ptr temp_clock;
+    vector<bool> UsedClocksTable;
     long int max_components_number;
     vector<bool> ComponentDoneTable;
-    unsigned int macros_number;
-    bool *UsedMacrosTable;
-    DSP::Macro_ptr *MacrosList = NULL;
+    vector<bool> UsedMacrosTable;
+    vector<DSP::Macro_ptr> MacrosList;
     DSP::Clock_trigger_ptr Clock_trigger;
 
     // ********************************** //
@@ -1365,28 +1363,29 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
 
     // ********************************** //
     // Get list of clocks
-    clocks_number = DSP::Clock::GetNoOfClocks();
-    ClocksList = new DSP::Clock_ptr[clocks_number];
-    temp = DSP::Clock::GetAlgorithmClocks(ReferenceClock, ClocksList, clocks_number, true);
-    clocks_number = temp;
+    ClocksList.clear();
+    DSP::Clock::GetAlgorithmClocks(ReferenceClock, ClocksList, true);
+    #ifdef __DEBUG__
+      if (ClocksList.size() != DSP::Clock::GetNoOfClocks())
+        DSP::log << DSP::LogMode::Error << "DSP::Clock::SchemeToDOTfile" << DSP::LogMode::second
+                << "wrong number of clocks in ClocksList" << endl;
+    #endif // __DEBUG__
 
     // ********************************** //
     // reserve space for info whether given clock
     // has been used and should be saved
-    UsedClocksTable = new bool [clocks_number];
-    for (long ind = 0; ind < clocks_number; ind ++)
-      UsedClocksTable[ind] = false;
+    UsedClocksTable.resize(ClocksList.size(), false);
 
     // ********************************** //
     // UsedMacrosTable generatiojn
-    macros_number = DSP::MacroStack::GetCurrentMacroList(MacrosList);
-    UsedMacrosTable = new bool[macros_number];
-    for (unsigned int ind = 0; ind < macros_number; ind ++)
+    DSP::MacroStack::GetCurrentMacroList(MacrosList);
+    UsedMacrosTable.resize(MacrosList.size());
+    for (unsigned int ind = 0; ind < MacrosList.size(); ind ++)
       UsedMacrosTable[ind] = false;
 
     // ********************************** //
     // clocks sorting : smaller cycle_length first // prevent MasterClocks grouping
-    for (long ind = 1; ind < clocks_number; ind++)
+    for (long ind = 1; ind < ClocksList.size(); ind++)
     {
       if (ClocksList[ind]->MasterClockIndex == ClocksList[ind-1]->MasterClockIndex)
       {
@@ -1416,13 +1415,13 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
     //dot_plik << "  subgraph cluster_BLOCKS {" << std::endl;
     dot_plik << "  subgraph BLOCKS {" << std::endl;
     // Process all clocks in the list
-    for (long ind = 0; ind < clocks_number; ind ++)
+    for (unsigned long ind = 0; ind < ClocksList.size(); ind ++)
     {
-      UsedClocksTable[ind] |= ClocksList[ind]->ClockComponentsToDOTfile(dot_plik,
-                                      ComponentDoneTable, max_components_number,
-                                      UsedMacrosTable, MacrosList, macros_number,
-                                      UsedClocksTable, ClocksList, clocks_number,
-                                      DrawnMacro);
+      UsedClocksTable[ind] = UsedClocksTable[ind] | ClocksList[ind]->ClockComponentsToDOTfile(dot_plik,
+                                                              ComponentDoneTable, max_components_number,
+                                                              UsedMacrosTable, MacrosList, 
+                                                              UsedClocksTable, ClocksList, 
+                                                              DrawnMacro);
 
     }
     dot_plik << "    style=invis;" << std::endl;
@@ -1448,10 +1447,10 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
                 << "];" << std::endl;
 
           // mark clock as used
-          for (long ind2 = 0; ind2 < clocks_number; ind2++)
+          for (unsigned long ind2 = 0; ind2 < ClocksList.size(); ind2++)
           {
             if (ClocksList[ind2] == Clock_trigger->SignalActivatedClock)
-              UsedClocksTable[ind2] |= true;
+              UsedClocksTable[ind2] = true;
           }
         }
       }
@@ -1459,12 +1458,12 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
 
     // ************************************************* //
     //! draw notifications
-    if (clocks_number > 0)
+    if (ClocksList.size() > 0)
     {
-      for (long ind = 0; ind < clocks_number; ind ++)
+      for (long ind = 0; ind < ClocksList.size(); ind ++)
       { // check for all clock: some ne used clock may come up
-        UsedClocksTable[ind] |= ClocksList[ind]->ClockNotificationsToDOTfile(dot_plik,
-                                        ComponentDoneTable, max_components_number);
+        UsedClocksTable[ind] = UsedClocksTable[ind] | ClocksList[ind]->ClockNotificationsToDOTfile(dot_plik,
+                                                                   ComponentDoneTable, max_components_number);
                                         //UsedClocksTable, ClocksList, clocks_number);
       }
     }
@@ -1473,28 +1472,22 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
 
     // ********************************** //
     // clocks sorting : move used clock higher and update clocks_number
-    long ind_clock = 0;
-    while (ind_clock < clocks_number)
+    long ind_clock = long(ClocksList.size()) - 1;
+    while (ind_clock >= 0)
     {
-      if (UsedClocksTable[ind_clock] == true)
+      if (UsedClocksTable[ind_clock] == false)
       {
-        ind_clock++;
+        // erase used clocks
+        ClocksList.erase(ClocksList.begin() + ind_clock);
+        UsedClocksTable.erase(UsedClocksTable.begin() + ind_clock);
       }
-      else
-      { // push rest of the clocks down and check the same slot
-        for (long ind2 = ind_clock+1; ind2 < clocks_number; ind2++)
-        {
-          ClocksList[ind2-1] = ClocksList[ind2];
-          UsedClocksTable[ind2-1] = UsedClocksTable[ind2];
-        }
-        clocks_number--;
-      }
+      ind_clock--;
     }
 
 
     // ************************************************* //
     // draw used macro blocks
-    for (unsigned int ind = 0; ind < macros_number; ind++)
+    for (unsigned int ind = 0; ind < MacrosList.size(); ind++)
     {
       if (UsedMacrosTable[ind] == true)
       {
@@ -1505,7 +1498,7 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
 
     // ************************************************* //
     // clocks subgraph
-    if (clocks_number > 0)
+    if (ClocksList.size() > 0)
     {
       stringstream ss;
       //dot_plik << "  subgraph cluster_CLOCKS {" << std::endl;
@@ -1525,7 +1518,7 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
       }
       dot_plik << ss.str() << std::endl;
 
-      for (long ind = 1; ind < clocks_number; ind ++)
+      for (long ind = 1; ind < ClocksList.size(); ind ++)
       {
         if (ClocksList[ind-1]->MasterClockIndex == ClocksList[ind]->MasterClockIndex)
         {
@@ -1575,7 +1568,7 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
         //ClocksList[ind]->M;
       }
       ss.clear(); ss.str("");
-      ss << "      label = \"Clocks group #" << ClocksList[clocks_number-1]->MasterClockIndex << "\";";
+      ss << "      label = \"Clocks group #" << ClocksList[ClocksList.size()-1]->MasterClockIndex << "\";";
       dot_plik << ss.str() << std::endl;
       dot_plik << "    }" << std::endl;
       //dot_plik << "    label=\"Algorithm clocks\";" << std::endl;
@@ -1584,14 +1577,10 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
 
     // *********************************** //
     ComponentDoneTable.clear();
-    if (ClocksList != NULL)
-      delete [] ClocksList;
-    if (UsedClocksTable != NULL)
-      delete [] UsedClocksTable;
-    if (UsedMacrosTable != NULL)
-      delete [] UsedMacrosTable;
-    if (MacrosList != NULL)
-      delete [] MacrosList;
+    ClocksList.clear();
+    UsedClocksTable.clear();
+    UsedMacrosTable.clear();
+    MacrosList.clear();
 
     dot_plik << "}" << std::endl;
     // ********************************** //
@@ -1608,8 +1597,8 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
    */
   bool DSP::Clock::ClockComponentsToDOTfile(std::ofstream &dot_plik,
                              vector<bool> &ComponentDoneTable, long max_components_number,
-                             bool *UsedMacrosTable, DSP::Macro_ptr *MacrosList, long macros_number,
-                             bool *UsedClocksTable, DSP::Clock_ptr *ClocksList, long clocks_number,
+                             vector<bool> &UsedMacrosTable, vector<DSP::Macro_ptr> &MacrosList,
+                             vector<bool> &UsedClocksTable, vector<DSP::Clock_ptr> &ClocksList,
                              DSP::Macro_ptr DrawnMacro)
   {
     unsigned long ind;
@@ -1626,8 +1615,8 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
       // saves component and it's output blocks (except of source & mixed blocks) to DOT-file
       SourcesTable[ind]->ComponentToDOTfile(dot_plik,
           ComponentDoneTable, max_components_number,
-          UsedMacrosTable, MacrosList, macros_number,
-          UsedClocksTable, ClocksList, clocks_number,
+          UsedMacrosTable, MacrosList,
+          UsedClocksTable, ClocksList,
           DrawnMacro, this);
     }
 

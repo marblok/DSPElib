@@ -1496,11 +1496,10 @@ unsigned long DSP::Clock::GetTimeToNextCycle(DSP::Clock_ptr CurrentMasterClock)
 // Returns all clocks of the algorithm linked with ReferenceClock
 /* Generaly it means that returns all the clocks with the same MasterClock as ReferenceClock.
  *
- * ClockList - pointer to list (allocated by user) where clocks' pointers will be stored
- * clocks_number - number of available entries in ClockList
+ * ClockList - vector with list where clocks' pointers will be stored (appended)
  */
 long DSP::Clock::GetAlgorithmClocks(DSP::Clock_ptr ReferenceClock,
-                                   DSP::Clock_ptr *ClocksList, unsigned long clocks_number,
+                                   vector<DSP::Clock_ptr> &ClocksList, 
                                    bool FindSignalActivatedClocks)
 {
   unsigned long index;
@@ -1516,15 +1515,7 @@ long DSP::Clock::GetAlgorithmClocks(DSP::Clock_ptr ReferenceClock,
   while (tempClock != NULL)
   {
     ind++;
-    if ((unsigned long)ind >= clocks_number)
-    {
-      #ifdef __DEBUG__
-        DSP::log << DSP::LogMode::Error << "DSP::Clock::GetAlgorithmClocks" << DSP::LogMode::second << "Not enough space in ClocksList" << endl;
-      #endif
-      break;
-    }
-
-    ClocksList[ind] = tempClock;
+    ClocksList.push_back(tempClock);
 
     tempClock=tempClock->Next;
   }
@@ -1549,17 +1540,9 @@ long DSP::Clock::GetAlgorithmClocks(DSP::Clock_ptr ReferenceClock,
               Ignore = true;
           if (Ignore == false)
           {
-            if ((int)clocks_number > (ind+1))
-            {
-              ile = GetAlgorithmClocks(tempClockTrigger->SignalActivatedClock,
-                                 ClocksList+ind+1, clocks_number - (ind+1), true);
-              ind += ile;
-            }
-            #ifdef __DEBUG__
-              else
-                DSP::log << DSP::LogMode::Error << "DSP::Clock::GetAlgorithmClocks" << DSP::LogMode::second
-                  << "Not enough space in ClocksList for possible signal activated clocks" << endl;
-            #endif
+            // append clocks to ClocksList vector
+            ile = GetAlgorithmClocks(tempClockTrigger->SignalActivatedClock, ClocksList, true);
+            ind += ile;
           }
         }
       }

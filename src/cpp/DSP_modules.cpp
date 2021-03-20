@@ -187,8 +187,7 @@ DSP::Component::Component(void)
   AutoFree = false;
   IsAutoSplit = false;
 
-  NoOfNotificationClocks = 0;
-  NotificationClocks = NULL;
+  NotificationClocks.clear();
 
   NoOfOutputs = 0;
   OutputBlocks = NULL;
@@ -256,14 +255,13 @@ DSP::Component::~Component(void)
   UnregisterNotifications();
   UnregisterComponent();
 
-  if (NotificationClocks != NULL)
+  if (NotificationClocks.size() > 0)
   {
     #ifdef __DEBUG__
       DSP::log << DSP::LogMode::Error << "DSP::Component::~DSP::Component" << DSP::LogMode::second
         << "Notifications have not been correctly unregistered for component: >>" << GetName() << "<<" << endl;
     #endif
-    delete [] NotificationClocks;
-    NotificationClocks = NULL;
+    NotificationClocks.clear();
   }
 
   #ifdef __DEBUG__
@@ -1933,21 +1931,14 @@ void DSP::Component::UnregisterNotifications(void)
 {
   unsigned int ind;
 
-  for (ind = 0; ind < NoOfNotificationClocks; ind++)
+  for (ind = 0; ind < NotificationClocks.size(); ind++)
     DSP::Clock::UnregisterNotification(NotificationClocks[ind], this);
 
-  NoOfNotificationClocks = 0;
-  if (NotificationClocks != NULL)
-  {
-    delete [] NotificationClocks;
-    NotificationClocks = NULL;
-  }
+  NotificationClocks.clear();
 }
 
 void DSP::Component::RegisterForNotification(DSP::Clock_ptr NotifyClock)
 {
-  DSP::Clock_ptr *temp_clocks;
-
   if (NotifyClock == NULL)
   {
     #ifdef __DEBUG__
@@ -1957,14 +1948,7 @@ void DSP::Component::RegisterForNotification(DSP::Clock_ptr NotifyClock)
     return;
   }
 
-  temp_clocks = NotificationClocks;
-  NotificationClocks = new DSP::Clock_ptr[NoOfNotificationClocks+1];
-  memcpy(NotificationClocks, temp_clocks, NoOfNotificationClocks*sizeof(DSP::Clock_ptr));
-  if (temp_clocks != NULL)
-    delete [] temp_clocks;
-
-  NotificationClocks[NoOfNotificationClocks] = NotifyClock;
-  NoOfNotificationClocks++;
+  NotificationClocks.push_back(NotifyClock);
 
   NotifyClock->RegisterNotification(this); // only for notifications
 }
@@ -10482,119 +10466,6 @@ unsigned int DSP::Block::FindOutputIndex_by_InputIndex(unsigned int InputIndex)
   return DSP::c::FO_NoOutput;
 }
 
-
-#ifdef __DEBUG__
-  // Saves this component and calls it's output blocks (except of source & mixed blocks) to M-file
-  /* See DSP::Clock::SchemeToMfile and DSP::Clock::ClockComponetsToMfile
-   *
-   * Can be called for sources and mixed blocks but cannot call itself for sources & mixed blocks
-   */
-  /*! \Fixed <b>2006.04.30</b> Wbudowano mechanizm zapobiegajcy
-   * wielokrotnemu zapisywaniu bloczkw do skryptu.
-   * W oparciu o list ju zapisanych komponentw
-   * identyfikowanych po GetGetComponentIndexInTable.
-   */
-  void DSP::Component::ComponentToMfile(std::ofstream &m_plik,
-            bool *ComponentDoneTable, long max_components_number)
-  {
-    unsigned int ind;
-    string tempName;
-    DSP::Block_ptr temp_OUT;
-    long component_index;
-
-    component_index = GetComponentIndexInTable(this);
-    if (component_index >= max_components_number)
-    {
-      #ifdef __DEBUG__
-        DSP::log << DSP::LogMode::Error << "ComponentToMfile" << DSP::LogMode::second
-          << "max_components_number (" << max_components_number
-          << ") <= component_index (" << component_index << ")" << endl;
-      #endif
-      return;
-    }
-    if (ComponentDoneTable[component_index] == true)
-      return; // component was processed before
-    ComponentDoneTable[component_index] = true;
-
-    // Save info for current component
-    // Bloczki(1).unique_index = 12; % unique number identifying object == integer part of Bloczki(ind).output_blocks
-    m_plik << "Bloczki(ind).unique_index = " << component_index << ";" << std::endl;
-
-    // Bloczki(1).name = 'Source_1';
-    tempName = GetName();
-    if (tempName.length() == 0)
-      m_plik << "Bloczki(ind).get_name() = '';" << std::endl;
-    else
-      m_plik << "Bloczki(ind).get_name() = '" << tempName << "';" << std::endl;
-
-    // Bloczki(1).type = 's'; % 's' - source, 'b' - processig block, 'm' - mixed: processing & source block, % 'o' - output (generaly == processing block with no outputs)
-    m_plik << "Bloczki(ind).type = ";
-    switch (Type)
-    {
-      case DSP_CT_source:
-        m_plik << "'s';" << std::endl;
-        break;
-      case DSP_CT_mixed:
-        m_plik << "'m';" << std::endl;
-        break;
-      case DSP_CT_block:
-        m_plik << "'b';" << std::endl;
-        break;
-      case DSP_CT_none:
-      default:
-        m_plik << "'?';" << std::endl;
-        break;
-    }
-    // Bloczki(1).number_of_outputs = 1;
-    m_plik << "Bloczki(ind).number_of_outputs = " << NoOfOutputs << std::endl;
-
-    //Bloczki(1).output_blocks = [2.0]; % indexes of output blocks (b.i <= b - block index (1, 2, ...), i - output block input index  (0, 1, ...)
-  //    DSP::Block_ptr *OutputBlocks; //!one block pointer for one output
-  //    int *OutputBlocks_InputNo; //!Input number of the output block
-    m_plik << "Bloczki(ind).output_blocks = [";
-    for (ind=0; ind<NoOfOutputs; ind++)
-    {
-      // Output component index based on its position in NoOfComponentsInTable
-      m_plik <<  GetComponentIndexInTable(OutputBlocks[ind]);
-      m_plik <<  ".";
-      m_plik <<  OutputBlocks_InputNo[ind];
-
-      if (ind < NoOfOutputs-1)
-        m_plik <<  ", ";
-    }
-    m_plik << "];" << std::endl;
-
-    //Bloczki(1).number_of_inputs = 0; % always 0 for source blocks
-    m_plik << "Bloczki(ind).number_of_inputs = ";
-    switch (Type)
-    {
-      case DSP_CT_source:
-        m_plik << "0;" << std::endl;
-        break;
-      case DSP_CT_mixed:
-      case DSP_CT_block:
-        m_plik << Convert2Block()->NoOfInputs << ";" << std::endl;
-        break;
-      case DSP_CT_none:
-      default:
-        m_plik << "-1;" << std::endl;
-        break;
-    }
-
-    m_plik << "ind = ind + 1;" << std::endl << std::endl;
-
-    for (ind=0; ind<NoOfOutputs; ind++)
-    {
-      temp_OUT = OutputBlocks[ind];
-
-      // call this function for all output blocks except for sources & mixed blocks
-      if (temp_OUT->Type == DSP_CT_block)
-        temp_OUT->ComponentToMfile(m_plik, ComponentDoneTable, max_components_number);
-    }
-  }
-
-#endif
-
 /* ************************************************ */
 /* ************************************************ */
 /* ************************************************ */
@@ -11225,10 +11096,11 @@ unsigned int DSP::MacroStack::GetCurrentMacroStack(DSP::Macro_ptr *&MacrosStack)
   return Length;
 }
 
-unsigned int DSP::MacroStack::GetCurrentMacroList(DSP::Macro_ptr *&MacrosList)
+unsigned int DSP::MacroStack::GetCurrentMacroList(vector<DSP::Macro_ptr> &MacrosList)
 {
-  MacrosList = new DSP::Macro_ptr[ListLength];
-  memcpy(MacrosList, List, ListLength*sizeof(DSP::Macro_ptr));
+  MacrosList.resize(ListLength);
+  // \TODO convert List into vector and copy vectors instead of using memcpy
+  memcpy(MacrosList.data(), List, ListLength*sizeof(DSP::Macro_ptr));
 
   return ListLength;
 }
