@@ -24,7 +24,7 @@ int main(void)
 //  DSPu_WaveInput AudioIn(MasterClock, "test.wav", ".");
 //  Fp = AudioIn.GetSamplingRate();
   Fp = 22050;
-  DSPu_DDScos AudioIn(MasterClock, false, 1.0, DSP_float(1000*M_PIx2/Fp));
+  DSPu_DDScos AudioIn(MasterClock, false, 1.0, DSP::Float(1000*M_PIx2/Fp));
   DSPu_MORSEkey MorseKey(MasterClock, 20, Fp);
   MorseKey.AddString("Digital Signal Processing Engine library");
   DSPu_RealMultiplication Mul(2);

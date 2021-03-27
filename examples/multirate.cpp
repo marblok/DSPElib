@@ -19,8 +19,8 @@ int main(int argn, char *args[])
   DSP::LoadCoef coef_info;
   int L, M;
   int N_LPF_resample;
-//  DSP_float_ptr h_LPF_resample;
-  DSP_float_vector h_LPF_resample;
+//  DSP::Float_ptr h_LPF_resample;
+  DSP::Float_vector h_LPF_resample;
   float sound_factor = 0.5; // input sound gain - to avoid saturation in processed sound
   float factor = 0.6; // loop decay factor
   float delay = 0.7; // loop delay in seconds

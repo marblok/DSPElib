@@ -132,7 +132,7 @@ namespace DSP
          */
         void InfoMessage(const string &source = "", const string &message = "");
         // //! returns size of text buffer required for the given message
-        //int DSP::f::GetMessageLength(bool IsError, const char *source, const char *message = NULL);
+        //int DSP::f::GetMessageLength(bool IsError, const string &source, const string &message = NULL);
 
         //! Returns error message in format used in DSP::f::ErrorMessage.
         /*!  See also ::DSP::f::GetErrorMessage, ::DSP::f::GetInfoMessage.

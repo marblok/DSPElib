@@ -16,7 +16,7 @@
   namespace DSP
   {
     //! Pointer to the Message callback function
-    /*! bool func(const char *source, const char *message, const bool IsError)
+    /*! bool func(const string &source, const string &message, const bool IsError)
      *  used in DSP::Message, DSP::ErrorMessage, DSP::InfoMessage
      *
      *  If function returns true all other message logging

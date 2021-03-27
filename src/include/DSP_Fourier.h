@@ -17,9 +17,9 @@ class DSP_Fourier
 {
   private:
     DWORD K, K2;
-    DSP_complex *fft;
-    DSP_complex *cSin, *cSinConj;
-//    DSP_complex *cSinFFT;
+    DSP::Complex *fft;
+    DSP::Complex *cSin, *cSinConj;
+//    DSP::Complex *cSinFFT;
 
     DWORD *RevBitTable, *FFTshift_RevBitTable;
 
@@ -42,18 +42,18 @@ class DSP_Fourier
     //! \TODO use private temporary vector so, the content pointed by the probki variable would not be destroyed
 
     //! \warning probki table is used to store internal values so it will be overwritten
-    void FFT(DWORD N, DSP_complex *probki);
+    void FFT(DWORD N, DSP::Complex *probki);
     //! \warning probki table is used to store internal values so it will be overwritten
-    void IFFT(DWORD N, DSP_complex *probki);
+    void IFFT(DWORD N, DSP::Complex *probki);
 
-    void absFFT(DWORD N, DSP_float *abs_fft, DSP_complex *probki);
-    void absFFT(DWORD N, DSP_float *abs_fft, DSP_float *probki, DSP_float *probki_imag);
-    void absFFTR(DWORD N, DSP_float *abs_fft, DSP_float *probki, bool JustHalf = false);
-    void abs2FFT(DWORD N, DSP_float *abs_fft, DSP_complex *probki);
+    void absFFT(DWORD N, DSP::Float *abs_fft, DSP::Complex *probki);
+    void absFFT(DWORD N, DSP::Float *abs_fft, DSP::Float *probki, DSP::Float *probki_imag);
+    void absFFTR(DWORD N, DSP::Float *abs_fft, DSP::Float *probki, bool JustHalf = false);
+    void abs2FFT(DWORD N, DSP::Float *abs_fft, DSP::Complex *probki);
 
-    void absDFT(DWORD N, DSP_float *abs_fft, DSP_complex *probki);
-    void absDFT(DWORD N, DSP_float *abs_fft, DSP_float *probki, DSP_float *probki_imag);
-    void absDFTR(DWORD N, DSP_float *abs_fft, DSP_float *probki, bool JustHalf = false);
+    void absDFT(DWORD N, DSP::Float *abs_fft, DSP::Complex *probki);
+    void absDFT(DWORD N, DSP::Float *abs_fft, DSP::Float *probki, DSP::Float *probki_imag);
+    void absDFTR(DWORD N, DSP::Float *abs_fft, DSP::Float *probki, bool JustHalf = false);
 
     //! DFT (if possible FFT radix-2 is used)
     /*! \note probki_in and probki_out can point to the same buffer
@@ -61,7 +61,7 @@ class DSP_Fourier
      * @param probki_in
      * @param probki_out
      */
-    void DFT(DWORD N, DSP_complex *probki_in, DSP_complex *probki_out);
+    void DFT(DWORD N, DSP::Complex *probki_in, DSP::Complex *probki_out);
 };
 
 #endif // DSP_FourierH

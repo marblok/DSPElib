@@ -679,7 +679,7 @@ void DSPu_SOCKETinput::Init(DSP::Clock_ptr ParentClock,
   inbuffer_size *= (InputSampleSize / 8);
 
   RawBuffer = new uint8_t[inbuffer_size];
-  Buffer = new DSP_float[NoOfOutputs * BufferSize];
+  Buffer = new DSP::Float[NoOfOutputs * BufferSize];
   BufferIndex = BufferSize;
 
   LastBytesRead_counter = DSP_FILE_READING_NOT_STARTED;
@@ -728,7 +728,7 @@ bool DSPu_SOCKETinput::OutputExecute(OUTPUT_EXECUTE_ARGS)
   unsigned long in_counter;
   int res;
   uint8_t *in_temp;
-  DSP_float_ptr temp_buffer;
+  DSP::Float_ptr temp_buffer;
   //string text;
 
   // this is just a client socket
@@ -896,8 +896,8 @@ bool DSPu_SOCKETinput::OutputExecute(OUTPUT_EXECUTE_ARGS)
               in_temp += sizeof(short);
               break;
             case DSP::e::SampleType::ST_float:
-              *temp_buffer = *((DSP_float_ptr)in_temp);
-              in_temp += sizeof(DSP_float);
+              *temp_buffer = *((DSP::Float_ptr)in_temp);
+              in_temp += sizeof(DSP::Float);
               break;
             case DSP::e::SampleType::ST_uchar:
             default:
@@ -1187,7 +1187,7 @@ void DSPu_SOCKEToutput::Init(unsigned int InputsNo,
   outbuffer_size *= (OutputSampleSize / 8);
 
   RawBuffer = new uint8_t[outbuffer_size];
-  Buffer = new DSP_float[NoOfInputs * BufferSize];
+  Buffer = new DSP::Float[NoOfInputs * BufferSize];
 
   BufferIndex = 0;
   NoOfInputsProcessed = 0;
@@ -1211,7 +1211,7 @@ void DSPu_SOCKEToutput::FlushBuffer(void)
 {
   uint8_t *temp8;
   short *temp16;
-  DSP_float_ptr Sample, temp_float;
+  DSP::Float_ptr Sample, temp_float;
   short Znak;
   DWORD ind;
 
@@ -1292,7 +1292,7 @@ void DSPu_SOCKEToutput::FlushBuffer(void)
   send(ConnectSocket, (char *)RawBuffer, outbuffer_size, 0);
 
   // reset buffer
-  memset(Buffer, 0x00, BufferSize * NoOfInputs * sizeof(DSP_float));
+  memset(Buffer, 0x00, BufferSize * NoOfInputs * sizeof(DSP::Float));
   BufferIndex = 0;
 }
 

@@ -88,68 +88,68 @@ void DSP::Rand::InitRandGenerator(bool forced)
   }
 }
 
-DSP_float DSP::Rand::randu(void)
+DSP::Float DSP::Rand::randu(void)
 {
-  DSP_float value;
+  DSP::Float value;
 
-  value =  DSP_float(rand());
-  value /= DSP_float(RAND_MAX);
+  value =  DSP::Float(rand());
+  value /= DSP::Float(RAND_MAX);
 
   return value;
 }
 
-void DSP::Rand::randu(unsigned int len, DSP_float_ptr buffer)
+void DSP::Rand::randu(unsigned int len, DSP::Float_ptr buffer)
 {
   unsigned int ind;
 
   for (ind = 0; ind < len; ind ++)
   {
-    buffer[ind] =  DSP_float(rand());
-    buffer[ind] /= DSP_float(RAND_MAX);
+    buffer[ind] =  DSP::Float(rand());
+    buffer[ind] /= DSP::Float(RAND_MAX);
   }
 }
 
-DSP_float DSP::Rand::randn(void)
+DSP::Float DSP::Rand::randn(void)
 {
-  DSP_float value;
+  DSP::Float value;
 
-  value  =  (DSP_float)rand();  // 1
-  value +=  (DSP_float)rand(); // 2
-  value +=  (DSP_float)rand(); // 3
-  value +=  (DSP_float)rand(); // 4
-  value +=  (DSP_float)rand(); // 5
-  value +=  (DSP_float)rand(); // 6
-  value +=  (DSP_float)rand(); // 7
-  value +=  (DSP_float)rand(); // 8
-  value +=  (DSP_float)rand(); // 9
-  value +=  (DSP_float)rand(); // 10
-  value +=  (DSP_float)rand(); // 11
-  value +=  (DSP_float)rand(); // 12
-  value /= DSP_float(RAND_MAX);
+  value  =  (DSP::Float)rand();  // 1
+  value +=  (DSP::Float)rand(); // 2
+  value +=  (DSP::Float)rand(); // 3
+  value +=  (DSP::Float)rand(); // 4
+  value +=  (DSP::Float)rand(); // 5
+  value +=  (DSP::Float)rand(); // 6
+  value +=  (DSP::Float)rand(); // 7
+  value +=  (DSP::Float)rand(); // 8
+  value +=  (DSP::Float)rand(); // 9
+  value +=  (DSP::Float)rand(); // 10
+  value +=  (DSP::Float)rand(); // 11
+  value +=  (DSP::Float)rand(); // 12
+  value /= DSP::Float(RAND_MAX);
   value -= 6;
 
   return value;
 }
 
-void DSP::Rand::randn(unsigned int len, DSP_float_ptr buffer)
+void DSP::Rand::randn(unsigned int len, DSP::Float_ptr buffer)
 {
   unsigned int ind;
 
   for (ind = 0; ind < len; ind ++)
   {
-    buffer[ind]  =  (DSP_float)rand();  // 1
-    buffer[ind] +=  (DSP_float)rand(); // 2
-    buffer[ind] +=  (DSP_float)rand(); // 3
-    buffer[ind] +=  (DSP_float)rand(); // 4
-    buffer[ind] +=  (DSP_float)rand(); // 5
-    buffer[ind] +=  (DSP_float)rand(); // 6
-    buffer[ind] +=  (DSP_float)rand(); // 7
-    buffer[ind] +=  (DSP_float)rand(); // 8
-    buffer[ind] +=  (DSP_float)rand(); // 9
-    buffer[ind] +=  (DSP_float)rand(); // 10
-    buffer[ind] +=  (DSP_float)rand(); // 11
-    buffer[ind] +=  (DSP_float)rand(); // 12
-    buffer[ind] /= DSP_float(RAND_MAX);
+    buffer[ind]  =  (DSP::Float)rand();  // 1
+    buffer[ind] +=  (DSP::Float)rand(); // 2
+    buffer[ind] +=  (DSP::Float)rand(); // 3
+    buffer[ind] +=  (DSP::Float)rand(); // 4
+    buffer[ind] +=  (DSP::Float)rand(); // 5
+    buffer[ind] +=  (DSP::Float)rand(); // 6
+    buffer[ind] +=  (DSP::Float)rand(); // 7
+    buffer[ind] +=  (DSP::Float)rand(); // 8
+    buffer[ind] +=  (DSP::Float)rand(); // 9
+    buffer[ind] +=  (DSP::Float)rand(); // 10
+    buffer[ind] +=  (DSP::Float)rand(); // 11
+    buffer[ind] +=  (DSP::Float)rand(); // 12
+    buffer[ind] /= DSP::Float(RAND_MAX);
     buffer[ind] -= 6;
   }
 }
@@ -1646,8 +1646,8 @@ unsigned int DSP::Block::GetNoOfInputs(void)
 /* Indicates given input as constant value (no coutput can
  * be connected to it)
  */
-bool DSP::Block::SetConstInput(const string &InputName, DSP_float value)
-//bool DSP::Block::SetConstInput(int InputNo, DSP_float value)
+bool DSP::Block::SetConstInput(const string &InputName, DSP::Float value)
+//bool DSP::Block::SetConstInput(int InputNo, DSP::Float value)
 {
   unsigned int ind;
   unsigned int InputNo;
@@ -1702,7 +1702,7 @@ bool DSP::Block::SetConstInput(const string &InputName, DSP_float value)
  * InputNo+1 -> imag_value
  * (no coutput can be connected to it)
  */
-bool DSP::Block::SetConstInput(const string &InputName, DSP_float real_value, DSP_float imag_value)
+bool DSP::Block::SetConstInput(const string &InputName, DSP::Float real_value, DSP::Float imag_value)
 {
   unsigned int ind;
   unsigned int InputNo;
@@ -3084,10 +3084,10 @@ DSPu_LoopDelay::DSPu_LoopDelay(DSP::Clock_ptr ParentClock, unsigned int delay, u
     delay=1; //in feedback loop can't be zero
 
   Delay = new unsigned int[NoOfInputs];
-  tempInput = new DSP_float[NoOfInputs];
+  tempInput = new DSP::Float[NoOfInputs];
   IsOutputProcessed = new bool[NoOfInputs];
   IsInputProcessed  = new bool[NoOfInputs];
-  State = new DSP_float_ptr[NoOfInputs];
+  State = new DSP::Float_ptr[NoOfInputs];
 
   for (ind = 0; ind < NoOfInputs; ind++)
   {
@@ -3097,7 +3097,7 @@ DSPu_LoopDelay::DSPu_LoopDelay(DSP::Clock_ptr ParentClock, unsigned int delay, u
     IsInputProcessed[ind]=false;
     if (Delay[ind] > 0)
     {
-      State[ind]=new DSP_float[Delay[ind]];
+      State[ind]=new DSP::Float[Delay[ind]];
       for (unsigned int ind2=0; ind2<Delay[ind]; ind2++)
         State[ind][ind2]=0.0;
     }
@@ -3117,11 +3117,11 @@ DSPu_LoopDelay::DSPu_LoopDelay(DSP::Clock_ptr ParentClock, unsigned int delay, u
   }
 }
 
-bool DSPu_LoopDelay::SetState(const string &InputName, DSP_float state_buffer_value)
+bool DSPu_LoopDelay::SetState(const string &InputName, DSP::Float state_buffer_value)
 {
   return SetState(InputName, 1, &state_buffer_value);
 }
-bool DSPu_LoopDelay::SetState(const string &InputName, unsigned int size, DSP_float_ptr state_buffer)
+bool DSPu_LoopDelay::SetState(const string &InputName, unsigned int size, DSP::Float_ptr state_buffer)
 {
   unsigned int InputNo;
 
@@ -3137,7 +3137,7 @@ bool DSPu_LoopDelay::SetState(const string &InputName, unsigned int size, DSP_fl
     {
       if (State[InputNo] != NULL)
       {
-        memcpy(State[InputNo], state_buffer, size*sizeof(DSP_float));
+        memcpy(State[InputNo], state_buffer, size*sizeof(DSP::Float));
       }
       else
       {
@@ -3203,7 +3203,7 @@ void DSPu_LoopDelay::InputExecute(INPUT_EXECUTE_ARGS)
   {
     if (*(THIS->Delay) > 1)
       memcpy(*(THIS->State), (*(THIS->State))+1,
-             sizeof(DSP_float) * ((*(THIS->Delay))-1));
+             sizeof(DSP::Float) * ((*(THIS->Delay))-1));
     (*(THIS->State))[(*(THIS->Delay))-1]=value;
 
     //reseting for next cycle
@@ -3225,7 +3225,7 @@ void DSPu_LoopDelay::InputExecute_multi(INPUT_EXECUTE_ARGS)
   {
     if (THIS->Delay[InputNo] > 1)
       memcpy(THIS->State[InputNo], THIS->State[InputNo]+1,
-             sizeof(DSP_float)*(THIS->Delay[InputNo]-1));
+             sizeof(DSP::Float)*(THIS->Delay[InputNo]-1));
     THIS->State[InputNo][THIS->Delay[InputNo]-1]=value;
 
     //reseting for next cycle
@@ -3262,7 +3262,7 @@ bool DSPu_LoopDelay::OutputExecute(OUTPUT_EXECUTE_ARGS)
     else
     {
       memcpy(*(THIS->State), *(THIS->State) + 1,
-             sizeof(DSP_float) * (*(THIS->Delay) - 1));
+             sizeof(DSP::Float) * (*(THIS->Delay) - 1));
       *(THIS->State)[*(THIS->Delay) - 1] = *(THIS->tempInput);
     }
 
@@ -3294,7 +3294,7 @@ bool DSPu_LoopDelay::OutputExecute_multi(OUTPUT_EXECUTE_ARGS)
       else
       {
         memcpy(THIS->State[ind], THIS->State[ind] + 1,
-               sizeof(DSP_float)*(THIS->Delay[ind] - 1));
+               sizeof(DSP::Float)*(THIS->Delay[ind] - 1));
         THIS->State[ind][THIS->Delay[ind] - 1] = THIS->tempInput[ind];
       }
 
@@ -3356,12 +3356,12 @@ DSPu_Delay::DSPu_Delay(unsigned int delay, unsigned int InputsNo, bool IsBufferC
   Delay=delay;
   if (Delay > 0)
   {
-    State = new DSP_float_ptr[NoOfInputs];
+    State = new DSP::Float_ptr[NoOfInputs];
     index = new unsigned int[NoOfInputs];
     for (ind = 0; ind < NoOfInputs; ind++)
     {
-      State[ind]=new DSP_float[Delay];
-      memset(State[ind], 0, sizeof(DSP_float) * Delay);
+      State[ind]=new DSP::Float[Delay];
+      memset(State[ind], 0, sizeof(DSP::Float) * Delay);
       index[ind]=0;
     }
   }
@@ -3472,7 +3472,7 @@ void DSPu_Delay::InputExecute(INPUT_EXECUTE_ARGS)
   THIS->OutputBlocks[0]->EXECUTE_PTR(
       THIS->OutputBlocks[0], THIS->OutputBlocks_InputNo[0],
       THIS->State[0][0], block);
-  memcpy(THIS->State[0], THIS->State[0]+1, sizeof(DSP_float)*(THIS->Delay-1));
+  memcpy(THIS->State[0], THIS->State[0]+1, sizeof(DSP::Float)*(THIS->Delay-1));
   THIS->State[0][THIS->Delay-1]=value;
 };
 
@@ -3484,7 +3484,7 @@ void DSPu_Delay::InputExecute_multi(INPUT_EXECUTE_ARGS)
   THIS->OutputBlocks[InputNo]->EXECUTE_PTR(
       THIS->OutputBlocks[InputNo], THIS->OutputBlocks_InputNo[InputNo],
       THIS->State[InputNo][0], block);
-  memcpy(THIS->State[InputNo], THIS->State[InputNo]+1, sizeof(DSP_float)*(THIS->Delay-1));
+  memcpy(THIS->State[InputNo], THIS->State[InputNo]+1, sizeof(DSP::Float)*(THIS->Delay-1));
   THIS->State[InputNo][THIS->Delay-1]=value;
 };
 
@@ -3528,40 +3528,40 @@ DSPu_Addition::DSPu_Addition(unsigned int NoOfRealInputs_in, unsigned int NoOfCo
   Execute_ptr = &InputExecute;
 }
 
-DSPu_Addition::DSPu_Addition(unsigned int NoOfRealInputs_in, DSP_float_ptr weights)
+DSPu_Addition::DSPu_Addition(unsigned int NoOfRealInputs_in, DSP::Float_ptr weights)
   : DSP::Block()
 {
   Init(NoOfRealInputs_in, 0, false);
 
-  RealWeights = new DSP_float[NoOfRealInputs_in];
-  memcpy(RealWeights, weights, NoOfRealInputs_in*sizeof(DSP_float));
+  RealWeights = new DSP::Float[NoOfRealInputs_in];
+  memcpy(RealWeights, weights, NoOfRealInputs_in*sizeof(DSP::Float));
 
   Execute_ptr = &InputExecute_RealWeights;
 }
 
-DSPu_Addition::DSPu_Addition(unsigned int NoOfRealInputs_in, DSP_complex_ptr weights)
+DSPu_Addition::DSPu_Addition(unsigned int NoOfRealInputs_in, DSP::Complex_ptr weights)
   : DSP::Block()
 {
   unsigned int ind;
 
   Init(NoOfRealInputs_in, 0, true);
 
-  CplxWeights = new DSP_complex[NoOfRealInputs_in];
-  //memcpy(CplxWeights, weights, NoOfRealInputs_in*sizeof(DSP_complex));
+  CplxWeights = new DSP::Complex[NoOfRealInputs_in];
+  //memcpy(CplxWeights, weights, NoOfRealInputs_in*sizeof(DSP::Complex));
   for (ind = 0; ind < NoOfRealInputs_in; ind++)
     CplxWeights[ind] = weights[ind];
 
   Execute_ptr = &InputExecute_CplxWeights;
 }
 
-DSPu_Addition::DSPu_Addition(unsigned int NoOfRealInputs_in, unsigned int NoOfComplexInputs_in, DSP_float_ptr weights)
+DSPu_Addition::DSPu_Addition(unsigned int NoOfRealInputs_in, unsigned int NoOfComplexInputs_in, DSP::Float_ptr weights)
   : DSP::Block()
 {
   unsigned int ind;
 
   Init(NoOfRealInputs_in, NoOfComplexInputs_in, false);
 
-  RealWeights = new DSP_float[NoOfRealInputs_in+NoOfComplexInputs_in*2];
+  RealWeights = new DSP::Float[NoOfRealInputs_in+NoOfComplexInputs_in*2];
   for (ind = 0; ind < NoOfRealInputs_in; ind++)
     RealWeights[ind] = weights[ind];
   for (ind = 0; ind < NoOfComplexInputs_in; ind++)
@@ -3576,15 +3576,15 @@ DSPu_Addition::DSPu_Addition(unsigned int NoOfRealInputs_in, unsigned int NoOfCo
   Execute_ptr = &InputExecute_RealWeights;
 }
 
-DSPu_Addition::DSPu_Addition(unsigned int NoOfRealInputs_in, unsigned int NoOfComplexInputs_in, DSP_complex_ptr weights)
+DSPu_Addition::DSPu_Addition(unsigned int NoOfRealInputs_in, unsigned int NoOfComplexInputs_in, DSP::Complex_ptr weights)
   : DSP::Block()
 {
   unsigned int ind;
 
   Init(NoOfRealInputs_in, NoOfComplexInputs_in, true);
 
-  CplxWeights = new DSP_complex[NoOfRealInputs_in+NoOfComplexInputs_in];
-  //memcpy(CplxWeights, weights, (NoOfRealInputs_in+NoOfComplexInputs_in)*sizeof(DSP_complex));
+  CplxWeights = new DSP::Complex[NoOfRealInputs_in+NoOfComplexInputs_in];
+  //memcpy(CplxWeights, weights, (NoOfRealInputs_in+NoOfComplexInputs_in)*sizeof(DSP::Complex));
   for (ind = 0; ind < NoOfRealInputs_in; ind++)
     CplxWeights[ind] = weights[ind];
   for (ind = 0; ind < NoOfComplexInputs_in; ind++)
@@ -3937,7 +3937,7 @@ DSPu_Multiplication::DSPu_Multiplication(unsigned int NoOfRealInputs_in, unsigne
 //  State=1.0;
   State_Re = 0.0; State_Im = 0.0;
 
-  State = new DSP_float[NoOfInputs];
+  State = new DSP::Float[NoOfInputs];
 
   Execute_ptr = &InputExecute;
 }
@@ -3969,7 +3969,7 @@ void DSPu_Multiplication::InputExecute(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
   unsigned int current_ind;
-  DSP_float temp_re;
+  DSP::Float temp_re;
 
   //In general we should check whether each input
   //is executed only once per cycle
@@ -4112,7 +4112,7 @@ void DSPu_RealMultiplication::InputExecute(INPUT_EXECUTE_ARGS)
 
 /**************************************************/
 // Multiplies input value by constant
-DSPu_Amplifier::DSPu_Amplifier(DSP_float alfa, unsigned int NoOfInputs_in, bool AreInputsComplex)
+DSPu_Amplifier::DSPu_Amplifier(DSP::Float alfa, unsigned int NoOfInputs_in, bool AreInputsComplex)
   : DSP::Block()
 {
   vector <unsigned int> indexes;
@@ -4197,7 +4197,7 @@ DSPu_Amplifier::DSPu_Amplifier(DSP_float alfa, unsigned int NoOfInputs_in, bool 
     Execute_ptr = &InputExecute_one_real_input_with_real_factor;
 };
 
-  DSPu_Amplifier::DSPu_Amplifier(DSP_complex alfa, unsigned int NoOfInputs_in, bool AreInputsComplex)
+  DSPu_Amplifier::DSPu_Amplifier(DSP::Complex alfa, unsigned int NoOfInputs_in, bool AreInputsComplex)
     : DSP::Block()
   {
     vector <unsigned int> indexes;
@@ -4279,7 +4279,7 @@ DSPu_Amplifier::DSPu_Amplifier(DSP_float alfa, unsigned int NoOfInputs_in, bool 
     temp_inputs = NULL;
     if (AreInputsComplex == true)
     {
-      temp_inputs = new DSP_float[NoOfInputs];
+      temp_inputs = new DSP::Float[NoOfInputs];
       Execute_ptr = &InputExecute_cplx_inputs_with_cplx_factor;
     }
     else
@@ -4297,7 +4297,7 @@ DSPu_Amplifier::~DSPu_Amplifier(void)
 };
 
 // changes amplification factor
-void DSPu_Amplifier::SetGain(DSP_float gain)
+void DSPu_Amplifier::SetGain(DSP::Float gain)
 {
   if (IsGainComplex == true)
     CplxCoeficient=gain;
@@ -4306,7 +4306,7 @@ void DSPu_Amplifier::SetGain(DSP_float gain)
 }
 
 // changes amplification factor
-void DSPu_Amplifier::SetGain(DSP_complex gain)
+void DSPu_Amplifier::SetGain(DSP::Complex gain)
 {
   if (IsGainComplex == true)
     CplxCoeficient=gain;
@@ -4412,7 +4412,7 @@ DSPu_Power::DSPu_Power(int factor)
     }
     else
     {
-      RealFactor = (DSP_float)factor;
+      RealFactor = (DSP::Float)factor;
       Execute_ptr = &InputExecute_PowerReal_real;
     }
   }
@@ -4449,7 +4449,7 @@ DSPu_Power::DSPu_Power(bool IsComplex, int factor)
       }
       else
       {
-        RealFactor = DSP_float(factor);
+        RealFactor = DSP::Float(factor);
         Execute_ptr = &InputExecute_PowerReal_real;
       }
     }
@@ -4487,7 +4487,7 @@ DSPu_Power::DSPu_Power(bool IsComplex, int factor)
   }
 };
 
-DSPu_Power::DSPu_Power(DSP_float factor)
+DSPu_Power::DSPu_Power(DSP::Float factor)
   : DSP::Block()
 {
   SetName("Power", false);
@@ -4509,7 +4509,7 @@ DSPu_Power::DSPu_Power(DSP_float factor)
   Execute_ptr = &InputExecute_PowerReal_real;
 };
 
-DSPu_Power::DSPu_Power(bool IsComplex, DSP_float factor)
+DSPu_Power::DSPu_Power(bool IsComplex, DSP::Float factor)
     : DSP::Block()
 {
   SetName("Power", false);
@@ -4547,7 +4547,7 @@ DSPu_Power::DSPu_Power(bool IsComplex, DSP_float factor)
     ClockGroups.AddOutputs2Group("all", 0, NoOfOutputs-1);
 
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "DSPu_Power::DSPu_Power(true,DSP_float)" << DSP::LogMode::second << "real power factor for complex input is not allowed" << endl;
+      DSP::log << DSP::LogMode::Error << "DSPu_Power::DSPu_Power(true,DSP::Float)" << DSP::LogMode::second << "real power factor for complex input is not allowed" << endl;
     #endif
 
     IntFactor = (int)factor;
@@ -4646,7 +4646,7 @@ void DSPu_Power::InputExecute_PowerReal_real(INPUT_EXECUTE_ARGS)
 
   THIS->OutputBlocks[0]->EXECUTE_PTR(
         THIS->OutputBlocks[0], THIS->OutputBlocks_InputNo[0],
-        (DSP_float)pow(value, THIS->RealFactor), block);
+        (DSP::Float)pow(value, THIS->RealFactor), block);
 };
 
 #undef THIS
@@ -4789,7 +4789,7 @@ void DSPu_Switch::Init(bool IsInputComplex,
   SetNoOfOutputs(ValuesPerOutput*OutputsNo);
   if (InputsNo<1) InputsNo=1;
 
-  State = new DSP_float[InputsNo*ValuesPerOutput];
+  State = new DSP::Float[InputsNo*ValuesPerOutput];
 
   LastInputInd=ValuesPerOutput*InputsNo-1; //index starts from 0
   InputSelectionInd = DSP::c::FO_NoInput;
@@ -5010,7 +5010,7 @@ DSPu_RawDecimator::DSPu_RawDecimator(DSP::Clock_ptr ParentClock,
     return;
   }
 
-  State=new DSP_float[NoOfInputs];
+  State=new DSP::Float[NoOfInputs];
   IsReady=false; //Input value not yet received
   InnerCounter=0; //Input received would be stored as an output value
   for (ind=0; ind<NoOfInputs; ind++)
@@ -5296,7 +5296,7 @@ bool DSPu_Zeroinserter::OutputExecute_cplx(OUTPUT_EXECUTE_ARGS)
  *  - Input: none
  */
 DSPu_Const::DSPu_Const(DSP::Clock_ptr ParentClock,
-                       DSP_float value)
+                       DSP::Float value)
   : DSP::Source()
 {
   SetName("Const", false);
@@ -5315,7 +5315,7 @@ DSPu_Const::DSPu_Const(DSP::Clock_ptr ParentClock,
 }
 
 DSPu_Const::DSPu_Const(DSP::Clock_ptr ParentClock,
-                       DSP_float value_re, DSP_float value_im)
+                       DSP::Float value_re, DSP::Float value_im)
   : DSP::Source()
 {
   SetName("Const", false);
@@ -5329,7 +5329,7 @@ DSPu_Const::DSPu_Const(DSP::Clock_ptr ParentClock,
 
   const_val = 0; // unused in this version of a block
 
-  const_state = new DSP_float[2];
+  const_state = new DSP::Float[2];
   const_state[0] = value_re;
   const_state[1] = value_im;
 
@@ -5337,7 +5337,7 @@ DSPu_Const::DSPu_Const(DSP::Clock_ptr ParentClock,
 }
 
 DSPu_Const::DSPu_Const(DSP::Clock_ptr ParentClock,
-                       DSP_complex value)
+                       DSP::Complex value)
   : DSP::Source()
 {
   SetName("Const", false);
@@ -5351,7 +5351,7 @@ DSPu_Const::DSPu_Const(DSP::Clock_ptr ParentClock,
 
   const_val = 0; // unused in this version of a block
 
-  const_state = new DSP_float[2];
+  const_state = new DSP::Float[2];
   const_state[0] = value.re;
   const_state[1] = value.im;
 
@@ -5359,7 +5359,7 @@ DSPu_Const::DSPu_Const(DSP::Clock_ptr ParentClock,
 }
 
 DSPu_Const::DSPu_Const(DSP::Clock_ptr ParentClock,
-    unsigned int NoOfOutputs_in, DSP_float_ptr values)
+    unsigned int NoOfOutputs_in, DSP::Float_ptr values)
   : DSP::Source()
 {
   string tekst;
@@ -5385,7 +5385,7 @@ DSPu_Const::DSPu_Const(DSP::Clock_ptr ParentClock,
 
   const_val = 0; // unused in this version of a block
 
-  const_state = new DSP_float[NoOfOutputs_in];
+  const_state = new DSP::Float[NoOfOutputs_in];
   for (ind = 0; ind < NoOfOutputs_in; ind++)
   {
     const_state[ind] = values[ind];
@@ -5395,7 +5395,7 @@ DSPu_Const::DSPu_Const(DSP::Clock_ptr ParentClock,
 }
 
 DSPu_Const::DSPu_Const(DSP::Clock_ptr ParentClock,
-    unsigned int NoOfOutputs_in, DSP_complex_ptr values)
+    unsigned int NoOfOutputs_in, DSP::Complex_ptr values)
   : DSP::Source()
 {
   string tekst;
@@ -5423,7 +5423,7 @@ DSPu_Const::DSPu_Const(DSP::Clock_ptr ParentClock,
 
   const_val = 0; // unused in this version of a block
 
-  const_state = new DSP_float[2*NoOfOutputs_in];
+  const_state = new DSP::Float[2*NoOfOutputs_in];
   for (ind = 0; ind < NoOfOutputs_in; ind++)
   {
     const_state[2*ind] = values[ind].re;
@@ -5477,8 +5477,8 @@ bool DSPu_Const::OutputExecute_many(OUTPUT_EXECUTE_ARGS)
 //   y[n]=exp(alfa*n)*cos(omega*n+phase)*u[n-N0]
 // if period > 0 -> n = (n+1) % period;
 DSPu_COSpulse::DSPu_COSpulse(DSP::Clock_ptr ParentClock,
-                  DSP_float A_in, DSP_float alfa_in,
-                  DSP_float omega_in, DSP_float phase_in,
+                  DSP::Float A_in, DSP::Float alfa_in,
+                  DSP::Float omega_in, DSP::Float phase_in,
                   unsigned long N0_in, unsigned long N1_in,
                   unsigned long period_in)
   : DSP::Source()
@@ -5499,8 +5499,8 @@ DSPu_COSpulse::DSPu_COSpulse(DSP::Clock_ptr ParentClock,
 
 DSPu_COSpulse::DSPu_COSpulse(DSP::Clock_ptr ParentClock,
                   bool IsComplex,
-                  DSP_float A_in, DSP_float alfa_in,
-                  DSP_float omega_in, DSP_float phase_in,
+                  DSP::Float A_in, DSP::Float alfa_in,
+                  DSP::Float omega_in, DSP::Float phase_in,
                   unsigned long N0_in, unsigned long N1_in,
                   unsigned long period_in)
   : DSP::Source()
@@ -5529,8 +5529,8 @@ DSPu_COSpulse::DSPu_COSpulse(DSP::Clock_ptr ParentClock,
   OutputExecute_ptr = &OutputExecute;
 }
 
-void DSPu_COSpulse::Init(DSP_float A_in, DSP_float alfa_in,
-                  DSP_float omega_in, DSP_float phase_in,
+void DSPu_COSpulse::Init(DSP::Float A_in, DSP::Float alfa_in,
+                  DSP::Float omega_in, DSP::Float phase_in,
                   unsigned long N0_in, unsigned long N1_in,
                   unsigned long period_in,
                   DSP::Clock_ptr ParentClock)
@@ -5547,13 +5547,13 @@ void DSPu_COSpulse::Init(DSP_float A_in, DSP_float alfa_in,
 };
 
 // changes amplitude parameter
-void DSPu_COSpulse::SetAmplitude(DSP_float new_amplitude)
+void DSPu_COSpulse::SetAmplitude(DSP::Float new_amplitude)
 {
   A = new_amplitude;
 }
 
 // Changes angular frequency
-void DSPu_COSpulse::SetAngularFrequency(DSP_float omega_in)
+void DSPu_COSpulse::SetAngularFrequency(DSP::Float omega_in)
 {
   omega=omega_in;
 }
@@ -5578,7 +5578,7 @@ DSPu_COSpulse::~DSPu_COSpulse(void)
 bool DSPu_COSpulse::OutputExecute(OUTPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(clock);
-  DSP_float value, value_im;
+  DSP::Float value, value_im;
 
   value=0.0;
   if (((DSPu_COSpulse *)source)->n >= ((DSPu_COSpulse *)source)->N0)
@@ -5586,8 +5586,8 @@ bool DSPu_COSpulse::OutputExecute(OUTPUT_EXECUTE_ARGS)
           (((DSPu_COSpulse *)source)->n >= ((DSPu_COSpulse *)source)->N1)))
       value = ((DSPu_COSpulse *)source)->A *
               EXP(
-                  ((DSPu_COSpulse *)source)->alfa * (DSP_float)(((DSPu_COSpulse *)source)->n)) *
-                  COS(((DSPu_COSpulse *)source)->omega * (DSP_float)(((DSPu_COSpulse *)source)->n) + ((DSPu_COSpulse *)source)->phase);
+                  ((DSPu_COSpulse *)source)->alfa * (DSP::Float)(((DSPu_COSpulse *)source)->n)) *
+                  COS(((DSPu_COSpulse *)source)->omega * (DSP::Float)(((DSPu_COSpulse *)source)->n) + ((DSPu_COSpulse *)source)->phase);
 //  OutputBlocks[0]->Execute(OutputBlocks_InputNo[0], value, this);
   ((DSPu_COSpulse *)source)->OutputBlocks[0]->EXECUTE_PTR(
       ((DSPu_COSpulse *)source)->OutputBlocks[0],
@@ -5601,8 +5601,8 @@ bool DSPu_COSpulse::OutputExecute(OUTPUT_EXECUTE_ARGS)
       if (!((((DSPu_COSpulse *)source)->N1 > ((DSPu_COSpulse *)source)->N0) &&
             (((DSPu_COSpulse *)source)->n >= ((DSPu_COSpulse *)source)->N1)))
         value_im = ((DSPu_COSpulse *)source)->A *
-                   EXP(((DSPu_COSpulse *)source)->alfa * (DSP_float)(((DSPu_COSpulse *)source)->n)) *
-                   SIN(((DSPu_COSpulse *)source)->omega * (DSP_float)(((DSPu_COSpulse *)source)->n) + ((DSPu_COSpulse *)source)->phase);
+                   EXP(((DSPu_COSpulse *)source)->alfa * (DSP::Float)(((DSPu_COSpulse *)source)->n)) *
+                   SIN(((DSPu_COSpulse *)source)->omega * (DSP::Float)(((DSPu_COSpulse *)source)->n) + ((DSPu_COSpulse *)source)->phase);
 //    OutputBlocks[1]->Execute(OutputBlocks_InputNo[1], value_im, this);
     ((DSPu_COSpulse *)source)->OutputBlocks[1]->EXECUTE_PTR(
         ((DSPu_COSpulse *)source)->OutputBlocks[1],
@@ -5672,10 +5672,10 @@ DSPu_rand::~DSPu_rand(void)
 bool DSPu_rand::OutputExecute(OUTPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(clock);
-  DSP_float value, value_im;
+  DSP::Float value, value_im;
 
-  value =  (DSP_float)rand();
-  value /= DSP_float(RAND_MAX);
+  value =  (DSP::Float)rand();
+  value /= DSP::Float(RAND_MAX);
 //  OutputBlocks[0]->Execute(OutputBlocks_InputNo[0], value, this);
   ((DSPu_rand *)source)->OutputBlocks[0]->EXECUTE_PTR(
       ((DSPu_rand *)source)->OutputBlocks[0],
@@ -5684,8 +5684,8 @@ bool DSPu_rand::OutputExecute(OUTPUT_EXECUTE_ARGS)
 
   if (((DSPu_rand *)source)->NoOfOutputs == 2)
   {
-    value_im =  (DSP_float)rand();
-    value_im /= DSP_float(RAND_MAX);
+    value_im =  (DSP::Float)rand();
+    value_im /= DSP::Float(RAND_MAX);
 //    OutputBlocks[1]->Execute(OutputBlocks_InputNo[1], value_im, this);
     ((DSPu_rand *)source)->OutputBlocks[1]->EXECUTE_PTR(
         ((DSPu_rand *)source)->OutputBlocks[1],
@@ -5699,7 +5699,7 @@ bool DSPu_rand::OutputExecute(OUTPUT_EXECUTE_ARGS)
 // ***************************************************** //
 // Generates random binary streams.
 DSPu_binrand::DSPu_binrand(DSP::Clock_ptr ParentClock,
-                           DSP_float L_value_in, DSP_float U_value_in)
+                           DSP::Float L_value_in, DSP::Float U_value_in)
   : DSP::Source()
 {
   SetName("binrand", false);
@@ -5714,7 +5714,7 @@ DSPu_binrand::DSPu_binrand(DSP::Clock_ptr ParentClock,
 }
 
 void DSPu_binrand::Init(DSP::Clock_ptr ParentClock,
-                        DSP_float L_value_in, DSP_float U_value_in)
+                        DSP::Float L_value_in, DSP::Float U_value_in)
 {
   RegisterOutputClock(ParentClock);
 
@@ -5729,7 +5729,7 @@ DSPu_binrand::~DSPu_binrand(void)
 bool DSPu_binrand::OutputExecute(OUTPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(clock);
-  DSP_float value;
+  DSP::Float value;
 
   value = (rand() < (RAND_MAX/2)) ? ((DSPu_binrand *)source)->L_value : ((DSPu_binrand *)source)->U_value;
 //  OutputBlocks[0]->Execute(OutputBlocks_InputNo[0], value, this);
@@ -5758,7 +5758,7 @@ DSPu_LFSR::DSPu_LFSR(DSP::Clock_ptr ParentClock,
                      unsigned int reg_length,
                      unsigned int no_of_taps, unsigned int *taps_idx,
 		    		         bool *state,
-		                 DSP_float L_value_in, DSP_float U_value_in)
+		                 DSP::Float L_value_in, DSP::Float U_value_in)
   : DSP::Source()
 {
   SetName("LFSR", false);
@@ -5777,7 +5777,7 @@ void DSPu_LFSR::Init(DSP::Clock_ptr ParentClock,
                      unsigned int reg_length,
 		                 unsigned int no_of_taps, unsigned int *taps_idx,
 		    		         bool *state,
-		                 DSP_float L_value_in, DSP_float U_value_in)
+		                 DSP::Float L_value_in, DSP::Float U_value_in)
 {
 	unsigned int ind, ind_1;
 	unsigned long long int sum;
@@ -5863,7 +5863,7 @@ DSPu_LFSR::~DSPu_LFSR(void)
 bool DSPu_LFSR::OutputExecute(OUTPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(clock);
-  DSP_float value;
+  DSP::Float value;
   unsigned char sum;
   unsigned int ind;
   unsigned int ind_1;
@@ -5905,7 +5905,7 @@ bool DSPu_LFSR::OutputExecute(OUTPUT_EXECUTE_ARGS)
 /* ************************************************ */
 DSPu_LFSR_tester::DSPu_LFSR_tester(unsigned int reg_length,
                      unsigned int no_of_taps, unsigned int *taps_idx,
-		                 DSP_float L_value_in, DSP_float U_value_in)
+		                 DSP::Float L_value_in, DSP::Float U_value_in)
   : DSP::Block()
 {
   SetName("LFSR tester", false);
@@ -5924,7 +5924,7 @@ DSPu_LFSR_tester::DSPu_LFSR_tester(unsigned int reg_length,
 
 void DSPu_LFSR_tester::Init(unsigned int reg_length,
 		                 unsigned int no_of_taps, unsigned int *taps_idx,
-		                 DSP_float L_value_in, DSP_float U_value_in)
+		                 DSP::Float L_value_in, DSP::Float U_value_in)
 {
 	unsigned int ind;
 	unsigned int ULL_size;
@@ -5964,7 +5964,7 @@ void DSPu_LFSR_tester::InputExecute(INPUT_EXECUTE_ARGS)
 {
   UNUSED_ARGUMENT(InputNo);
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_float out_value;
+  DSP::Float out_value;
   unsigned int ind;
   unsigned int ind_1;
   unsigned int sum, mask_shift;
@@ -6005,25 +6005,25 @@ void DSPu_LFSR_tester::InputExecute(INPUT_EXECUTE_ARGS)
 // FIR filter implementation
 // N_in - impulse response length
 // h_in - impulse response samples
-DSPu_FIR::DSPu_FIR(const DSP_float_vector &h_in, int n0, int M, int L)
+DSPu_FIR::DSPu_FIR(const DSP::Float_vector &h_in, int n0, int M, int L)
   : DSP::Block()
 { //real valued input & real valued coefficients
   Init(false, false, (unsigned long)(h_in.size()), h_in.data(), n0, M, L);
 }
 
-DSPu_FIR::DSPu_FIR(const DSP_complex_vector &h_in, int n0, int M, int L)
+DSPu_FIR::DSPu_FIR(const DSP::Complex_vector &h_in, int n0, int M, int L)
   : DSP::Block()
 { //real valued input & complex valued coefficients
   Init(false, true, (unsigned long)(h_in.size()), h_in.data(), n0, M, L);
 }
 
-DSPu_FIR::DSPu_FIR(bool IsInputComplex, const DSP_float_vector &h_in, int n0, int M, int L)
+DSPu_FIR::DSPu_FIR(bool IsInputComplex, const DSP::Float_vector &h_in, int n0, int M, int L)
   : DSP::Block()
 { //real or complex valued input & real valued coefficients
   Init(IsInputComplex, false, (unsigned long)(h_in.size()), h_in.data(), n0, M, L);
 }
 
-DSPu_FIR::DSPu_FIR(bool IsInputComplex, const DSP_complex_vector &h_in, int n0, int M, int L)
+DSPu_FIR::DSPu_FIR(bool IsInputComplex, const DSP::Complex_vector &h_in, int n0, int M, int L)
   : DSP::Block()
 { //real or complex valued input & complex valued coefficients
   Init(IsInputComplex, true, (unsigned long)(h_in.size()), h_in.data(), n0, M, L);
@@ -6122,10 +6122,10 @@ void DSPu_FIR::Init(bool IsInputComplex, bool AreCoeficientsComplex,
     }
     else
     {
-      State=new DSP_float[NoOfOutputs*(N-1)];
+      State=new DSP::Float[NoOfOutputs*(N-1)];
       if (State !=  NULL)
       {
-        memset(State, 0, sizeof(DSP_float)*NoOfOutputs*(N-1));
+        memset(State, 0, sizeof(DSP::Float)*NoOfOutputs*(N-1));
       }
     }
   }
@@ -6137,11 +6137,11 @@ void DSPu_FIR::Init(bool IsInputComplex, bool AreCoeficientsComplex,
     }
     else
     {
-      State=new DSP_float[NoOfOutputs*(N-1)*L_step];
-      memmove_size = (long int)(sizeof(DSP_float)*(NoOfOutputs*(N-1)*L_step - 1));
+      State=new DSP::Float[NoOfOutputs*(N-1)*L_step];
+      memmove_size = (long int)(sizeof(DSP::Float)*(NoOfOutputs*(N-1)*L_step - 1));
       if (State !=  NULL)
       {
-        memset(State, 0, sizeof(DSP_float)*NoOfOutputs*(N-1)*L_step);
+        memset(State, 0, sizeof(DSP::Float)*NoOfOutputs*(N-1)*L_step);
       }
     }
   }
@@ -6153,18 +6153,18 @@ void DSPu_FIR::Init(bool IsInputComplex, bool AreCoeficientsComplex,
   {
     if (N > 0)
     {
-      hC=new DSP_complex[N];
+      hC=new DSP::Complex[N];
       for (ind=0; ind<N; ind++)
-        hC[ind]=((DSP_complex_ptr)h_in)[n0+M*ind];
+        hC[ind]=((DSP::Complex_ptr)h_in)[n0+M*ind];
     }
   }
   else
   {
     if (N > 0)
     {
-      h=new DSP_float[N];
+      h=new DSP::Float[N];
       for (ind=0; ind<N; ind++)
-        h[ind]=((DSP_float_ptr)h_in)[n0+M*ind];
+        h[ind]=((DSP::Float_ptr)h_in)[n0+M*ind];
     }
   }
 
@@ -6238,9 +6238,9 @@ DSPu_FIR::~DSPu_FIR(void)
 void DSPu_FIR::InputExecute(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_complex out_value, temp_value;
-  DSP_float *temp_h;
-  DSP_complex *temp_hC;
+  DSP::Complex out_value, temp_value;
+  DSP::Float *temp_h;
+  DSP::Complex *temp_hC;
   int ind;
 
   if (InputNo==0)
@@ -6409,8 +6409,8 @@ void DSPu_FIR::InputExecute_RI_RH(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(InputNo);
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_float out_value;
-  DSP_float *temp_h;
+  DSP::Float out_value;
+  DSP::Float *temp_h;
   int ind;
 
   temp_h=THIS->h;
@@ -6438,7 +6438,7 @@ void DSPu_FIR::InputExecute_RI_CH1(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(InputNo);
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_complex out_value;
+  DSP::Complex out_value;
 
   out_value.set(value);
   out_value.multiply_by(*THIS->hC);
@@ -6460,8 +6460,8 @@ void DSPu_FIR::InputExecute_RI_CH(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(InputNo);
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_complex out_value;
-  DSP_complex *temp_hC;
+  DSP::Complex out_value;
+  DSP::Complex *temp_hC;
   int ind;
 
   //THIS->in_value.im=0.0;
@@ -6496,7 +6496,7 @@ void DSPu_FIR::InputExecute_RI_CH(INPUT_EXECUTE_ARGS)
 void DSPu_FIR::InputExecute_CI_RH1(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_complex out_value;
+  DSP::Complex out_value;
 
   if (InputNo==0)
     THIS->in_value.re=value;
@@ -6527,8 +6527,8 @@ void DSPu_FIR::InputExecute_CI_RH1(INPUT_EXECUTE_ARGS)
 void DSPu_FIR::InputExecute_CI_RH(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_complex out_value;
-  DSP_float *temp_h;
+  DSP::Complex out_value;
+  DSP::Float *temp_h;
   int ind;
 
   if (InputNo==0)
@@ -6574,7 +6574,7 @@ void DSPu_FIR::InputExecute_CI_RH(INPUT_EXECUTE_ARGS)
 void DSPu_FIR::InputExecute_CI_CH1(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_complex out_value;
+  DSP::Complex out_value;
 
   if (InputNo==0)
     THIS->in_value.re=value;
@@ -6605,8 +6605,8 @@ void DSPu_FIR::InputExecute_CI_CH1(INPUT_EXECUTE_ARGS)
 void DSPu_FIR::InputExecute_CI_CH(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_complex out_value, temp_value;
-  DSP_complex *temp_hC;
+  DSP::Complex out_value, temp_value;
+  DSP::Complex *temp_hC;
   int ind;
 
   if (InputNo==0)
@@ -6656,8 +6656,8 @@ void DSPu_FIR::InputExecute_RI_RH_L(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(InputNo);
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_float out_value;
-  DSP_float *temp_h, *temp_state;
+  DSP::Float out_value;
+  DSP::Float *temp_h, *temp_state;
   int ind;
 
   // ++++++++++++++++++++++++++++
@@ -6690,42 +6690,75 @@ void DSPu_FIR::InputExecute_RI_RH_L(INPUT_EXECUTE_ARGS)
 
 /**************************************************/
 // IIR filter implementation
-DSPu_IIR::DSPu_IIR(int Na_in, DSP_float *a_in, int Nb_in, DSP_float *b_in)
+DSPu_IIR::DSPu_IIR(DSP::Float_vector &a_in)
   : DSP::Block()
 {
-  Init(false, false, Na_in, a_in, Nb_in, b_in);
+  DSP::Float_vector b_in = {1.0};
+
+  Init(false, false, a_in, b_in);
+
+//  Execute_ptr = &InputExecute;
+}
+DSPu_IIR::DSPu_IIR(DSP::Float_vector &a_in, DSP::Float_vector &b_in)
+  : DSP::Block()
+{
+  Init(false, false, a_in, b_in);
 
 //  Execute_ptr = &InputExecute;
 }
 
-DSPu_IIR::DSPu_IIR(bool IsInputComplex, int Na_in, DSP_float *a_in, int Nb_in, DSP_float *b_in)
+DSPu_IIR::DSPu_IIR(bool IsInputComplex, DSP::Float_vector &a_in, DSP::Float_vector &b_in)
   : DSP::Block()
 {
-  Init(IsInputComplex, false, Na_in, a_in, Nb_in, b_in);
+  Init(IsInputComplex, false, a_in, b_in);
+
+//  Execute_ptr = &InputExecute;
+}
+DSPu_IIR::DSPu_IIR(bool IsInputComplex, DSP::Float_vector &a_in)
+  : DSP::Block()
+{
+  DSP::Float_vector b_in = {1.0};
+  Init(IsInputComplex, false, a_in, b_in);
 
 //  Execute_ptr = &InputExecute;
 }
 
-DSPu_IIR::DSPu_IIR(int Na_in, DSP_complex *a_in, int Nb_in, DSP_complex *b_in)
+DSPu_IIR::DSPu_IIR(DSP::Complex_vector &a_in)
   : DSP::Block()
 {
-  Init(false, true, Na_in, a_in, Nb_in, b_in);
+  DSP::Complex_vector b_in = {DSP::Complex(1.0,1.0)};
+  Init(false, true, a_in, b_in);
+
+//  Execute_ptr = &InputExecute;
+}
+DSPu_IIR::DSPu_IIR(DSP::Complex_vector &a_in, DSP::Complex_vector &b_in)
+  : DSP::Block()
+{
+  Init(false, true, a_in, b_in);
 
 //  Execute_ptr = &InputExecute;
 }
 
-DSPu_IIR::DSPu_IIR(bool IsInputComplex, int Na_in, DSP_complex *a_in, int Nb_in, DSP_complex *b_in)
+DSPu_IIR::DSPu_IIR(bool IsInputComplex, DSP::Complex_vector &a_in, DSP::Complex_vector &b_in)
   : DSP::Block()
 {
-  Init(IsInputComplex, true, Na_in, a_in, Nb_in, b_in);
+  Init(IsInputComplex, true, a_in, b_in);
+
+//  Execute_ptr = &InputExecute;
+}
+DSPu_IIR::DSPu_IIR(bool IsInputComplex, DSP::Complex_vector &a_in)
+  : DSP::Block()
+{
+  DSP::Complex_vector b_in = {DSP::Complex(1.0, 1.0)};
+  Init(IsInputComplex, true, a_in, b_in);
 
 //  Execute_ptr = &InputExecute;
 }
 
+template <typename T>
 void DSPu_IIR::Init(bool IsInputComplex,
                    bool AreCoeficientsComplex,
-                   int Na_in, void *a_in,
-                   int Nb_in, void *b_in)
+                   T &a_in, T &b_in)
 {
   SetName("IIR", false);
 
@@ -6763,40 +6796,30 @@ void DSPu_IIR::Init(bool IsInputComplex,
   ClockGroups.AddInputs2Group("all", 0, NoOfInputs-1);
   ClockGroups.AddOutputs2Group("all", 0, NoOfOutputs-1);
 
-  if (a_in == NULL)
-    Na_in=0;
-  if (b_in == NULL)
-    Nb_in=0;
-
-  FilterOrder=Na_in-1;
-  if (FilterOrder<(Nb_in-1))
-    FilterOrder=Nb_in-1;
+  FilterOrder=long(a_in.size())-1;
+  if (FilterOrder<long(b_in.size())-1)
+    FilterOrder=long(b_in.size())-1;
   if (FilterOrder<0)
     FilterOrder=0;
-  Na=Na_in; Nb=Nb_in;
 
-  if (FilterOrder == 0)
-    State=NULL;
-  else
-    State=new DSP_float[NoOfOutputs*FilterOrder];
+  State.clear();
+  State.resize(NoOfOutputs*FilterOrder, 0.0);
 
   if (AreCoeficientsComplex)
   {
-    a=NULL; b=NULL;
-    aC=new DSP_complex[FilterOrder+1];
-    bC=new DSP_complex[FilterOrder+1];
+    a.clear(); b.clear();
+    aC.resize(FilterOrder+1);
+    bC.resize(FilterOrder+1);
   }
   else
   {
-    a=new DSP_float[FilterOrder+1];
-    b=new DSP_float[FilterOrder+1];
-    aC=NULL; bC=NULL;
+    a.resize(FilterOrder+1);
+    b.resize(FilterOrder+1);
+    aC.clear(); bC.clear();
   }
 
-  if (State !=  NULL)
-    memset(State, 0, sizeof(DSP_float)*NoOfOutputs*FilterOrder);
-
-  SetCoefs(AreCoeficientsComplex, Na_in, a_in, Nb_in, b_in);
+  //SetCoefs(AreCoeficientsComplex, a_in, b_in);
+  SetCoefs(a_in, b_in);
 
   if (NoOfInputs == 1)
   {
@@ -6840,154 +6863,102 @@ DSPu_IIR::~DSPu_IIR(void)
 {
 //  SetNoOfOutputs(0);
 
-  if (State !=  NULL)
-    delete [] State;
-  if (a !=  NULL)
-    delete [] a;
-  if (b !=  NULL)
-    delete [] b;
-  if (aC !=  NULL)
-    delete [] aC;
-  if (bC !=  NULL)
-    delete [] bC;
+  State.clear();
+  a.clear();
+  b.clear();
+  aC.clear();
+  bC.clear();
 }
 
-bool DSPu_IIR::SetCoefs(int Na_in, DSP_float *a_in,
-                        int Nb_in, DSP_float *b_in)
+bool DSPu_IIR::SetCoefs(DSP::Float_vector &a_in,
+                        DSP::Float_vector &b_in)
 {
-  return SetCoefs(false, Na_in, a_in, Nb_in, b_in);
-}
+  long ind;
+  long required_FilterOrder;
+  DSP::Float a0;
 
-bool DSPu_IIR::SetCoefs(int Na_in, DSP_complex *a_in,
-                        int Nb_in, DSP_complex *b_in)
-{
-  return SetCoefs(true, Na_in, a_in, Nb_in, b_in);
-}
-
-bool DSPu_IIR::SetCoefs(bool AreCoeficientsComplex,
-                        int Na_in, void *a_in,
-                        int Nb_in, void *b_in)
-{
-  int ind;
-  int required_FilterOrder;
-  DSP_float a0;
-  DSP_complex aC_0;
-
-  if (a_in == NULL)
-    Na_in=0;
-  if (b_in == NULL)
-    Nb_in=0;
-
-  required_FilterOrder=Na_in-1;
-  if (required_FilterOrder<(Nb_in-1))
-    required_FilterOrder=Nb_in-1;
+  required_FilterOrder=long(a_in.size())-1;
+  if (required_FilterOrder<long(b_in.size())-1)
+    required_FilterOrder=long(b_in.size())-1;
   if (required_FilterOrder<0)
     required_FilterOrder=0;
 
   if (required_FilterOrder > FilterOrder)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "DSPu_IIR::SetCoefs" << DSP::LogMode::second << "Too many coefficients for current filter order" << endl;
+      DSP::log << DSP::LogMode::Error << "DSPu_IIR::SetCoefs<DSP::Float_vector>" << DSP::LogMode::second << "Too many coefficients for current filter order" << endl;
     #endif
     return false;
   }
 
-  if (AreCoeficientsComplex == false)
+  a = a_in;
+  if (a.size()==0)
   {
-    if (a !=  NULL)
-    {
-      memcpy(a, a_in, sizeof(DSP_float)*Na);
-      for (ind=Na; ind<=FilterOrder; ind++)
-        a[ind]=0.0;
-      if (Na==0)
-      {
-        a[0]=1.0;
-        Na=1;
-      }
-    }
-    else
-    {
-      #ifdef __DEBUG__
-        DSP::log << DSP::LogMode::Error << "DSPu_IIR::SetCoefs" << DSP::LogMode::second << "Filter requires complex >b< coefficients" << endl;
-      #endif
-      return false;
-    }
-    if (b !=  NULL)
-    {
-      memcpy(b, b_in, sizeof(DSP_float)*Nb);
-      for (ind=Nb; ind<=FilterOrder; ind++)
-        b[ind]=0.0;
-      if (Nb==0)
-      {
-        b[0]=1.0;
-        Nb=1;
-      }
-      if (a[0]==0.0)
-        a[0]=1.0;
-
-      a0=a[0];
-      for (ind=1; ind<=FilterOrder; ind++)
-      {
-        a[ind]=a[ind]/a0;
-        b[ind]=b[ind]/a0;
-      }
-    }
-    else
-    {
-      #ifdef __DEBUG__
-        DSP::log << DSP::LogMode::Error << "DSPu_IIR::SetCoefs" << DSP::LogMode::second << "Filter requires complex >a< coefficients" << endl;
-      #endif
-      return false;
-    }
+    a={1.0};
   }
-  else
+  a.resize(FilterOrder, 0.0);
+
+  b = b_in;
+  if (b.size() ==  0)
   {
-    if (aC !=  NULL)
-    {
-      memcpy(aC, a_in, sizeof(DSP_complex)*Na);
-      for (ind=Na; ind<=FilterOrder; ind++)
-        aC[ind].set(0.0);
-      if (Na==0)
-      {
-        aC[0].set(1.0);
-        Na=1;
-      }
-    }
-    else
-    {
-      #ifdef __DEBUG__
-        DSP::log << DSP::LogMode::Error << "DSPu_IIR::SetCoefs" << DSP::LogMode::second << "Filter requires real >b< coefficients" << endl;
-      #endif
-      return false;
-    }
-    if (bC !=  NULL)
-    {
-      memcpy(bC, b_in, sizeof(DSP_complex)*Nb);
-      for (ind=Nb; ind<=FilterOrder; ind++)
-        bC[ind].set(0.0);
-      if (Nb==0)
-      {
-        bC[0].set(1.0);
-        Nb=1;
-      }
+    b={1.0};
+  }
+  b.resize(FilterOrder, 0.0);
+  if (a[0]==0.0)
+    a[0]=1.0;
 
-      if ((aC[0].re==0.0) && (aC[0].im==0.0))
-        aC[0].set(1.0);
+  a0=a[0];
+  for (ind=0; ind<=FilterOrder; ind++)
+  {
+    a[ind]=a[ind]/a0;
+    b[ind]=b[ind]/a0;
+  }
+  return true;
+}
 
-      aC_0=aC[0];
-      for (ind=0; ind<=FilterOrder; ind++)
-      {
-        aC[ind].divide_by(aC_0);
-        bC[ind].divide_by(aC_0);
-      }
-    }
-    else
-    {
-      #ifdef __DEBUG__
-        DSP::log << DSP::LogMode::Error << "DSPu_IIR::SetCoefs" << DSP::LogMode::second << "Filter requires real >a< coefficients" << endl;
-      #endif
-      return false;
-    }
+bool DSPu_IIR::SetCoefs(DSP::Complex_vector &a_in,
+                        DSP::Complex_vector &b_in)
+{
+  long ind;
+  long required_FilterOrder;
+  DSP::Complex aC_0;
+
+  required_FilterOrder=long(a_in.size())-1;
+  if (required_FilterOrder<long(b_in.size())-1)
+    required_FilterOrder=long(b_in.size())-1;
+  if (required_FilterOrder<0)
+    required_FilterOrder=0;
+
+  if (required_FilterOrder > FilterOrder)
+  {
+    #ifdef __DEBUG__
+      DSP::log << DSP::LogMode::Error << "DSPu_IIR::SetCoefs<DSP::Complex_vector>" << DSP::LogMode::second << "Too many coefficients for current filter order" << endl;
+    #endif
+    return false;
+  }
+
+  aC = a_in;
+  aC.resize(FilterOrder, 0.0);
+  if (aC.size()==0)
+  {
+    aC = {DSP::Complex(1.0, 0.0)};
+  }
+
+  bC = b_in;
+  bC.resize(FilterOrder, 0.0);
+  if (bC.size()==0)
+  {
+    bC = {DSP::Complex(1.0, 0.0)};
+  }
+
+  if ((aC[0].re==0.0) && (aC[0].im==0.0))
+    aC[0].set(1.0);
+
+  aC_0=aC[0];
+  for (ind=0; ind<=FilterOrder; ind++)
+  {
+    aC[ind].divide_by(aC_0);
+    bC[ind].divide_by(aC_0);
   }
   return true;
 }
@@ -6997,7 +6968,7 @@ bool DSPu_IIR::SetCoefs(bool AreCoeficientsComplex,
 void DSPu_IIR::InputExecute_cplx_coefs_cplx_input_zero_order(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_complex out_value;
+  DSP::Complex out_value;
 
   if (InputNo==0)
     THIS->in_value.re = value;
@@ -7013,7 +6984,7 @@ void DSPu_IIR::InputExecute_cplx_coefs_cplx_input_zero_order(INPUT_EXECUTE_ARGS)
   //y[n]=(w[0]+b0*x[n])*a0
   // 1) b0*x[n] (x[n] - complex)
   out_value.set(THIS->in_value);
-  out_value.multiply_by(*(THIS->bC));
+  out_value.multiply_by(THIS->bC[0]);
 
 //      OutputBlocks[0]->Execute(OutputBlocks_InputNo[0], out_value.re, this);
   THIS->OutputBlocks[0]->EXECUTE_PTR(
@@ -7031,10 +7002,10 @@ void DSPu_IIR::InputExecute_cplx_coefs_real_input_zero_order(INPUT_EXECUTE_ARGS)
 {
   UNUSED_ARGUMENT(InputNo);
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_complex out_value;
+  DSP::Complex out_value;
 
   //temp_a = THIS->aC; aC[0] == 1.0
-  out_value.set(*(THIS->bC));
+  out_value.set(THIS->bC[0]);
   out_value.multiply_by(value);
 
 //      OutputBlocks[0]->Execute(OutputBlocks_InputNo[0], out_value.re, this);
@@ -7052,7 +7023,7 @@ void DSPu_IIR::InputExecute_cplx_coefs_real_input_zero_order(INPUT_EXECUTE_ARGS)
 void DSPu_IIR::InputExecute_cplx_coefs_cplx_input(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_complex out_value;
+  DSP::Complex out_value;
   int ind;
 
   if (InputNo==0)
@@ -7065,11 +7036,11 @@ void DSPu_IIR::InputExecute_cplx_coefs_cplx_input(INPUT_EXECUTE_ARGS)
     return;
   THIS->NoOfInputsProcessed = 0;
 
-  DSP_complex *temp_a, *temp_b;
-  DSP_complex temp_val1, temp_val2;
+  DSP::Complex *temp_a, *temp_b;
+  DSP::Complex temp_val1, temp_val2;
 
-  temp_a = THIS->aC;
-  temp_b = THIS->bC;
+  temp_a = THIS->aC.data();
+  temp_b = THIS->bC.data();
   //y[n]=(w[0]+b0*x[n])*a0
   // 1) b0*x[n] (x[n] - complex)
   out_value.set(THIS->in_value);
@@ -7129,7 +7100,7 @@ void DSPu_IIR::InputExecute_cplx_coefs_real_input(INPUT_EXECUTE_ARGS)
 {
   UNUSED_ARGUMENT(InputNo);
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_complex out_value;
+  DSP::Complex out_value;
   int ind;
 
   THIS->in_value.re = value;
@@ -7138,11 +7109,11 @@ void DSPu_IIR::InputExecute_cplx_coefs_real_input(INPUT_EXECUTE_ARGS)
   //  return;
   //THIS->NoOfInputsProcessed = 0;
 
-  DSP_complex *temp_a, *temp_b;
-  DSP_complex temp_val1, temp_val2;
+  DSP::Complex *temp_a, *temp_b;
+  DSP::Complex temp_val1, temp_val2;
 
-  temp_a = THIS->aC;
-  temp_b = THIS->bC;
+  temp_a = THIS->aC.data();
+  temp_b = THIS->bC.data();
   //y[n]=(w[0]+b0*x[n])*a0
   // 1) b0*x[n] (x[n] - real)
   out_value.re = (*temp_b).re * THIS->in_value.re;
@@ -7214,7 +7185,7 @@ void DSPu_IIR::InputExecute_cplx_coefs_real_input(INPUT_EXECUTE_ARGS)
 void DSPu_IIR::InputExecute_real_coefs_cplx_input_zero_order(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_complex out_value;
+  DSP::Complex out_value;
 
   if (InputNo==0)
     THIS->in_value.re = value;
@@ -7226,8 +7197,8 @@ void DSPu_IIR::InputExecute_real_coefs_cplx_input_zero_order(INPUT_EXECUTE_ARGS)
     return;
   THIS->NoOfInputsProcessed = 0;
 
-  out_value.re = (*(THIS->b)) * THIS->in_value.re;
-  out_value.im = (*(THIS->b)) * THIS->in_value.im;
+  out_value.re = (THIS->b[0]) * THIS->in_value.re;
+  out_value.im = (THIS->b[0]) * THIS->in_value.im;
 
 //      OutputBlocks[0]->Execute(OutputBlocks_InputNo[0], out_value.re, this);
   THIS->OutputBlocks[0]->EXECUTE_PTR(
@@ -7245,9 +7216,9 @@ void DSPu_IIR::InputExecute_real_coefs_real_input_zero_order(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
   UNUSED_ARGUMENT(InputNo);
-  DSP_float out_value;
+  DSP::Float out_value;
 
-  out_value = (*(THIS->b)) * value;
+  out_value = (THIS->b[0]) * value;
 
   THIS->OutputBlocks[0]->EXECUTE_PTR(
       THIS->OutputBlocks[0],
@@ -7259,7 +7230,7 @@ void DSPu_IIR::InputExecute_real_coefs_real_input_zero_order(INPUT_EXECUTE_ARGS)
 void DSPu_IIR::InputExecute_real_coefs_cplx_input(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_complex out_value;
+  DSP::Complex out_value;
   int ind;
 
   if (InputNo==0)
@@ -7272,10 +7243,10 @@ void DSPu_IIR::InputExecute_real_coefs_cplx_input(INPUT_EXECUTE_ARGS)
     return;
   THIS->NoOfInputsProcessed = 0;
 
-  DSP_float *temp_a, *temp_b;
+  DSP::Float *temp_a, *temp_b;
 
-  temp_a = THIS->a;
-  temp_b = THIS->b;
+  temp_a = THIS->a.data();
+  temp_b = THIS->b.data();
   out_value.re = (*temp_a) * ((*temp_b) * THIS->in_value.re + THIS->State[0]);
   out_value.im = (*temp_a) * ((*temp_b) * THIS->in_value.im + THIS->State[1]);
   temp_a++; temp_b++;
@@ -7308,7 +7279,7 @@ void DSPu_IIR::InputExecute_real_coefs_real_input(INPUT_EXECUTE_ARGS)
 {
   UNUSED_ARGUMENT(InputNo);
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_complex out_value;
+  DSP::Complex out_value;
   int ind;
 
   THIS->in_value.re = value;
@@ -7317,10 +7288,10 @@ void DSPu_IIR::InputExecute_real_coefs_real_input(INPUT_EXECUTE_ARGS)
   //  return;
   //THIS->NoOfInputsProcessed = 0;
 
-  DSP_float *temp_a, *temp_b;
+  DSP::Float *temp_a, *temp_b;
 
-  temp_a = THIS->a;
-  temp_b = THIS->b;
+  temp_a = THIS->a.data();
+  temp_b = THIS->b.data();
   out_value.re = (*temp_a) * ((*temp_b) * THIS->in_value.re + THIS->State[0]);
   temp_a++; temp_b++;
   for (ind=0; ind < THIS->FilterOrder-1; ind++)
@@ -7343,8 +7314,8 @@ void DSPu_IIR::InputExecute_real_coefs_real_input(INPUT_EXECUTE_ARGS)
 // ***************************************************** //
 // ***************************************************** //
 // ***************************************************** //
-void DSPu_DDScos::Init(DSP_float A_in,
-                      DSP_float frequency_in, DSP_float phase_in,
+void DSPu_DDScos::Init(DSP::Float A_in,
+                      DSP::Float frequency_in, DSP::Float phase_in,
                       DSP::Clock_ptr ParentClock)
 {
   A=A_in;
@@ -7359,8 +7330,8 @@ void DSPu_DDScos::Init(DSP_float A_in,
 
 // DDS cosinusoid generator with constant parameters and real output
 DSPu_DDScos::DSPu_DDScos(DSP::Clock_ptr ParentClock,
-                       DSP_float A_in,
-                       DSP_float frequency_in, DSP_float phase_in)
+                       DSP::Float A_in,
+                       DSP::Float frequency_in, DSP::Float phase_in)
   : DSP::Block(), DSP::Source()
 {
   SetName("DDScos", false);
@@ -7381,8 +7352,8 @@ DSPu_DDScos::DSPu_DDScos(DSP::Clock_ptr ParentClock,
 // DDS cosinusoid generator with constant parameters and complex output
 DSPu_DDScos::DSPu_DDScos(DSP::Clock_ptr ParentClock,
                bool IsComplex,
-               DSP_float A_in,
-               DSP_float frequency_in, DSP_float phase_in)
+               DSP::Float A_in,
+               DSP::Float frequency_in, DSP::Float phase_in)
   : DSP::Block(), DSP::Source()
 {
   SetName("DDScos", false);
@@ -7584,16 +7555,16 @@ bool DSPu_DDScos::OutputExecute_complex(OUTPUT_EXECUTE_ARGS)
 
   if (THIS->CurrentPhase<0)
   {
-    THIS->CurrentPhase -= DSP_float(0.5);
+    THIS->CurrentPhase -= DSP::Float(0.5);
     THIS->CurrentPhase = FMOD(THIS->CurrentPhase, 1.0);
-    THIS->CurrentPhase += DSP_float(0.5);
+    THIS->CurrentPhase += DSP::Float(0.5);
   }
   else
     if (THIS->CurrentPhase > 0)
     {
-      THIS->CurrentPhase += DSP_float(0.5);
+      THIS->CurrentPhase += DSP::Float(0.5);
       THIS->CurrentPhase = FMOD(THIS->CurrentPhase, 1.0);
-      THIS->CurrentPhase -= DSP_float(0.5);
+      THIS->CurrentPhase -= DSP::Float(0.5);
     }
 
   return true;
@@ -7625,16 +7596,16 @@ bool DSPu_DDScos::OutputExecute_real(OUTPUT_EXECUTE_ARGS)
 
   if (THIS->CurrentPhase<0)
   {
-    THIS->CurrentPhase -= DSP_float(0.5);
+    THIS->CurrentPhase -= DSP::Float(0.5);
     THIS->CurrentPhase = FMOD(THIS->CurrentPhase, 1.0);
-    THIS->CurrentPhase += DSP_float(0.5);
+    THIS->CurrentPhase += DSP::Float(0.5);
   }
   else
     if (THIS->CurrentPhase > 0)
     {
-      THIS->CurrentPhase += DSP_float(0.5);
+      THIS->CurrentPhase += DSP::Float(0.5);
       THIS->CurrentPhase = FMOD(THIS->CurrentPhase, 1.0);
-      THIS->CurrentPhase -= DSP_float(0.5);
+      THIS->CurrentPhase -= DSP::Float(0.5);
     }
 
   return true;
@@ -7658,16 +7629,16 @@ bool DSPu_DDScos::OutputExecute_complex_no_inputs(OUTPUT_EXECUTE_ARGS)
 
   if (THIS->CurrentPhase<0)
   {
-    THIS->CurrentPhase -= DSP_float(0.5);
+    THIS->CurrentPhase -= DSP::Float(0.5);
     THIS->CurrentPhase = FMOD(THIS->CurrentPhase, 1.0);
-    THIS->CurrentPhase += DSP_float(0.5);
+    THIS->CurrentPhase += DSP::Float(0.5);
   }
   else
     if (THIS->CurrentPhase > 0)
     {
-      THIS->CurrentPhase += DSP_float(0.5);
+      THIS->CurrentPhase += DSP::Float(0.5);
       THIS->CurrentPhase = FMOD(THIS->CurrentPhase, 1.0);
-      THIS->CurrentPhase -= DSP_float(0.5);
+      THIS->CurrentPhase -= DSP::Float(0.5);
     }
 
   return true;
@@ -7687,16 +7658,16 @@ bool DSPu_DDScos::OutputExecute_real_no_inputs(OUTPUT_EXECUTE_ARGS)
 
   if (THIS->CurrentPhase<0)
   {
-    THIS->CurrentPhase -= DSP_float(0.5);
+    THIS->CurrentPhase -= DSP::Float(0.5);
     THIS->CurrentPhase = FMOD(THIS->CurrentPhase, 1.0);
-    THIS->CurrentPhase += DSP_float(0.5);
+    THIS->CurrentPhase += DSP::Float(0.5);
   }
   else
     if (THIS->CurrentPhase > 0)
     {
-      THIS->CurrentPhase += DSP_float(0.5);
+      THIS->CurrentPhase += DSP::Float(0.5);
       THIS->CurrentPhase = FMOD(THIS->CurrentPhase, 1.0);
-      THIS->CurrentPhase -= DSP_float(0.5);
+      THIS->CurrentPhase -= DSP::Float(0.5);
     }
 
   return true;
@@ -7704,7 +7675,7 @@ bool DSPu_DDScos::OutputExecute_real_no_inputs(OUTPUT_EXECUTE_ARGS)
 #undef  THIS
 
 // Changes angular frequency (if not associated with input)
-void DSPu_DDScos::SetAngularFrequency(DSP_float omega)
+void DSPu_DDScos::SetAngularFrequency(DSP::Float omega)
 {
   if (NoOfInputs == 0)
   {
@@ -7717,7 +7688,7 @@ void DSPu_DDScos::SetAngularFrequency(DSP_float omega)
 }
 
 // Changes amplitude (if not associated with input)
-void DSPu_DDScos::SetAmplitude(DSP_float amplitude)
+void DSPu_DDScos::SetAmplitude(DSP::Float amplitude)
 {
   if (NoOfInputs == 0)
   {
@@ -7755,7 +7726,7 @@ void DSPu_DDScos::InputExecute(INPUT_EXECUTE_ARGS)
 // ***************************************************** //
 DSPu_SamplingRateConversion::DSPu_SamplingRateConversion(
     DSP::Clock_ptr ParentClock, unsigned int L_in, unsigned int M_in,
-    const DSP_complex_vector &h_in)
+    const DSP::Complex_vector &h_in)
   : DSP::Block(), DSP::Source()
 {
   Init(false, L_in, M_in, h_in, ParentClock);
@@ -7767,7 +7738,7 @@ DSPu_SamplingRateConversion::DSPu_SamplingRateConversion(
 DSPu_SamplingRateConversion::DSPu_SamplingRateConversion(
     bool IsInputComplex,
     DSP::Clock_ptr ParentClock, unsigned int L_in, unsigned int M_in,
-    const DSP_complex_vector &h_in)
+    const DSP::Complex_vector &h_in)
   : DSP::Block(), DSP::Source()
 {
   Init(IsInputComplex, L_in, M_in, h_in, ParentClock);
@@ -7787,7 +7758,7 @@ DSPu_SamplingRateConversion::DSPu_SamplingRateConversion(
 // ***************************************************** //
 DSPu_SamplingRateConversion::DSPu_SamplingRateConversion(
     DSP::Clock_ptr ParentClock, unsigned int L_in, unsigned int M_in,
-    const DSP_float_vector &h_in)
+    const DSP::Float_vector &h_in)
   : DSP::Block(), DSP::Source()
 {
   Init(false, L_in, M_in, h_in, ParentClock);
@@ -7799,7 +7770,7 @@ DSPu_SamplingRateConversion::DSPu_SamplingRateConversion(
 DSPu_SamplingRateConversion::DSPu_SamplingRateConversion(
     bool IsInputComplex,
     DSP::Clock_ptr ParentClock, unsigned int L_in, unsigned int M_in,
-    const DSP_float_vector &h_in)
+    const DSP::Float_vector &h_in)
   : DSP::Block(), DSP::Source()
 {
   Init(IsInputComplex, L_in, M_in, h_in, ParentClock);
@@ -7817,7 +7788,7 @@ DSPu_SamplingRateConversion::DSPu_SamplingRateConversion(
 }
 
 void DSPu_SamplingRateConversion::Init(bool IsInputComplex,
-    unsigned int L_in, unsigned int M_in, const DSP_float_vector &h_in,
+    unsigned int L_in, unsigned int M_in, const DSP::Float_vector &h_in,
   DSP::Clock_ptr ParentClock)
 {
   SetName("SamplingRateConversion", false);
@@ -7869,7 +7840,7 @@ void DSPu_SamplingRateConversion::Init(bool IsInputComplex,
   }
   else
   {
-    StateBuffer_cplx.resize(StateBufferLen, DSP_complex(0.0, 0.0));
+    StateBuffer_cplx.resize(StateBufferLen, DSP::Complex(0.0, 0.0));
   }
 
   // make a copy of impulse response
@@ -7886,13 +7857,13 @@ void DSPu_SamplingRateConversion::Init(bool IsInputComplex,
   }
   else
   {
-    OutputBuffer_cplx.resize(OutputBufferLen, DSP_complex(0.0, 0.0));
+    OutputBuffer_cplx.resize(OutputBufferLen, DSP::Complex(0.0, 0.0));
   }
   NoOfSamplesReady=0;
 }
 
 void DSPu_SamplingRateConversion::Init(bool IsInputComplex,
-    unsigned int L_in, unsigned int M_in, const DSP_complex_vector &h_in,
+    unsigned int L_in, unsigned int M_in, const DSP::Complex_vector &h_in,
     DSP::Clock_ptr ParentClock)
 {
   SetName("SamplingRateConversion", false);
@@ -7944,7 +7915,7 @@ void DSPu_SamplingRateConversion::Init(bool IsInputComplex,
   }
   else
   {
-    StateBuffer_cplx.resize(StateBufferLen, DSP_complex(0.0, 0.0));
+    StateBuffer_cplx.resize(StateBufferLen, DSP::Complex(0.0, 0.0));
   }
 
   // make a copy of impulse response
@@ -7958,7 +7929,7 @@ void DSPu_SamplingRateConversion::Init(bool IsInputComplex,
 
   int OutputBufferLen = (L+M-1)/M;
   // output is always complex valued
-  OutputBuffer_cplx.resize(OutputBufferLen, DSP_complex(0.0, 0.0));
+  OutputBuffer_cplx.resize(OutputBufferLen, DSP::Complex(0.0, 0.0));
   NoOfSamplesReady=0;
 }
 
@@ -7980,7 +7951,7 @@ void DSPu_SamplingRateConversion::InputExecute_real_in_real_h(INPUT_EXECUTE_ARGS
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
   UNUSED_ARGUMENT(InputNo);
-  DSP_float tempOut;
+  DSP::Float tempOut;
   unsigned int n_h, ind;
 
   // Push input sample into the StateBuffer
@@ -8017,7 +7988,7 @@ void DSPu_SamplingRateConversion::InputExecute_real_in_real_h(INPUT_EXECUTE_ARGS
 void DSPu_SamplingRateConversion::InputExecute_cplx_in_real_h(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_complex tempOut;
+  DSP::Complex tempOut;
   unsigned int n_h, ind;
 
   if (InputNo==0) {
@@ -8073,7 +8044,7 @@ void DSPu_SamplingRateConversion::InputExecute_real_in_cplx_h(INPUT_EXECUTE_ARGS
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
   UNUSED_ARGUMENT(InputNo);
-  DSP_complex tempOut;
+  DSP::Complex tempOut;
   unsigned int n_h, ind;
 
   // Push input sample into the StateBuffer
@@ -8126,7 +8097,7 @@ void DSPu_SamplingRateConversion::InputExecute_real_in_cplx_h(INPUT_EXECUTE_ARGS
 void DSPu_SamplingRateConversion::InputExecute_cplx_in_cplx_h(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_complex tempOut;
+  DSP::Complex tempOut;
   unsigned int n_h, ind;
 
   if (InputNo==0)
@@ -8195,7 +8166,7 @@ bool DSPu_SamplingRateConversion::OutputExecute_real_out(OUTPUT_EXECUTE_ARGS)
   THIS->NoOfSamplesReady--;
   if (THIS->NoOfSamplesReady != 0)
     memcpy(THIS->OutputBuffer_real.data(), THIS->OutputBuffer_real.data()+1,
-           THIS->NoOfSamplesReady * sizeof(DSP_float));
+           THIS->NoOfSamplesReady * sizeof(DSP::Float));
 
   return true;
 };
@@ -8219,7 +8190,7 @@ bool DSPu_SamplingRateConversion::OutputExecute_cplx_out(OUTPUT_EXECUTE_ARGS)
   THIS->NoOfSamplesReady--;
   if (THIS->NoOfSamplesReady != 0)
     memcpy(THIS->OutputBuffer_cplx.data(), THIS->OutputBuffer_cplx.data() + 1,
-           THIS->NoOfSamplesReady * sizeof(DSP_complex));
+           THIS->NoOfSamplesReady * sizeof(DSP::Complex));
 
   return true;
 };
@@ -8445,7 +8416,7 @@ void DSPu_Maximum::InputExecute(INPUT_EXECUTE_ARGS)
   ((DSPu_Maximum *)block)->OutputBlocks[1]->EXECUTE_PTR(
       ((DSPu_Maximum *)block)->OutputBlocks[1],
       ((DSPu_Maximum *)block)->OutputBlocks_InputNo[1],
-      DSP_float(((DSPu_Maximum *)block)->max_ind+1), block);
+      DSP::Float(((DSPu_Maximum *)block)->max_ind+1), block);
 }
 
 // **************************************************** //
@@ -8513,7 +8484,7 @@ void DSPu_Selector::Init(bool AreInputsComplex,
 
   index_offset=IndexOffset;
   in_values_len=NumberOfInputs;
-  in_values= new DSP_complex[in_values_len];
+  in_values= new DSP::Complex[in_values_len];
 }
 
 DSPu_Selector::~DSPu_Selector(void)
@@ -8778,7 +8749,7 @@ DSPu_MyFunction::DSPu_MyFunction(unsigned int NumberOfInputs, unsigned int Numbe
   if (NumberOfInputs<=0)
     NumberOfInputs=1;
   //if (NumberOfOutputs<0) NumberOfOutputs=0;
-  InputData = new DSP_float[NumberOfInputs];
+  InputData = new DSP::Float[NumberOfInputs];
   SetNoOfInputs(NumberOfInputs, false);
 
   indexes.resize(NoOfInputs);
@@ -8790,7 +8761,7 @@ DSPu_MyFunction::DSPu_MyFunction(unsigned int NumberOfInputs, unsigned int Numbe
   }
   DefineInput("in", indexes);
 
-  OutputData = new DSP_float[NumberOfOutputs];
+  OutputData = new DSP::Float[NumberOfOutputs];
   SetNoOfOutputs(NumberOfOutputs);
   indexes.resize(NoOfOutputs);
   for (ind=0; ind<NoOfOutputs; ind++)
@@ -8977,7 +8948,7 @@ void DSPu_SampleSelector::Init(DSP::Clock_ptr ParentClock,
   }
 #endif
 
-  State=new DSP_float[NoOfInputs];
+  State=new DSP::Float[NoOfInputs];
   for (ind=0; ind<NoOfInputs; ind++)
     State[ind]=0.0;
 
@@ -9204,10 +9175,10 @@ DSPu_Hold::DSPu_Hold(DSP::Clock_ptr InputClock, DSP::Clock_ptr OutputClock,
   ClockGroups.AddOutput2Group("output", Output("out"));
   ClockGroups.AddClockRelation("input", "output", L_factor, M_factor);
 
-  currentState=new DSP_float[NoOfInputs];
+  currentState=new DSP::Float[NoOfInputs];
   for (unsigned int ind=0; ind<NoOfInputs; ind++)
     currentState[ind]=0.0;
-  newState=new DSP_float[NoOfInputs];
+  newState=new DSP::Float[NoOfInputs];
 
   SamplesReady = true;
 
@@ -9241,7 +9212,7 @@ void DSPu_Hold::InputExecute(INPUT_EXECUTE_ARGS)
 
   if (((DSPu_Hold *)block)->NoOfInputsProcessed == ((DSPu_Hold *)block)->NoOfInputs)
   {
-    DSP_float_ptr temp;
+    DSP::Float_ptr temp;
 
     temp = ((DSPu_Hold *)block)->newState;
     ((DSPu_Hold *)block)->newState = ((DSPu_Hold *)block)->currentState;
@@ -9279,7 +9250,7 @@ bool DSPu_Hold::OutputExecute(OUTPUT_EXECUTE_ARGS)
 
     if (((DSPu_Hold *)source)->IsHold == false)
       memset(((DSPu_Hold *)source)->currentState, 0,
-             sizeof(DSP_float) * ((DSPu_Hold *)source)->NoOfInputs);
+             sizeof(DSP::Float) * ((DSPu_Hold *)source)->NoOfInputs);
     //DSP::log << "DSPu_Hold::Execute(DSP::Clock_ptr clock)", "Hold outputs processed !!!");
     return true;
   }
@@ -9505,7 +9476,7 @@ DSPu_Multiplexer::DSPu_Multiplexer(DSP::Clock_ptr ParentClock,
   }
 
   CurrentOutputSampleNo = 0;
-  State = new DSP_float[NoOfInputs];
+  State = new DSP::Float[NoOfInputs];
   StateReady = new bool[NoOfInputs];
   for (ind = 0; ind < NoOfInputs; ind++)
   {
@@ -9640,7 +9611,7 @@ bool DSPu_Multiplexer::OutputExecute_cplx(OUTPUT_EXECUTE_ARGS)
 
 /**************************************************/
 // DCO - digitaly controled oscilator
-DSPu_DCO::DSPu_DCO(DSP_float wo, DSP_float d_wo, DSP_float freq_alfa, DSP_float phase_alfa,
+DSPu_DCO::DSPu_DCO(DSP::Float wo, DSP::Float d_wo, DSP::Float freq_alfa, DSP::Float phase_alfa,
                    bool output_current_frequency)
   : DSP::Block()
 {
@@ -9720,7 +9691,7 @@ void DSPu_DCO::InputExecute(INPUT_EXECUTE_ARGS)
 
   // modulo "pi" operator
   //THIS->freq_memo -= ceil(THIS->freq_memo);
-  THIS->freq_memo -= FLOOR(THIS->freq_memo + DSP_float(0.5));
+  THIS->freq_memo -= FLOOR(THIS->freq_memo + DSP::Float(0.5));
 
   // withhold within maximum deviation range
   if (THIS->freq_memo > THIS->freq_dev_max)
@@ -9771,7 +9742,7 @@ void DSPu_DCO::InputExecute_with_Freq(INPUT_EXECUTE_ARGS)
 
   // modulo "pi" operator
   //THIS->freq_memo -= ceil(THIS->freq_mem);
-  THIS->freq_memo -= FLOOR(THIS->freq_memo+ DSP_float(0.5));
+  THIS->freq_memo -= FLOOR(THIS->freq_memo+ DSP::Float(0.5));
 
   // withhold within maximum deviation range
   if (THIS->freq_memo > THIS->freq_dev_max)
@@ -9812,9 +9783,9 @@ void DSPu_DCO::InputExecute_with_Freq(INPUT_EXECUTE_ARGS)
 };
 #undef THIS
 
-DSP_float DSPu_DCO::GetFrequency(DSP_float Fp)
+DSP::Float DSPu_DCO::GetFrequency(DSP::Float Fp)
 {
-  DSP_float temp;
+  DSP::Float temp;
 
   temp=freq_memo+fo;
   while (temp<-0.5)
@@ -9856,7 +9827,7 @@ DSPu_CrossSwitch::DSPu_CrossSwitch(bool IsComplex)
   if (IsComplex  == true)
   {
     default_state = 2;
-    inputs = new DSP_float[4];
+    inputs = new DSP::Float[4];
 
     SetNoOfInputs(1+4, false);
 
@@ -9879,7 +9850,7 @@ DSPu_CrossSwitch::DSPu_CrossSwitch(bool IsComplex)
   else
   {
     default_state = 0;
-    inputs = new DSP_float[2];
+    inputs = new DSP::Float[2];
 
     SetNoOfInputs(1+2, false);
 
@@ -10095,31 +10066,31 @@ DSPu_Differator::DSPu_Differator(int NoOfInputs_in, bool IsInputComplex)
   ClockGroups.AddInputs2Group("all", 0, NoOfInputs-1);
   ClockGroups.AddOutputs2Group("all", 0, NoOfOutputs-1);
 
-  State = new DSP_float[NoOfInputs];
-  memset(State, 0, sizeof(DSP_float)*NoOfInputs);
+  State = new DSP::Float[NoOfInputs];
+  memset(State, 0, sizeof(DSP::Float)*NoOfInputs);
 
   Execute_ptr = &InputExecute;
 }
 
-void DSPu_Differator::SetInitialState(DSP_float State_init)
+void DSPu_Differator::SetInitialState(DSP::Float State_init)
 {
   SetInitialState(1, &State_init);
 }
-void DSPu_Differator::SetInitialState(DSP_float State_init_re, DSP_float State_init_im)
+void DSPu_Differator::SetInitialState(DSP::Float State_init_re, DSP::Float State_init_im)
 {
-  DSP_float temp[2];
+  DSP::Float temp[2];
 
   temp[0] = State_init_re;
   temp[1] = State_init_im;
   SetInitialState(2, temp);
 }
-void DSPu_Differator::SetInitialState(DSP_complex State_init)
+void DSPu_Differator::SetInitialState(DSP::Complex State_init)
 {
-  SetInitialState(2, (DSP_float_ptr)(&State_init));
+  SetInitialState(2, (DSP::Float_ptr)(&State_init));
 }
 
 // Setting up internal state
-void DSPu_Differator::SetInitialState(unsigned int length, DSP_float_ptr State_init)
+void DSPu_Differator::SetInitialState(unsigned int length, DSP::Float_ptr State_init)
 {
   if (length > NoOfInputs)
   {
@@ -10137,7 +10108,7 @@ void DSPu_Differator::SetInitialState(unsigned int length, DSP_float_ptr State_i
     #endif
   }
 
-  memcpy(State, State_init, sizeof(DSP_float)*length);
+  memcpy(State, State_init, sizeof(DSP::Float)*length);
 }
 
 DSPu_Differator::~DSPu_Differator(void)
@@ -10193,7 +10164,7 @@ DSPu_Accumulator::DSPu_Accumulator(int NoOfInputs_in, bool IsInputComplex)
   Execute_ptr = &InputExecute_classic;
 }
 
-DSPu_Accumulator::DSPu_Accumulator(DSP_float lambda_in, int NoOfInputs_in, bool IsInputComplex)
+DSPu_Accumulator::DSPu_Accumulator(DSP::Float lambda_in, int NoOfInputs_in, bool IsInputComplex)
   : DSP::Block()
 {
   Init(NoOfInputs_in, lambda_in, IsInputComplex);
@@ -10201,7 +10172,7 @@ DSPu_Accumulator::DSPu_Accumulator(DSP_float lambda_in, int NoOfInputs_in, bool 
   Execute_ptr = &InputExecute_leakage;
 }
 
-void DSPu_Accumulator::Init(int NoOfInputs_in, DSP_float lambda_in, bool IsInputComplex)
+void DSPu_Accumulator::Init(int NoOfInputs_in, DSP::Float lambda_in, bool IsInputComplex)
 {
   int ind;
   string tekst;
@@ -10262,32 +10233,32 @@ void DSPu_Accumulator::Init(int NoOfInputs_in, DSP_float lambda_in, bool IsInput
   ClockGroups.AddInputs2Group("all", 0, NoOfInputs-1);
   ClockGroups.AddOutputs2Group("all", 0, NoOfOutputs-1);
 
-  State = new DSP_float[NoOfInputs];
-  memset(State, 0, sizeof(DSP_float)*NoOfInputs);
+  State = new DSP::Float[NoOfInputs];
+  memset(State, 0, sizeof(DSP::Float)*NoOfInputs);
 
   lambda = lambda_in;
-  one_minus_lambda = DSP_float(1.0) - lambda;
+  one_minus_lambda = DSP::Float(1.0) - lambda;
 }
 
-void DSPu_Accumulator::SetInitialState(DSP_float State_init)
+void DSPu_Accumulator::SetInitialState(DSP::Float State_init)
 {
   SetInitialState(1, &State_init);
 }
-void DSPu_Accumulator::SetInitialState(DSP_float State_init_re, DSP_float State_init_im)
+void DSPu_Accumulator::SetInitialState(DSP::Float State_init_re, DSP::Float State_init_im)
 {
-  DSP_float temp[2];
+  DSP::Float temp[2];
 
   temp[0] = State_init_re;
   temp[1] = State_init_im;
   SetInitialState(2, temp);
 }
-void DSPu_Accumulator::SetInitialState(DSP_complex State_init)
+void DSPu_Accumulator::SetInitialState(DSP::Complex State_init)
 {
-  SetInitialState(2, (DSP_float_ptr)(&State_init));
+  SetInitialState(2, (DSP::Float_ptr)(&State_init));
 }
 
 // Setting up internal state
-void DSPu_Accumulator::SetInitialState(unsigned int length, DSP_float_ptr State_init)
+void DSPu_Accumulator::SetInitialState(unsigned int length, DSP::Float_ptr State_init)
 {
   if (length > NoOfInputs)
   {
@@ -10305,7 +10276,7 @@ void DSPu_Accumulator::SetInitialState(unsigned int length, DSP_float_ptr State_
     #endif
   }
 
-  memcpy(State, State_init, sizeof(DSP_float)*length);
+  memcpy(State, State_init, sizeof(DSP::Float)*length);
 }
 
 DSPu_Accumulator::~DSPu_Accumulator(void)
@@ -11469,7 +11440,7 @@ DSP::Macro::~Macro(void)
 
 /**************************************************/
 // Block calculating absolute value of real or complex sample
-DSPu_Quantizer::DSPu_Quantizer(DSP_float threshold, DSP_float L_value, DSP_float U_value)
+DSPu_Quantizer::DSPu_Quantizer(DSP::Float threshold, DSP::Float L_value, DSP::Float U_value)
   : DSP::Block()
 {
   SetName("Quantizer", false);
@@ -11483,9 +11454,9 @@ DSPu_Quantizer::DSPu_Quantizer(DSP_float threshold, DSP_float L_value, DSP_float
   ClockGroups.AddOutputs2Group("all", 0, NoOfOutputs-1);
 
   B = 1;
-  thresholds = new DSP_float[B];
+  thresholds = new DSP::Float[B];
   thresholds[0] = threshold;
-  q_levels = new DSP_float[1 << B];
+  q_levels = new DSP::Float[1 << B];
   q_levels[0] = L_value; q_levels[1] = U_value;
 
   output_val = 0.0;

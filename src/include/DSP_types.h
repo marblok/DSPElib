@@ -76,8 +76,6 @@ namespace DSP {
     enum struct FileType;
   }
 }
-class DSP_complex;
-typedef DSP_complex * DSP_complex_ptr;
 
 class T_WAVEchunk;
 typedef T_WAVEchunk * T_WAVEchunk_ptr;
@@ -112,7 +110,10 @@ typedef T_WAVEchunk * T_WAVEchunk_ptr;
 #define DSP_USE_float
 
 #ifdef DSP_USE_float
-  typedef float DSP_float;
+//  typedef float DSP::Float;
+  namespace DSP {
+    typedef float Float;
+  }
 
   #define COS cosf
   #define SIN sinf
@@ -129,7 +130,9 @@ typedef T_WAVEchunk * T_WAVEchunk_ptr;
   #define DSP_M_PIx1 M_PIx1f
 
 #else
-  typedef double DSP_float;
+  namespace DSP {
+    typedef double DSP::Float;
+  }
 
   #define COS cos
   #define SIN sin
@@ -146,18 +149,20 @@ typedef T_WAVEchunk * T_WAVEchunk_ptr;
   #define DSP_M_PIx1 M_PIx1
 
 #endif
-typedef DSP_float * DSP_float_ptr;
-
-typedef long double DSP_prec_float; //high precition float type
-typedef DSP_prec_float * DSP_prec_float_ptr;
-
 namespace DSP {
+  typedef DSP::Float * Float_ptr;
+  typedef long double Prec_Float; //high precition float type
+  class Complex;
+
+  typedef DSP::Prec_Float * Prec_Float_ptr;
+  typedef DSP::Complex * Complex_ptr;
+
   typedef void * void_ptr;
 }
 
 //! Pointer to the callback function
-/*! void func(unsigned int NoOfInputs,  DSP_float_ptr InputSamples,
- *            unsigned int NoOfOutputs, DSP_float_ptr OutputSamples,
+/*! void func(unsigned int NoOfInputs,  DSP::Float_ptr InputSamples,
+ *            unsigned int NoOfOutputs, DSP::Float_ptr OutputSamples,
  *            DSP::void_ptr *UserDataPtr, unsigned int UserDefinedIdentifier,
  *            DSP::Component_ptr Caller)
  *
@@ -173,14 +178,14 @@ namespace DSP {
  *  this is when the user can free UserData structure.
  *
  */
-typedef void (*DSPu_callback_ptr)(unsigned int, DSP_float_ptr,
-                                  unsigned int, DSP_float_ptr,
+typedef void (*DSPu_callback_ptr)(unsigned int, DSP::Float_ptr,
+                                  unsigned int, DSP::Float_ptr,
                                   DSP::void_ptr *, unsigned int,
                                   DSP::Component_ptr);
 
 //! Pointer to the buffer callback function
 /*! void func(unsigned int NoOfInputs,
- *            unsigned int NoOfOutputs, DSP_float_ptr OutputSamples,
+ *            unsigned int NoOfOutputs, DSP::Float_ptr OutputSamples,
  *            DSP::void_ptr *UserDataPtr, unsigned int UserDefinedIdentifier,
  *            DSP::Component_ptr Caller)
  *
@@ -197,7 +202,7 @@ typedef void (*DSPu_callback_ptr)(unsigned int, DSP_float_ptr,
  *
  */
 typedef void (*DSPu_buffer_callback_ptr)(unsigned int,
-                                  unsigned int, DSP_float_ptr,
+                                  unsigned int, DSP::Float_ptr,
                                   DSP::void_ptr *, unsigned int,
                                   DSP::Component_ptr);
 
@@ -215,96 +220,96 @@ namespace DSP {
 
 #define M_PIx1  3.14159265358979323846264338328
 #define M_PIx2  6.28318530718058647692528676656
-#define M_PIx1f      DSP_float(M_PIx1)
-#define M_PIx2f      DSP_float(M_PIx2)
+#define M_PIx1f      DSP::Float(M_PIx1)
+#define M_PIx2f      DSP::Float(M_PIx2)
 
-// and DSP_float precision
-#define M_Ef         DSP_float(M_E)
-#define M_LOG2Ef     DSP_float(M_LOG2E)
-#define M_LOG10Ef    DSP_float(M_LOG10E)
-#define M_LN2f       DSP_float(M_LN2)
-#define M_LN10f      DSP_float(M_LN10)
-#define M_PIf        DSP_float(M_PI)
-#define M_PI_2f      DSP_float(M_PI_2)
-#define M_PI_4f      DSP_float(M_PI_4)
-#define M_1_PIf      DSP_float(M_1_PI)
-#define M_2_PIf      DSP_float(M_2_PI)
-#define M_2_SQRTPIf  DSP_float(M_2_SQRTPI)
-#define M_SQRT2f     DSP_float(M_SQRT2)
-#define M_SQRT1_2f   DSP_float(M_SQRT1_2)
-class DSP_complex
+// and DSP::Float precision
+#define M_Ef         DSP::Float(M_E)
+#define M_LOG2Ef     DSP::Float(M_LOG2E)
+#define M_LOG10Ef    DSP::Float(M_LOG10E)
+#define M_LN2f       DSP::Float(M_LN2)
+#define M_LN10f      DSP::Float(M_LN10)
+#define M_PIf        DSP::Float(M_PI)
+#define M_PI_2f      DSP::Float(M_PI_2)
+#define M_PI_4f      DSP::Float(M_PI_4)
+#define M_1_PIf      DSP::Float(M_1_PI)
+#define M_2_PIf      DSP::Float(M_2_PI)
+#define M_2_SQRTPIf  DSP::Float(M_2_SQRTPI)
+#define M_SQRT2f     DSP::Float(M_SQRT2)
+#define M_SQRT1_2f   DSP::Float(M_SQRT1_2)
+class DSP::Complex
 {
   public:
-   DSP_float re;
-   DSP_float im;
+   DSP::Float re;
+   DSP::Float im;
 
-   DSP_complex(void)
+   Complex(void)
    {
      re=0.0; im=0.0;
    }
-   DSP_complex(const DSP_float& re_in)
+   Complex(const DSP::Float& re_in)
    {
      re=re_in; im=0.0;
    }
-   template <class T>
-   DSP_complex(const T& re_in, const T& im_in)
+   template <typename T>
+   Complex(const T& re_in, const T& im_in)
    {
-     re=(DSP_float)re_in; im=(DSP_float)im_in;
+     re=(DSP::Float)re_in; im=(DSP::Float)im_in;
    }
 
-   void set(DSP_float re_in)
+   void set(DSP::Float re_in)
    { re=re_in; im=0.0; };
-   void set(DSP_float re_in, DSP_float im_in)
+   void set(DSP::Float re_in, DSP::Float im_in)
    { re=re_in; im=im_in; };
    void set(double re_in, double im_in)
-   { re=(DSP_float)re_in; im=(DSP_float)im_in; };
-   void set(DSP_complex number)
+   { re=(DSP::Float)re_in; im=(DSP::Float)im_in; };
+   void set(DSP::Complex number)
    { re=number.re; im=number.im; };
 
-   friend const DSP_complex operator* (const DSP_complex& left,
-                                       const DSP_complex& right)
+   friend const DSP::Complex operator* (const DSP::Complex& left,
+                                       const DSP::Complex& right)
    {
 //     (a.re+j*a.im)*(b.re+j*b.im)
 //     a.re*b.re-a.im*b.im+j*(a.re*b.im+a.im*b.re)
-     return DSP_complex(left.re*right.re-left.im*right.im,
+     return DSP::Complex(left.re*right.re-left.im*right.im,
                         left.re*right.im+left.im*right.re);
    }
 
-   friend const DSP_complex operator+ (const DSP_complex& left,
-                                       const DSP_complex& right)
+   friend const DSP::Complex operator+ (const DSP::Complex& left,
+                                       const DSP::Complex& right)
    {
-     return DSP_complex(left.re+right.re, left.im+right.im);
+     return DSP::Complex(left.re+right.re, left.im+right.im);
    }
 
-   friend const DSP_complex operator- (const DSP_complex& left,
-                                       const DSP_complex& right)
+   friend const DSP::Complex operator- (const DSP::Complex& left,
+                                       const DSP::Complex& right)
    {
-     return DSP_complex(left.re-right.re, left.im-right.im);
+     return DSP::Complex(left.re-right.re, left.im-right.im);
    }
 
-   friend DSP_complex& operator+= (DSP_complex& left,
-                                   const DSP_complex& right)
+   friend DSP::Complex& operator+= (DSP::Complex& left,
+                                   const DSP::Complex& right)
    {
      left.re+=right.re;
      left.im+=right.im;
      return left;
    }
 
-   void add(DSP_complex number)
+   void add(DSP::Complex number)
    {
      re+=number.re;
      im+=number.im;
    }
 
-   void sub(DSP_complex number)
+   void sub(DSP::Complex number)
    {
      re-=number.re;
      im-=number.im;
    }
 
-   void divide_by(DSP_complex factor)
+   void divide_by(DSP::Complex factor)
    {
-     DSP_float mod;
+     DSP::Float mod;
 
      mod=factor.re*factor.re+factor.im*factor.im;
      mod=SQRT(mod);
@@ -314,9 +319,9 @@ class DSP_complex
      multiply_by(factor);
    }
 
-   void multiply_by(DSP_complex factor)
+   void multiply_by(DSP::Complex factor)
    {
-     DSP_float temp;
+     DSP::Float temp;
 
      temp=re;
      re=temp*factor.re-im*factor.im;
@@ -338,33 +343,33 @@ class DSP_complex
      */
    }
 
-   void multiply_by_conj(DSP_complex factor)
+   void multiply_by_conj(DSP::Complex factor)
    {
-     DSP_float temp;
+     DSP::Float temp;
 
      temp=re;
      re= temp*factor.re+im*factor.im;
      im=-temp*factor.im+im*factor.re;
    }
 
-   void multiply_by(DSP_float factor)
+   void multiply_by(DSP::Float factor)
    {
      re*=factor;
      im*=factor;
    }
 
-   DSP_float abs(void)
+   DSP::Float abs(void)
    {
      return SQRT(re*re+im*im);
    }
 
-   friend DSP_float abs(const DSP_complex& val)
+   friend DSP::Float abs(const DSP::Complex& val)
    {
      return SQRT(val.re*val.re+val.im*val.im);
    }
 
    // square of absolute value of  complex number
-   friend DSP_float abs2(const DSP_complex& val)
+   friend DSP::Float abs2(const DSP::Complex& val)
    {
      return val.re*val.re+val.im*val.im;
    }
@@ -373,7 +378,7 @@ class DSP_complex
    /*! However the atan2 function is extremely sensitive to
     * quantization noise of the imaginary part of the sample.
     */
-   DSP_float angle(void)
+   DSP::Float angle(void)
    {
 //     return -atan2(-im, re);
      return ATAN2(im, re);
@@ -472,14 +477,14 @@ namespace DSP {
 
 namespace DSP {
 //! Pointer to the DSP::Block input callback function
-/*! void func(DSP::Block_ptr block, unsigned int InputNo, DSP_float value, DSP::Component *Caller)
+/*! void func(DSP::Block_ptr block, unsigned int InputNo, DSP::Float value, DSP::Component *Caller)
  *
  *  \note In release mode last parameter (DSP::Component *) is skipped
  */
 #ifdef __DEBUG__
-  typedef void (*Block_Execute_ptr)(const DSP::Block_ptr, unsigned int, DSP_float, const DSP::Component_ptr);
+  typedef void (*Block_Execute_ptr)(const DSP::Block_ptr, unsigned int, DSP::Float, const DSP::Component_ptr);
 #else
-  typedef void (*Block_Execute_ptr)(const DSP::Block_ptr, unsigned int, DSP_float);
+  typedef void (*Block_Execute_ptr)(const DSP::Block_ptr, unsigned int, DSP::Float);
 #endif
 }
 
@@ -501,14 +506,14 @@ namespace DSP {
 }
 
 #ifdef __DEBUG__
-  #define INPUT_EXECUTE_ARGS  DSP::Block_ptr block, unsigned int InputNo, DSP_float value, DSP::Component_ptr Caller
+  #define INPUT_EXECUTE_ARGS  DSP::Block_ptr block, unsigned int InputNo, DSP::Float value, DSP::Component_ptr Caller
   #define EXECUTE_PTR(block, InputNo, value, Caller)  Execute_ptr((DSP::Block_ptr)block, InputNo, value, (DSP::Component_ptr)Caller)
   #define EXECUTE_INPUT_CALLBACK(InputExecute, block, InputNo, value, Caller) InputExecute(block, InputNo, value, Caller)
 
   #define OUTPUT_EXECUTE_ARGS DSP::Source_ptr source, DSP::Clock_ptr clock
   #define OUTPUT_EXECUTE_PTR(source, clock) OutputExecute_ptr((DSP::Source_ptr)source, (DSP::Clock_ptr)clock)
 #else
-  #define INPUT_EXECUTE_ARGS DSP::Block_ptr block, unsigned int InputNo, DSP_float value
+  #define INPUT_EXECUTE_ARGS DSP::Block_ptr block, unsigned int InputNo, DSP::Float value
   #define EXECUTE_PTR(block, InputNo, value, Caller)  Execute_ptr((DSP::Block_ptr)block, InputNo, value)
   #define EXECUTE_INPUT_CALLBACK(InputExecute, block, InputNo, value, Caller) InputExecute(block, InputNo, value)
 
@@ -517,10 +522,11 @@ namespace DSP {
 #endif
 
 
-typedef std::vector<DSP_float > DSP_float_vector;
-typedef std::vector<DSP_prec_float > DSP_prec_float_vector;
-typedef std::vector<DSP_complex > DSP_complex_vector;
-
+namespace DSP {
+  typedef std::vector<DSP::Float > Float_vector;
+  typedef std::vector<DSP::Prec_Float > Prec_Float_vector;
+  typedef std::vector<DSP::Complex > Complex_vector;
+}
 
 
 #include <DSP_DOT.h>

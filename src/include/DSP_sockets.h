@@ -182,9 +182,9 @@ class DSPu_SOCKETinput : public DSP::File, public DSP_socket, public DSP::Source
   private:
     DSP::e::SampleType SampleType;
 
-    //! size of the output buffer in DSP_float * NoOfOutputs
+    //! size of the output buffer in DSP::Float * NoOfOutputs
     unsigned int BufferSize;
-    DSP_float *Buffer;
+    DSP::Float *Buffer;
     unsigned int BufferIndex;
 
     unsigned int BytesRead;
@@ -254,8 +254,8 @@ class DSPu_SOCKETinput : public DSP::File, public DSP_socket, public DSP::Source
     /*! If NoOfSamples == 0 return allocated internal raw buffer size.
      */
     unsigned int GetRawBufferSize(unsigned int NoOfSamples = 0);
-    //! Returns DSP_float buffer size needed for SizeInSamples samples.
-    /*! If SizeInSamples == 0 return allocated internal DSP_float buffer size.
+    //! Returns DSP::Float buffer size needed for SizeInSamples samples.
+    /*! If SizeInSamples == 0 return allocated internal DSP::Float buffer size.
      *
      *  \note Returned value is NoOfSamples * NoOfChannels.
      */
@@ -275,11 +275,11 @@ class DSPu_SOCKETinput : public DSP::File, public DSP_socket, public DSP::Source
         * \warning this buffer must be allocated and deleted by the user.
         */
        char        *raw_buffer,
-       //! Buffer where read data will be stored in DSP_float format
+       //! Buffer where read data will be stored in DSP::Float format
        /*! \note size == buffer_size * no_of_channels
         * \warning this buffer must be allocated and deleted by the user.
         */
-       DSP_float   *flt_buffer
+       DSP::Float   *flt_buffer
        );
 };
 
@@ -299,7 +299,7 @@ class DSPu_SOCKEToutput : public DSP_socket, public DSP::Block
 {
   private:
     unsigned int BufferSize;
-    DSP_float *Buffer;
+    DSP::Float *Buffer;
     unsigned int BufferIndex;
 
     //! Type of samples send into socket

@@ -22,7 +22,7 @@
 int TMorseTable::TablesNo=0;
 TMorseTable *TMorseTable::FirstTable=NULL;
 TMorseTable *TMorseTable::Current=NULL;
-const char *TMorseTable::BaseDirectory="./";
+const string &TMorseTable::BaseDirectory="./";
 
 TMorseTable::TMorseTable(void)
 {
@@ -315,7 +315,7 @@ DWORD TMorseTable::Ind2FontCharset(int ind)
 }
 
 
-const char *TMorseTable::Ind2AnsiString(int ind)
+const string TMorseTable::Ind2AnsiString(int ind)
 {
   switch (Ind2FontCharset(ind))
   {

@@ -25,7 +25,7 @@ class TMorseTable
   private:
     static int TablesNo;
     static TMorseTable *FirstTable;
-    static const char *BaseDirectory;
+    static const string &BaseDirectory;
 
     TMorseTable *NextTable;
 
@@ -52,7 +52,7 @@ class TMorseTable
 
     static int FontCharset2Ind(DWORD charset);
     static DWORD Ind2FontCharset(int ind);
-    static const char *Ind2AnsiString(int ind);
+    static const string Ind2AnsiString(int ind);
 
     static DWORD MorseCodeText2Number(const string &dot_dash_text);
     /*!
@@ -105,7 +105,7 @@ class DSPu_MORSEkey : public DSP::Source // , public DSP::Rand
     //int current_char; // always first char is the current char
 
     //! current key state (1.0/0.0 == ON/OFF)
-    DSP_float value;
+    DSP::Float value;
     int state, morse_state;
 
     string morse_text;

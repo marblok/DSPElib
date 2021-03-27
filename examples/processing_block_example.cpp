@@ -19,9 +19,9 @@
 class DSPu_CCPC : public DSP_block
 {
   private:
-    DSP_complex in_value;
+    DSP::Complex in_value;
     
-    static void InputExecute(DSP_block *block, int InputNo, DSP_float value, DSP_component *Caller);
+    static void InputExecute(DSP_block *block, int InputNo, DSP::Float value, DSP_component *Caller);
   public:
     DSPu_CCPC(void); 
     ~DSPu_CCPC(void);
@@ -58,7 +58,7 @@ DSPu_CCPC::~DSPu_CCPC()
 {
 }
 
-void DSPu_CCPC::InputExecute(DSP_block *block, int InputNo, DSP_float value, DSP_component *Caller)
+void DSPu_CCPC::InputExecute(DSP_block *block, int InputNo, DSP::Float value, DSP_component *Caller)
 {
   if (InputNo==0)
     THIS->in_value.re = value;

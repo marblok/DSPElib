@@ -6,9 +6,9 @@
 #include <DSP_lib.h>
 
 #define buffer_size 4
-DSP_float_vector read_buffer;
+DSP::Float_vector read_buffer;
 
-void BufferCallback(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP_float_ptr OutputSamples, DSP::void_ptr *UserDataPtr, unsigned int UserDefinedIdentifier, DSP::Component_ptr Caller)
+void BufferCallback(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP::Float_ptr OutputSamples, DSP::void_ptr *UserDataPtr, unsigned int UserDefinedIdentifier, DSP::Component_ptr Caller)
 {
   if (NoOfInputs == DSP::c::Callback_Init)
   {
@@ -26,7 +26,7 @@ void BufferCallback(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP_float
 
   dsp_buffer = (DSPu_OutputBuffer *)Caller->Convert2Block();
   counter = dsp_buffer->ReadBuffer(read_buffer.data(),
-                                   buffer_size*sizeof(DSP_float), // read all samples
+                                   buffer_size*sizeof(DSP::Float), // read all samples
                                    -2,  // reset only NotificationsStep slots in buffer block
                                    DSP::e::SampleType::ST_float); // write to read_buffer in float format
 

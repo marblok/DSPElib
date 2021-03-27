@@ -59,7 +59,7 @@ switch mode
       h = coefficients.h;
       
       for ind_h = 0:length(h)-1
-        fprintf(plik, 'DSP_float_vector Farrow_coefs_row_%i = {', ind_h);
+        fprintf(plik, 'DSP::Float_vector Farrow_coefs_row_%i = {', ind_h);
         h_tmp = h{ind_h+1};
         for ind_p = 0:length(h_tmp)-1,
           if ind_p > 0
@@ -72,8 +72,8 @@ switch mode
       end
       fprintf(plik, '\n');
       
-      %vector <DSP_float_vector> Farrow_coefs = { coefs_0, coefs_1, coefs_2 };
-      fprintf(plik, 'vector <DSP_float_vector> Farrow_coefs = {');
+      %vector <DSP::Float_vector> Farrow_coefs = { coefs_0, coefs_1, coefs_2 };
+      fprintf(plik, 'vector <DSP::Float_vector> Farrow_coefs = {');
       for ind_h = 0:length(h)-1
         if ind_h > 0
           fprintf(plik, ', ');

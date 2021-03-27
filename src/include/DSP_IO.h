@@ -67,7 +67,8 @@ enum DSPe_AudioBufferType {DSP_AB_none=0, DSP_AB_IN=1, DSP_AB_OUT=2};
 
 namespace DSP {
   namespace f { //! Special functions namespace
-    DWORD ReadCoefficientsFromFile(DSP_float *Buffer, DWORD N, const string &FileName, const string &FileDir, DSP::e::SampleType type, DWORD offset);
+    unsigned long ReadCoefficientsFromFile(DSP::Float_vector &Buffer, unsigned long N, const string &FileName, const string &FileDir, DSP::e::SampleType type, unsigned long offset);
+    unsigned long ReadCoefficientsFromFile(DSP::Complex_vector &Buffer, unsigned long N, const string &FileName, const string &FileDir, DSP::e::SampleType type, unsigned long offset);
     bool GetWAVEfileParams(const string &FileName, const string &FileDir, T_WAVEchunk_ptr WAVEparams);
     //! Determines file type by filename extension
     DSP::e::FileType FileExtToFileType(const string &filename);
@@ -93,7 +94,7 @@ namespace DSP {
 /*! Reads N coefficients from file Filename (in directory DirName)
  *  to the Buffer.\n
  *  Values in file must be stored in given format (type). Function makes conversion
- *  from given format to DSP_float format.\n
+ *  from given format to DSP::Float format.\n
  *  File reading starts from given offset (in bytes) which allows for reading
  *  from mixed data type files.
  *
@@ -106,10 +107,10 @@ namespace DSP {
  *
  * \ingroup load_func
  */
-DWORD DSP::f::ReadCoefficientsFromFile(DSP_float *Buffer, DWORD N,
+unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Float_vector &Buffer, unsigned long N,
                      const string &FileName, const string &FileDir,
                      DSP::e::SampleType type=DSP::e::SampleType::ST_float,
-                     DWORD offset=0);
+                     unsigned long offset=0);
 
 /*! \todo Add support for Sony Wave64 (.w64)
  */
@@ -321,7 +322,7 @@ class DSPu_WaveInput : public DSP::File, public DSP::Source//: public CAudioInpu
     char  *ReadBuffer;
     DWORD AudioBufferLen;  // in bytes
     unsigned int BufferIndex;
-    DSP_float *AudioBuffer;
+    DSP::Float *AudioBuffer;
     bool ConvertionNeeded;
 
     //! Number of bytes to read remaining in file
@@ -396,7 +397,7 @@ class DSPu_FILEinput : public DSP::File, public DSP::Source
     //! detected no of channels written in file
     unsigned int NoOfFileChannels;
 
-    DSP_float *Buffer;
+    DSP::Float *Buffer;
     unsigned int BufferIndex;
 
     unsigned int BytesRead;
@@ -474,8 +475,8 @@ class DSPu_FILEinput : public DSP::File, public DSP::Source
     /*! If NoOfSamples == 0 return allocated internal raw buffer size.
      */
     unsigned int GetRawBufferSize(unsigned int NoOfSamples = 0);
-    //! Returns DSP_float buffer size needed for SizeInSamples samples.
-    /*! If SizeInSamples == 0 return allocated internal DSP_float buffer size.
+    //! Returns DSP::Float buffer size needed for SizeInSamples samples.
+    /*! If SizeInSamples == 0 return allocated internal DSP::Float buffer size.
      *
      *  \note Returned value is NoOfSamples * NoOfChannels.
      */
@@ -498,11 +499,11 @@ class DSPu_FILEinput : public DSP::File, public DSP::Source
         * \warning this buffer must be allocated and deleted by the user.
         */
        uint8_t        *raw_buffer,
-       //! Buffer where read data will be stored in DSP_float format
+       //! Buffer where read data will be stored in DSP::Float format
        /*! \note size == buffer_size * no_of_channels
         * \warning this buffer must be allocated and deleted by the user.
         */
-       DSP_float   *flt_buffer,
+       DSP::Float   *flt_buffer,
        //!number of sample components leave free after each (multicomponent) sample
        /*! eg. {re0, im0, {pad}, re1, im1, {pad}, ...}
         */
@@ -562,7 +563,7 @@ class DSPu_FILEoutput  : public DSP::File, public DSP::Block
     bool FileType_no_scaling;
     T_WAVEchunk WAV_header;
 
-    //DSP_float *Buffer;
+    //DSP::Float *Buffer;
     unsigned int BufferIndex;
 
     // in bits (all channel together)
@@ -602,7 +603,7 @@ class DSPu_FILEoutput  : public DSP::File, public DSP::Block
     static void InputExecute_bit_text(INPUT_EXECUTE_ARGS);
     static void InputExecute_bit(INPUT_EXECUTE_ARGS);
     static void InputExecute_blocked(INPUT_EXECUTE_ARGS);
-//    static void InputExecute(DSP::Block *block, int InputNo, DSP_float value, DSP::Component_ptr Caller);
+//    static void InputExecute(DSP::Block *block, int InputNo, DSP::Float value, DSP::Component_ptr Caller);
 
     //! true if file output is blocked
     bool IsBlocked;
@@ -666,11 +667,11 @@ class DSPu_FILEoutput  : public DSP::File, public DSP::Block
         * \warning this buffer must be allocated and deleted by the user.
         */
        uint8_t     *raw_buffer,
-       //! Buffer where data which must be written is stored in DSP_float format
+       //! Buffer where data which must be written is stored in DSP::Float format
        /*! \note size == buffer_size * no_of_channels
         *  \warning this buffer must be allocated and deleted by the user.
         */
-       DSP_float   *flt_buffer,
+       DSP::Float   *flt_buffer,
        //! number of samples to skip after each written sample
        int skip = 0
        );
@@ -738,8 +739,8 @@ class DSPu_AudioInput : public DSP::Source
 
     //! in samples times number of channels
     DWORD InBufferLen;
-    //! Buffer for storing samples in DSP_float format
-    DSP_float_ptr InBuffers[DSP_NoOfAudioInputBuffers];
+    //! Buffer for storing samples in DSP::Float format
+    DSP::Float_ptr InBuffers[DSP_NoOfAudioInputBuffers];
     //! current read index in current InBuffer
     unsigned int BufferIndex;
     //! Index of the next buffer to fill
@@ -854,8 +855,8 @@ class DSPu_AudioOutput : public DSP::Block
 
     //! in samples times number of channels
     DWORD OutBufferLen;
-    //! Buffer for storing samples in DSP_float format
-    DSP_float_ptr OutBuffer;
+    //! Buffer for storing samples in DSP::Float format
+    DSP::Float_ptr OutBuffer;
     unsigned int BufferIndex;
 
     //! Prepares buffers for playing and sends it to the audio device
@@ -934,10 +935,10 @@ class DSPu_InputBuffer : public DSP::Source
     //! executes when notification or callback function must be processed
     void Notify(DSP::Clock_ptr clock);
 
-    //! actual size = BufferSize*sizeof(DSP_float)*NoOfOutputs
+    //! actual size = BufferSize*sizeof(DSP::Float)*NoOfOutputs
     long int BufferSize, BufferIndex;
-    //! data are internally stored in DSP_float format
-    DSP_float_ptr Buffer;
+    //! data are internally stored in DSP::Float format
+    DSP::Float_ptr Buffer;
 
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
     static bool OutputExecute_single_channel(OUTPUT_EXECUTE_ARGS);
@@ -1013,7 +1014,7 @@ class DSPu_OutputBuffer : public DSP::Block, public DSP::Source
     //! callback function pointer
     DSPu_buffer_callback_ptr CallbackFunction_ptr;
     //! Table for output values from callback function
-    DSP_float *OutputsValues;
+    DSP::Float *OutputsValues;
     //! if true block must output samples values from OutputsValues table
     bool OutputSamples_ready;
     //! Variable storing the user data pointer from callback function
@@ -1038,10 +1039,10 @@ class DSPu_OutputBuffer : public DSP::Block, public DSP::Source
     //! executes when notification or callback function must be processed
     void Notify(DSP::Clock_ptr clock);
 
-    //! actual size = BufferSize*sizeof(DSP_float)*NoOfInputs
+    //! actual size = BufferSize*sizeof(DSP::Float)*NoOfInputs
     long int BufferSize, BufferIndex;
-    //! data are internally stored in DSP_float format
-    DSP_float_ptr Buffer;
+    //! data are internally stored in DSP::Float format
+    DSP::Float_ptr Buffer;
     //! Buffer wraps up if TRUE
     bool IsCyclic;
     //! Buffer stops when full if TRUE
@@ -1072,7 +1073,7 @@ class DSPu_OutputBuffer : public DSP::Block, public DSP::Source
      *
      *  \note BufferSize_in is the number of samples (each with NoOfInputs_in components)
      *    that can fit into buffer. Thus the actual buffer size is
-     *    BufferSize_in * NoOfInputs_in * sizeof(DSP_float).
+     *    BufferSize_in * NoOfInputs_in * sizeof(DSP::Float).
      *
      *  \note apart of standard notifications, notification function
      *    will be called twice:
@@ -1090,8 +1091,8 @@ class DSPu_OutputBuffer : public DSP::Block, public DSP::Source
     /*! Version with output lines.
      *
      *  Callback function:
-     *    void func(int NoOfInputs,  DSP_float_ptr InputSamples,
-     *              int NoOfOutputs, DSP_float_ptr OutputSamples,
+     *    void func(int NoOfInputs,  DSP::Float_ptr InputSamples,
+     *              int NoOfOutputs, DSP::Float_ptr OutputSamples,
      *              DSP::void_ptr *UserDataPtr, int UserDefinedIdentifier)
      *  \warning NoOfInputs will be set to the buffer inputs number, though
      *    InputSamples will always be NULL.
@@ -1137,7 +1138,7 @@ class DSPu_OutputBuffer : public DSP::Block, public DSP::Source
     long int ReadBuffer(void *dest, long int dest_size,
                         long int reset=-1, DSP::e::SampleType dest_DataType=DSP::e::SampleType::ST_float);
     //! low level access to the buffer
-    DSP_float_ptr AccessBuffer(void);
+    DSP::Float_ptr AccessBuffer(void);
 
     //! returns number of samples already in the buffer
     /*! \note Actual number of entries equals returned value
@@ -1150,7 +1151,7 @@ class DSPu_OutputBuffer : public DSP::Block, public DSP::Source
      * - mode == 0: number of samples
      *   \note Actual number of entries equals returned value
      *   times number of inputs
-     * - mode == 1: number of DSP_float entries
+     * - mode == 1: number of DSP::Float entries
      * - mode == 2: number of bytes
      * .
      */

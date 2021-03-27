@@ -13,7 +13,7 @@ int main(void)
   int temp;
   long int Fp1, Fp2, M, L;
   DSP::LoadCoef coef_info;
-  int N_SRC;  DSP_float_vector h_SRC;
+  int N_SRC;  DSP::Float_vector h_SRC;
 
   DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file);
   DSP::log.SetLogFileName("log_file_client.log");

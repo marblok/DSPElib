@@ -1,8 +1,24 @@
+TODO::
+  void PSK_SNR_estimator( ??? => int buffer_size, DSP::Float_ptr buffer, DSP::Float &BPSK_SNR, DSP::Float &QPSK_SNR);
+  void PSK_SNR_estimator2( ??? => int buffer_size, DSP::Float_ptr buffer, DSP::Float &BPSK_SNR, DSP::Float &QPSK_SNR);
+  void DSP::f::LPF_LS (int N, DSP::Float fp, DSP::Float fs, ??? => DSP::Float_ptr h_buffer, DSP::Float Ws)
+  DWORD => unsigned long
+  DSPu_FIR => use vectors instead of pointers as an input
+
+
+CHANGES:
+- ver. 0.19.017 - <b>2021.03.27</b> Changed: 
   - removed obsolete DSP::Clock::SchemeToMfile and related functions
-  - changed some pointers into vectors
+  - DSP_DOT.cpp changed pointers into vectors
+  - changed some pointers into vectors in other modules
+  - DSP_float_vector, DSP_prec_float_vector, DSP_complex_vector => DSP::Float_vector, DSP::Prec_Float_vector, DSP::Complex_vector
+  - DSP_float, DSP_prec_float, DSP_complex => DSP_Float, DSP::Prec_Float, DSP::Complex
+  - several const char * => const string &
+  - ReadResamplerCoef uses vector instead of pointer as an input
+  - DSPu_IIR uses vectors instead of pointers as an input
 
 - ver. 0.19.016 - <b>2021.03.19</b> Changed: Some of the #defines changed into consts and moved into DSP::c:: namespace
-	-	 DSP_Callback_Init => DSP::c::Callback_Init
+	-	DSP_Callback_Init => DSP::c::Callback_Init
 	-	DSP_Callback_Delete => DSP::c::Callback_Delete
 	-	CallbackID_mask => DSP::c::CallbackID_mask
 	-	CallbackID_signal_start => DSP::c::CallbackID_signal_start

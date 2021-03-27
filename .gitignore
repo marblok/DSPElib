@@ -46,3 +46,4 @@ examples/hello.dot
 examples/hello.gif
 examples/multirate.dot
 examples/multirate.gif
+examples/matlab/LPF_22050_8000.coef

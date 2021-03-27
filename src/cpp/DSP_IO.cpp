@@ -28,13 +28,12 @@
 
 //*****************************************************//
 //*****************************************************//
-DWORD DSP::f::ReadCoefficientsFromFile(DSP_float *Buffer, DWORD N,
+unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Float_vector &Buffer, unsigned long N,
                      const string &FileName, const string &FileDir,
                      DSP::e::SampleType type,
-                     DWORD offset)
+                     unsigned long offset)
 {
   FILE *plik;
-  uint8_t *tempBuffer;
   string file_name;
   DWORD ValuesRead;
   unsigned int ind;
@@ -49,41 +48,123 @@ DWORD DSP::f::ReadCoefficientsFromFile(DSP_float *Buffer, DWORD N,
   plik=fopen(file_name.c_str(), "rb");
   if (plik != NULL)
   {
+    Buffer.resize(N);
     if (fseek(plik, offset, SEEK_SET)==0)
     {
       switch (type)
       {
         case DSP::e::SampleType::ST_uchar:
           //reading
-          tempBuffer=(uint8_t *)new uint8_t[N];
-          ValuesRead=(DWORD)fread(tempBuffer, sizeof(uint8_t), N, plik);
-          //convertion
-          for (ind=0; ind<ValuesRead; ind++)
-            Buffer[ind]=(((DSP_float)((uint8_t  *)tempBuffer)[ind]-80)
-                        )/0x80;
-          //clean up
-          delete []tempBuffer;
+          {
+            vector<uint8_t> tempBuffer;
+            tempBuffer.resize(N);
+            ValuesRead=(DWORD)fread(tempBuffer.data(), sizeof(uint8_t), N, plik);
+            //convertion
+            for (ind=0; ind<ValuesRead; ind++)
+              Buffer[ind]=((DSP::Float)(tempBuffer[ind]-80))/0x80;
+          }
           break;
         case DSP::e::SampleType::ST_short:
           //reading
-          tempBuffer=(uint8_t *)new short[N];
-          ValuesRead=(DWORD)fread(tempBuffer, sizeof(short), N, plik);
-          //convertion
-          for (ind=0; ind<ValuesRead; ind++)
-            Buffer[ind]=((DSP_float)((short *)tempBuffer)[ind])
-                        /0x8000;
-          //clean up
-          delete []tempBuffer;
+          {
+            vector<short> tempBuffer;
+            tempBuffer.resize(N);
+            ValuesRead=(DWORD)fread(tempBuffer.data(), sizeof(short), N, plik);
+            //convertion
+            for (ind=0; ind<ValuesRead; ind++)
+              Buffer[ind]=((DSP::Float)(tempBuffer[ind]))/0x8000;
+          }
           break;
         case DSP::e::SampleType::ST_float:
           //reading
-          tempBuffer=(uint8_t *)new float [N];
-          ValuesRead=(DWORD)fread(tempBuffer, sizeof(float), N, plik);
-          //convertion
-          for (ind=0; ind<ValuesRead; ind++)
-            Buffer[ind]=((float *)tempBuffer)[ind];
-          //clean up
-          delete []tempBuffer;
+          {
+            ValuesRead=(DWORD)fread(Buffer.data(), sizeof(float), N, plik);
+            //no need for convertion
+          }
+          break;
+        default:
+          ValuesRead=0;
+          break;
+      }
+    }
+    #ifdef __DEBUG__
+      else
+      {
+        DSP::log << DSP::LogMode::Error << "DSP::f::ReadCoefficientsFromFile" << DSP::LogMode::second << "ReadCoefficientsFromFile wrong offset" << endl;
+      }
+    #endif
+    fclose(plik);
+  }
+  return ValuesRead;
+}
+
+//*****************************************************//
+unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Complex_vector &Buffer, unsigned long N,
+                     const string &FileName, const string &FileDir,
+                     DSP::e::SampleType type,
+                     unsigned long offset)
+{
+  FILE *plik;
+  string file_name;
+  DWORD ValuesRead;
+  unsigned int ind;
+
+  file_name = FileDir;
+  if (file_name.length() > 0)
+    if ((file_name.back() != '/') || (file_name.back() != '\\'))
+    { file_name += '/'; }
+  file_name += FileName;
+
+  ValuesRead=0;
+  plik=fopen(file_name.c_str(), "rb");
+  if (plik != NULL)
+  {
+    Buffer.resize(N);
+    if (fseek(plik, offset, SEEK_SET)==0)
+    {
+      switch (type)
+      {
+        case DSP::e::SampleType::ST_uchar:
+          //reading
+          {
+            vector<uint8_t> tempBuffer;
+            tempBuffer.resize(2*N);
+            ValuesRead=(DWORD)fread(tempBuffer.data(), sizeof(uint8_t), 2*N, plik);
+            //convertion
+            for (ind=0; ind<ValuesRead; ind=ind+2) {
+              Buffer[ind].set(
+                ((DSP::Float)(tempBuffer[ind]-80))/0x80,
+                ((DSP::Float)(tempBuffer[ind+1]-80))/0x80
+              );
+            }
+          }
+          break;
+        case DSP::e::SampleType::ST_short:
+          //reading
+          {
+            vector<short> tempBuffer;
+            tempBuffer.resize(2*N);
+            ValuesRead=(DWORD)fread(tempBuffer.data(), sizeof(short), 2*N, plik);
+            //convertion
+            for (ind=0; ind<ValuesRead; ind=ind+2) {
+              Buffer[ind].set(
+                ((DSP::Float)(tempBuffer[ind]))/0x8000,
+                ((DSP::Float)(tempBuffer[ind+1]))/0x8000
+              );
+            }
+          }
+          break;
+        case DSP::e::SampleType::ST_float:
+          //reading
+          {
+            vector<DSP::Float> tempBuffer;
+            tempBuffer.resize(2*N);
+            ValuesRead=(DWORD)fread(Buffer.data(), sizeof(float), 2*N, plik);
+            // convertion
+            for (ind=0; ind<ValuesRead; ind=ind+2) {
+              Buffer[ind]=DSP::Complex(tempBuffer[ind], tempBuffer[ind+1]);
+            }
+          }
           break;
         default:
           ValuesRead=0;
@@ -309,10 +390,10 @@ DSPu_FILEinput::DSPu_FILEinput(DSP::Clock_ptr ParentClock,
   SetNoOfOutputs(NoOfChannels); // NoOfOutputs = NoOfChannels;
 
   // +++++++++++++++++++++++++++++++++++++++++++++ //
-  //Data are stored in buffer in DSP_float format
-  Buffer = new DSP_float [NoOfOutputs*DSP_file_buffer_size];
+  //Data are stored in buffer in DSP::Float format
+  Buffer = new DSP::Float [NoOfOutputs*DSP_file_buffer_size];
   BufferIndex=0; //this means also that Buffer is empty
-  memset(Buffer, 0, NoOfOutputs*sizeof(DSP_float)*DSP_file_buffer_size);
+  memset(Buffer, 0, NoOfOutputs*sizeof(DSP::Float)*DSP_file_buffer_size);
   // +++++++++++++++++++++++++++++++++++++++++++++ //
 
 
@@ -689,8 +770,8 @@ unsigned int DSPu_FILEinput::GetRawBufferSize(unsigned int NoOfSamples)
     return (SampleSize * NoOfSamples + 7)/8;
 }
 
-// Returns DSP_float buffer size needed for SizeInSamples samples.
-/* If SizeInSamples == 0 return allocated internal DSP_float buffer size.
+// Returns DSP::Float buffer size needed for SizeInSamples samples.
+/* If SizeInSamples == 0 return allocated internal DSP::Float buffer size.
  *
  *  \note Returned value is NoOfSamples * NoOfChannels.
  */
@@ -722,10 +803,10 @@ long long DSPu_FILEinput::SkipSamples(long long no_to_skip)
 unsigned int DSPu_FILEinput::ReadSegmentToBuffer(
     unsigned int buffer_size, // in samples (raw_buffer_size == buffer_size * sample_size / 8)
     uint8_t *raw_buffer,
-    DSP_float   *flt_buffer,
+    DSP::Float   *flt_buffer,
     int pad_size)
 {
-  DSP_float *tempBuffer;
+  DSP::Float *tempBuffer;
   uint8_t *tempUChar;
   //short *tempShort;
   int16_t *tempShort;
@@ -766,7 +847,7 @@ unsigned int DSPu_FILEinput::ReadSegmentToBuffer(
       {
         for (ind2=0; ind2 < NoOfOutputs; ind2++)
         {
-          *tempBuffer = (((*tempUChar) & mask) != 0) ? DSP_float(+1.0) : DSP_float(-1.0);
+          *tempBuffer = (((*tempUChar) & mask) != 0) ? DSP::Float(+1.0) : DSP::Float(-1.0);
           tempBuffer++;
 
           //mask >>= 1;
@@ -788,7 +869,7 @@ unsigned int DSPu_FILEinput::ReadSegmentToBuffer(
       {
         for (ind2=0; ind2 < NoOfOutputs; ind2++)
         {
-          *tempBuffer = (((*tempUChar) & mask) != 0) ? DSP_float(+1.0) : DSP_float(-1.0);
+          *tempBuffer = (((*tempUChar) & mask) != 0) ? DSP::Float(+1.0) : DSP::Float(-1.0);
           tempBuffer++;
 
           //mask <<= 1;
@@ -822,7 +903,7 @@ unsigned int DSPu_FILEinput::ReadSegmentToBuffer(
       {
         for (ind2=0; ind2 < NoOfOutputs; ind2++)
         {
-          *tempBuffer=DSP_float(*tempUChar-0x80)/0x80;
+          *tempBuffer=DSP::Float(*tempUChar-0x80)/0x80;
           tempBuffer++;
           tempUChar++;
         }
@@ -835,7 +916,7 @@ unsigned int DSPu_FILEinput::ReadSegmentToBuffer(
       {
         for (ind2=0; ind2 < NoOfOutputs; ind2++)
         {
-          *tempBuffer=DSP_float(*tempShort)/0x8000;
+          *tempBuffer=DSP::Float(*tempShort)/0x8000;
           tempBuffer++;
           tempShort++;
         }
@@ -848,7 +929,7 @@ unsigned int DSPu_FILEinput::ReadSegmentToBuffer(
       {
         for (ind2=0; ind2 < NoOfOutputs; ind2++)
         {
-          *tempBuffer=DSP_float(*tempInt);
+          *tempBuffer=DSP::Float(*tempInt);
           tempBuffer++;
           tempInt++;
         }
@@ -1060,10 +1141,10 @@ bool DSPu_FILEoutput::Open(const string &FileName, DSP::e::SampleType sample_typ
 {
   FileType = file_type;
   SampleType=sample_type;
-  // //Data are stored in buffer in DSP_float format
-  // Buffer = new DSP_float [DSP_file_buffer_size*NoOfInputs];
+  // //Data are stored in buffer in DSP::Float format
+  // Buffer = new DSP::Float [DSP_file_buffer_size*NoOfInputs];
   // BufferIndex=0; //this means also that Buffer is empty
-  // memset(Buffer, 0, NoOfInputs*sizeof(DSP_float)*DSP_file_buffer_size);
+  // memset(Buffer, 0, NoOfInputs*sizeof(DSP::Float)*DSP_file_buffer_size);
 
   if (NoOfChannels > UCHAR_MAX)
   {
@@ -1456,7 +1537,7 @@ unsigned int DSPu_FILEoutput::GetRawBufferSize(unsigned int NoOfSamples)
 }
 
 unsigned int DSPu_FILEoutput::WriteSegmentFromBuffer( unsigned int buffer_size,
-                                    uint8_t *raw_buffer,  DSP_float *flt_buffer,
+                                    uint8_t *raw_buffer,  DSP::Float *flt_buffer,
                                     int skip)
 {
   unsigned int ind, ind_raw;
@@ -1474,7 +1555,7 @@ unsigned int DSPu_FILEoutput::WriteSegmentFromBuffer( unsigned int buffer_size,
   switch (SampleType)
   {
     case DSP::e::SampleType::ST_float:
-      if ((sizeof(float) == sizeof(DSP_float)) && (skip == 0))
+      if ((sizeof(float) == sizeof(DSP::Float)) && (skip == 0))
       { // write without conversion
         BytesWritten = (unsigned int)fwrite(flt_buffer, 1, SampleSize/8*buffer_size, FileHandle);
         return BytesWritten;
@@ -2042,10 +2123,10 @@ void DSPu_FILEoutput::InputExecute_int_no_scaling(INPUT_EXECUTE_ARGS)
 { // we assume only one input
   UNUSED_DEBUG_ARGUMENT(Caller);
 
-  if (value < (DSP_float)INT_MIN)
-    value = (DSP_float)INT_MIN;
-  if (value > (DSP_float)INT_MAX)
-    value = (DSP_float)INT_MAX;
+  if (value < (DSP::Float)INT_MIN)
+    value = (DSP::Float)INT_MIN;
+  if (value > (DSP::Float)INT_MAX)
+    value = (DSP::Float)INT_MAX;
 
   ((int *)DSP_THIS->RawBuffer)[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
       = (int)(value);
@@ -2241,7 +2322,7 @@ void DSPu_FILEoutput::InputExecute_blocked(INPUT_EXECUTE_ARGS)
 /*
 // returns true if successfully processed given value
 // value is put on input number InputNo
-void DSPu_FILEoutput::InputExecute(DSP::Block *block, int InputNo, DSP_float value, DSP::Component_ptr Caller)
+void DSPu_FILEoutput::InputExecute(DSP::Block *block, int InputNo, DSP::Float value, DSP::Component_ptr Caller)
 { // we assume only one input
   ((DSPu_FILEoutput *)block)->Buffer[((DSPu_FILEoutput *)block)->BufferIndex * ((DSPu_FILEoutput *)block)->NoOfInputs + InputNo]=value;
   ((DSPu_FILEoutput *)block)->NoOfInputsProcessed++;
@@ -2290,7 +2371,7 @@ void DSPu_FILEoutput::FlushBuffer(void)
   uint8_t *tempUChar, mask;
   uint8_t *tempBuffer;
 //#ifdef __DEBUG__
-//  DSP_float *tempBuffer_float;
+//  DSP::Float *tempBuffer_float;
 //  short *tempShort;
 //  float *tempFloat;
 //#endif
@@ -2572,9 +2653,9 @@ bool DSPu_WaveInput::Init(void)
 
   BufferIndex=0; //this means also that Buffer is empty
 
-  ConvertionNeeded=true; //inner buffer in DSP_float format
-  AudioBufferLen = (DWORD)(NoOfOutputs*SegmentSize*sizeof(DSP_float));
-  AudioBuffer=(DSP_float *)(new char[AudioBufferLen]);
+  ConvertionNeeded=true; //inner buffer in DSP::Float format
+  AudioBufferLen = (DWORD)(NoOfOutputs*SegmentSize*sizeof(DSP::Float));
+  AudioBuffer=(DSP::Float *)(new char[AudioBufferLen]);
   memset(AudioBuffer, 0, AudioBufferLen);
 
   tekst = FileDir; len = int(tekst.length());
@@ -2714,7 +2795,7 @@ DWORD DSPu_WaveInput::ReadAudioSegment(void)
     if (ConvertionNeeded)
     {
       unsigned int ind, ind2;
-      DSP_float *temp_Audio;
+      DSP::Float *temp_Audio;
 
       temp_Audio=AudioBuffer;
 
@@ -2723,7 +2804,7 @@ DWORD DSPu_WaveInput::ReadAudioSegment(void)
           for (ind2=0; ind2<NoOfOutputs; ind2++)
           {
             if (ind2<WAVEchunk.nChannels)
-              *temp_Audio=(DSP_float)(
+              *temp_Audio=(DSP::Float)(
                 ((uint8_t *)ReadBuffer)[ind2+ind*WAVEchunk.nChannels]-0x80)
                 / 0x80;
             else
@@ -2736,7 +2817,7 @@ DWORD DSPu_WaveInput::ReadAudioSegment(void)
             for (ind2=0; ind2<NoOfOutputs; ind2++)
             {
               if (ind2<WAVEchunk.nChannels)
-                *temp_Audio=DSP_float(
+                *temp_Audio=DSP::Float(
                     ((short *)ReadBuffer)[ind2+ind*WAVEchunk.nChannels])
                     / 0x8000;
               else
@@ -2749,7 +2830,7 @@ DWORD DSPu_WaveInput::ReadAudioSegment(void)
               for (ind2=0; ind2<NoOfOutputs; ind2++)
               {
                 if (ind2<WAVEchunk.nChannels)
-                  *temp_Audio=DSP_float(
+                  *temp_Audio=DSP::Float(
                       ((float *)ReadBuffer)[ind2+ind*WAVEchunk.nChannels])
                       / 0x8000;
                 else
@@ -2764,7 +2845,7 @@ DWORD DSPu_WaveInput::ReadAudioSegment(void)
         #endif
 
     }
-    return (DWORD)(BytesRead/sizeof(DSP_float)/WAVEchunk.nChannels);
+    return (DWORD)(BytesRead/sizeof(DSP::Float)/WAVEchunk.nChannels);
   }
 }
 
@@ -2785,10 +2866,10 @@ bool DSPu_WaveInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
 { // we assume only one output
   UNUSED_DEBUG_ARGUMENT(clock);
   unsigned int ind;
-  DSP_float *temp;
+  DSP::Float *temp;
 
   if (DSP_THIS->BufferIndex == 0)
-  { // Data must be read from file to buffer and convert to DSP_float
+  { // Data must be read from file to buffer and convert to DSP::Float
     DSP_THIS->ReadAudioSegment();
   }
 
@@ -3607,7 +3688,7 @@ DWORD DSP::f::GetAudioBufferSize(unsigned long SamplingFreq, DSPe_AudioBufferTyp
     MMRESULT result;
     DSPu_AudioInput *Current;
     short *temp16;
-    DSP_float_ptr Sample;
+    DSP::Float_ptr Sample;
     unsigned int ind;
   #ifdef __DEBUG__
     #ifdef AUDIO_DEBUG_MESSAGES_ON
@@ -3688,7 +3769,7 @@ DWORD DSP::f::GetAudioBufferSize(unsigned long SamplingFreq, DSPe_AudioBufferTyp
               temp16=(short *)(Current->WaveInBuffers[Current->NextBufferInd]);
               for (ind=0; ind<Current->InBufferLen; ind++)
               {
-                *Sample = (DSP_float)(*temp16) / SHRT_MAX;
+                *Sample = (DSP::Float)(*temp16) / SHRT_MAX;
                 Sample++;
                 temp16++;
               }
@@ -3729,7 +3810,7 @@ DWORD DSP::f::GetAudioBufferSize(unsigned long SamplingFreq, DSPe_AudioBufferTyp
     MMRESULT result;
     DSPu_AudioInput *Current;
     uint8_t *temp8;
-    DSP_float_ptr Sample;
+    DSP::Float_ptr Sample;
     unsigned int ind;
   #ifdef __DEBUG__
     #ifdef AUDIO_DEBUG_MESSAGES_ON
@@ -3812,7 +3893,7 @@ DWORD DSP::f::GetAudioBufferSize(unsigned long SamplingFreq, DSPe_AudioBufferTyp
               temp8=(uint8_t *)(Current->WaveInBuffers[Current->NextBufferInd]);
               for (ind=0; ind<Current->InBufferLen; ind++)
               {
-                *Sample = (DSP_float)(*temp8 - 128) / 128;
+                *Sample = (DSP::Float)(*temp8 - 128) / 128;
                 Sample++;
                 temp8++;
               }
@@ -4004,8 +4085,8 @@ void DSPu_AudioOutput::Init(unsigned long SamplingFreq,
       }
 
       OutBufferLen=NoOfInputs*audio_outbuffer_size;
-      OutBuffer = new DSP_float[OutBufferLen];
-      memset(OutBuffer, 0, OutBufferLen*sizeof(DSP_float));
+      OutBuffer = new DSP::Float[OutBufferLen];
+      memset(OutBuffer, 0, OutBufferLen*sizeof(DSP::Float));
       BufferIndex=0;
 
       for (ind=0; ind< DSP_NoOfAudioOutputBuffers; ind++)
@@ -4194,8 +4275,8 @@ void DSPu_AudioInput::Init(DSP::Clock_ptr ParentClock,
       InBufferLen=NoOfOutputs*audio_inbuffer_size;
       for (ind = 0; ind < DSP_NoOfAudioInputBuffers; ind++)
       {
-        InBuffers[ind] = new DSP_float[InBufferLen];
-        memset(InBuffers[ind], 0, InBufferLen*sizeof(DSP_float));
+        InBuffers[ind] = new DSP::Float[InBufferLen];
+        memset(InBuffers[ind], 0, InBufferLen*sizeof(DSP::Float));
       }
       EmptyBufferIndex=0;
       CurrentBufferIndex=DSP_NoOfAudioInputBuffers-1;
@@ -4426,7 +4507,7 @@ void DSPu_AudioOutput::FlushBuffer(void)
     MMRESULT result;
     uint8_t *temp8;
     short *temp16;
-    DSP_float_ptr Sample;
+    DSP::Float_ptr Sample;
     short Znak;
     DWORD ind;
 
@@ -4688,7 +4769,7 @@ bool DSPu_AudioInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
       DSP_THIS->NextBufferInd = 0; //first buffer first
       DSP_THIS->EmptyBufferIndex = 2; //simulate two full buffers
       for (ind = 0; ind < DSP_THIS->EmptyBufferIndex; ind++)
-        memset(DSP_THIS->InBuffers[ind], 0, DSP_THIS->InBufferLen*sizeof(DSP_float));
+        memset(DSP_THIS->InBuffers[ind], 0, DSP_THIS->InBufferLen*sizeof(DSP::Float));
       DSP_THIS->BufferIndex = 0;
 
       result=waveInStart(DSP_THIS->hWaveIn);
@@ -4813,9 +4894,9 @@ DSPu_InputBuffer::DSPu_InputBuffer(DSP::Clock_ptr ParentClock, int BufferSize_in
   RegisterOutputClock(ParentClock);
 
   BufferSize=BufferSize_in;
-  Buffer = new DSP_float[BufferSize*NoOfOutputs];
+  Buffer = new DSP::Float[BufferSize*NoOfOutputs];
   BufferIndex=0;
-  memset(Buffer, 0, sizeof(DSP_float)*BufferSize*NoOfOutputs);
+  memset(Buffer, 0, sizeof(DSP::Float)*BufferSize*NoOfOutputs);
 
   if (cyclic == DSP_cyclic)
   {
@@ -4898,7 +4979,7 @@ void DSPu_InputBuffer::WriteBuffer(void *source,
   NoOfSourceSamples*=NoOfOutputs;
   if (BufferSize > NoOfSourceSamples)
   {
-    memset(Buffer, 0, sizeof(DSP_float)*NoOfSourceSamples);
+    memset(Buffer, 0, sizeof(DSP::Float)*NoOfSourceSamples);
   }
 
   switch (source_DataType)
@@ -4906,13 +4987,13 @@ void DSPu_InputBuffer::WriteBuffer(void *source,
     case DSP::e::SampleType::ST_uchar:
       //convertion
       for (ind=0; ind<NoOfSourceSamples; ind++)
-        Buffer[ind]=(((DSP_float)((unsigned char  *)source)[ind]-0x80)
+        Buffer[ind]=(((DSP::Float)((unsigned char  *)source)[ind]-0x80)
                     )/0x80;
       break;
     case DSP::e::SampleType::ST_short:
       //convertion
       for (ind=0; ind<NoOfSourceSamples; ind++)
-        Buffer[ind]=((DSP_float)((short *)source)[ind])/0x8000;
+        Buffer[ind]=((DSP::Float)((short *)source)[ind])/0x8000;
       break;
     case DSP::e::SampleType::ST_float:
       //convertion
@@ -4943,7 +5024,7 @@ bool DSPu_InputBuffer::OutputExecute(OUTPUT_EXECUTE_ARGS)
   DSP_THIS->BufferIndex %= (DSP_THIS->BufferSize * DSP_THIS->NoOfOutputs);
   if (DSP_THIS->BufferIndex == 0)
     memset(DSP_THIS->Buffer, 0,
-           sizeof(DSP_float) * DSP_THIS->BufferSize * DSP_THIS->NoOfOutputs);
+           sizeof(DSP::Float) * DSP_THIS->BufferSize * DSP_THIS->NoOfOutputs);
 
   return true;
 }
@@ -4961,7 +5042,7 @@ bool DSPu_InputBuffer::OutputExecute_single_channel(OUTPUT_EXECUTE_ARGS)
   DSP_THIS->BufferIndex %= DSP_THIS->BufferSize;
 
   if (DSP_THIS->BufferIndex == 0)
-    memset(DSP_THIS->Buffer, 0, sizeof(DSP_float) * DSP_THIS->BufferSize);
+    memset(DSP_THIS->Buffer, 0, sizeof(DSP::Float) * DSP_THIS->BufferSize);
 
   return true;
 }
@@ -5096,8 +5177,8 @@ DSPu_OutputBuffer::DSPu_OutputBuffer(unsigned int BufferSize_in, unsigned int No
   }
 
   ///////////////////////////////////////////////
-  OutputsValues = new DSP_float[NoOfOutputs];
-  memset(OutputsValues, 0, NoOfOutputs*sizeof(DSP_float));
+  OutputsValues = new DSP::Float[NoOfOutputs];
+  memset(OutputsValues, 0, NoOfOutputs*sizeof(DSP::Float));
 
   NotificationFunction_ptr = NULL;
   CallbackFunction_ptr = func_ptr;
@@ -5156,8 +5237,8 @@ DSPu_OutputBuffer::DSPu_OutputBuffer(unsigned int BufferSize_in, unsigned int No
   }
 
   ///////////////////////////////////////////////
-  OutputsValues = new DSP_float[NoOfOutputs];
-  memset(OutputsValues, 0, NoOfOutputs*sizeof(DSP_float));
+  OutputsValues = new DSP::Float[NoOfOutputs];
+  memset(OutputsValues, 0, NoOfOutputs*sizeof(DSP::Float));
 
   NotificationFunction_ptr = NULL;
   CallbackFunction_ptr = func_ptr;
@@ -5265,9 +5346,9 @@ void DSPu_OutputBuffer::Init(unsigned int BufferSize_in, unsigned int NoOfChanne
   }
 
   BufferSize=BufferSize_in;
-  Buffer = new DSP_float[BufferSize*NoOfInputs];
+  Buffer = new DSP::Float[BufferSize*NoOfInputs];
   BufferIndex=0;
-  memset(Buffer, 0, sizeof(DSP_float)*BufferSize*NoOfInputs);
+  memset(Buffer, 0, sizeof(DSP::Float)*BufferSize*NoOfInputs);
 }
 
 // copies dest_size bytes to the dest buffer
@@ -5374,7 +5455,7 @@ long int DSPu_OutputBuffer::ReadBuffer(void *dest, long int dest_size,
       //   256 slots       256 filled       needed place for 128
       if (BufferSize - BufferIndex < reset)
       {
-        DSP_float_ptr in, out;
+        DSP::Float_ptr in, out;
         int size, step;
 
         // BufferIndex \ BufferSize
@@ -5387,7 +5468,7 @@ long int DSPu_OutputBuffer::ReadBuffer(void *dest, long int dest_size,
         step = (int)(reset - (BufferSize - BufferIndex));
 
         out = Buffer; in = out + step*NoOfInputs;
-        size = (int)(NoOfInputs*sizeof(DSP_float));
+        size = (int)(NoOfInputs*sizeof(DSP::Float));
         for (ind = 0; ind < BufferIndex-step; ind++)
         {
           memcpy(out, in, size);
@@ -5402,7 +5483,7 @@ long int DSPu_OutputBuffer::ReadBuffer(void *dest, long int dest_size,
   return  NoOfDestSamples/NoOfInputs;
 }
 
-DSP_float_ptr DSPu_OutputBuffer::AccessBuffer(void)
+DSP::Float_ptr DSPu_OutputBuffer::AccessBuffer(void)
 {
   return Buffer;
 }
@@ -5418,7 +5499,7 @@ long int DSPu_OutputBuffer::GetBufferSize(int mode)
   switch (mode)
   {
     case 2:
-      return  (long int)(BufferSize*NoOfInputs*sizeof(DSP_float));
+      return  (long int)(BufferSize*NoOfInputs*sizeof(DSP::Float));
     case 1:
       return  BufferSize*NoOfInputs;
     case 0:
@@ -5458,8 +5539,8 @@ void DSPu_OutputBuffer::InputExecute(INPUT_EXECUTE_ARGS)
       { 
         if (DSP_THIS->IsCyclic == false)
         { // place for one input sample needed
-          memcpy(DSP_THIS->Buffer, DSP_THIS->Buffer+DSP_THIS->NoOfInputs, (DSP_THIS->BufferSize-1)*DSP_THIS->NoOfInputs*sizeof(DSP_float));
-          memset(DSP_THIS->Buffer+(DSP_THIS->BufferSize - 1) * DSP_THIS->NoOfInputs, 0, DSP_THIS->NoOfInputs*sizeof(DSP_float));
+          memcpy(DSP_THIS->Buffer, DSP_THIS->Buffer+DSP_THIS->NoOfInputs, (DSP_THIS->BufferSize-1)*DSP_THIS->NoOfInputs*sizeof(DSP::Float));
+          memset(DSP_THIS->Buffer+(DSP_THIS->BufferSize - 1) * DSP_THIS->NoOfInputs, 0, DSP_THIS->NoOfInputs*sizeof(DSP::Float));
           DSP_THIS->BufferIndex--;
         }
       }
@@ -5508,8 +5589,8 @@ void DSPu_OutputBuffer::InputExecute_with_output(INPUT_EXECUTE_ARGS)
       {
         if (DSP_THIS->IsCyclic == false)
         { // place for one input sample needed
-          memcpy(DSP_THIS->Buffer, DSP_THIS->Buffer+DSP_THIS->NoOfInputs, (DSP_THIS->BufferSize-1)*DSP_THIS->NoOfInputs*sizeof(DSP_float));
-          memset(DSP_THIS->Buffer+(DSP_THIS->BufferSize - 1) * DSP_THIS->NoOfInputs, 0, DSP_THIS->NoOfInputs*sizeof(DSP_float));
+          memcpy(DSP_THIS->Buffer, DSP_THIS->Buffer+DSP_THIS->NoOfInputs, (DSP_THIS->BufferSize-1)*DSP_THIS->NoOfInputs*sizeof(DSP::Float));
+          memset(DSP_THIS->Buffer+(DSP_THIS->BufferSize - 1) * DSP_THIS->NoOfInputs, 0, DSP_THIS->NoOfInputs*sizeof(DSP::Float));
           DSP_THIS->BufferIndex--;
         }
       }
@@ -5823,7 +5904,7 @@ int DSP::LoadCoef::GetSize(int vector_no)
  *
  * Returns FALSE if file type or size mismatch is detected.
  */
-bool DSP::LoadCoef::Load(DSP_complex_vector &FIR_coef, int vector_index)
+bool DSP::LoadCoef::Load(DSP::Complex_vector &FIR_coef, int vector_index)
 {
   FILE *plik;
   uint8_t *data;
@@ -5863,16 +5944,16 @@ bool DSP::LoadCoef::Load(DSP_complex_vector &FIR_coef, int vector_index)
         switch (this->sample_type)
         {
           case DSP::e::SampleType::ST_float:
-            FIR_coef[ind] = DSP_complex(((float *)data)[0], ((float *)data)[1]);
+            FIR_coef[ind] = DSP::Complex(((float *)data)[0], ((float *)data)[1]);
             break;
           case DSP::e::SampleType::ST_double:
-            FIR_coef[ind] = DSP_complex(((double *)data)[0], ((double *)data)[1]);
+            FIR_coef[ind] = DSP::Complex(((double *)data)[0], ((double *)data)[1]);
             break;
           case DSP::e::SampleType::ST_long_double:
-            FIR_coef[ind] = DSP_complex(((long double *)data)[0], ((long double *)data)[1]);
+            FIR_coef[ind] = DSP::Complex(((long double *)data)[0], ((long double *)data)[1]);
             break;
           default:
-            FIR_coef[ind] = DSP_complex(0.0, 0.0);
+            FIR_coef[ind] = DSP::Complex(0.0, 0.0);
             break;
         }
       }
@@ -5891,7 +5972,7 @@ bool DSP::LoadCoef::Load(DSP_complex_vector &FIR_coef, int vector_index)
  *
  * Returns FALSE if file type or size mismatch is detected.
  */
-bool DSP::LoadCoef::Load(DSP_float_vector &FIR_coef, int vector_index)
+bool DSP::LoadCoef::Load(DSP::Float_vector &FIR_coef, int vector_index)
 {
   FILE *plik;
   uint8_t *data;
@@ -5931,16 +6012,16 @@ bool DSP::LoadCoef::Load(DSP_float_vector &FIR_coef, int vector_index)
         switch (this->sample_type)
         {
           case DSP::e::SampleType::ST_float:
-            FIR_coef[ind] = DSP_float(((float *)data)[0]);
+            FIR_coef[ind] = DSP::Float(((float *)data)[0]);
             break;
           case DSP::e::SampleType::ST_double:
-            FIR_coef[ind] = DSP_float(((double *)data)[0]);
+            FIR_coef[ind] = DSP::Float(((double *)data)[0]);
             break;
           case DSP::e::SampleType::ST_long_double:
-            FIR_coef[ind] = DSP_float(((long double *)data)[0]);
+            FIR_coef[ind] = DSP::Float(((long double *)data)[0]);
             break;
           default:
-            FIR_coef[ind] = DSP_float(0.0);
+            FIR_coef[ind] = DSP::Float(0.0);
             break;
         }
       }
@@ -5972,13 +6053,13 @@ FILE * CreateFLTfile(const string &filename, const unsigned int &NoOfChannels = 
 }
 
 // Saves to *.flt file len samples from real valued vector
-bool DSP::f::SaveVector(const string &filename, const DSP_float_vector &vector, const unsigned int &Fp)
+bool DSP::f::SaveVector(const string &filename, const DSP::Float_vector &vector, const unsigned int &Fp)
 {
   FILE *FileHandle = CreateFLTfile(filename, 1U, Fp);
 
   if (FileHandle != NULL)
   {
-    fwrite(vector.data(), sizeof(DSP_float), vector.size(), FileHandle);
+    fwrite(vector.data(), sizeof(DSP::Float), vector.size(), FileHandle);
 //    fflush(FileHandle);
     fclose(FileHandle);
 
@@ -5987,13 +6068,13 @@ bool DSP::f::SaveVector(const string &filename, const DSP_float_vector &vector, 
   return false;
 }
 // Saves to *.flt file len samples from complex valued vector
-bool DSP::f::SaveVector(const string &filename, const DSP_complex_vector &vector, const unsigned int &Fp)
+bool DSP::f::SaveVector(const string &filename, const DSP::Complex_vector &vector, const unsigned int &Fp)
 {
   FILE *FileHandle = CreateFLTfile(filename, 2U, Fp);
 
   if (FileHandle != NULL)
   {
-    fwrite(vector.data(), 2*sizeof(DSP_float), vector.size(), FileHandle);
+    fwrite(vector.data(), 2*sizeof(DSP::Float), vector.size(), FileHandle);
 //    fflush(FileHandle);
     fclose(FileHandle);
 

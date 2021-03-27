@@ -6,8 +6,8 @@
 
 /**************************************************/
 // AGC - automatic gain control
-DSPu_AGC::DSPu_AGC(DSP_float alfa_in, DSP_float init_signal_power,
-                 DSP_float output_signal_power)
+DSPu_AGC::DSPu_AGC(DSP::Float alfa_in, DSP::Float init_signal_power,
+                 DSP::Float output_signal_power)
   : DSP::Block()
 {
   SetName("AGC", false);
@@ -26,7 +26,7 @@ DSPu_AGC::DSPu_AGC(DSP_float alfa_in, DSP_float init_signal_power,
 
   alfa=alfa_in;
   signal_power=init_signal_power;
-  out_power=(DSP_float)sqrt(output_signal_power);
+  out_power=(DSP::Float)sqrt(output_signal_power);
 
   Execute_ptr = &InputExecute;
 }
@@ -38,7 +38,7 @@ DSPu_AGC::~DSPu_AGC()
 void DSPu_AGC::InputExecute(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_float temp;
+  DSP::Float temp;
 
   if (InputNo==0)
     ((DSPu_AGC *)block)->input.re = value;
@@ -70,7 +70,7 @@ void DSPu_AGC::InputExecute(INPUT_EXECUTE_ARGS)
       ((DSPu_AGC *)block)->input.im * temp, block);
 };
 
-DSP_float DSPu_AGC::GetPower(void)
+DSP::Float DSPu_AGC::GetPower(void)
 {
   return signal_power;
 }
@@ -105,8 +105,8 @@ DSPu_BPSK_SNR_estimator::DSPu_BPSK_SNR_estimator(int segment_size)
   ClockGroups.AddOutputs2Group("all", 0, NoOfOutputs-1);
 
   SegmentSize = segment_size;
-  RealBuffer = new DSP_float[SegmentSize];
-  memset(RealBuffer, 0, sizeof(DSP_float)*SegmentSize);
+  RealBuffer = new DSP::Float[SegmentSize];
+  memset(RealBuffer, 0, sizeof(DSP::Float)*SegmentSize);
   current_ind = 0;
 
   Input_Real = 0.0; Input_Imag = 0.0;
@@ -137,7 +137,7 @@ void DSPu_BPSK_SNR_estimator::InputExecute(INPUT_EXECUTE_ARGS)
   /*
    * Input samples processing
    */
-  DSP_float s_abs, s_smoothed, v_BPSK, S, N;
+  DSP::Float s_abs, s_smoothed, v_BPSK, S, N;
   s_smoothed=0.0;
 
   s_abs=FABS(((DSPu_BPSK_SNR_estimator *)block)->Input_Real);
@@ -147,7 +147,7 @@ void DSPu_BPSK_SNR_estimator::InputExecute(INPUT_EXECUTE_ARGS)
   ((DSPu_BPSK_SNR_estimator *)block)->current_ind =
       ((((DSPu_BPSK_SNR_estimator *)block)->current_ind + 1) % ((DSPu_BPSK_SNR_estimator *)block)->SegmentSize);
 
-  v_BPSK = s_smoothed / DSP_float(((DSPu_BPSK_SNR_estimator *)block)->SegmentSize);
+  v_BPSK = s_smoothed / DSP::Float(((DSPu_BPSK_SNR_estimator *)block)->SegmentSize);
 
   ((DSPu_BPSK_SNR_estimator *)block)->Input_Real = s_abs - v_BPSK;
 
@@ -171,13 +171,13 @@ void DSPu_BPSK_SNR_estimator::InputExecute(INPUT_EXECUTE_ARGS)
  *
  * \warning in this version Buffer is overwritten
  */
-void DSP::f::PSK_SNR_estimator(int buffer_size, DSP_float_ptr buffer,
-                            DSP_float &BPSK_SNR, DSP_float &QPSK_SNR)
+void DSP::f::PSK_SNR_estimator(int buffer_size, DSP::Float_ptr buffer,
+                            DSP::Float &BPSK_SNR, DSP::Float &QPSK_SNR)
 {
-  DSP_float s_re_abs, s_im_abs;
-  DSP_float v_BPSK, S_BPSK, N_BPSK;
-  DSP_float v_QPSK, S_QPSK, N_QPSK;
-  DSP_float_ptr tmp_buffer;
+  DSP::Float s_re_abs, s_im_abs;
+  DSP::Float v_BPSK, S_BPSK, N_BPSK;
+  DSP::Float v_QPSK, S_QPSK, N_QPSK;
+  DSP::Float_ptr tmp_buffer;
   int ind;
 
   //constelation points position estimation for BPSK & QPSK
@@ -196,8 +196,8 @@ void DSP::f::PSK_SNR_estimator(int buffer_size, DSP_float_ptr buffer,
     *tmp_buffer = FABS(*tmp_buffer);
     s_im_abs += *tmp_buffer;
   }
-  s_re_abs /= (DSP_float)buffer_size;
-  s_im_abs /= (DSP_float)buffer_size;
+  s_re_abs /= (DSP::Float)buffer_size;
+  s_im_abs /= (DSP::Float)buffer_size;
 
   v_BPSK = s_re_abs;
   v_QPSK = (v_BPSK + s_im_abs)/2;
@@ -215,7 +215,7 @@ void DSP::f::PSK_SNR_estimator(int buffer_size, DSP_float_ptr buffer,
     tmp_buffer++;
     N_BPSK += (*tmp_buffer) * (*tmp_buffer);
   }
-  N_BPSK /= (DSP_float)buffer_size;
+  N_BPSK /= (DSP::Float)buffer_size;
   S_BPSK = v_BPSK*v_BPSK + v_BPSK*v_BPSK;
 
   // Signal power for QPSK
@@ -226,7 +226,7 @@ void DSP::f::PSK_SNR_estimator(int buffer_size, DSP_float_ptr buffer,
     tmp_buffer++;
     N_QPSK += (*tmp_buffer - v_QPSK) * (*tmp_buffer - v_QPSK);
   }
-  N_QPSK /= (DSP_float)buffer_size;
+  N_QPSK /= (DSP::Float)buffer_size;
   S_QPSK = v_QPSK*v_QPSK + v_QPSK*v_QPSK;
 
 
@@ -240,13 +240,13 @@ void DSP::f::PSK_SNR_estimator(int buffer_size, DSP_float_ptr buffer,
  *
  * \warning This version preserves input buffer
  */
-void DSP::f::PSK_SNR_estimator2(int buffer_size, DSP_float_ptr buffer,
-                             DSP_float &BPSK_SNR, DSP_float &QPSK_SNR)
+void DSP::f::PSK_SNR_estimator2(int buffer_size, DSP::Float_ptr buffer,
+                             DSP::Float &BPSK_SNR, DSP::Float &QPSK_SNR)
 {
-  DSP_float s_re_abs, s_im_abs;
-  DSP_float v_BPSK, S_BPSK, N_BPSK;
-  DSP_float v_QPSK, S_QPSK, N_QPSK;
-  DSP_float_ptr tmp_buffer;
+  DSP::Float s_re_abs, s_im_abs;
+  DSP::Float v_BPSK, S_BPSK, N_BPSK;
+  DSP::Float v_QPSK, S_QPSK, N_QPSK;
+  DSP::Float_ptr tmp_buffer;
   int ind;
 
   //constelation points position estimation for BPSK & QPSK
@@ -261,8 +261,8 @@ void DSP::f::PSK_SNR_estimator2(int buffer_size, DSP_float_ptr buffer,
     tmp_buffer++;
     s_im_abs += FABS(*tmp_buffer);
   }
-  s_re_abs /= (DSP_float)buffer_size;
-  s_im_abs /= (DSP_float)buffer_size;
+  s_re_abs /= (DSP::Float)buffer_size;
+  s_im_abs /= (DSP::Float)buffer_size;
 
   v_BPSK = s_re_abs;
   v_QPSK = (v_BPSK + s_im_abs)/2;
@@ -280,7 +280,7 @@ void DSP::f::PSK_SNR_estimator2(int buffer_size, DSP_float_ptr buffer,
     tmp_buffer++;
     N_BPSK += (*tmp_buffer) * (*tmp_buffer);
   }
-  N_BPSK /= (DSP_float)buffer_size;
+  N_BPSK /= (DSP::Float)buffer_size;
   S_BPSK = v_BPSK*v_BPSK;
 
   // Signal power for QPSK
@@ -291,7 +291,7 @@ void DSP::f::PSK_SNR_estimator2(int buffer_size, DSP_float_ptr buffer,
     tmp_buffer++;
     N_QPSK += (FABS(*tmp_buffer) - v_QPSK) * (FABS(*tmp_buffer) - v_QPSK);
   }
-  N_QPSK /= (DSP_float)buffer_size;
+  N_QPSK /= (DSP::Float)buffer_size;
   S_QPSK = 2*v_QPSK*v_QPSK;
 
 
@@ -315,7 +315,7 @@ void DSP::f::PSK_SNR_estimator2(int buffer_size, DSP_float_ptr buffer,
  *
  */
 DSPu_DynamicCompressor::DSPu_DynamicCompressor(
-                           int BufferSize_in, DSP_float a0, DSP_float Po_dB,
+                           int BufferSize_in, DSP::Float a0, DSP::Float Po_dB,
                            bool IsInputComplex, int OutputDelay_in)
   : DSP::Block()
 {
@@ -388,17 +388,17 @@ DSPu_DynamicCompressor::DSPu_DynamicCompressor(
   if (SamplesBufferSize == 0)
     SamplesBuffer = NULL;
   else
-    SamplesBuffer = new DSP_float[SamplesBufferSize];
+    SamplesBuffer = new DSP::Float[SamplesBufferSize];
   for (ind = 0; ind < SamplesBufferSize; ind++)
     SamplesBuffer[ind] = 0.0;
 
   PowerBufferSize = BufferSize_in;
-  PowerBuffer = new DSP_float[PowerBufferSize];
+  PowerBuffer = new DSP::Float[PowerBufferSize];
   for (ind = 0; ind < PowerBufferSize; ind++)
     PowerBuffer[ind] = 0.0;
 
   CurrentPower = 0.0;
-  alfa = (DSP_float(1.0)/a0 - 1)/2;
+  alfa = (DSP::Float(1.0)/a0 - 1)/2;
   factor_0 = POW( POW(10, Po_dB/10), -alfa);
 
   if (OutputDelay_in == 0)
@@ -427,10 +427,10 @@ void DSPu_DynamicCompressor::InputExecute_no_delay_real(INPUT_EXECUTE_ARGS)
 {
   UNUSED_ARGUMENT(InputNo);
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_float factor;
+  DSP::Float factor;
 
   THIS->CurrentPower -= THIS->PowerBuffer[THIS->power_index];
-  THIS->PowerBuffer[THIS->power_index] = (value * value) / DSP_float(THIS->PowerBufferSize);
+  THIS->PowerBuffer[THIS->power_index] = (value * value) / DSP::Float(THIS->PowerBufferSize);
   THIS->CurrentPower += THIS->PowerBuffer[THIS->power_index];
   THIS->power_index++; THIS->power_index %= THIS->PowerBufferSize;
 
@@ -456,13 +456,13 @@ void DSPu_DynamicCompressor::InputExecute_no_delay_complex(INPUT_EXECUTE_ARGS)
 
   if (THIS->NoOfInputsProcessed == THIS->NoOfInputs)
   {
-    DSP_float factor;
+    DSP::Float factor;
 
     THIS->CurrentPower -= THIS->PowerBuffer[THIS->power_index];
     THIS->PowerBuffer[THIS->power_index] =
         ((THIS->temp_value.re * THIS->temp_value.re) +
          (THIS->temp_value.im * THIS->temp_value.im))
-        / DSP_float(THIS->PowerBufferSize);
+        / DSP::Float(THIS->PowerBufferSize);
     THIS->CurrentPower += THIS->PowerBuffer[THIS->power_index];
     THIS->power_index++; THIS->power_index %= THIS->PowerBufferSize;
 
@@ -486,10 +486,10 @@ void DSPu_DynamicCompressor::InputExecute_real(INPUT_EXECUTE_ARGS)
 {
   UNUSED_ARGUMENT(InputNo);
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_float factor;
+  DSP::Float factor;
 
   THIS->CurrentPower -= THIS->PowerBuffer[THIS->power_index];
-  THIS->PowerBuffer[THIS->power_index] = (value * value) / DSP_float(THIS->PowerBufferSize);
+  THIS->PowerBuffer[THIS->power_index] = (value * value) / DSP::Float(THIS->PowerBufferSize);
   THIS->CurrentPower += THIS->PowerBuffer[THIS->power_index];
   THIS->power_index++; THIS->power_index %= THIS->PowerBufferSize;
 
@@ -521,13 +521,13 @@ void DSPu_DynamicCompressor::InputExecute_complex(INPUT_EXECUTE_ARGS)
 
   if (THIS->NoOfInputsProcessed == THIS->NoOfInputs)
   {
-    DSP_float factor;
+    DSP::Float factor;
 
     THIS->CurrentPower -= THIS->PowerBuffer[THIS->power_index];
     THIS->PowerBuffer[THIS->power_index] =
         ((THIS->temp_value.re * THIS->temp_value.re) +
         (THIS->temp_value.im * THIS->temp_value.im))
-       / DSP_float(THIS->PowerBufferSize);
+       / DSP::Float(THIS->PowerBufferSize);
     THIS->CurrentPower += THIS->PowerBuffer[THIS->power_index];
     THIS->power_index++; THIS->power_index %= THIS->PowerBufferSize;
 
@@ -555,7 +555,7 @@ void DSPu_DynamicCompressor::InputExecute_complex(INPUT_EXECUTE_ARGS)
 
 
 ///**************************************************/
-//DSPu_Farrow::DSPu_Farrow(bool IsComplex, unsigned int N_FSD_in, unsigned int order_in, DSP_float_ptr *Farrow_coefs_in,
+//DSPu_Farrow::DSPu_Farrow(bool IsComplex, unsigned int N_FSD_in, unsigned int order_in, DSP::Float_ptr *Farrow_coefs_in,
 //                         DSP::Clock_ptr InputClock, DSP::Clock_ptr OutputClock)
 //  : DSP::Block(), DSP::Source()
 //{
@@ -622,27 +622,27 @@ void DSPu_DynamicCompressor::InputExecute_complex(INPUT_EXECUTE_ARGS)
 //  N_FSD = N_FSD_in;
 //  if (NoOfOutputs == 1)
 //  {
-//    Buffer = (uint8_t *)(new DSP_float[N_FSD]);
+//    Buffer = (uint8_t *)(new DSP::Float[N_FSD]);
 //    for (ind=0; ind<N_FSD; ind++)
-//      ((DSP_float *)Buffer)[ind] = 0.0;
+//      ((DSP::Float *)Buffer)[ind] = 0.0;
 //
 //    Execute_ptr = &InputExecute_real;
 //  }
 //  else
 //  {
-//    Buffer = (uint8_t *)(new DSP_complex[N_FSD]);
+//    Buffer = (uint8_t *)(new DSP::Complex[N_FSD]);
 //    for (ind=0; ind<N_FSD; ind++)
-//      ((DSP_complex *)Buffer)[ind] = DSP_complex(0.0, 0.0);
+//      ((DSP::Complex *)Buffer)[ind] = DSP::Complex(0.0, 0.0);
 //
 //    Execute_ptr = &InputExecute_cplx;
 //  }
 //
 //  ///////////////////////////////////
 //  Farrow_len = order_in+1;
-//  Farrow_coefs = new DSP_float_ptr[Farrow_len];
+//  Farrow_coefs = new DSP::Float_ptr[Farrow_len];
 //  for (ind = 0; ind < Farrow_len; ind++)
 //  {
-//    Farrow_coefs[ind] = new DSP_float[N_FSD];
+//    Farrow_coefs[ind] = new DSP::Float[N_FSD];
 //  }
 //
 ////  // copy with transposition
@@ -668,7 +668,7 @@ void DSPu_DynamicCompressor::InputExecute_complex(INPUT_EXECUTE_ARGS)
 //  OutputExecute_ptr = &OutputExecute;
 //}
 
-DSPu_Farrow::DSPu_Farrow(const bool& IsComplex, const vector<DSP_float_vector>& Farrow_coefs_in,
+DSPu_Farrow::DSPu_Farrow(const bool& IsComplex, const vector<DSP::Float_vector>& Farrow_coefs_in,
   const DSP::Clock_ptr& InputClock, const DSP::Clock_ptr& OutputClock)
   : DSP::Block(), DSP::Source()
 {
@@ -735,27 +735,27 @@ DSPu_Farrow::DSPu_Farrow(const bool& IsComplex, const vector<DSP_float_vector>& 
   N_FSD = (unsigned long)(Farrow_coefs_in.size());
   if (NoOfOutputs == 1)
   {
-    Buffer = (uint8_t*)(new DSP_float[N_FSD]);
+    Buffer = (uint8_t*)(new DSP::Float[N_FSD]);
     for (ind = 0; ind < N_FSD; ind++)
-      ((DSP_float*)Buffer)[ind] = 0.0;
+      ((DSP::Float*)Buffer)[ind] = 0.0;
 
     Execute_ptr = &InputExecute_real;
   }
   else
   {
-    Buffer = (uint8_t*)(new DSP_complex[N_FSD]);
+    Buffer = (uint8_t*)(new DSP::Complex[N_FSD]);
     for (ind = 0; ind < N_FSD; ind++)
-      ((DSP_complex*)Buffer)[ind] = DSP_complex(0.0, 0.0);
+      ((DSP::Complex*)Buffer)[ind] = DSP::Complex(0.0, 0.0);
 
     Execute_ptr = &InputExecute_cplx;
   }
 
   ///////////////////////////////////
   Farrow_len = (unsigned long)(Farrow_coefs_in[0].size()); // p_order+1
-  Farrow_coefs = new DSP_float_ptr[Farrow_len];
+  Farrow_coefs = new DSP::Float_ptr[Farrow_len];
   for (ind = 0; ind < Farrow_len; ind++)
   {
-    Farrow_coefs[ind] = new DSP_float[N_FSD];
+    Farrow_coefs[ind] = new DSP::Float[N_FSD];
   }
 
   //  // copy with transposition
@@ -790,9 +790,9 @@ DSPu_Farrow::~DSPu_Farrow(void)
   if (Buffer != NULL)
   {
     if (NoOfOutputs == 1)
-      delete [] ((DSP_float *)Buffer);
+      delete [] ((DSP::Float *)Buffer);
     else
-      delete [] ((DSP_complex *)Buffer);
+      delete [] ((DSP::Complex *)Buffer);
     Buffer = NULL;
   }
 
@@ -821,9 +821,9 @@ void DSPu_Farrow::InputExecute_cplx(INPUT_EXECUTE_ARGS)
   if (InputNo < THIS->NoOfOutputs)
   { //update buffer
     if (InputNo == 0)
-      ((DSP_complex *)(THIS->Buffer))[THIS->N_FSD-1].re = value;
+      ((DSP::Complex *)(THIS->Buffer))[THIS->N_FSD-1].re = value;
     else
-      ((DSP_complex *)(THIS->Buffer))[THIS->N_FSD-1].im = value;
+      ((DSP::Complex *)(THIS->Buffer))[THIS->N_FSD-1].im = value;
     THIS->NoOfInputsProcessed++;
 
     if (THIS->NoOfInputsProcessed == THIS->NoOfOutputs)
@@ -847,7 +847,7 @@ void DSPu_Farrow::InputExecute_real(INPUT_EXECUTE_ARGS)
 
   if (InputNo == 0)
   { //update buffer
-    ((DSP_float *)(THIS->Buffer))[THIS->N_FSD-1] = value;
+    ((DSP::Float *)(THIS->Buffer))[THIS->N_FSD-1] = value;
     THIS->InputSampleReady = true;
     //DSP::f::InfoMessage(const_cast < char* > (THIS->GetName()), "PROCESS: InputSampleReady == true !!!");
   }
@@ -937,14 +937,14 @@ void DSPu_Farrow::Notify(DSP::Clock_ptr clock) //, bool State)
     // update buffer
     if (NoOfOutputs == 1)
     {
-      memmove((uint8_t *)Buffer, (uint8_t *)Buffer+sizeof(DSP_float), (N_FSD-1) * sizeof(DSP_float));
-//      ((DSP_float_ptr)Buffer)[N_FSD-1] = 100.0;
+      memmove((uint8_t *)Buffer, (uint8_t *)Buffer+sizeof(DSP::Float), (N_FSD-1) * sizeof(DSP::Float));
+//      ((DSP::Float_ptr)Buffer)[N_FSD-1] = 100.0;
     }
     else
     {
-      memmove((uint8_t *)Buffer, (uint8_t *)Buffer+sizeof(DSP_complex), (N_FSD-1) * sizeof(DSP_complex));
-//      ((DSP_complex_ptr)Buffer)[N_FSD-1].re = 100.0;
-//      ((DSP_complex_ptr)Buffer)[N_FSD-1].im = 200.0;
+      memmove((uint8_t *)Buffer, (uint8_t *)Buffer+sizeof(DSP::Complex), (N_FSD-1) * sizeof(DSP::Complex));
+//      ((DSP::Complex_ptr)Buffer)[N_FSD-1].re = 100.0;
+//      ((DSP::Complex_ptr)Buffer)[N_FSD-1].im = 200.0;
     }
     InputSampleReady = false;
     //DSP::f::InfoMessage(const_cast < char* > (this->GetName()), "NOTIFY: InputSampleReady == false !!!");
@@ -961,8 +961,8 @@ void DSPu_Farrow::Notify(DSP::Clock_ptr clock) //, bool State)
 void DSPu_Farrow::CalculateOutputSample_cplx(void)
 {
   unsigned int ind, ind2;
-  DSP_complex temp, tmp2;
-  currentOutput = DSP_complex(0.0, 0.0);
+  DSP::Complex temp, tmp2;
+  currentOutput = DSP::Complex(0.0, 0.0);
 
   // implement Farrow structure
   for (ind = 0; ind < Farrow_len; ind++)
@@ -973,8 +973,8 @@ void DSPu_Farrow::CalculateOutputSample_cplx(void)
     for (ind2 = 0; ind2 < N_FSD; ind2++)
     {
       // remember that most recent sample is the last sample
-//      temp += ((DSP_complex *)Buffer)[N_FSD-1-ind2] * Farrow_coefs[ind][ind2];
-      tmp2 = ((DSP_complex *)Buffer)[N_FSD-1-ind2];
+//      temp += ((DSP::Complex *)Buffer)[N_FSD-1-ind2] * Farrow_coefs[ind][ind2];
+      tmp2 = ((DSP::Complex *)Buffer)[N_FSD-1-ind2];
       tmp2.multiply_by(Farrow_coefs[ind][ind2]);
       temp.add(tmp2);
     }
@@ -987,7 +987,7 @@ void DSPu_Farrow::CalculateOutputSample_cplx(void)
 void DSPu_Farrow::CalculateOutputSample_real(void)
 {
   unsigned int ind, ind2;
-  DSP_float temp;
+  DSP::Float temp;
   currentOutput.re = 0.0;
 
   // implement Farrow structure
@@ -998,7 +998,7 @@ void DSPu_Farrow::CalculateOutputSample_real(void)
     temp = 0.0;
     for (ind2 = 0; ind2 < N_FSD; ind2++)
       // remember that most recent sample is the last sample
-      temp += ((DSP_float *)Buffer)[N_FSD-1-ind2] * Farrow_coefs[ind][ind2];
+      temp += ((DSP::Float *)Buffer)[N_FSD-1-ind2] * Farrow_coefs[ind][ind2];
 
     currentOutput.re += temp;
   }
@@ -1011,11 +1011,11 @@ DSPu_GardnerSampling::DSPu_GardnerSampling(
             DSP::Clock_ptr InputClock,
             DSP::Clock_ptr OutputClock,
             //! initial value of the sampling period
-            DSP_float SamplingPeriod_in,
+            DSP::Float SamplingPeriod_in,
             //! sampling period correction factor
-            DSP_float beta_in,
+            DSP::Float beta_in,
             //! maximum allowed delay correction
-            DSP_float max_korekta_in,
+            DSP::Float max_korekta_in,
             //! number of simultaneously processed subchannels
             unsigned int NoOfChannels_in,
             DSPe_GardnerSamplingOptions options_in)
@@ -1024,9 +1024,9 @@ DSPu_GardnerSampling::DSPu_GardnerSampling(
   Init(InputClock, OutputClock, SamplingPeriod_in, beta_in, max_korekta_in, NoOfChannels_in, options_in);
 }
 
-DSPu_GardnerSampling::DSPu_GardnerSampling(DSP_float SamplingPeriod_in,
-                                         DSP_float beta_in,
-                                         DSP_float max_korekta_in, // maximum allowed delay correction
+DSPu_GardnerSampling::DSPu_GardnerSampling(DSP::Float SamplingPeriod_in,
+                                         DSP::Float beta_in,
+                                         DSP::Float max_korekta_in, // maximum allowed delay correction
                                          unsigned int NoOfChannels_in)
   : DSP::Block()
 {
@@ -1036,9 +1036,9 @@ DSPu_GardnerSampling::DSPu_GardnerSampling(DSP_float SamplingPeriod_in,
 void DSPu_GardnerSampling::Init(
             DSP::Clock_ptr InputClock,
             DSP::Clock_ptr OutputClock,
-            DSP_float SamplingPeriod_in,
-            DSP_float beta_in,
-            DSP_float max_korekta_in, // maximum allowed delay correction
+            DSP::Float SamplingPeriod_in,
+            DSP::Float beta_in,
+            DSP::Float max_korekta_in, // maximum allowed delay correction
             unsigned int NoOfChannels_in,
             DSPe_GardnerSamplingOptions options_in)
 {
@@ -1103,9 +1103,9 @@ void DSPu_GardnerSampling::Init(
     ClockGroups.AddOutput2Group("output", Output(tekst));
   }
 
-  y0 = new DSP_complex[NoOfChannels];
-  y1 = new DSP_complex[NoOfChannels];
-  y2 = new DSP_complex[NoOfChannels];
+  y0 = new DSP::Complex[NoOfChannels];
+  y1 = new DSP::Complex[NoOfChannels];
+  y2 = new DSP::Complex[NoOfChannels];
 
   /* inner state
    * 0 - waiting for y0
@@ -1116,7 +1116,7 @@ void DSPu_GardnerSampling::Init(
    */
   state_1 = 0;
 /*
-  state = new int[NoOfChannels]; delay=new DSP_float[NoOfChannels];
+  state = new int[NoOfChannels]; delay=new DSP::Float[NoOfChannels];
   for (ind = 0; ind < NoOfChannels; ind++)
   {
     state[ind] = 0;
@@ -1138,7 +1138,7 @@ void DSPu_GardnerSampling::Init(
   delay_1 = -half_SamplingPeriod;
 
   beta = beta_in;
-  beta/=DSP_float(NoOfChannels);
+  beta/=DSP::Float(NoOfChannels);
   beta/=2; //for half_Sampling_period
   max_korekta=max_korekta_in;
 
@@ -1232,7 +1232,7 @@ DSPu_GardnerSampling::~DSPu_GardnerSampling()
   delete [] y2;
 }
 
-DSP_float DSPu_GardnerSampling::GetSamplingPeriod(void)
+DSP::Float DSPu_GardnerSampling::GetSamplingPeriod(void)
 {
   return estimated_SamplingPeriod;
 }
@@ -1318,7 +1318,7 @@ void DSPu_GardnerSampling::InputExecute_with_options(INPUT_EXECUTE_ARGS)
 void DSPu_GardnerSampling::InputExecute_new(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
-  DSP_float tmp_korekta;
+  DSP::Float tmp_korekta;
 
   THIS->output_generated = false;
 
@@ -1539,15 +1539,15 @@ void DSPu_GardnerSampling::InputExecute_new(INPUT_EXECUTE_ARGS)
 
       THIS->delay_1 += THIS->korekta;
       THIS->estimated_SamplingPeriod =
-          DSP_float(0.9) * THIS->estimated_SamplingPeriod +
-          DSP_float(0.1) * (2*(THIS->half_SamplingPeriod -
+          DSP::Float(0.9) * THIS->estimated_SamplingPeriod +
+          DSP::Float(0.1) * (2*(THIS->half_SamplingPeriod -
                     THIS->korekta));
       /*! \todo_later <b>2006.08.05</b> half_SamplingPeriod should also be updated not only estimated_SamplingPeriod
        */
 
 
       //y0 <= y2 (just swap memory pointers !!!)
-      DSP_complex_ptr temp_y;
+      DSP::Complex_ptr temp_y;
       temp_y = THIS->y0;
       THIS->y0 = THIS->y2;
       THIS->y2 = temp_y;
@@ -1732,10 +1732,10 @@ void DSPu_PSKencoder::InputExecute_BPSK(INPUT_EXECUTE_ARGS)
 
   THIS_->OutputBlocks[0]->EXECUTE_PTR(
     THIS_->OutputBlocks[0], THIS_->OutputBlocks_InputNo[0],
-    (value > 0.5)? DSP_float(+1.0) : DSP_float(-1.0), block);
+    (value > 0.5)? DSP::Float(+1.0) : DSP::Float(-1.0), block);
 
   THIS_->OutputBlocks[1]->EXECUTE_PTR(
-    THIS_->OutputBlocks[1], THIS_->OutputBlocks_InputNo[1], DSP_float(0.0), block);
+    THIS_->OutputBlocks[1], THIS_->OutputBlocks_InputNo[1], DSP::Float(0.0), block);
 };
 
 void DSPu_PSKencoder::InputExecute_DBPSK(INPUT_EXECUTE_ARGS)
@@ -1748,7 +1748,7 @@ void DSPu_PSKencoder::InputExecute_DBPSK(INPUT_EXECUTE_ARGS)
   THIS_->State_re *= THIS_->tmp_re; // current bit defines phase change
   THIS_->OutputBlocks[0]->EXECUTE_PTR(
     THIS_->OutputBlocks[0], THIS_->OutputBlocks_InputNo[0],
-    (THIS_->State_re > 0.0)? DSP_float(+1.0) : DSP_float(-1.0), block);
+    (THIS_->State_re > 0.0)? DSP::Float(+1.0) : DSP::Float(-1.0), block);
   // store current bit
 
 /*
@@ -1758,10 +1758,10 @@ void DSPu_PSKencoder::InputExecute_DBPSK(INPUT_EXECUTE_ARGS)
 
   THIS_->OutputBlocks[0]->EXECUTE_PTR(
     THIS_->OutputBlocks[0], THIS_->OutputBlocks_InputNo[0],
-    (THIS_->State_re == 0)? DSP_float(+1.0) : DSP_float(-1.0), block);
+    (THIS_->State_re == 0)? DSP::Float(+1.0) : DSP::Float(-1.0), block);
 */
   THIS_->OutputBlocks[1]->EXECUTE_PTR(
-    THIS_->OutputBlocks[1], THIS_->OutputBlocks_InputNo[1], DSP_float(0.0), block);
+    THIS_->OutputBlocks[1], THIS_->OutputBlocks_InputNo[1], DSP::Float(0.0), block);
 };
 
 void DSPu_PSKencoder::InputExecute_QPSK_B(INPUT_EXECUTE_ARGS)
@@ -1771,11 +1771,11 @@ void DSPu_PSKencoder::InputExecute_QPSK_B(INPUT_EXECUTE_ARGS)
   if (InputNo==0)
     THIS_->OutputBlocks[0]->EXECUTE_PTR(
       THIS_->OutputBlocks[0], THIS_->OutputBlocks_InputNo[0],
-      (value > 0.5)? DSP_float(+1.0) : DSP_float(-1.0), block);
+      (value > 0.5)? DSP::Float(+1.0) : DSP::Float(-1.0), block);
   else
     THIS_->OutputBlocks[1]->EXECUTE_PTR(
       THIS_->OutputBlocks[1], THIS_->OutputBlocks_InputNo[1],
-      (value > 0.5)? DSP_float(+1.0) : DSP_float(-1.0), block);
+      (value > 0.5)? DSP::Float(+1.0) : DSP::Float(-1.0), block);
 };
 
 void DSPu_PSKencoder::InputExecute_QPSK_A(INPUT_EXECUTE_ARGS)
@@ -1804,35 +1804,35 @@ void DSPu_PSKencoder::InputExecute_QPSK_A(INPUT_EXECUTE_ARGS)
     case 0:
       THIS_->OutputBlocks[0]->EXECUTE_PTR(
         THIS_->OutputBlocks[0], THIS_->OutputBlocks_InputNo[0],
-        DSP_float(+1.0), block);
+        DSP::Float(+1.0), block);
       THIS_->OutputBlocks[1]->EXECUTE_PTR(
         THIS_->OutputBlocks[1], THIS_->OutputBlocks_InputNo[1],
-        DSP_float(0.0), block);
+        DSP::Float(0.0), block);
       break;
     case 1:
       THIS_->OutputBlocks[0]->EXECUTE_PTR(
         THIS_->OutputBlocks[0], THIS_->OutputBlocks_InputNo[0],
-        DSP_float(0.0), block);
+        DSP::Float(0.0), block);
       THIS_->OutputBlocks[1]->EXECUTE_PTR(
         THIS_->OutputBlocks[1], THIS_->OutputBlocks_InputNo[1],
-        DSP_float(+1.0), block);
+        DSP::Float(+1.0), block);
       break;
     case 2:
       THIS_->OutputBlocks[0]->EXECUTE_PTR(
         THIS_->OutputBlocks[0], THIS_->OutputBlocks_InputNo[0],
-        DSP_float(0.0), block);
+        DSP::Float(0.0), block);
       THIS_->OutputBlocks[1]->EXECUTE_PTR(
         THIS_->OutputBlocks[1], THIS_->OutputBlocks_InputNo[1],
-        DSP_float(-1.0), block);
+        DSP::Float(-1.0), block);
       break;
     case 3:
     default:
       THIS_->OutputBlocks[0]->EXECUTE_PTR(
         THIS_->OutputBlocks[0], THIS_->OutputBlocks_InputNo[0],
-        DSP_float(-1.0), block);
+        DSP::Float(-1.0), block);
       THIS_->OutputBlocks[1]->EXECUTE_PTR(
         THIS_->OutputBlocks[1], THIS_->OutputBlocks_InputNo[1],
-        DSP_float(0.0), block);
+        DSP::Float(0.0), block);
       break;
   }
 
@@ -1844,7 +1844,7 @@ void DSPu_PSKencoder::InputExecute_QPSK_A(INPUT_EXECUTE_ARGS)
 DSPu_SymbolMapper::DSPu_SymbolMapper(
     DSPe_Modulation_type type,
     const unsigned int &bits_per_symbol_in,
-    const DSP_float &constellation_phase_offset) : DSP::Block()
+    const DSP::Float &constellation_phase_offset) : DSP::Block()
 {
   SetName("Symbol Mapper", false);
 
@@ -1888,9 +1888,9 @@ DSPu_SymbolMapper::DSPu_SymbolMapper(
 //}
 
 unsigned int getConstellation(
-                DSP_complex_vector &constellation,
+                DSP::Complex_vector &constellation,
                 DSPe_Modulation_type type,
-                const DSP_float &constellation_phase_offset,
+                const DSP::Float &constellation_phase_offset,
                 const unsigned int &bits_per_symbol,
                 bool &is_real) {
   is_real = true;
@@ -1900,15 +1900,15 @@ unsigned int getConstellation(
     case DSP_MT_PSK: {
         constellation.resize(M);
 //        for (unsigned int n=0; n < M; n++) {
-//          constellation[n].re = static_cast<DSP_float>(cos(constellation_phase_offset+(DSP_M_PIx2*n)/M));
-//          constellation[n].im = static_cast<DSP_float>(sin(constellation_phase_offset+(DSP_M_PIx2*n)/M));
+//          constellation[n].re = static_cast<DSP::Float>(cos(constellation_phase_offset+(DSP_M_PIx2*n)/M));
+//          constellation[n].im = static_cast<DSP::Float>(sin(constellation_phase_offset+(DSP_M_PIx2*n)/M));
 //        }
         // Gray codding (start from LSB)
         uint16_t mask = 0x0001;
         uint16_t n = 0;
         for (unsigned int ind=0; ind < M; ind++) {
-          constellation[ind].re = static_cast<DSP_float>(cos(constellation_phase_offset+(DSP_M_PIx2*n)/DSP_float(M)));
-          constellation[ind].im = static_cast<DSP_float>(sin(constellation_phase_offset+(DSP_M_PIx2*n)/DSP_float(M)));
+          constellation[ind].re = static_cast<DSP::Float>(cos(constellation_phase_offset+(DSP_M_PIx2*n)/DSP::Float(M)));
+          constellation[ind].im = static_cast<DSP::Float>(sin(constellation_phase_offset+(DSP_M_PIx2*n)/DSP::Float(M)));
 
 //          stringstream ss;
 //          ss << "constellation[" << ind << "]={" << setprecision(2) << constellation[ind].re << "," << constellation[ind].im << "}; n=" << n;
@@ -1934,7 +1934,7 @@ unsigned int getConstellation(
     case DSP_MT_ASK: {
       constellation.resize(M);
         for (unsigned int n=0; n < M; n++) {
-          constellation[n].re = static_cast<DSP_float>(n)/static_cast<DSP_float>(M-1);
+          constellation[n].re = static_cast<DSP::Float>(n)/static_cast<DSP::Float>(M-1);
           constellation[n].im = 0;
         }
         is_real = true;
@@ -2007,7 +2007,7 @@ void DSPu_SymbolMapper::InputExecute_bits(INPUT_EXECUTE_ARGS)
 DSPu_Serial2Parallel::DSPu_Serial2Parallel(const DSP::Clock_ptr &InputClock,
                                            const unsigned int &NoOfParallelOutputs,
                                            const unsigned int &NoOfLinesPerInput,
-                                           const vector<DSP_float> &first_output_vector)
+                                           const vector<DSP::Float> &first_output_vector)
   : DSP::Block(), DSP::Source()
 {
   string tekst;
@@ -2312,7 +2312,7 @@ bool DSPu_Parallel2Serial::OutputExecute(OUTPUT_EXECUTE_ARGS)
 // ********************************************************************** //
 DSPu_SymbolDemapper::DSPu_SymbolDemapper( DSPe_Modulation_type type,
                                           const unsigned int &bits_per_symbol_in,
-                                          const DSP_float &constellation_phase_offset) : DSP::Block()
+                                          const DSP::Float &constellation_phase_offset) : DSP::Block()
 {
   SetName("Symbol Demapper", false);
 
@@ -2381,13 +2381,13 @@ void DSPu_SymbolDemapper::InputExecute_constellation(INPUT_EXECUTE_ARGS)
 
   //! determine symbol index based on nearest neighbor rule
   //! \TODO add optimized versions for particular modulations
-  DSP_float d_re, d_im;
+  DSP::Float d_re, d_im;
   d_re = THIS_->current_constellation[0].re-THIS_->input.re;
   d_im = THIS_->current_constellation[0].im-THIS_->input.im;
   unsigned int symbol_index=0;
-  DSP_float min_squared_dist = d_re*d_re + d_im*d_im;
+  DSP::Float min_squared_dist = d_re*d_re + d_im*d_im;
 
-  DSP_float squared_dist;
+  DSP::Float squared_dist;
   for (unsigned int n=1; n<THIS_->current_constellation.size(); n++) {
     d_re = THIS_->current_constellation[n].re-THIS_->input.re;
     d_im = THIS_->current_constellation[n].im-THIS_->input.im;
@@ -2409,7 +2409,7 @@ void DSPu_SymbolDemapper::InputExecute_constellation(INPUT_EXECUTE_ARGS)
   for (auto ind = 0U; ind < THIS_->NoOfOutputs; ind ++){
     // output sample
     THIS_->OutputBlocks[ind]->EXECUTE_PTR(
-      THIS_->OutputBlocks[ind], THIS_->OutputBlocks_InputNo[ind], static_cast<DSP_float>(bit), block);
+      THIS_->OutputBlocks[ind], THIS_->OutputBlocks_InputNo[ind], static_cast<DSP::Float>(bit), block);
 
 //    ss << "(" << symbol_index << ")=" << bit << ",";
     // get the next bit
@@ -2540,7 +2540,7 @@ void DSPu_PSKdecoder::InputExecute_BPSK(INPUT_EXECUTE_ARGS)
   if (InputNo == 0)
     THIS_->OutputBlocks[0]->EXECUTE_PTR(
       THIS_->OutputBlocks[0], THIS_->OutputBlocks_InputNo[0],
-      (value > 0.0)? DSP_float(1.0) : DSP_float(0.0), block);
+      (value > 0.0)? DSP::Float(1.0) : DSP::Float(0.0), block);
    // Ignore InputNo == 1 <= imaginary part
 };
 
@@ -2554,7 +2554,7 @@ void DSPu_PSKdecoder::InputExecute_DEBPSK(INPUT_EXECUTE_ARGS)
     THIS_->i_tmp_re = ((value > 0.0)? +1 : -1);
     THIS_->OutputBlocks[0]->EXECUTE_PTR(
       THIS_->OutputBlocks[0], THIS_->OutputBlocks_InputNo[0],
-      ((THIS_->State_re*THIS_->i_tmp_re) > 0.0) ? DSP_float(1.0) : DSP_float(0.0), block);
+      ((THIS_->State_re*THIS_->i_tmp_re) > 0.0) ? DSP::Float(1.0) : DSP::Float(0.0), block);
     // store current bit
     THIS_->State_re = THIS_->i_tmp_re;
   }
@@ -2583,7 +2583,7 @@ void DSPu_PSKdecoder::InputExecute_DBPSK(INPUT_EXECUTE_ARGS)
 
   THIS_->OutputBlocks[0]->EXECUTE_PTR(
       THIS_->OutputBlocks[0], THIS_->OutputBlocks_InputNo[0],
-      (THIS_->f_State_re > 0.0) ? DSP_float(1.0) : DSP_float(0.0), block);
+      (THIS_->f_State_re > 0.0) ? DSP::Float(1.0) : DSP::Float(0.0), block);
 
   // store current symbol bit
   THIS_->f_State_re = THIS_->f_tmp_re;
@@ -2597,11 +2597,11 @@ void DSPu_PSKdecoder::InputExecute_QPSK_B(INPUT_EXECUTE_ARGS)
   if (InputNo==0)
     THIS_->OutputBlocks[0]->EXECUTE_PTR(
       THIS_->OutputBlocks[0], THIS_->OutputBlocks_InputNo[0],
-      (value > 0.0)? DSP_float(1.0) : DSP_float(0.0), block);
+      (value > 0.0)? DSP::Float(1.0) : DSP::Float(0.0), block);
   else
     THIS_->OutputBlocks[1]->EXECUTE_PTR(
       THIS_->OutputBlocks[1], THIS_->OutputBlocks_InputNo[1],
-      (value > 0.0)? DSP_float(1.0) : DSP_float(0.0), block);
+      (value > 0.0)? DSP::Float(1.0) : DSP::Float(0.0), block);
 };
 
 void DSPu_PSKdecoder::InputExecute_QPSK_A(INPUT_EXECUTE_ARGS)
@@ -2624,38 +2624,38 @@ void DSPu_PSKdecoder::InputExecute_QPSK_A(INPUT_EXECUTE_ARGS)
     {
       THIS_->OutputBlocks[0]->EXECUTE_PTR(
         THIS_->OutputBlocks[0], THIS_->OutputBlocks_InputNo[0],
-        DSP_float(0.0), block);
+        DSP::Float(0.0), block);
       THIS_->OutputBlocks[1]->EXECUTE_PTR(
         THIS_->OutputBlocks[1], THIS_->OutputBlocks_InputNo[1],
-        DSP_float(0.0), block);
+        DSP::Float(0.0), block);
     }
     else
     {
       THIS_->OutputBlocks[0]->EXECUTE_PTR(
         THIS_->OutputBlocks[0], THIS_->OutputBlocks_InputNo[0],
-        DSP_float(1.0), block);
+        DSP::Float(1.0), block);
       THIS_->OutputBlocks[1]->EXECUTE_PTR(
         THIS_->OutputBlocks[1], THIS_->OutputBlocks_InputNo[1],
-        DSP_float(1.0), block);
+        DSP::Float(1.0), block);
     }
   else
     if (THIS_->f_tmp_im >= 0)
     {
       THIS_->OutputBlocks[0]->EXECUTE_PTR(
         THIS_->OutputBlocks[0], THIS_->OutputBlocks_InputNo[0],
-        DSP_float(1.0), block);
+        DSP::Float(1.0), block);
       THIS_->OutputBlocks[1]->EXECUTE_PTR(
         THIS_->OutputBlocks[1], THIS_->OutputBlocks_InputNo[1],
-        DSP_float(0.0), block);
+        DSP::Float(0.0), block);
     }
     else
     {
       THIS_->OutputBlocks[0]->EXECUTE_PTR(
         THIS_->OutputBlocks[0], THIS_->OutputBlocks_InputNo[0],
-        DSP_float(0.0), block);
+        DSP::Float(0.0), block);
       THIS_->OutputBlocks[1]->EXECUTE_PTR(
         THIS_->OutputBlocks[1], THIS_->OutputBlocks_InputNo[1],
-        DSP_float(1.0), block);
+        DSP::Float(1.0), block);
     }
 };
 #undef  THIS_
@@ -2716,7 +2716,7 @@ DSPu_FFT::DSPu_FFT(unsigned int K_in, bool AreInputsComplex)
   // init DFT block
   dft.resize(K);
   // create buffers for use with dft
-  input_buffer.resize(K, DSP_complex(0.0,0.0));
+  input_buffer.resize(K, DSP::Complex(0.0,0.0));
   output_buffer.resize(K);
  
   if (AreInputsComplex == true)
@@ -2859,7 +2859,7 @@ DSPu_TimingErrorDetector::DSPu_TimingErrorDetector(int N, bool InputIsComplex)
     ClockGroups.AddOutputs2Group("all", 0, NoOfOutputs-1);
 
     Real_Buffer.resize(0);
-    Cplx_Buffer.resize(N_symb+1, DSP_complex(0.0,0.0));
+    Cplx_Buffer.resize(N_symb+1, DSP::Complex(0.0,0.0));
 
     n0 = N_symb;
     n1 = (N_symb - (N_symb % 2))/2; // N_symb = 4 or 5 ==> n1 = 2

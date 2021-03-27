@@ -89,7 +89,7 @@ DSP_Fourier::~DSP_Fourier(void)
 void DSP_Fourier::resize(DWORD K_in)
 {
   DWORD i, k;
-  DSP_float *temp, skala;
+  DSP::Float *temp, skala;
 
   if (K_in != DSP_Fourier::K)
   {
@@ -101,22 +101,22 @@ void DSP_Fourier::resize(DWORD K_in)
 //    fft.resize(K);
     if (fft!=NULL)
       delete [] fft;
-    fft= new DSP_complex[K];
+    fft= new DSP::Complex[K];
 
 //    cSin.resize(K);
     if (cSin!=NULL)
       delete [] cSin;
-    cSin= new DSP_complex[K];
+    cSin= new DSP::Complex[K];
 
 //    cSinConj.resize(K);
     if (cSinConj!=NULL)
       delete [] cSinConj;
-    cSinConj= new DSP_complex[K];
+    cSinConj= new DSP::Complex[K];
 
 ////    cSinFFT.resize(K>>1);
 //    if (cSinFFT!=NULL)
 //      delete [] cSinFFT;
-//    cSinFFT= new DSP_complex[K>>1];
+//    cSinFFT= new DSP::Complex[K>>1];
 
 //    RevBitTable.resize(K);
     if (RevBitTable!=NULL)
@@ -139,17 +139,17 @@ void DSP_Fourier::resize(DWORD K_in)
 
     for (i=0; i<K; i++)
     { //exp{j*2*pi/K*i}
-      cSin[i].set(cos(2*M_PIx1f*DSP_float(i)/DSP_float(K)),-sin(2*M_PIx1f*DSP_float(i)/DSP_float(K)));
+      cSin[i].set(cos(2*M_PIx1f*DSP::Float(i)/DSP::Float(K)),-sin(2*M_PIx1f*DSP::Float(i)/DSP::Float(K)));
 //      if ((i%2)==0)
 //        cSinFFT[i>>1]=cSin[i];
       RevBitTable[i]=BitRev(i, Kbit+1);
       FFTshift_RevBitTable[(i+K/2)%K]=RevBitTable[i];
     }
     //cSinConj=cSin;
-    memcpy(cSinConj, cSin, K*sizeof(DSP_complex));
+    memcpy(cSinConj, cSin, K*sizeof(DSP::Complex));
 
 //    cSinConj.conj(); cSinConj/=K;
-    temp=(DSP_float *)cSinConj; temp++; skala=-1.0f/(DSP_float)K;
+    temp=(DSP::Float *)cSinConj; temp++; skala=-1.0f/(DSP::Float)K;
     for (i=0; i<K; i++)
     {
       (*temp)*=skala;
@@ -221,10 +221,10 @@ DWORD DSP_Fourier::DFTdatalen(void)
 { return K2; };
 */
 
-void DSP_Fourier::FFT(DWORD N, DSP_complex *probki)
+void DSP_Fourier::FFT(DWORD N, DSP::Complex *probki)
 {  //FFT of real sequence
   DWORD Kbit_tmp, M, seg_no, ind1, ind2, ind2b, ind3;
-  DSP_complex COStmp, temp;
+  DSP::Complex COStmp, temp;
   DWORD *tmp_rev_bit_table;
 
   if (K != N)
@@ -273,15 +273,15 @@ void DSP_Fourier::FFT(DWORD N, DSP_complex *probki)
   }
 };
 
-void DSP_Fourier::absFFT(DWORD N, DSP_float *abs_fft, DSP_complex *probki)
+void DSP_Fourier::absFFT(DWORD N, DSP::Float *abs_fft, DSP::Complex *probki)
 {
   DWORD Kbit_tmp, M, seg_no, ind1, ind2, ind2b, ind3;
-  DSP_complex COStmp, temp;
+  DSP::Complex COStmp, temp;
 
   if (K != N)
     resize(N);
 
-  memcpy(fft, probki, N*sizeof(DSP_complex));
+  memcpy(fft, probki, N*sizeof(DSP::Complex));
 
   M = K/2; seg_no=1;
   //Kbit - bits number - 1
@@ -343,10 +343,10 @@ void DSP_Fourier::absFFT(DWORD N, DSP_float *abs_fft, DSP_complex *probki)
   }
 };
 
-void DSP_Fourier::absFFT(DWORD N, DSP_float *abs_fft, DSP_float *probki, DSP_float *probki_imag)
+void DSP_Fourier::absFFT(DWORD N, DSP::Float *abs_fft, DSP::Float *probki, DSP::Float *probki_imag)
 {
   DWORD Kbit_tmp, M, seg_no, ind1, ind2, ind2b, ind3;
-  DSP_complex COStmp, temp;
+  DSP::Complex COStmp, temp;
 
   if (K != N)
     resize(N);
@@ -414,15 +414,15 @@ void DSP_Fourier::absFFT(DWORD N, DSP_float *abs_fft, DSP_float *probki, DSP_flo
 };
 
 
-void DSP_Fourier::abs2FFT(DWORD N, DSP_float *abs_fft, DSP_complex *probki)
+void DSP_Fourier::abs2FFT(DWORD N, DSP::Float *abs_fft, DSP::Complex *probki)
 {  //FFT of real sequence
   DWORD Kbit_tmp, M, seg_no, ind1, ind2, ind2b, ind3;
-  DSP_complex COStmp, temp;
+  DSP::Complex COStmp, temp;
 
   if (K != N)
     resize(N);
 
-  memcpy(fft, probki, N*sizeof(DSP_complex));
+  memcpy(fft, probki, N*sizeof(DSP::Complex));
 
   M = K/2; seg_no=1;
   //Kbit - bits number - 1
@@ -521,20 +521,20 @@ void DSP_Fourier::FFT(cvector& probki)
 };
 */
 
-void DSP_Fourier::IFFT(DWORD N, DSP_complex *probki)
+void DSP_Fourier::IFFT(DWORD N, DSP::Complex *probki)
 {  //FFT of real sequence
-  DSP_float *temp;
+  DSP::Float *temp;
   DWORD i;
 
   FFT(N, probki);
 
 //  probki.conj();
-  temp=(DSP_float *)probki;
+  temp=(DSP::Float *)probki;
   for (i=0; i<N; i++)
   {
-    *temp=(*temp)/(DSP_float)K;
+    *temp=(*temp)/(DSP::Float)K;
     temp++;
-    *temp=(-*temp)/(DSP_float)K;
+    *temp=(-*temp)/(DSP::Float)K;
     temp++;
   }
 };
@@ -670,10 +670,10 @@ bool DSP_Fourier::CheckIsFFT(DWORD K_in)
 /*! JustHalf == true: outputs only N/2+1 samples
  *  JustHalf == false: outputs all N samples
  */
-void DSP_Fourier::absFFTR(DWORD N, DSP_float *abs_fft, DSP_float *probki, bool JustHalf)
+void DSP_Fourier::absFFTR(DWORD N, DSP::Float *abs_fft, DSP::Float *probki, bool JustHalf)
 {
   DWORD Kbit_tmp, M, seg_no, ind1, ind2, ind2b, ind3;
-  DSP_complex COStmp, temp;
+  DSP::Complex COStmp, temp;
 
   if (K != N)
     resize(N);
@@ -761,9 +761,9 @@ void DSP_Fourier::absFFTR(DWORD N, DSP_float *abs_fft, DSP_float *probki, bool J
  *   .
  *  JustHalf == false: outputs all N samples
  */
-void DSP_Fourier::absDFTR(DWORD N, DSP_float *abs_dft, DSP_float *probki, bool JustHalf)
+void DSP_Fourier::absDFTR(DWORD N, DSP::Float *abs_dft, DSP::Float *probki, bool JustHalf)
 {  //DFT of real sequence
-  DSP_float temp_abs;
+  DSP::Float temp_abs;
 
   if (K != N)
     resize(N);
@@ -877,7 +877,7 @@ void DSP_Fourier::absDFTR(DWORD N, DSP_float *abs_dft, DSP_float *probki, bool J
   }
 };
 
-void DSP_Fourier::absDFT(DWORD N, DSP_float *abs_dft, DSP_complex *probki)
+void DSP_Fourier::absDFT(DWORD N, DSP::Float *abs_dft, DSP::Complex *probki)
 {  //DFT of real sequence
   if (K != N)
     resize(N);
@@ -927,7 +927,7 @@ void DSP_Fourier::absDFT(DWORD N, DSP_float *abs_dft, DSP_complex *probki)
   }
 };
 
-void DSP_Fourier::absDFT(DWORD N, DSP_float *abs_dft, DSP_float *probki, DSP_float *probki_imag)
+void DSP_Fourier::absDFT(DWORD N, DSP::Float *abs_dft, DSP::Float *probki, DSP::Float *probki_imag)
 {  //DFT of real sequence
   if (K != N)
     resize(N);
@@ -946,7 +946,7 @@ void DSP_Fourier::absDFT(DWORD N, DSP_float *abs_dft, DSP_float *probki, DSP_flo
       fft[k]=0;
       for (n=0; n<K; n++)
       {
-        fft[k]+=DSP_complex(probki[n],probki_imag[n])*cSin[(k*n)%K];
+        fft[k]+=DSP::Complex(probki[n],probki_imag[n])*cSin[(k*n)%K];
       }
     }
     if (isFFTshiftON)
@@ -977,7 +977,7 @@ void DSP_Fourier::absDFT(DWORD N, DSP_float *abs_dft, DSP_float *probki, DSP_flo
   }
 };
 
-void DSP_Fourier::DFT(DWORD N, DSP_complex *probki_in, DSP_complex *probki_out)
+void DSP_Fourier::DFT(DWORD N, DSP::Complex *probki_in, DSP::Complex *probki_out)
 {  //DFT of real sequence
   if (K != N)
     resize(N);
@@ -986,7 +986,7 @@ void DSP_Fourier::DFT(DWORD N, DSP_complex *probki_in, DSP_complex *probki_out)
   if (IsFFT)
   {
     if (probki_out != probki_in)
-      memcpy(probki_out, probki_in, N*sizeof(DSP_complex));
+      memcpy(probki_out, probki_in, N*sizeof(DSP::Complex));
     FFT(N, probki_out);
   }
   else
@@ -1026,7 +1026,7 @@ void DSP_Fourier::DFT(DWORD N, DSP_complex *probki_in, DSP_complex *probki_out)
     {
       //for (k=0; k<K; k++)
       //  probki_out[k]=fft[k];
-      memcpy(fft, probki_out, N*sizeof(DSP_complex));
+      memcpy(fft, probki_out, N*sizeof(DSP::Complex));
     }
   }
 };

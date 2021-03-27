@@ -11,7 +11,7 @@
 
 #define DSP_VER_MAJOR 0
 #define DSP_VER_MINOR 19
-#define DSP_VER_BUILD 16 // !!! without zeroes before, else this will be treated as octal number
+#define DSP_VER_BUILD 17 // !!! without zeroes before, else this will be treated as octal number
 #define DSP_VER_YEAR  2021
 #define DSP_VER       DSP_VER_MAJOR.DSP_VER_MINOR.DSP_VER_BUILD
 
@@ -559,9 +559,9 @@ string DSP_lib_version_string();
  *   Some of the blocks allow to set constat value to the input
  *   instead of connecting some block's output to it.
  *   Use
- *    - DSP::Block::SetConstInput(char *input_name, DSP_float value)
+ *    - DSP::Block::SetConstInput(char *input_name, DSP::Float value)
  *      function for real valued inputs
- *    - DSP::Block::SetConstInput(char *input_name, DSP_float value_re, DSP_float value_im)
+ *    - DSP::Block::SetConstInput(char *input_name, DSP::Float value_re, DSP::Float value_im)
  *      function for complex valued inputs.
  *    .
  *   In the following example only frequency of DDS will be changed
@@ -811,8 +811,8 @@ string DSP_lib_version_string();
  *   -# DSP::f::Triangular()
  *   .
  *  \section misc_DSP_fnc Miscellaneous DSP functions
- *   -# DSP::f::sinc(DSP_float)
- *   -# DSP::f::sinc(int, DSP_float_ptr)
+ *   -# DSP::f::sinc(DSP::Float)
+ *   -# DSP::f::sinc(int, DSP::Float_ptr)
  *   .
  *  \section load_fnc Loading coefficients
  *   -# DSP_LoadCoef class for loading coeffients from files

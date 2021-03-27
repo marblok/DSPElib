@@ -11,26 +11,26 @@
  *   -# "out1.im", "out2.im", ... (complex part)
  *  - Input: none
  */
-class DSPu_Const : public DSP_source
+class DSPu_Const : public DSP::Source
 {
   private:
-    DSP_float const_val;
-    DSP_float_vector const_state;
+    DSP::Float const_val;
+    DSP::Float_vector const_state;
     
-    static bool OutputExecute_one(DSP_source_ptr source, DSP::clock_ptr clock=NULL);
-    static bool OutputExecute_many(DSP_source_ptr source, DSP::clock_ptr clock=NULL);
+    static bool OutputExecute_one(DSP_source_ptr source, DSP::Clock_ptr clock=NULL);
+    static bool OutputExecute_many(DSP_source_ptr source, DSP::Clock_ptr clock=NULL);
 
   public:
-    DSPu_Const(DSP::clock_ptr ParentClock,
-               DSP_float value);
-    DSPu_Const(DSP::clock_ptr ParentClock,
-               DSP_float value_re, DSP_float value_im);
-    DSPu_Const(DSP::clock_ptr ParentClock,
-               DSP_complex value);
-    DSPu_Const(DSP::clock_ptr ParentClock,
-               int NoOfInputs_in, DSP_float_ptr values);
-    DSPu_Const(DSP::clock_ptr ParentClock,
-               int NoOfInputs_in, DSP_complex_ptr values);
+    DSPu_Const(DSP::Clock_ptr ParentClock,
+               DSP::Float value);
+    DSPu_Const(DSP::Clock_ptr ParentClock,
+               DSP::Float value_re, DSP::Float value_im);
+    DSPu_Const(DSP::Clock_ptr ParentClock,
+               DSP::Complex value);
+    DSPu_Const(DSP::Clock_ptr ParentClock,
+               int NoOfInputs_in, DSP::Float_ptr values);
+    DSPu_Const(DSP::Clock_ptr ParentClock,
+               int NoOfInputs_in, DSP::Complex_ptr values);
     ~DSPu_Const(void);
 };
 
@@ -48,9 +48,9 @@ class DSPu_Const : public DSP_source
  *   -# "out1.im", "out2.im", ... (complex part)
  *  - Input: none
  */
-DSPu_Const::DSPu_Const(DSP::clock_ptr ParentClock,
-                       DSP_float value)
-  : DSP_source(ParentClock)
+DSPu_Const::DSPu_Const(DSP::Clock_ptr ParentClock,
+                       DSP::Float value)
+  : DSP::Source(ParentClock)
 {
   SetName("Const", false);
 
@@ -67,9 +67,9 @@ DSPu_Const::DSPu_Const(DSP::clock_ptr ParentClock,
   OutputExecute_ptr = &OutputExecute_one;
 }
 
-DSPu_Const::DSPu_Const(DSP::clock_ptr ParentClock,
-                       DSP_float value_re, DSP_float value_im)
-  : DSP_source(ParentClock)
+DSPu_Const::DSPu_Const(DSP::Clock_ptr ParentClock,
+                       DSP::Float value_re, DSP::Float value_im)
+  : DSP::Source(ParentClock)
 {
   SetName("Const", false);
  
@@ -89,9 +89,9 @@ DSPu_Const::DSPu_Const(DSP::clock_ptr ParentClock,
   OutputExecute_ptr = &OutputExecute_many;
 }
 
-DSPu_Const::DSPu_Const(DSP::clock_ptr ParentClock,
-                       DSP_complex value)
-  : DSP_source(ParentClock)
+DSPu_Const::DSPu_Const(DSP::Clock_ptr ParentClock,
+                       DSP::Complex value)
+  : DSP::Source(ParentClock)
 {
   SetName("Const", false);
  
@@ -111,9 +111,9 @@ DSPu_Const::DSPu_Const(DSP::clock_ptr ParentClock,
   OutputExecute_ptr = &OutputExecute_many;
 }
 
-DSPu_Const::DSPu_Const(DSP::clock_ptr ParentClock,
-                       int NoOfOutputs_in, DSP_float_ptr values)
-  : DSP_source(ParentClock)
+DSPu_Const::DSPu_Const(DSP::Clock_ptr ParentClock,
+                       int NoOfOutputs_in, DSP::Float_ptr values)
+  : DSP::Source(ParentClock)
 {
   string tekst;
   int ind;
@@ -146,9 +146,9 @@ DSPu_Const::DSPu_Const(DSP::clock_ptr ParentClock,
   OutputExecute_ptr = &OutputExecute_many;
 }
 
-DSPu_Const::DSPu_Const(DSP::clock_ptr ParentClock,
-                       int NoOfOutputs_in, DSP_complex_ptr values)
-  : DSP_source(ParentClock)
+DSPu_Const::DSPu_Const(DSP::Clock_ptr ParentClock,
+                       int NoOfOutputs_in, DSP::Complex_ptr values)
+  : DSP::Source(ParentClock)
 {
   string tekst;
   int ind;
@@ -190,7 +190,7 @@ DSPu_Const::~DSPu_Const(void)
 }
 
 #define THIS_ ((DSPu_Const *)source)
-bool DSPu_Const::OutputExecute_one(DSP_source_ptr source, DSP::clock_ptr clock)
+bool DSPu_Const::OutputExecute_one(DSP_source_ptr source, DSP::Clock_ptr clock)
 {
   THIS_->OutputBlocks[0]->Execute_ptr(
       THIS_->OutputBlocks[0], THIS_->OutputBlocks_InputNo[0], 
@@ -199,7 +199,7 @@ bool DSPu_Const::OutputExecute_one(DSP_source_ptr source, DSP::clock_ptr clock)
   return true;
 };
 
-bool DSPu_Const::OutputExecute_many(DSP_source_ptr source, DSP::clock_ptr clock)
+bool DSPu_Const::OutputExecute_many(DSP_source_ptr source, DSP::Clock_ptr clock)
 {
   int ind;
   

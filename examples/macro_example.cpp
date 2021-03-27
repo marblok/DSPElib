@@ -13,14 +13,14 @@ class DDS_macro : public DSP::Macro
     DSPu_LoopDelay *Alpha_state;
 
   public:
-  DDS_macro(DSP::Clock_ptr Fp2Clock, DSP_float exp_w_n);
+  DDS_macro(DSP::Clock_ptr Fp2Clock, DSP::Float exp_w_n);
 
     ~DDS_macro(void);
 };
 
-DDS_macro::DDS_macro(DSP::Clock_ptr Fp2Clock, DSP_float w_n) : DSP::Macro("DDS", 1, 2)
+DDS_macro::DDS_macro(DSP::Clock_ptr Fp2Clock, DSP::Float w_n) : DSP::Macro("DDS", 1, 2)
 {
-  DSP_complex factor = DSP_complex(cos(w_n), sin(w_n));
+  DSP::Complex factor = DSP::Complex(cos(w_n), sin(w_n));
 
   alpha_state_correction = NULL;
   Alpha_state_MUL = NULL;

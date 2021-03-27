@@ -482,7 +482,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
           DSP::Macro_ptr DrawnMacro, DSP::Clock_ptr clock_ptr)
 {
   unsigned int ind;
-  long ind2;
+  unsigned long ind2;
   DSP::Block_ptr temp_OUT;
   long component_index;
   DSP::Macro_ptr current_macro;
@@ -1385,7 +1385,7 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
 
     // ********************************** //
     // clocks sorting : smaller cycle_length first // prevent MasterClocks grouping
-    for (long ind = 1; ind < ClocksList.size(); ind++)
+    for (unsigned long ind = 1; ind < ClocksList.size(); ind++)
     {
       if (ClocksList[ind]->MasterClockIndex == ClocksList[ind-1]->MasterClockIndex)
       {
@@ -1460,7 +1460,7 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
     //! draw notifications
     if (ClocksList.size() > 0)
     {
-      for (long ind = 0; ind < ClocksList.size(); ind ++)
+      for (unsigned long ind = 0; ind < ClocksList.size(); ind ++)
       { // check for all clock: some ne used clock may come up
         UsedClocksTable[ind] = UsedClocksTable[ind] | ClocksList[ind]->ClockNotificationsToDOTfile(dot_plik,
                                                                    ComponentDoneTable, max_components_number);
@@ -1518,7 +1518,7 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
       }
       dot_plik << ss.str() << std::endl;
 
-      for (long ind = 1; ind < ClocksList.size(); ind ++)
+      for (unsigned long ind = 1; ind < ClocksList.size(); ind ++)
       {
         if (ClocksList[ind-1]->MasterClockIndex == ClocksList[ind]->MasterClockIndex)
         {
