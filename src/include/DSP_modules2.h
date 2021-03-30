@@ -69,7 +69,7 @@ class DSPu_BPSK_SNR_estimator : public DSP::Block
     int SegmentSize;
 
     //! buffer for real input values of the size SegmentSize
-    DSP::Float_ptr RealBuffer;
+    DSP::Float_vector RealBuffer;
     //! current free slot RealBuffer index
     int current_ind;
 
@@ -99,20 +99,10 @@ namespace DSP {
     /*! 1) buffer_size is in symbols
     *  2) buffer contains 2*buffer_size floating point values (real & imag)
     *
-    * \warning in this version Buffer is overwrited
-    *
+    * \note Buffer content is preserved.
     */
-    void PSK_SNR_estimator(int buffer_size, DSP::Float_ptr buffer,
-                            DSP::Float &BPSK_SNR, DSP::Float &QPSK_SNR);
-    //! SNR estimation for PSK modulation (BPSK & QPSK) based on complex symbol samples
-    /*! 1) buffer_size is in symbols
-    *  2) buffer contains 2*buffer_size floating point values (real & imag)
-    *
-    * \warning in this version preserves input buffer
-    *
-    */
-    void PSK_SNR_estimator2(int buffer_size, DSP::Float_ptr buffer,
-                            DSP::Float &BPSK_SNR, DSP::Float &QPSK_SNR);
+    void PSK_SNR_estimator(const int &buffer_size, const DSP::Float_vector &buffer,
+                           DSP::Float &BPSK_SNR, DSP::Float &QPSK_SNR);
   }
 }
 

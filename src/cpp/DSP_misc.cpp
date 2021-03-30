@@ -1079,7 +1079,7 @@ int DSP::f::SampleType2SampleSize(DSP::e::SampleType type)
  *
  * \todo Add to the documentation
  */
-void DSP::f::LPF_LS (int N, DSP::Float fp, DSP::Float fs, DSP::Float_ptr h_buffer, DSP::Float Ws)
+void DSP::f::LPF_LS (int N, DSP::Float fp, DSP::Float fs, DSP::Float_vector &h_buffer, DSP::Float Ws)
 {
   DSP::Prec_Float L;
   int Nodd, temp;
@@ -1121,8 +1121,8 @@ void DSP::f::LPF_LS (int N, DSP::Float fp, DSP::Float fs, DSP::Float_ptr h_buffe
     for (ind_2 = 0; ind_2 < temp; ind_2++)
     {
       I1 = ind_2 + ind_1 + 1 - Nodd;
-      // warto�� na diagonalnej odejmnij od kolumny
-      // kolumna ind_2: diag = 2*ind_2 + + 1 - Nodd
+      // value at diagonal substruct from column
+      // column ind_2: diag = 2*ind_2 + + 1 - Nodd
       I2 = -ind_2 + ind_1;
       G[ind_1][ind_2] += (.5* fp*(DSP::f::sinc_prec(2*DSP::Float(I1)*fp)+DSP::f::sinc_prec(2*DSP::Float(I2)*fp)));
       G[ind_1][ind_2] += (.5*0.5*(DSP::f::sinc_prec(2*I1*0.5)+DSP::f::sinc_prec(2*I2*0.5))
@@ -1137,6 +1137,7 @@ void DSP::f::LPF_LS (int N, DSP::Float fp, DSP::Float fs, DSP::Float_ptr h_buffe
                            b,    //right-hand side quantities vector
                            2);  // do pivot rows&cols or we get badly scaled matrix
   // fill h_buffer
+  h_buffer.resize(N);
   ind_2 = temp-1;
   for (ind_1=0; ind_1 < N; ind_1++)
   {

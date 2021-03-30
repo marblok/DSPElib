@@ -106,7 +106,7 @@ namespace DSP {
     *  - h_buffer - user buffer for impulse response
     *  .
     */
-    void LPF_LS (int N, DSP::Float fp, DSP::Float fs, DSP::Float_ptr h_buffer, DSP::Float Ws = 1.0);
+    void LPF_LS (int N, DSP::Float fp, DSP::Float fs, DSP::Float_vector &h_buffer, DSP::Float Ws = 1.0);
 
     //! Creates subdirectory in parent_dir
     /*! \warning if parent_dir != NULL then it must exist.

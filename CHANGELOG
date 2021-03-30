@@ -1,12 +1,15 @@
 TODO::
-  void PSK_SNR_estimator( ??? => int buffer_size, DSP::Float_ptr buffer, DSP::Float &BPSK_SNR, DSP::Float &QPSK_SNR);
-  void PSK_SNR_estimator2( ??? => int buffer_size, DSP::Float_ptr buffer, DSP::Float &BPSK_SNR, DSP::Float &QPSK_SNR);
-  void DSP::f::LPF_LS (int N, DSP::Float fp, DSP::Float fs, ??? => DSP::Float_ptr h_buffer, DSP::Float Ws)
   DWORD => unsigned long
   DSPu_FIR => use vectors instead of pointers as an input
 
+LAST DONE:
+
 
 CHANGES:
+- ver. 0.19.018 - <b>2021.03.30</b> Changed: 
+  - DSP::f::LPF_LS uses vector instead of pointer
+  - PSK_SNR_estimator and PSK_SNR_estimator2 are merged into DSP::f::PSK_SNR_estimator and buffer vector is used instead of pointer
+
 - ver. 0.19.017 - <b>2021.03.27</b> Changed: 
   - removed obsolete DSP::Clock::SchemeToMfile and related functions
   - DSP_DOT.cpp changed pointers into vectors

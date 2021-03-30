@@ -105,8 +105,8 @@ DSPu_BPSK_SNR_estimator::DSPu_BPSK_SNR_estimator(int segment_size)
   ClockGroups.AddOutputs2Group("all", 0, NoOfOutputs-1);
 
   SegmentSize = segment_size;
-  RealBuffer = new DSP::Float[SegmentSize];
-  memset(RealBuffer, 0, sizeof(DSP::Float)*SegmentSize);
+  RealBuffer.clear();
+  RealBuffer.resize(SegmentSize, 0.0);
   current_ind = 0;
 
   Input_Real = 0.0; Input_Imag = 0.0;
@@ -117,8 +117,7 @@ DSPu_BPSK_SNR_estimator::DSPu_BPSK_SNR_estimator(int segment_size)
 
 DSPu_BPSK_SNR_estimator::~DSPu_BPSK_SNR_estimator(void)
 {
-  if (RealBuffer != NULL)
-    delete [] RealBuffer;
+  RealBuffer.clear();
 }
 
 void DSPu_BPSK_SNR_estimator::InputExecute(INPUT_EXECUTE_ARGS)
@@ -169,97 +168,23 @@ void DSPu_BPSK_SNR_estimator::InputExecute(INPUT_EXECUTE_ARGS)
  * 1) buffer_size is in symbols
  * 2) buffer contains 2*buffer_size floating point values (real & imag)
  *
- * \warning in this version Buffer is overwritten
+ * \note Buffer content is preserved.
  */
-void DSP::f::PSK_SNR_estimator(int buffer_size, DSP::Float_ptr buffer,
-                            DSP::Float &BPSK_SNR, DSP::Float &QPSK_SNR)
-{
-  DSP::Float s_re_abs, s_im_abs;
-  DSP::Float v_BPSK, S_BPSK, N_BPSK;
-  DSP::Float v_QPSK, S_QPSK, N_QPSK;
-  DSP::Float_ptr tmp_buffer;
-  int ind;
-
-  //constelation points position estimation for BPSK & QPSK
-  tmp_buffer = buffer;
-  *tmp_buffer = FABS(*tmp_buffer);
-  s_re_abs=*tmp_buffer;
-  tmp_buffer++;
-  *tmp_buffer = FABS(*tmp_buffer);
-  s_im_abs=*tmp_buffer;
-  for (ind = 1; ind < buffer_size; ind++)
-  {
-    tmp_buffer++;
-    *tmp_buffer = FABS(*tmp_buffer);
-    s_re_abs += *tmp_buffer;
-    tmp_buffer++;
-    *tmp_buffer = FABS(*tmp_buffer);
-    s_im_abs += *tmp_buffer;
-  }
-  s_re_abs /= (DSP::Float)buffer_size;
-  s_im_abs /= (DSP::Float)buffer_size;
-
-  v_BPSK = s_re_abs;
-  v_QPSK = (v_BPSK + s_im_abs)/2;
-
-
-  // Signal power for BPSK
-  tmp_buffer = buffer;
-  N_BPSK = (*tmp_buffer - v_BPSK) * (*tmp_buffer - v_BPSK);
-  tmp_buffer++;
-  N_BPSK += (*tmp_buffer) * (*tmp_buffer);
-  for (ind = 1; ind < buffer_size; ind++)
-  {
-    tmp_buffer++;
-    N_BPSK += (*tmp_buffer - v_BPSK) * (*tmp_buffer - v_BPSK);
-    tmp_buffer++;
-    N_BPSK += (*tmp_buffer) * (*tmp_buffer);
-  }
-  N_BPSK /= (DSP::Float)buffer_size;
-  S_BPSK = v_BPSK*v_BPSK + v_BPSK*v_BPSK;
-
-  // Signal power for QPSK
-  tmp_buffer = buffer;
-  N_QPSK = (*tmp_buffer - v_QPSK) * (*tmp_buffer - v_QPSK);
-  for (ind = 1; ind < 2*buffer_size; ind++)
-  {
-    tmp_buffer++;
-    N_QPSK += (*tmp_buffer - v_QPSK) * (*tmp_buffer - v_QPSK);
-  }
-  N_QPSK /= (DSP::Float)buffer_size;
-  S_QPSK = v_QPSK*v_QPSK + v_QPSK*v_QPSK;
-
-
-  BPSK_SNR = S_BPSK / N_BPSK; //linear
-  QPSK_SNR = S_QPSK / N_QPSK; //linear
-};
-
-/* SNR estimation for PSK modulation (BPSK & QPSK) based on complex symbol samples
- * 1) buffer_size is in symbols
- * 2) buffer contains 2*buffer_size floating point values (real & imag)
- *
- * \warning This version preserves input buffer
- */
-void DSP::f::PSK_SNR_estimator2(int buffer_size, DSP::Float_ptr buffer,
+void DSP::f::PSK_SNR_estimator(const int &buffer_size, const DSP::Float_vector &buffer,
                              DSP::Float &BPSK_SNR, DSP::Float &QPSK_SNR)
 {
   DSP::Float s_re_abs, s_im_abs;
   DSP::Float v_BPSK, S_BPSK, N_BPSK;
   DSP::Float v_QPSK, S_QPSK, N_QPSK;
-  DSP::Float_ptr tmp_buffer;
   int ind;
 
   //constelation points position estimation for BPSK & QPSK
-  tmp_buffer = buffer;
-  s_re_abs= FABS(*tmp_buffer);
-  tmp_buffer++;
-  s_im_abs= FABS(*tmp_buffer);
+  s_re_abs= FABS(buffer[0]);
+  s_im_abs= FABS(buffer[1]);
   for (ind = 1; ind < buffer_size; ind++)
   {
-    tmp_buffer++;
-    s_re_abs += FABS(*tmp_buffer);
-    tmp_buffer++;
-    s_im_abs += FABS(*tmp_buffer);
+    s_re_abs += FABS(buffer[2*ind]);
+    s_im_abs += FABS(buffer[2*ind+1]);
   }
   s_re_abs /= (DSP::Float)buffer_size;
   s_im_abs /= (DSP::Float)buffer_size;
@@ -269,27 +194,21 @@ void DSP::f::PSK_SNR_estimator2(int buffer_size, DSP::Float_ptr buffer,
 
 
   // Signal power for BPSK
-  tmp_buffer = buffer;
-  N_BPSK = (FABS(*tmp_buffer) - v_BPSK) * (FABS(*tmp_buffer) - v_BPSK);
-  tmp_buffer++;
-  N_BPSK += (*tmp_buffer) * (*tmp_buffer);
+  N_BPSK = (FABS(buffer[0]) - v_BPSK) * (FABS(buffer[0]) - v_BPSK);
+  N_BPSK += (buffer[1]) * (buffer[1]);
   for (ind = 1; ind < buffer_size; ind++)
   {
-    tmp_buffer++;
-    N_BPSK += (FABS(*tmp_buffer) - v_BPSK) * (FABS(*tmp_buffer) - v_BPSK);
-    tmp_buffer++;
-    N_BPSK += (*tmp_buffer) * (*tmp_buffer);
+    N_BPSK += (FABS(buffer[2*ind]) - v_BPSK) * (FABS(buffer[2*ind]) - v_BPSK);
+    N_BPSK += (buffer[2*ind+1]) * (buffer[2*ind+1]);
   }
   N_BPSK /= (DSP::Float)buffer_size;
   S_BPSK = v_BPSK*v_BPSK;
 
   // Signal power for QPSK
-  tmp_buffer = buffer;
-  N_QPSK = (FABS(*tmp_buffer) - v_QPSK) * (FABS(*tmp_buffer) - v_QPSK);
+  N_QPSK = (FABS(buffer[0]) - v_QPSK) * (FABS(buffer[0]) - v_QPSK);
   for (ind = 1; ind < 2*buffer_size; ind++)
   {
-    tmp_buffer++;
-    N_QPSK += (FABS(*tmp_buffer) - v_QPSK) * (FABS(*tmp_buffer) - v_QPSK);
+    N_QPSK += (FABS(buffer[ind]) - v_QPSK) * (FABS(buffer[ind]) - v_QPSK);
   }
   N_QPSK /= (DSP::Float)buffer_size;
   S_QPSK = 2*v_QPSK*v_QPSK;

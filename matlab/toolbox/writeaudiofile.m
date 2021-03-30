@@ -1,4 +1,4 @@
-function filewrite(filename, x, sample_type, Fs)
+function writeaudiofile(filename, x, sample_type, Fs)
 
 if nargin == 2,
   sample_type = 'float';

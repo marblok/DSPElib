@@ -1,8 +1,8 @@
 function varargout = specgraf_2(Akcja, param)
 % Spectrogram for long signals
 %
-% last modification: 2013.12.04
-% Author: Marek Blok 
+% last modification: 2006.09.14
+% Author: Marek Blok
 
 %cos(cumsum(n/1000))
 
@@ -15,19 +15,7 @@ function varargout = specgraf_2(Akcja, param)
 % \fixed 2005.11.20 Placed all in single file
 % \fixed 2005.11.20 Fixed problems with zoom out
 
-% \fixed 2013.07.05 Fixed obsolete finite
-% \fixed 2013.07.06 Fixed zoom related warnings
-% \added 2013.07.06 param.filename = 'name.wav'; specgraf_2('UserInit', param)
-% 
-
-% \added 2013.12.04 obs³ugê global specgram
-% \added 2013.12.04 param.filename = 'name.wav'; 
-%                   param.out_dir = 'katalog'; 
-%                   specgraf_2('GetImage', param)
-% \added 2013.12.04 przycisk 'Save image'
-% \fixed 2021.03.29 Update to Matlab 2021a
-ver_data = '2021.03.21';
-
+if nargin == 0  % LAUNCH GUI
 
 % 	fig = openfig(mfilename,'reuse'); return; %ZapiszFig(1,'specGUI.m')
   if isempty(findobj(0, 'tag', 'Specgraf_DrawFig_2')) 
@@ -35,7 +23,7 @@ ver_data = '2021.03.21';
     fig = Specgraf_DrawFig_2;
     set(fig,'DoubleBuffer', 'on');
     set(fig,'tag', 'Specgraf_DrawFig_2', 'Units', 'pixels');
-    set(fig,'name', ['Spektrogram d³ugich sygna³ów niestacjonarnych (', ver_data, ') dr in¿. Marek Blok'],...
+    set(fig,'name', 'Spektrogram d³ugich sygna³ów niestacjonarnych (2006.03.23) dr in¿. Marek Blok',...
       'KeyPressFcn','1;');
     
     specgraf_2('Init');
@@ -43,14 +31,10 @@ ver_data = '2021.03.21';
     set(fig,'Visible','on');
 %    specgraf_2('per');
   else
-    if nargin == 0  % close GUI
-      specgraf_2('Exit');
-    end;
+    specgraf_2('Exit');
   end
-
-if nargin == 0  % close GUI
   return;
-end
+end;
 
 if ~isstr(Akcja) % INVOKE NAMED SUBFUNCTION OR CALLBACK
   disp('Something''s wrong');
@@ -77,34 +61,12 @@ else
 end
 hEdit_dY=findobj(fig,'tag', 'dY_edit');
 
-% przechowywania na potrzeby skoryzstania na zewn¹trz
-global specgram
-
 if strcmp(Akcja, 'Exit')
   close(fig);
   return;
-  
-elseif strcmp(Akcja, 'UserInit')
-  if nargin == 1,
-    warning('UserInit expects data in param');
-  end
-%   specgraf_2('Init', param);
-
-  set(hEdit_filename,'UserData',param.filename);
-  set(hEdit_filename,'String',param.filename);
-  set(hEdit_filename,'Max', 1);
-
-  specgraf_2('signal');
-  set(fig,'Visible','on');
-  figure(fig);
-
 elseif strcmp(Akcja, 'Init')
-  if nargin == 1,
-    param.filename = 'test.wav';
-  else
-  end
-  set(hEdit_filename,'UserData',param.filename);
-  set(hEdit_filename,'String',param.filename);
+  set(hEdit_filename,'UserData','test.wav');
+  set(hEdit_filename,'String','test.wav');
   set(hEdit_filename,'Max', 1);
 
   set(hEdit_L,'UserData','-1');
@@ -115,8 +77,8 @@ elseif strcmp(Akcja, 'Init')
   set(hEdit_k,'UserData','2');
   set(hEdit_k,'String','2');
 
-  set(hEdit_N,'UserData','4');
-  set(hEdit_N,'String','4');
+  set(hEdit_N,'UserData','16');
+  set(hEdit_N,'String','16');
   set(hEdit_O,'UserData','50');
   set(hEdit_O,'String','50');
   
@@ -149,27 +111,8 @@ elseif strcmp(Akcja, 'Init')
   draw_params.max_per = 1;
   setappdata(fig, 'draw_params', draw_params);
 
-  set(hEdit_dY,'String','80');
+  set(hEdit_dY,'String','90');
   return;
-  
-elseif strcmp(Akcja, 'GetImage')
-  
-  try 
-    param.out_dir
-  catch
-    tekst_filename=get(hEdit_filename,'UserData');
-    ind=find(tekst_filename==0);
-    if ~isempty(ind)
-      tekst_filename=tekst_filename(1:ind(1)-1);
-    end;
-    
-    param.out_dir = 'figs\'; 
-    param.filename = tekst_filename(1:end-4);
-  end
-
-  pos = [1 6 [10 5]*4];
-  set(fig, 'PaperPosition', pos);
-  to_file(fig, param.out_dir, param.filename, 3);
   
 elseif strcmp(Akcja, 'signal')
   if nargin==2,
@@ -199,18 +142,15 @@ elseif strcmp(Akcja, 'signal')
   end;
   L_tmp = L; 
   if L_tmp <=0, L_tmp =1000; end;
-  
-%   if (L >=100*48000) | (L <= 0), L = 100*48000; end;
+  if (L >=100*48000) | (L <= 0), L = 100*48000; end;
 %   L_tmp =1000000; 
 
 % SIZ=WAVREAD(FILE,'size')
-  eval(['size_tmp = readaudiofile(''' tekst_filename ''', ''size'');'], 'size_tmp = -1;');
+  eval(['size_tmp = fileread(''' tekst_filename ''', ''size'');'], 'size_tmp = -1;');
   if (size_tmp ~= -1) & (max(size_tmp) < L),
     L = max(size_tmp);
-  elseif L <= 0, 
-    L = max(size_tmp);
   end
-  eval(['[x, Fs]=readaudiofile(''' tekst_filename ''', L);'], 'x=randn(1,L_tmp); L = L_tmp; Fs=48000;')
+  eval(['[x, Fs]=fileread(''' tekst_filename ''', L);'], 'x=randn(1,L_tmp); L = L_tmp; Fs=48000;')
 
 %   size(x,1)
   if size(x,2) == 2,
@@ -231,23 +171,23 @@ elseif strcmp(Akcja, 'signal')
    
   %draw signal
   draw_params = getappdata(fig, 'draw_params');
-  if ishandle(draw_params.hp_spec),
+  if isfinite(draw_params.hp_spec),
     delete(draw_params.hp_spec);
     draw_params.hp_spec = NaN;
   end
-  if ishandle(draw_params.hp_spec_t2),
+  if isfinite(draw_params.hp_spec_t2),
     delete(draw_params.hp_spec_t2);
     draw_params.hp_spec_t2 = NaN;
   end
-  if ishandle(draw_params.hp_per),
+  if isfinite(draw_params.hp_per),
     delete(draw_params.hp_per);
     draw_params.hp_per = NaN;
   end
-%   if ishandle(draw_params.hp_spec_slice),
+%   if isfinite(draw_params.hp_spec_slice),
 %     delete(draw_params.hp_spec_slice);
 %     draw_params.hp_spec_slice = NaN;
 %   end
-  if ishandle(draw_params.hp_per2),
+  if isfinite(draw_params.hp_per2),
     delete(draw_params.hp_per2);
     draw_params.hp_per2 = NaN;
   end
@@ -363,73 +303,69 @@ elseif strcmp(Akcja, 'spec')
 
 %   [Spec, f, t]=specgram(x, K, 1, w, O);
 %   Spec=(abs(Spec).^2)/norm(w)^2;
-  [specgram.Spec, specgram.f, specgram.t, specgram.Per]=eval_specgram(x, K, Fs, w, O, N, Os);
-  [specgram.t_Ex, specgram.Ex] = eval_energy(x, O, Fs);
-  specgram.f2 = specgram.f;
+  [Spec, f, t, Per]=eval_specgram(x, K, Fs, w, O, N, Os);
+  f2 = f;
 %   [Per, f2]=psd(x, K, 1, w, O);
 %   Per=abs(Per);
 
 
-  setappdata(fig, 'f',specgram.f); %   set(get(ha(2),'Ylabel'),'UserData', f);
-  setappdata(fig, 'Spec',specgram.Spec); %   set(get(ha_spec,'Ylabel'),'UserData', Spec);
-  setappdata(fig, 'Per',specgram.Per); %   set(get(ha_per,'Ylabel'),'UserData', Per);
+  setappdata(fig, 'f',f); %   set(get(ha(2),'Ylabel'),'UserData', f);
+  setappdata(fig, 'Spec',Spec); %   set(get(ha_spec,'Ylabel'),'UserData', Spec);
+  setappdata(fig, 'Per',Per); %   set(get(ha_per,'Ylabel'),'UserData', Per);
 
 %   draw_params.min_spec=min([min(Spec(finite(Spec))); 0]);
 %   draw_params.max_spec=max([max(Spec(finite(Spec))); 0.001]);
 %   draw_params.min_per=min([min(Per(finite(Per))); 0]);
 %   draw_params.max_per=max([max(Per(finite(Per))); 0.001]);
-  draw_params.min_spec=min([min(specgram.Spec(isfinite(specgram.Spec))); 0]);
-  draw_params.max_spec=max([max(specgram.Spec(isfinite(specgram.Spec))); draw_params.min_spec+0.001]);
-  draw_params.min_per=min([min(specgram.Per(isfinite(specgram.Per))); 0]);
-  draw_params.max_per=max([max(specgram.Per(isfinite(specgram.Per))); draw_params.min_per+0.001]);
+  draw_params.min_spec=min([min(Spec(finite(Spec))); 0]);
+  draw_params.max_spec=max([max(Spec(finite(Spec))); draw_params.min_spec+0.001]);
+  draw_params.min_per=min([min(Per(finite(Per))); 0]);
+  draw_params.max_per=max([max(Per(finite(Per))); draw_params.min_per+0.001]);
   if get(h_dB, 'UserData') %dB
-    specgram.Spec=10*log10(specgram.Spec);
-    specgram.Per=10*log10(specgram.Per);
+    Spec=10*log10(Spec);
+    Per=10*log10(Per);
   end
   
   %spektrogram
-  if length(specgram.t)>1
-    specgram.t2=specgram.t+(specgram.t(2)-specgram.t(1))/2;
+  if length(t)>1
+    t2=t+(t(2)-t(1))/2;
   else
-    specgram.t2=M/2*(1/Fs);
-    specgram.t=specgram.t2;
+    t2=M/2*(1/Fs);
+    t=t2;
   end;
 
   axes(ha_spec);
-  if ~ishandle(draw_params.hp_spec)
+  if isnan(draw_params.hp_spec)
     hold on;
-    draw_params.hp_spec=image(specgram.t2, specgram.f, specgram.Spec);
+    draw_params.hp_spec=image(t2, f, Spec);
     set(draw_params.hp_spec, 'CDataMapping', 'scaled');
     colormap(hot);
     hold off;
   else
-    set(draw_params.hp_spec,'Xdata', specgram.t2, 'Ydata', specgram.f, 'Cdata', specgram.Spec);
+    set(draw_params.hp_spec,'Xdata', t2, 'Ydata', f, 'Cdata', Spec);
   end
-  if length(specgram.t)==1,
-    tlim_=[specgram.t(1)-0.5 specgram.t(1)+0.5];
+  if length(t)==1,
+    tlim_=[t(1)-0.5 t(1)+0.5];
   else
-    tlim_=[specgram.t(1) specgram.t(length(specgram.t))+specgram.t(2)-specgram.t(1)];
+    tlim_=[t(1) t(length(t))+t(2)-t(1)];
   end;
   if isreal(x)
     set(ha_spec, 'Ylim', [0 Fs/2], 'Xlim', tlim_);
   else
     set(ha_spec, 'Ylim', [-Fs/2 Fs/2], 'Xlim', tlim_);
   end
-  eval('zoom reset', 'set(get(draw_params.ha_spec,''ZLabel''),''UserData'',[]);');    
-
-  axes(ha_time);
-  plot(specgram.t_Ex, specgram.Ex, 'k');
   set(ha_time, 'Xlim', tlim_);
 %  set(get(ha_spec,'ZLabel'),'UserData',[]);    
 %  reset(get(ha_spec,'ZLabel'));    
+  eval('zoom reset', 'set(get(draw_params.ha_spec,''ZLabel''),''UserData'',[]);');    
   
   axes(ha_per);
-  if ~ishandle(draw_params.hp_per)
+  if isnan(draw_params.hp_per)
     hold on;
-    draw_params.hp_per=plot(specgram.f2, specgram.Per, 'Color', 'k');
+    draw_params.hp_per=plot(f2, Per, 'Color', 'k');
     hold off;
   else
-    set(draw_params.hp_per,'Xdata', specgram.f2, 'Ydata', specgram.Per, 'Color', 'k');
+    set(draw_params.hp_per,'Xdata', f2, 'Ydata', Per, 'Color', 'k');
   end
 %   set(ha_per, 'Xdir', 'reverse', 'YTick', []); %, 'Xlim', [t(1) t(length(t))], 'Ylim', [-1.1 1.1]*max(max_x));
   if isreal(x),
@@ -477,7 +413,7 @@ elseif strcmp(Akcja, 'dB')
 %     setappdata(fig, 'Per', per);
     set(h_dB, 'UserData', get(h_dB, 'Value'));
 
-    if ishandle(draw_params.hp_per2),
+    if isfinite(draw_params.hp_per2),
       delete(draw_params.hp_per2);
       draw_params.hp_per2 = NaN;
     end
@@ -504,7 +440,7 @@ elseif strcmp(Akcja, 'spec_ylim')
 %   max_per=pom(:,12);
   if get(h_dB, 'UserData') %dB
     tekst=get(hEdit_dY,'String');
-    eval(['dY=' tekst ';'], 'dY=80;');
+    eval(['dY=' tekst ';'], 'dY=90;');
     if dY<=0, dY=10; end;
     params_=[min(draw_params.min_spec) max(draw_params.max_spec)];
     ind_params = find(abs(params_) <= eps);
@@ -512,7 +448,7 @@ elseif strcmp(Akcja, 'spec_ylim')
       params_(ind_params) = NaN*ones(size(ind_params));
     end
     ylim_=10*log10(params_);
-    if ~isfinite(ylim_(2))
+    if ~finite(ylim_(2))
       ylim_(2)=0;
     end
     ylim_(1)=ylim_(2)-dY;
@@ -522,7 +458,7 @@ elseif strcmp(Akcja, 'spec_ylim')
       params_(ind_params) = NaN*ones(size(ind_params));
     end
     ylim_per=10*log10(params_);
-    if ~isfinite(ylim_per(2))
+    if ~finite(ylim_per(2))
       ylim_per(2)=0;
     end
     ylim_per(1)=ylim_per(2)-dY;
@@ -541,7 +477,7 @@ elseif strcmp(Akcja, 'spec_ylim')
   set(ha_spec,'Clim', ylim_per);
 %   set(draw_params.hp_per,'Xdata', f, 'Ydata', Per);
   set(ha_per,'Ylim', ylim_per);
-%   set(ha_time,'Ylim', ylim_per);
+  set(ha_time,'Ylim', ylim_per);
 
 %   if get(h_dB, 'UserData') %dB
 %     set(hp_spec_t(Ktory),'Ydata', 20*log10(abs(get(hp_re(Ktory),'Ydata')+j*get(hp_im(Ktory),'Ydata'))));
@@ -549,37 +485,30 @@ elseif strcmp(Akcja, 'spec_ylim')
 %     set(hp_spec_t(Ktory),'Ydata', abs(get(hp_re(Ktory),'Ydata')+j*get(hp_im(Ktory),'Ydata')));
 %   end
   
-  specgraf_2 zoom_on;
+  SPECgraf_2 zoom_on;
   eval('zoom reset', 'set(get(ha_spec,''ZLabel''),''UserData'',[]);');    
-  specgraf_2 zoom_off;
+  SPECgraf_2 zoom_off;
   return
 elseif strcmp(Akcja, 'zoom_on')
-  h_zoom = zoom(fig);
-  set(h_zoom,'ActionPreCallback',@myprecallback);
-  set(h_zoom,'ActionPostCallback',@mypostcallback);
-  set(h_zoom,'Enable','on');
-%   
-%   zoom on;
-%   pom=get(fig, 'WindowButtonDownFcn');
-%   set(fig, 'WindowButtonDownFcn', 'specgraf_2 zoom');
-%   set(get(ha_spec,'Xlabel'), 'UserData', pom);
+  zoom on;
+  pom=get(fig, 'WindowButtonDownFcn');
+  set(fig, 'WindowButtonDownFcn', 'specgraf_2 zoom');
+  set(get(ha_spec,'Xlabel'), 'UserData', pom);
   return;  
 elseif strcmp(Akcja, 'zoom_off')
   if get(findobj(fig,'tag','checkbox_zoom'),'Value') == 0,
-%     pom = get(get(ha_spec,'Xlabel'), 'UserData');
-%     set(fig, 'WindowButtonDownFcn', pom);
-    h_zoom = zoom(fig);
-    set(h_zoom,'Enable','off');
-%     zoom off;
+    pom = get(get(ha_spec,'Xlabel'), 'UserData');
+    set(fig, 'WindowButtonDownFcn', pom);
+    zoom off;
     set(fig, 'WindowButtonDownFcn', 'specgraf_2 zoom');
     set(get(ha_spec,'Xlabel'), 'UserData', '1;');
   end
   return;  
 elseif strcmp(Akcja, 'zoom_spec')
   if get(findobj(fig,'tag','checkbox_zoom'),'Value') ~= 0,
-    specgraf_2 zoom_on;
+    Specgraf_2 zoom_on;
   else
-    specgraf_2 zoom_off;
+    Specgraf_2 zoom_off;
   end
 elseif strcmp(Akcja, 'zoom')
 %  if strcmp(get(fig,'SelectionType'),'normal') | (gca~=ha_spec)
@@ -610,7 +539,7 @@ elseif strcmp(Akcja, 'zoom')
     end;
     if get(h_dB, 'Value') %dB
       axes(ha_per);
-      if ~ishandle(draw_params.hp_per2)
+      if isnan(draw_params.hp_per2)
         hold on;
 %         draw_params.hp_per2=plot(f, 10*log10(Spec(:,ind_t)), 'Color', 'r', 'LineWidth', 2);
         draw_params.hp_per2=plot(f, 10*log10(Spec(:,ind_t)), 'Color', 'r', 'LineWidth', 1);
@@ -619,7 +548,7 @@ elseif strcmp(Akcja, 'zoom')
         set(draw_params.hp_per2,'Xdata', f, 'Ydata', 10*log10(Spec(:,ind_t)));
       end
       axes(ha_time);
-      if ~ishandle(draw_params.hp_spec_t2)
+      if isnan(draw_params.hp_spec_t2)
         hold on;
         draw_params.hp_spec_t2=plot(t, 10*log10(Spec(ind_f,:)), 'Color', 'b', 'LineWidth', 1);
         hold off;
@@ -628,7 +557,7 @@ elseif strcmp(Akcja, 'zoom')
       end
     else
       axes(ha_per);
-      if ~ishandle(draw_params.hp_per2)
+      if isnan(draw_params.hp_per2)
         hold on;
         draw_params.hp_per2=plot(f, Spec(:,ind_t), 'Color', 'r', 'LineWidth', 2);
         hold off;
@@ -636,7 +565,7 @@ elseif strcmp(Akcja, 'zoom')
         set(draw_params.hp_per2,'Xdata', f, 'Ydata', Spec(:,ind_t));
       end
       axes(ha_time);
-      if ~ishandle(draw_params.hp_spec_t2)
+      if isnan(draw_params.hp_spec_t2)
         hold on;
         draw_params.hp_spec_t2=plot(t, Spec(ind_f,:), 'Color', 'b', 'LineWidth', 1);
         hold off;
@@ -825,25 +754,6 @@ delete(hb);
 clear global spegraf_progress_stop;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [t_Ex, Ex] = eval_energy(x, O, Fs)
-
-if O > length(x)
-  O = length(x);
-end
-dt = O/Fs;
-wind = blackman(O); wind = wind / sum(wind);
-
-Ex_len = floor(length(x)/O);
-Ex = zeros(Ex_len,1);
-t_Ex = dt/2 + (0:Ex_len-1)*dt;
-
-E = abs(x(:)).^2;
-for ind =1:O,
-%   tmp = wind(ind)*E(ind:O:Ex_len*O);
-  Ex = Ex + wind(ind)*E(ind:O:Ex_len*O);
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function fig_h=Specgraf_DrawFig_2
 fig_h=figure;
 set(fig_h, ...
@@ -962,40 +872,40 @@ if (x(1)>='5'),
   set(h, ...
     'FontSize', 10);
 end;
-% set(h, ...
-%   'Style', 'edit',...
-%   'Units', 'Normalized',...
-%   'Position', [0.0180 0.8140 0.2210 0.0364],...
-%   'BackGroundColor', [1.0000 1.0000 1.0000],...
-%   'String', 'Edit Text',...
-%   'Value', 0,...
-%   'Visible', 'on',...
-%   'Callback', 'specgraf_2(''signal'')',...
-%   'Tag', 'prescript_edit'...
-%   );
-% h=uicontrol;
-% x=version;
-% if (x(1)>='5'),
-%   set(h, ...
-%     'FontSize', 10);
-% end;
-% set(h, ...
-%   'Style', 'text',...
-%   'Units', 'Normalized',...
-%   'Position', [0.0120 0.8503 0.1380 0.0280],...
-%   'BackGroundColor', [0.9255 0.9137 0.8471],...
-%   'String', 'preprocessing script =',...
-%   'Value', 0,...
-%   'Visible', 'on',...
-%   'Callback', '',...
-%   'Tag', 'text24'...
-%   );
-% h=uicontrol;
-% x=version;
-% if (x(1)>='5'),
-%   set(h, ...
-%     'FontSize', 10);
-% end;
+set(h, ...
+  'Style', 'edit',...
+  'Units', 'Normalized',...
+  'Position', [0.0180 0.8140 0.2210 0.0364],...
+  'BackGroundColor', [1.0000 1.0000 1.0000],...
+  'String', 'Edit Text',...
+  'Value', 0,...
+  'Visible', 'on',...
+  'Callback', 'specgraf_2(''signal'')',...
+  'Tag', 'spript_edit'...
+  );
+h=uicontrol;
+x=version;
+if (x(1)>='5'),
+  set(h, ...
+    'FontSize', 10);
+end;
+set(h, ...
+  'Style', 'text',...
+  'Units', 'Normalized',...
+  'Position', [0.0120 0.8503 0.1380 0.0280],...
+  'BackGroundColor', [0.9255 0.9137 0.8471],...
+  'String', 'preprocessing script =',...
+  'Value', 0,...
+  'Visible', 'on',...
+  'Callback', '',...
+  'Tag', 'text24'...
+  );
+h=uicontrol;
+x=version;
+if (x(1)>='5'),
+  set(h, ...
+    'FontSize', 10);
+end;
 set(h, ...
   'Style', 'pushbutton',...
   'Units', 'Normalized',...
@@ -1004,7 +914,7 @@ set(h, ...
   'String', 'Refresh',...
   'Value', 0,...
   'Visible', 'on',...
-  'Callback', 'specgraf_2 Refresh',...
+  'Callback', 'SPECgraf_2 Refresh',...
   'Tag', 'pushbutton6'...
   );
 h=uicontrol;
@@ -1021,7 +931,7 @@ set(h, ...
   'String', 'zoom',...
   'Value', 0,...
   'Visible', 'on',...
-  'Callback', 'specgraf_2 zoom_spec',...
+  'Callback', 'Specgraf_2 zoom_spec',...
   'Tag', 'checkbox_zoom'...
   );
 h=uicontrol;
@@ -1038,24 +948,7 @@ set(h, ...
   'String', 'Exit',...
   'Value', 0,...
   'Visible', 'on',...
-  'Callback', 'specgraf_2 Exit',...
-  'Tag', 'pushbutton5'...
-  );
-h=uicontrol;
-x=version;
-if (x(1)>='5'),
-  set(h, ...
-    'FontSize', 10);
-end;
-set(h, ...
-  'Style', 'pushbutton',...
-  'Units', 'Normalized',...
-  'Position', [0.2540 0.0098 0.0660 0.0378],...
-  'BackGroundColor', [0.9255 0.9137 0.8471],...
-  'String', 'Save image',...
-  'Value', 0,...
-  'Visible', 'on',...
-  'Callback', 'specgraf_2 GetImage',...
+  'Callback', 'SPECgraf_2 Exit',...
   'Tag', 'pushbutton5'...
   );
 h=uicontrol;
@@ -1307,7 +1200,7 @@ set(h, ...
   'Units', 'Normalized',...
   'Position', [0.2600 0.9622 0.1470 0.0266],...
   'BackGroundColor', [0.9255 0.9137 0.8471],...
-  'String', 'Spectrograph parameters',...
+  'String', 'Spectrograf parameters',...
   'Value', 0,...
   'Visible', 'on',...
   'Callback', '',...
@@ -1398,12 +1291,3 @@ set(h, ...
   'Callback', '',...
   'Tag', 'text2'...
   );
-
-
-function myprecallback(obj,evd)
-% disp('A zoom is about to occur.');
-% specgraf_2 zoom
-
-function mypostcallback(obj,evd)
-% newLim = get(evd.Axes,'XLim');
-% msgbox(sprintf('The new X-Limits are [%.2f %.2f].',newLim));
