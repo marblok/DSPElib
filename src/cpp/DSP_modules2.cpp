@@ -2680,7 +2680,7 @@ void DSPu_FFT::InputExecute_cplx(INPUT_EXECUTE_ARGS)
 
   if (THIS->NoOfInputsProcessed == THIS->NoOfInputs)
   {
-    THIS->dft.DFT((DWORD)THIS->K, THIS->input_buffer.data(), THIS->output_buffer.data());
+    THIS->dft.DFT((DWORD)THIS->K, THIS->input_buffer, THIS->output_buffer);
 
     for (int ind = 0; ind < (int)(THIS->K); ind++)
     {
@@ -2710,7 +2710,7 @@ void DSPu_FFT::InputExecute_real(INPUT_EXECUTE_ARGS)
 
   if (THIS->NoOfInputsProcessed == THIS->NoOfInputs)
   {
-    THIS->dft.DFT(THIS->K, THIS->input_buffer.data(), THIS->output_buffer.data());
+    THIS->dft.DFT(THIS->K, THIS->input_buffer, THIS->output_buffer);
 
     for (int ind = 0; ind < (int)(THIS->K); ind++)
     {

@@ -13,55 +13,58 @@
 //---------------------------------------------------------------------------
 #include <DSP_types.h>
 //---------------------------------------------------------------------------
-class DSP_Fourier
-{
-  private:
-    DWORD K, K2;
-    DSP::Complex *fft;
-    DSP::Complex *cSin, *cSinConj;
-//    DSP::Complex *cSinFFT;
+namespace DSP {
+  class Fourier
+  {
+    private:
+      unsigned long K, K2;
+      DSP::Complex_vector fft;
+      DSP::Complex_vector cSin;
+  //    DSP::Complex_vector cSinConj;
+  ////    DSP::Complex_vector cSinFFT;
 
-    DWORD *RevBitTable, *FFTshift_RevBitTable;
+      std::vector <unsigned long> RevBitTable, FFTshift_RevBitTable;
 
 
-    bool IsFFT, isFFTshiftON;
-    DWORD Kbit;
+      bool IsFFT, isFFTshiftON;
+      unsigned long Kbit;
 
-    DWORD BitRev(DWORD x, DWORD s);
-  public:
-    void resize(DWORD K);
-    //void resizeR(DWORD K2);
+      unsigned long BitRev(unsigned long x, const unsigned long &s);
+    public:
+      void resize(const unsigned long &K);
+      //void resizeR(unsigned long K2);
 
-    DSP_Fourier(void);
-    DSP_Fourier(DWORD K);
-    ~DSP_Fourier(void);
+      Fourier(void);
+      Fourier(const unsigned long &K);
+      ~Fourier(void);
 
-    bool CheckIsFFT(DWORD K);
-    void FFTshiftON(bool val);
+      bool CheckIsFFT(const unsigned long &K);
+      void FFTshiftON(const bool &val);
 
-    //! \TODO use private temporary vector so, the content pointed by the probki variable would not be destroyed
+      //! \TODO use private temporary vector so, the content pointed by the probki variable would not be destroyed
 
-    //! \warning probki table is used to store internal values so it will be overwritten
-    void FFT(DWORD N, DSP::Complex *probki);
-    //! \warning probki table is used to store internal values so it will be overwritten
-    void IFFT(DWORD N, DSP::Complex *probki);
+      //! \warning probki table is used to store internal values so it will be overwritten
+      void FFT(const unsigned long &N, DSP::Complex_vector &probki);
+      //! \warning probki table is used to store internal values so it will be overwritten
+      void IFFT(const unsigned long &N, DSP::Complex_vector &probki);
 
-    void absFFT(DWORD N, DSP::Float *abs_fft, DSP::Complex *probki);
-    void absFFT(DWORD N, DSP::Float *abs_fft, DSP::Float *probki, DSP::Float *probki_imag);
-    void absFFTR(DWORD N, DSP::Float *abs_fft, DSP::Float *probki, bool JustHalf = false);
-    void abs2FFT(DWORD N, DSP::Float *abs_fft, DSP::Complex *probki);
+      void absFFT(const unsigned long &N, DSP::Float_vector &abs_fft, const DSP::Complex_vector &probki);
+      void absFFT(const unsigned long &N, DSP::Float_vector &abs_fft, const DSP::Float_vector &probki, const DSP::Float_vector &probki_imag);
+      void absFFTR(const unsigned long &N, DSP::Float_vector &abs_fft, const DSP::Float_vector &probki, const bool &JustHalf = false);
+      void abs2FFT(const unsigned long &N, DSP::Float_vector &abs_fft, const DSP::Complex_vector &probki);
 
-    void absDFT(DWORD N, DSP::Float *abs_fft, DSP::Complex *probki);
-    void absDFT(DWORD N, DSP::Float *abs_fft, DSP::Float *probki, DSP::Float *probki_imag);
-    void absDFTR(DWORD N, DSP::Float *abs_fft, DSP::Float *probki, bool JustHalf = false);
+      void absDFT(const unsigned long &N, DSP::Float_vector &abs_fft, const DSP::Complex_vector &probki);
+      void absDFT(const unsigned long &N, DSP::Float_vector &abs_fft, const DSP::Float_vector &probki, const DSP::Float_vector &probki_imag);
+      void absDFTR(const unsigned long &N, DSP::Float_vector &abs_fft, const DSP::Float_vector &probki, const bool &JustHalf = false);
 
-    //! DFT (if possible FFT radix-2 is used)
-    /*! \note probki_in and probki_out can point to the same buffer
-     * @param N
-     * @param probki_in
-     * @param probki_out
-     */
-    void DFT(DWORD N, DSP::Complex *probki_in, DSP::Complex *probki_out);
-};
+      //! DFT (if possible FFT radix-2 is used)
+      /*! \note probki_in and probki_out can point to the same buffer
+      * @param N
+      * @param probki_in
+      * @param probki_out
+      */
+      void DFT(const unsigned long &N, const DSP::Complex_vector &probki_in, DSP::Complex_vector &probki_out);
+  };
+}
 
 #endif // DSP_FourierH

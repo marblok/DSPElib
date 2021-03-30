@@ -740,7 +740,7 @@ class DSPu_FFT : public DSP::Block
 {
   private:
     unsigned int K;
-    DSP_Fourier dft;
+    DSP::Fourier dft;
     //DSP::Complex *input_buffer, *output_buffer;
     DSP::Complex_vector input_buffer, output_buffer;
 

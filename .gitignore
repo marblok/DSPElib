@@ -47,3 +47,7 @@ examples/hello.gif
 examples/multirate.dot
 examples/multirate.gif
 examples/matlab/LPF_22050_8000.coef
+examples/socket_server_2.gif
+examples/socket_server_2.dot
+examples/morse_key.wav
+examples/log_file_client.log
