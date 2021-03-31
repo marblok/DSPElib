@@ -3,8 +3,6 @@ TODO::
   DSPu_FIR => use vectors instead of pointers as an input
   ? DSP::Clock_ptr => migrate to std::shared_ptr
 
-  examples compilation from main folder instead of examples (store path in compilation reports fo VSC)
-  examples use unique_ptr instead of standard pointers in all, most or some of the examples
 
 
 LAST DONE:
@@ -13,6 +11,7 @@ CHANGES:
 - ver. 0.19.019 - <b>2021.03.30</b> Changed: 
   - DSP_Fourier moved into ::DSP namespace DSP::Fourier and modernized
   - examples: callbacks.cpp, multirate.cpp - shared_ptr instead of standard pointers
+  - examples compilation from main folder instead of examples (stores path in error compilation reports for VSC)
 
 - ver. 0.19.018 - <b>2021.03.30</b> Changed: 
   - DSP::f::LPF_LS uses vector instead of pointer
