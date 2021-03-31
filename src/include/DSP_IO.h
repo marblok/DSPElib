@@ -319,10 +319,10 @@ class DSPu_WaveInput : public DSP::File, public DSP::Source//: public CAudioInpu
     string FileDir;
 
     DWORD ReadBufferLen;  // in bytes
-    char  *ReadBuffer;
+    std::vector<char>  ReadBuffer;
     DWORD AudioBufferLen;  // in bytes
     unsigned int BufferIndex;
-    DSP::Float *AudioBuffer;
+    std::vector<DSP::Float> AudioBuffer;
     bool ConvertionNeeded;
 
     //! Number of bytes to read remaining in file
@@ -568,8 +568,8 @@ class DSPu_FILEoutput  : public DSP::File, public DSP::Block
 
     // in bits (all channel together)
     //unsigned int OutputSampleSize; ==> moved to DSP::File
-    uint8_t *RawBuffer;
-    uint8_t *TmpBuffer;
+    std::vector<uint8_t> RawBuffer;
+    std::vector<uint8_t> TmpBuffer;
 
     enum E_FlushBuffer {E_FB_default = 0, E_FB_raw = 1, E_FB_update_header = 2};
     E_FlushBuffer FlushBuffer_type;
@@ -728,11 +728,11 @@ class DSPu_AudioInput : public DSP::Source
     //! Type of samples in WaveInBuffers
     DSP::e::SampleType InSampleType;
     #ifdef WINMMAPI
-      WAVEHDR *waveHeaderIn;
+      std::vector<WAVEHDR> waveHeaderIn;
     #endif
     DWORD WaveInBufferLen;  // in bytes
     //! Buffers for audio samples prepared for playing
-    char **WaveInBuffers;
+    std::vector<std::vector<char>> WaveInBuffers;
 
     //! size of the buffers used internally with WMM driver
     DWORD audio_inbuffer_size;
@@ -740,7 +740,7 @@ class DSPu_AudioInput : public DSP::Source
     //! in samples times number of channels
     DWORD InBufferLen;
     //! Buffer for storing samples in DSP::Float format
-    DSP::Float_ptr InBuffers[DSP_NoOfAudioInputBuffers];
+    DSP::Float_vector InBuffers[DSP_NoOfAudioInputBuffers];
     //! current read index in current InBuffer
     unsigned int BufferIndex;
     //! Index of the next buffer to fill
@@ -753,7 +753,7 @@ class DSPu_AudioInput : public DSP::Source
     int SamplingFrequency;
 
     //! stores parent clock in case we must stall it for some time
-    DSP::Clock *my_clock;
+    DSP::Clock_ptr my_clock;
 
     //! To be used in constructor
     /*! \bug <b>2006.08.13</b> when 8bit audio stream is created initial values should be 0x80 or 0x79 not 0x00

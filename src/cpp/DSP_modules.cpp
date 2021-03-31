@@ -205,7 +205,7 @@ DSP::Component::~Component(void)
 {
   unsigned int ind;
 
-  DSP::Component_ptr *deprecated_list = NULL;
+  std::vector<DSP::Component_ptr> deprecated_list;
   unsigned int NoOfDeprecated = 0;
 
   for (ind=0; ind<NoOfOutputs; ind++)
@@ -219,10 +219,10 @@ DSP::Component::~Component(void)
          */
         if (Type != DSP_CT_copy)
         {
-          // create list of blocks for automatic deletion - deletion blocks here can lead to cascade of deletion procedure calls without prior call to UnregisterComponent();
-          //  ??? sprawdza� powt�rzenia
+          // create list of blocks for automatic deletion - deleting blocks here can lead to cascade of deletion procedure calls without prior call to UnregisterComponent();
+          //  ??? check repetitions
           if (NoOfDeprecated == 0)
-            deprecated_list = new DSP::Component_ptr[NoOfOutputs];
+            deprecated_list.resize(NoOfOutputs, NULL);
 
           bool ignore = false;
           for (unsigned int ind2=0; ind2<NoOfDeprecated; ind2++)
@@ -275,11 +275,11 @@ DSP::Component::~Component(void)
   #endif
 
   // delete blocks previously marked for automatic deletion
-  if (deprecated_list != NULL)
+  if (deprecated_list.size() > 0)
   {
     for (ind=0; ind<NoOfDeprecated; ind++)
       delete deprecated_list[ind];
-    delete [] deprecated_list; deprecated_list = NULL;
+    deprecated_list.clear();
   }
 }
 
@@ -10008,8 +10008,6 @@ DSPu_Differator::DSPu_Differator(int NoOfInputs_in, bool IsInputComplex)
   int ind;
   string tekst;
 
-  tekst = new char[1024];
-
   SetName("Differator", false);
 
   if (IsInputComplex == false)
@@ -10066,54 +10064,58 @@ DSPu_Differator::DSPu_Differator(int NoOfInputs_in, bool IsInputComplex)
   ClockGroups.AddInputs2Group("all", 0, NoOfInputs-1);
   ClockGroups.AddOutputs2Group("all", 0, NoOfOutputs-1);
 
-  State = new DSP::Float[NoOfInputs];
-  memset(State, 0, sizeof(DSP::Float)*NoOfInputs);
+  State.resize(NoOfInputs, 0.0);
 
   Execute_ptr = &InputExecute;
 }
 
 void DSPu_Differator::SetInitialState(DSP::Float State_init)
 {
-  SetInitialState(1, &State_init);
+  DSP::Float_vector State_init_vector(1, State_init);
+  SetInitialState(State_init_vector);
 }
 void DSPu_Differator::SetInitialState(DSP::Float State_init_re, DSP::Float State_init_im)
 {
-  DSP::Float temp[2];
+  DSP::Float_vector temp(2);
 
   temp[0] = State_init_re;
   temp[1] = State_init_im;
-  SetInitialState(2, temp);
+  SetInitialState(temp);
 }
 void DSPu_Differator::SetInitialState(DSP::Complex State_init)
 {
-  SetInitialState(2, (DSP::Float_ptr)(&State_init));
+  DSP::Float_vector temp(2);
+
+  temp[0] = State_init.re;
+  temp[1] = State_init.im;
+  SetInitialState(temp);
 }
 
 // Setting up internal state
-void DSPu_Differator::SetInitialState(unsigned int length, DSP::Float_ptr State_init)
+void DSPu_Differator::SetInitialState(const DSP::Float_vector &State_init)
 {
-  if (length > NoOfInputs)
+  if (State_init.size() > NoOfInputs)
   {
     #ifdef __DEBUG__
     DSP::log << DSP::LogMode::Error << "DSPu_Differator::SetInitialState" << DSP::LogMode::second
-      << "ABORDING: length(" << length << ") > size of internal state(" << NoOfInputs << ")" << endl;
+      << "ABORDING: length(" << State_init.size() << ") > size of internal state(" << NoOfInputs << ")" << endl;
     #endif
     return;
   }
-  if (length < NoOfInputs)
+  if (State_init.size() < NoOfInputs)
   {
     #ifdef __DEBUG__
     DSP::log << "DSPu_Differator::SetInitialState" << DSP::LogMode::second
-      << "length(" << length << ") < size of internal state(" << NoOfInputs << ")" << endl;
+      << "length(" << State_init.size() << ") < size of internal state(" << NoOfInputs << ")" << endl;
     #endif
   }
 
-  memcpy(State, State_init, sizeof(DSP::Float)*length);
+  State = State_init;
 }
 
 DSPu_Differator::~DSPu_Differator(void)
 {
-  delete [] State;
+  State.clear();
 }
 
 #define  THIS_ ((DSPu_Differator *)block)

@@ -145,7 +145,7 @@ class DSPu_MORSEkey : public DSP::Source // , public DSP::Rand
     static float GetDotLength(float WPM_in, long sampling_rate_in,
         float dash2dot_ratio = 3.0, float space2dot_ratio = 7.0);
 
-    bool LoadCodeTable(char *filename);
+    bool LoadCodeTable(const string &filename);
 
     //! Changes manually current key state
     /*!

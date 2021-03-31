@@ -1056,8 +1056,8 @@ DSPu_FILEoutput::DSPu_FILEoutput(unsigned char NoOfChannels) : DSP::Block()
   ReOpenFile = false;
   ReOpen_FileName[0] = 0;
 
-  TmpBuffer = NULL;
-  RawBuffer = NULL;
+  TmpBuffer.clear();
+  RawBuffer.clear();
   FileHandle = NULL;
   Execute_ptr = &InputExecute_blocked;
 
@@ -1153,8 +1153,8 @@ bool DSPu_FILEoutput::Open(const string &FileName, DSP::e::SampleType sample_typ
     #endif
     NoOfChannels = UCHAR_MAX;
   }
-  TmpBuffer = NULL;
-  RawBuffer = NULL;
+  TmpBuffer.clear();
+  RawBuffer.clear();
   FlushBuffer_type = E_FB_default;
 
   FileType_no_scaling = true;
@@ -1198,7 +1198,7 @@ bool DSPu_FILEoutput::Open(const string &FileName, DSP::e::SampleType sample_typ
           " DSP_file_buffer_size is not a multiply of byte size (8 bits)" << endl;
       }
       // "0 / 1" byte by byte
-      TmpBuffer = new unsigned char[SampleSize*DSP_file_buffer_size];
+      TmpBuffer.resize(SampleSize*DSP_file_buffer_size);
 
       Execute_ptr = &InputExecute_bit; // FlushBuffer is used
       FlushBuffer_type = E_FB_default;
@@ -1212,7 +1212,7 @@ bool DSPu_FILEoutput::Open(const string &FileName, DSP::e::SampleType sample_typ
       FlushBuffer_type = E_FB_raw;
       break;
   }
-  RawBuffer = new uint8_t[(SampleSize*DSP_file_buffer_size+7)/8 + 1];
+  RawBuffer.resize((SampleSize*DSP_file_buffer_size+7)/8 + 1);
   BufferIndex=0; //this means also that Buffer is empty
 
   //Open file
@@ -1442,16 +1442,8 @@ void DSPu_FILEoutput::Close(void)
 
   Flush();
 
-  if (RawBuffer != NULL)
-  {
-    delete [] RawBuffer;
-    RawBuffer=NULL;
-  }
-  if (TmpBuffer != NULL)
-  {
-    delete [] TmpBuffer;
-    TmpBuffer=NULL;
-  }
+  RawBuffer.clear();
+  TmpBuffer.clear();
   if (FileHandle != NULL)
   {
     fclose(FileHandle);
@@ -1707,7 +1699,7 @@ void DSPu_FILEoutput::InputExecute_float(INPUT_EXECUTE_ARGS)
 { // we assume only one input
   UNUSED_DEBUG_ARGUMENT(Caller);
 
-  ((float *)DSP_THIS->RawBuffer)[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]=value;
+  ((float *)DSP_THIS->RawBuffer.data())[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]=value;
   DSP_THIS->NoOfInputsProcessed++;
 
   if (DSP_THIS->NoOfInputsProcessed == DSP_THIS->NoOfInputs)
@@ -1734,7 +1726,7 @@ void DSPu_FILEoutput::InputExecute_float(INPUT_EXECUTE_ARGS)
       for (unsigned int ind=0; ind < DSP_THIS->NoOfInputs; ind++)
         if (DSP_THIS->IsConstantInput[ind])
         {
-          ((float *)DSP_THIS->RawBuffer)[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo] =
+          ((float *)DSP_THIS->RawBuffer.data())[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo] =
              DSP_THIS->ConstantInputValues[ind];
           DSP_THIS->NoOfInputsProcessed++;
         }
@@ -1760,7 +1752,7 @@ void DSPu_FILEoutput::InputExecute_scaled_float(INPUT_EXECUTE_ARGS)
 { // we assume only one input
   UNUSED_DEBUG_ARGUMENT(Caller);
 
-  ((float *)DSP_THIS->RawBuffer)[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
+  ((float *)DSP_THIS->RawBuffer.data())[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
                                  = 0x8000 * value;
   DSP_THIS->NoOfInputsProcessed++;
 
@@ -1788,7 +1780,7 @@ void DSPu_FILEoutput::InputExecute_scaled_float(INPUT_EXECUTE_ARGS)
       for (unsigned int ind=0; ind < DSP_THIS->NoOfInputs; ind++)
         if (DSP_THIS->IsConstantInput[ind])
         {
-          ((float *)DSP_THIS->RawBuffer)[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
+          ((float *)DSP_THIS->RawBuffer.data())[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
                = 0x8000 * DSP_THIS->ConstantInputValues[ind];
           DSP_THIS->NoOfInputsProcessed++;
         }
@@ -1822,7 +1814,7 @@ void DSPu_FILEoutput::InputExecute_uchar(INPUT_EXECUTE_ARGS)
   if (temp > 0xff)
     temp = 0xff;
 
-  ((uint8_t *)DSP_THIS->RawBuffer)[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
+  ((uint8_t *)DSP_THIS->RawBuffer.data())[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
       = (unsigned char)(temp);
 //      = (unsigned char)((value*0x80)+0x80);
   DSP_THIS->NoOfInputsProcessed++;
@@ -1851,7 +1843,7 @@ void DSPu_FILEoutput::InputExecute_uchar(INPUT_EXECUTE_ARGS)
       for (unsigned int ind=0; ind < DSP_THIS->NoOfInputs; ind++)
         if (DSP_THIS->IsConstantInput[ind])
         {
-          ((uint8_t *)DSP_THIS->RawBuffer)[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
+          ((uint8_t *)DSP_THIS->RawBuffer.data())[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
               = (uint8_t)((DSP_THIS->ConstantInputValues[ind]*0x80)+0x80);
           DSP_THIS->NoOfInputsProcessed++;
         }
@@ -1882,7 +1874,7 @@ void DSPu_FILEoutput::InputExecute_uchar_no_scaling(INPUT_EXECUTE_ARGS)
   if (value > 0xff)
     value = 0xff;
 
-  ((uint8_t *)DSP_THIS->RawBuffer)[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
+  ((uint8_t *)DSP_THIS->RawBuffer.data())[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
                                    = (uint8_t)(value);
 //      = (unsigned char)((value*0x80)+0x80);
   DSP_THIS->NoOfInputsProcessed++;
@@ -1911,7 +1903,7 @@ void DSPu_FILEoutput::InputExecute_uchar_no_scaling(INPUT_EXECUTE_ARGS)
       for (unsigned int ind=0; ind < DSP_THIS->NoOfInputs; ind++)
         if (DSP_THIS->IsConstantInput[ind])
         {
-          ((uint8_t *)DSP_THIS->RawBuffer)[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
+          ((uint8_t *)DSP_THIS->RawBuffer.data())[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
               = (uint8_t)(DSP_THIS->ConstantInputValues[ind]);
           DSP_THIS->NoOfInputsProcessed++;
         }
@@ -1944,7 +1936,7 @@ void DSPu_FILEoutput::InputExecute_short(INPUT_EXECUTE_ARGS)
   if (temp > 0x7fff)
     temp = 0x7fff;
 
-  ((short *)DSP_THIS->RawBuffer)[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
+  ((short *)DSP_THIS->RawBuffer.data())[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
       = (short)(temp);
   DSP_THIS->NoOfInputsProcessed++;
 
@@ -1973,7 +1965,7 @@ void DSPu_FILEoutput::InputExecute_short(INPUT_EXECUTE_ARGS)
       for (unsigned int ind=0; ind < DSP_THIS->NoOfInputs; ind++)
         if (DSP_THIS->IsConstantInput[ind])
         {
-          ((short *)DSP_THIS->RawBuffer)[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
+          ((short *)DSP_THIS->RawBuffer.data())[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
               = (short)(DSP_THIS->ConstantInputValues[ind]*0x8000);
           DSP_THIS->NoOfInputsProcessed++;
         }
@@ -2008,7 +2000,7 @@ void DSPu_FILEoutput::InputExecute_short_no_scaling(INPUT_EXECUTE_ARGS)
   if (value > 0x7fff)
     value = 0x7fff;
 
-  ((short *)DSP_THIS->RawBuffer)[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
+  ((short *)DSP_THIS->RawBuffer.data())[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
       = (short)(value);
   DSP_THIS->NoOfInputsProcessed++;
 
@@ -2036,7 +2028,7 @@ void DSPu_FILEoutput::InputExecute_short_no_scaling(INPUT_EXECUTE_ARGS)
       for (unsigned int ind=0; ind < DSP_THIS->NoOfInputs; ind++)
         if (DSP_THIS->IsConstantInput[ind])
         {
-          ((short *)DSP_THIS->RawBuffer)[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
+          ((short *)DSP_THIS->RawBuffer.data())[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
               = (short)(DSP_THIS->ConstantInputValues[ind]);
           DSP_THIS->NoOfInputsProcessed++;
         }
@@ -2069,7 +2061,7 @@ void DSPu_FILEoutput::InputExecute_int(INPUT_EXECUTE_ARGS)
   if (temp > INT_MAX)
     temp = INT_MAX;
 
-  ((int *)DSP_THIS->RawBuffer)[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
+  ((int *)DSP_THIS->RawBuffer.data())[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
       = (int)(temp);
   DSP_THIS->NoOfInputsProcessed++;
 
@@ -2097,7 +2089,7 @@ void DSPu_FILEoutput::InputExecute_int(INPUT_EXECUTE_ARGS)
       for (unsigned int ind=0; ind < DSP_THIS->NoOfInputs; ind++)
         if (DSP_THIS->IsConstantInput[ind])
         {
-          ((int *)DSP_THIS->RawBuffer)[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
+          ((int *)DSP_THIS->RawBuffer.data())[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
               = (int)(DSP_THIS->ConstantInputValues[ind]*0x80000000L);
           DSP_THIS->NoOfInputsProcessed++;
         }
@@ -2128,7 +2120,7 @@ void DSPu_FILEoutput::InputExecute_int_no_scaling(INPUT_EXECUTE_ARGS)
   if (value > (DSP::Float)INT_MAX)
     value = (DSP::Float)INT_MAX;
 
-  ((int *)DSP_THIS->RawBuffer)[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
+  ((int *)DSP_THIS->RawBuffer.data())[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
       = (int)(value);
   DSP_THIS->NoOfInputsProcessed++;
 
@@ -2156,7 +2148,7 @@ void DSPu_FILEoutput::InputExecute_int_no_scaling(INPUT_EXECUTE_ARGS)
       for (unsigned int ind=0; ind < DSP_THIS->NoOfInputs; ind++)
         if (DSP_THIS->IsConstantInput[ind])
         {
-          ((int *)DSP_THIS->RawBuffer)[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
+          ((int *)DSP_THIS->RawBuffer.data())[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
               = (int)(DSP_THIS->ConstantInputValues[ind]);
           DSP_THIS->NoOfInputsProcessed++;
         }
@@ -2182,7 +2174,7 @@ void DSPu_FILEoutput::InputExecute_bit_text(INPUT_EXECUTE_ARGS)
 { // we assume only one input
   UNUSED_DEBUG_ARGUMENT(Caller);
 
-  ((uint8_t *)DSP_THIS->RawBuffer)[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
+  ((uint8_t *)DSP_THIS->RawBuffer.data())[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
       = (value>0.0)?'1':'0';
   DSP_THIS->NoOfInputsProcessed++;
 
@@ -2210,7 +2202,7 @@ void DSPu_FILEoutput::InputExecute_bit_text(INPUT_EXECUTE_ARGS)
       for (unsigned int ind=0; ind < DSP_THIS->NoOfInputs; ind++)
         if (DSP_THIS->IsConstantInput[ind])
         {
-          ((uint8_t *)DSP_THIS->RawBuffer)[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
+          ((uint8_t *)DSP_THIS->RawBuffer.data())[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
               = (DSP_THIS->ConstantInputValues[ind]>0.0)?'1':'0';
           DSP_THIS->NoOfInputsProcessed++;
         }
@@ -2237,7 +2229,7 @@ void DSPu_FILEoutput::InputExecute_bit(INPUT_EXECUTE_ARGS)
 { // we assume only one input
   UNUSED_DEBUG_ARGUMENT(Caller);
 
-  ((uint8_t *)DSP_THIS->TmpBuffer)[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
+  ((uint8_t *)DSP_THIS->TmpBuffer.data())[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
       = (value>0.0)? 1 : 0;
   DSP_THIS->NoOfInputsProcessed++;
 
@@ -2265,7 +2257,7 @@ void DSPu_FILEoutput::InputExecute_bit(INPUT_EXECUTE_ARGS)
       for (unsigned int ind=0; ind < DSP_THIS->NoOfInputs; ind++)
         if (DSP_THIS->IsConstantInput[ind])
         {
-          ((uint8_t *)DSP_THIS->TmpBuffer)[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
+          ((uint8_t *)DSP_THIS->TmpBuffer.data())[DSP_THIS->BufferIndex * DSP_THIS->NoOfInputs + InputNo]
               = (DSP_THIS->ConstantInputValues[ind]>0.0) ? 1 : 0;
           DSP_THIS->NoOfInputsProcessed++;
         }
@@ -2447,8 +2439,8 @@ void DSPu_FILEoutput::FlushBuffer(void)
         break;
     #endif
       case DSP::e::SampleType::ST_bit:
-        tempBuffer = TmpBuffer;
-        tempUChar=(uint8_t *)RawBuffer;
+        tempBuffer = TmpBuffer.data();
+        tempUChar=(uint8_t *)RawBuffer.data();
         mask=0x80; *tempUChar=0;
         for (ind=0; ind<NoOfInputs*BufferIndex; ind++)
         {
@@ -2471,8 +2463,8 @@ void DSPu_FILEoutput::FlushBuffer(void)
         }
         break;
       case DSP::e::SampleType::ST_bit_reversed:
-        tempBuffer = TmpBuffer;
-        tempUChar=(uint8_t *)RawBuffer;
+        tempBuffer = TmpBuffer.data();
+        tempUChar=(uint8_t *)RawBuffer.data();
         mask=0x01; *tempUChar=0;
         for (ind=0; ind<NoOfInputs*BufferIndex; ind++)
         {
@@ -2500,7 +2492,7 @@ void DSPu_FILEoutput::FlushBuffer(void)
         break;
     }
 
-    fwrite(RawBuffer, 1, (SampleSize*BufferIndex+7)/8, FileHandle);
+    fwrite(RawBuffer.data(), 1, (SampleSize*BufferIndex+7)/8, FileHandle);
     fflush(FileHandle);
     BufferIndex=0;
   }
@@ -2514,7 +2506,7 @@ void DSPu_FILEoutput::raw_FlushBuffer(void)
     if (BufferIndex == 0)
       return; // BufferIndex=DSP_file_buffer_size;
 
-    fwrite(RawBuffer, 1, SampleSize/8*BufferIndex, FileHandle);
+    fwrite(RawBuffer.data(), 1, SampleSize/8*BufferIndex, FileHandle);
     fflush(FileHandle);
     BufferIndex=0;
   }
@@ -2620,17 +2612,8 @@ DSPu_WaveInput::~DSPu_WaveInput(void)
 {
   CloseFile();
 
-  if (ReadBuffer !=NULL)
-  {
-    delete [] ReadBuffer;
-    ReadBuffer=NULL;
-  }
-  if (ConvertionNeeded)
-  {
-    if (AudioBuffer !=NULL)
-      delete [] AudioBuffer;
-  }
-  AudioBuffer=NULL;
+  ReadBuffer.clear();
+  AudioBuffer.clear();
 }
 
 bool DSPu_WaveInput::SetSkip(long long Offset)
@@ -2655,8 +2638,8 @@ bool DSPu_WaveInput::Init(void)
 
   ConvertionNeeded=true; //inner buffer in DSP::Float format
   AudioBufferLen = (DWORD)(NoOfOutputs*SegmentSize*sizeof(DSP::Float));
-  AudioBuffer=(DSP::Float *)(new char[AudioBufferLen]);
-  memset(AudioBuffer, 0, AudioBufferLen);
+  AudioBuffer.clear();
+  AudioBuffer.resize(AudioBufferLen/sizeof(DSP::Float), 0.0);
 
   tekst = FileDir; len = int(tekst.length());
   if (len>0)
@@ -2679,7 +2662,7 @@ bool DSPu_WaveInput::Init(void)
 
     FileEnd=true;
 		WAVEchunk.nChannels=0;
-    ReadBufferLen=0; ReadBuffer=NULL;
+    ReadBufferLen=0; ReadBuffer.clear();
 
     return false; //Error opening file
   }
@@ -2740,7 +2723,7 @@ bool DSPu_WaveInput::Init(void)
   FileEnd=false;
 
   ReadBufferLen=WAVEchunk.nChannels*WAVEchunk.wBitsPerSample/8*SegmentSize;
-  ReadBuffer=new char[ReadBufferLen];
+  ReadBuffer.resize(ReadBufferLen);
   BytesRead=0;
 
   SamplingRate=WAVEchunk.nSamplesPerSec;
@@ -2767,7 +2750,7 @@ DWORD DSPu_WaveInput::ReadAudioSegment(void)
 {
   if (FileEnd == true)
   { // AudioBuffer must be cleaned (reset)
-    memset((uint8_t *)AudioBuffer, 0, AudioBufferLen);
+    memset(AudioBuffer.data(), 0, AudioBufferLen);
     BytesRead=0;
     return 0x00000000;
   }
@@ -2775,16 +2758,16 @@ DWORD DSPu_WaveInput::ReadAudioSegment(void)
   {
     //ReadFile(hIn, ReadBuffer, ReadBufferLen, &BytesRead, NULL);
     if (BytesRemainingInFile < ReadBufferLen)
-      BytesRead=(DWORD)fread(ReadBuffer, 1, BytesRemainingInFile, FileHandle);
+      BytesRead=(DWORD)fread(ReadBuffer.data(), 1, BytesRemainingInFile, FileHandle);
     else
-      BytesRead=(DWORD)fread(ReadBuffer, 1, ReadBufferLen, FileHandle);
+      BytesRead=(DWORD)fread(ReadBuffer.data(), 1, ReadBufferLen, FileHandle);
     BytesRemainingInFile-=BytesRead;
     if (BytesRead!=ReadBufferLen)
     {
       if (WAVEchunk.wBitsPerSample==8)
-        memset(((uint8_t *)ReadBuffer)+BytesRead,0x80, ReadBufferLen-BytesRead);
+        memset(((uint8_t *)ReadBuffer.data())+BytesRead,0x80, ReadBufferLen-BytesRead);
       else
-        memset(((uint8_t *)ReadBuffer)+BytesRead,0, ReadBufferLen-BytesRead);
+        memset(((uint8_t *)ReadBuffer.data())+BytesRead,0, ReadBufferLen-BytesRead);
 
 //      if (BytesRead==0)
       FileEnd=true;
@@ -2797,7 +2780,7 @@ DWORD DSPu_WaveInput::ReadAudioSegment(void)
       unsigned int ind, ind2;
       DSP::Float *temp_Audio;
 
-      temp_Audio=AudioBuffer;
+      temp_Audio=AudioBuffer.data();
 
       if (WAVEchunk.wBitsPerSample==8)
         for (ind=0; ind<SegmentSize; ind++)
@@ -2805,7 +2788,7 @@ DWORD DSPu_WaveInput::ReadAudioSegment(void)
           {
             if (ind2<WAVEchunk.nChannels)
               *temp_Audio=(DSP::Float)(
-                ((uint8_t *)ReadBuffer)[ind2+ind*WAVEchunk.nChannels]-0x80)
+                ((uint8_t *)ReadBuffer.data())[ind2+ind*WAVEchunk.nChannels]-0x80)
                 / 0x80;
             else
               *temp_Audio=0.0;
@@ -2818,7 +2801,7 @@ DWORD DSPu_WaveInput::ReadAudioSegment(void)
             {
               if (ind2<WAVEchunk.nChannels)
                 *temp_Audio=DSP::Float(
-                    ((short *)ReadBuffer)[ind2+ind*WAVEchunk.nChannels])
+                    ((short *)ReadBuffer.data())[ind2+ind*WAVEchunk.nChannels])
                     / 0x8000;
               else
                 *temp_Audio=0.0;
@@ -2831,7 +2814,7 @@ DWORD DSPu_WaveInput::ReadAudioSegment(void)
               {
                 if (ind2<WAVEchunk.nChannels)
                   *temp_Audio=DSP::Float(
-                      ((float *)ReadBuffer)[ind2+ind*WAVEchunk.nChannels])
+                      ((float *)ReadBuffer.data())[ind2+ind*WAVEchunk.nChannels])
                       / 0x8000;
                 else
                   *temp_Audio=0.0;
@@ -2880,7 +2863,7 @@ bool DSPu_WaveInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
    *
    * Check the above also in case of DSPu_FILEinput
    */
-  temp = DSP_THIS->AudioBuffer +
+  temp = DSP_THIS->AudioBuffer.data() +
          DSP_THIS->BufferIndex * DSP_THIS->NoOfOutputs;
   for (ind=0; ind < DSP_THIS->NoOfOutputs; ind++)
   {
@@ -3756,7 +3739,7 @@ DWORD DSP::f::GetAudioBufferSize(unsigned long SamplingFreq, DSPe_AudioBufferTyp
                 &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
               DSP::f::AudioCheckError(result);
 
-              Sample=Current->InBuffers[Current->EmptyBufferIndex];
+              Sample=Current->InBuffers[Current->EmptyBufferIndex].data();
               // ************************************************** //
               // Converts samples format to the one suitable for the audio device
               #ifdef __DEBUG__
@@ -3766,7 +3749,7 @@ DWORD DSP::f::GetAudioBufferSize(unsigned long SamplingFreq, DSPe_AudioBufferTyp
                 }
               #endif
 
-              temp16=(short *)(Current->WaveInBuffers[Current->NextBufferInd]);
+              temp16=(short *)(Current->WaveInBuffers[Current->NextBufferInd].data());
               for (ind=0; ind<Current->InBufferLen; ind++)
               {
                 *Sample = (DSP::Float)(*temp16) / SHRT_MAX;
@@ -3880,7 +3863,7 @@ DWORD DSP::f::GetAudioBufferSize(unsigned long SamplingFreq, DSPe_AudioBufferTyp
                 &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
               DSP::f::AudioCheckError(result);
 
-              Sample=Current->InBuffers[Current->EmptyBufferIndex];
+              Sample=Current->InBuffers[Current->EmptyBufferIndex].data();
               // ************************************************** //
               // Converts samples format to the one suitable for the audio device
               #ifdef __DEBUG__
@@ -3890,7 +3873,7 @@ DWORD DSP::f::GetAudioBufferSize(unsigned long SamplingFreq, DSPe_AudioBufferTyp
                 }
               #endif
 
-              temp8=(uint8_t *)(Current->WaveInBuffers[Current->NextBufferInd]);
+              temp8=(uint8_t *)(Current->WaveInBuffers[Current->NextBufferInd].data());
               for (ind=0; ind<Current->InBufferLen; ind++)
               {
                 *Sample = (DSP::Float)(*temp8 - 128) / 128;
@@ -4262,27 +4245,25 @@ void DSPu_AudioInput::Init(DSP::Clock_ptr ParentClock,
         );
     if (DSP::f::AudioCheckError(result) == false)
     { // no errors
-      waveHeaderIn = new WAVEHDR[2];
+      waveHeaderIn.resize(2);
       WaveInBufferLen=wfx.wf.nBlockAlign*audio_inbuffer_size;
-      WaveInBuffers = new char *[2];
+      WaveInBuffers.resize(2);
       /*! \bug <b>2006.08.13</b> when 8bit audio stream is created initial values should be 0x80 or 0x79 not 0x00
        */
-      WaveInBuffers[0] = new char[WaveInBufferLen];
-      memset(WaveInBuffers[0], 0, WaveInBufferLen);
-      WaveInBuffers[1] = new char[WaveInBufferLen];
-      memset(WaveInBuffers[1], 0, WaveInBufferLen);
+      WaveInBuffers[0].clear(); WaveInBuffers[0].resize(WaveInBufferLen, 0);
+      WaveInBuffers[1].clear(); WaveInBuffers[1].resize(WaveInBufferLen, 0);
 
       InBufferLen=NoOfOutputs*audio_inbuffer_size;
       for (ind = 0; ind < DSP_NoOfAudioInputBuffers; ind++)
       {
-        InBuffers[ind] = new DSP::Float[InBufferLen];
-        memset(InBuffers[ind], 0, InBufferLen*sizeof(DSP::Float));
+        InBuffers[ind].clear();
+        InBuffers[ind].resize(InBufferLen);
       }
       EmptyBufferIndex=0;
       CurrentBufferIndex=DSP_NoOfAudioInputBuffers-1;
       BufferIndex=InBufferLen;
 
-      waveHeaderIn[0].lpData=(char *)(WaveInBuffers[0]);
+      waveHeaderIn[0].lpData=(char *)(WaveInBuffers[0].data());
       waveHeaderIn[0].dwBufferLength=InBufferLen*(BitPrec/8); //sizeof(short);
       waveHeaderIn[0].dwFlags= 0; // WHDR_BEGINLOOP | WHDR_ENDLOOP;
       waveHeaderIn[0].dwLoops=0;
@@ -4292,7 +4273,7 @@ void DSPu_AudioInput::Init(DSP::Clock_ptr ParentClock,
       DSP::f::AudioCheckError(result);
     //  waveHeaderIn[0].dwFlags= WHDR_DONE; // WHDR_BEGINLOOP | WHDR_ENDLOOP;
 
-      waveHeaderIn[1].lpData=(char *)(WaveInBuffers[1]);
+      waveHeaderIn[1].lpData=(char *)(WaveInBuffers[1].data());
       waveHeaderIn[1].dwBufferLength=InBufferLen*(BitPrec/8); //sizeof(short);
       waveHeaderIn[1].dwFlags= 0; // WHDR_BEGINLOOP | WHDR_ENDLOOP;
       waveHeaderIn[1].dwLoops=0;
@@ -4304,13 +4285,13 @@ void DSPu_AudioInput::Init(DSP::Clock_ptr ParentClock,
     }
     else
     { // error creating audio object
-      waveHeaderIn = NULL; WaveInBufferLen=0;
-      WaveInBuffers = NULL;
+      waveHeaderIn.clear(); WaveInBufferLen=0;
+      WaveInBuffers.clear();
 
       InBufferLen=0;
       for (ind = 0; ind < DSP_NoOfAudioInputBuffers; ind++)
       {
-        InBuffers[ind] = NULL;
+        InBuffers[ind].clear();
       }
       EmptyBufferIndex=0; CurrentBufferIndex=0;
       BufferIndex=0;
@@ -4460,19 +4441,15 @@ DSPu_AudioInput::~DSPu_AudioInput()
     #endif
 
     // 2) Free buffers
-    if (WaveInBuffers[0] != NULL)
-      delete [] WaveInBuffers[0];
-    if (WaveInBuffers[1] != NULL)
-      delete [] WaveInBuffers[1];
-    if (WaveInBuffers != NULL)
-      delete [] WaveInBuffers;
+    WaveInBuffers[0].clear();
+    WaveInBuffers[1].clear();
+    WaveInBuffers.clear();
     #ifdef WINMMAPI
-      delete [] waveHeaderIn;
+      waveHeaderIn.clear();
     #endif
 
     for (ind=0; ind<DSP_NoOfAudioInputBuffers; ind++)
-      if (InBuffers[ind] != NULL)
-        delete [] InBuffers[ind];
+      InBuffers[ind].clear();
   }
 
   // *************************** //
@@ -4768,8 +4745,9 @@ bool DSPu_AudioInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
 
       DSP_THIS->NextBufferInd = 0; //first buffer first
       DSP_THIS->EmptyBufferIndex = 2; //simulate two full buffers
-      for (ind = 0; ind < DSP_THIS->EmptyBufferIndex; ind++)
-        memset(DSP_THIS->InBuffers[ind], 0, DSP_THIS->InBufferLen*sizeof(DSP::Float));
+      for (ind = 0; ind < DSP_THIS->EmptyBufferIndex; ind++) {
+        memset(DSP_THIS->InBuffers[ind].data(), 0, DSP_THIS->InBufferLen*sizeof(DSP::Float));
+      }
       DSP_THIS->BufferIndex = 0;
 
       result=waveInStart(DSP_THIS->hWaveIn);

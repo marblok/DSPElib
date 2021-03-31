@@ -3,11 +3,19 @@ TODO::
   DSPu_FIR => use vectors instead of pointers as an input
   ? DSP::Clock_ptr => migrate to std::shared_ptr
 
+  update Linux makefile
 
 
 LAST DONE:
 
+
+
 CHANGES:
+- ver. 0.19.020 - <b>2021.03.31</b> Changed: 
+  - changes towards C++11 in DSP_IO.cpp/DSP_IO.h
+  - several other changes towards C++11
+  - Windows makefile update
+
 - ver. 0.19.019 - <b>2021.03.30</b> Changed: 
   - DSP_Fourier moved into ::DSP namespace DSP::Fourier and modernized
   - examples: callbacks.cpp, multirate.cpp, macro_example.cpp - shared_ptr instead of standard pointers

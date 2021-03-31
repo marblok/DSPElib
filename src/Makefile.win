@@ -49,8 +49,9 @@ SOURCES_SOCKETS = $(addprefix $(SRC_CPP_SUBDIR)/,$(SOURCES_SOCKETS_NAMES))
 # ################################################# #
 # RELEASE
 OBJECTS_Release 		:= $(SOURCES:%.cpp=$(OUT_DIR_RLS)/%.o)
+DEPENDS_Release 		:= $(SOURCES:%.cpp=$(OUT_DIR_RLS)/%.d)
 OBJECTS_SOCKETS_Release := $(SOURCES_SOCKETS:%.cpp=$(OUT_DIR_RLS)/%.o)
-
+DEPENDS_SOCKETS_Release := $(DEPENDS_SOCKETS:%.cpp=$(OUT_DIR_RLS)/%.d)
 
 
 
@@ -58,8 +59,11 @@ OBJECTS_SOCKETS_Release := $(SOURCES_SOCKETS:%.cpp=$(OUT_DIR_RLS)/%.o)
 # ################################################# #
 # DEBUG
 OBJECTS_Debug 		  := $(SOURCES:%.cpp=$(OUT_DIR_DBG)/%.o)
+DEPENDS_Debug 		  := $(SOURCES:%.cpp=$(OUT_DIR_DBG)/%.d)
 OBJECTS_Debug 		  += $(SOURCES_DBG:%.cpp=$(OUT_DIR_DBG)/%.o)
+DEPENDS_Debug 		  += $(SOURCES_DBG:%.cpp=$(OUT_DIR_DBG)/%.d)
 OBJECTS_SOCKETS_Debug := $(SOURCES_SOCKETS:%.cpp=$(OUT_DIR_DBG)/%.o)
+DEPENDS_SOCKETS_Debug := $(SOURCES_SOCKETS:%.cpp=$(OUT_DIR_DBG)/%.d)
 
 # SRC_DBG_SUBDIR = nvwa
 # SOURCES_MISC_Debug += debug_new.cpp
@@ -67,6 +71,10 @@ OBJECTS_SOCKETS_Debug := $(SOURCES_SOCKETS:%.cpp=$(OUT_DIR_DBG)/%.o)
 OBJECTS_MISC_Debug := 
 
 # ################################################# #
+-include $(DEPENDS_Release)
+-include $(DEPENDS_SOCKETS_Release)
+-include $(DEPENDS_Debug)
+-include $(DEPENDS_SOCKETS_Debug)
 
 all: Debug Release
 
@@ -91,7 +99,7 @@ $(OBJECTS_Release) $(OBJECTS_SOCKETS_Release): $(OUT_DIR_RLS)/%.o : %.cpp
 	
 	#mkdir -p $(OUT_DIR_RLS)/$(SRC_CPP_SUBDIR)
 	mkdir -p $(@D)
-	$(CC) $(DFLAGS) $(CFLAGS_release) $(INCLUDES_RLS) $< -o $@
+	$(CC) $(DFLAGS) $(CFLAGS_release) $(INCLUDES_RLS) -MMD $< -o $@
 
 # ########################################################################################### #	
 # ########################################################################################### #	
@@ -115,7 +123,7 @@ $(OBJECTS_Debug) $(OBJECTS_SOCKETS_Debug) $(OBJECTS_MISC_Debug): $(OUT_DIR_DBG)/
 	@echo $(@D) $< $@
 	
 	mkdir -p $(@D)
-	$(CC) $(DFLAGS) $(CFLAGS_debug) $(INCLUDES_DBG) $< -o $@
+	$(CC) $(DFLAGS) $(CFLAGS_debug) $(INCLUDES_DBG) -MMD $< -o $@
 
 install_library: Debug Release
     # https://www.geeksforgeeks.org/install-command-in-linux-with-examples/
@@ -156,6 +164,7 @@ clean:
 	@if [ -d "$(OUT_DIR_DBG)" ]; then \
 		echo "cleaning $(OUT_DIR_DBG) ..."; \
 		#find $(OUT_DIR_DBG)/ -name "*.o" -type f -delete; \
+		rm -rf $(OUT_DIR_DBG)/$(SRC_CPP_SUBDIR)/*.d; \
 		rm -rf $(OUT_DIR_DBG)/$(SRC_CPP_SUBDIR)/*.o; \
 		rm -rf $(OUT_DIR_DBG)/$(SRC_CPP_SUBDIR); \
 		rm -rf $(OUT_DIR_DBG)/*.a; \
@@ -165,6 +174,7 @@ clean:
 	@if [ -d "$(OUT_DIR_RLS)" ]; then \
 		echo "cleaning $(OUT_DIR_RLS) ..."; \
 		#find $(OUT_DIR_RLS)/ -name "*.o" -type f -delete; \
+		rm -rf $(OUT_DIR_RLS)/$(SRC_CPP_SUBDIR)/*.d; \
 		rm -rf $(OUT_DIR_RLS)/$(SRC_CPP_SUBDIR)/*.o; \
 		rm -rf $(OUT_DIR_RLS)/$(SRC_CPP_SUBDIR); \
 		rm -rf $(OUT_DIR_RLS)/*.a; \

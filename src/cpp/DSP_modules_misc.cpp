@@ -489,7 +489,7 @@ bool TMorseTable::LoadFromFile(const string &Name)
   BYTE ver;
   FILE *plik;
   WORD Ile, pom;
-  char *Fake;
+  std::vector<char> Fake;
   int ind;
 
   FileName = Name;
@@ -548,9 +548,8 @@ bool TMorseTable::LoadFromFile(const string &Name)
       fread(&pom, sizeof(WORD), 1, plik);
       if (pom!=0)
       {
-        Fake=new char[pom];
-        fread(Fake, pom, 1, plik);
-        delete [] Fake;
+        Fake=std::vector<char>(pom);
+        fread(Fake.data(), pom, 1, plik);
       }
 
       fread(&pom, sizeof(WORD), 1, plik);
@@ -558,9 +557,8 @@ bool TMorseTable::LoadFromFile(const string &Name)
       fread(&pom, sizeof(WORD), 1, plik);
       if (pom!=0)
       {
-        Fake=new char[pom];
-        fread(Fake, pom, 1, plik);
-        delete [] Fake;
+        Fake=std::vector<char>(pom);
+        fread(Fake.data(), pom, 1, plik);
       }
     }
   }
@@ -931,7 +929,7 @@ void DSPu_MORSEkey::Init(DSP::Clock_ptr ParentClock)
   RegisterOutputClock(ParentClock);
 };
 
-bool DSPu_MORSEkey::LoadCodeTable(char *filename)
+bool DSPu_MORSEkey::LoadCodeTable(const string &filename)
 {
   return MorseTable.LoadFromFile(filename);
 }

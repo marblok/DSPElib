@@ -1101,7 +1101,7 @@ class DSP::File
     virtual long int GetSamplingRate(void) = 0;
 
     DSP::File_ptr GetPointer2File(void)
-    { return this; };
+    { return DSP::File_ptr(this); };
 
     //! Changes current file position
     /*!
@@ -2994,12 +2994,12 @@ class DSPu_IIR : public DSP::Block
 class DSPu_Differator : public DSP::Block
 {
   private:
-    DSP::Float *State;
+    std::vector <DSP::Float> State;
 
     static void InputExecute(INPUT_EXECUTE_ARGS);
   public:
     //! Setting up internal state
-    void SetInitialState(unsigned int length, DSP::Float_ptr State_init);
+    void SetInitialState(const DSP::Float_vector &State_init);
     void SetInitialState(DSP::Float State_init);
     void SetInitialState(DSP::Float State_init_re, DSP::Float State_init_im);
     void SetInitialState(DSP::Complex State_init);
