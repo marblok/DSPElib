@@ -75,7 +75,6 @@ int main(void)
   AudioIn.Output("out") >> gain.Input("in");
   gain.Output("out") >> DDS.Input("in");
 
-  //!\bug double splitters at macro output occur
   DDS.Output("out") >> AudioOut.Input("in");
   DDS.Output("out") >> FileOut.Input("in");
 

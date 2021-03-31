@@ -1,8 +1,10 @@
 /*! Simple Digital Signal Processing Engine usage example.
  * \author Marek Blok
  * \date 2008.05.28
- * \date updated 2021.03.20
+ * \date updated 2021.03.31
  */
+#include <memory>
+
 #include <DSP_lib.h>
 
 #define buffer_size 4
@@ -56,13 +58,13 @@ int main(void)
   long int Fp;
   int callback_type;
 
-  DSPu_WaveInput     *AudioIn;
-  DSPu_OutputBuffer  *OutputBuffer;
-  DSPu_Multiplexer   *Multiplexer;
-  DSPu_AudioOutput   *AudioOut;
-  DSPu_Demultiplexer *Demultiplexer;
-  DSPu_Amplifier     *Scale;
-  DSPu_Multiplexer   *Multiplexer2;
+  std::shared_ptr<DSPu_WaveInput>     AudioIn;
+  std::shared_ptr<DSPu_OutputBuffer>  OutputBuffer;
+  std::shared_ptr<DSPu_Multiplexer>   Multiplexer;
+  std::shared_ptr<DSPu_AudioOutput>   AudioOut;
+  std::shared_ptr<DSPu_Demultiplexer> Demultiplexer;
+  std::shared_ptr<DSPu_Amplifier>     Scale;
+  std::shared_ptr<DSPu_Multiplexer>   Multiplexer2;
 
   DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file);
   DSP::log.SetLogFileName("log_file.log");
@@ -72,12 +74,12 @@ int main(void)
   MasterClock=DSP::Clock::CreateMasterClock();
 
 
-  AudioIn = new DSPu_WaveInput(MasterClock, "test.wav", ".");
+  AudioIn = std::make_shared<DSPu_WaveInput>(MasterClock, "test.wav", ".");
   Fp = AudioIn->GetSamplingRate();
 
   //callback_type = 0; // just copy samples
   callback_type = 1; // inverse spectrum
-  OutputBuffer = new DSPu_OutputBuffer(buffer_size,
+  OutputBuffer = std::make_shared<DSPu_OutputBuffer>(buffer_size,
                               1,
                               DSP_standard,
                               MasterClock,
@@ -87,16 +89,16 @@ int main(void)
                               callback_type);
   BufferClock = OutputBuffer->GetOutputClock();
 
-  Multiplexer = new DSPu_Multiplexer (BufferClock, false, buffer_size);
+  Multiplexer = std::make_shared<DSPu_Multiplexer> (BufferClock, false, buffer_size);
   MuxClock = Multiplexer->GetOutputClock();
 
-  Demultiplexer = new DSPu_Demultiplexer(false, 2);
+  Demultiplexer = std::make_shared<DSPu_Demultiplexer>(false, 2);
   DemuxClock = DSP::Clock::GetClock(MuxClock, 1,2);
 
-  Scale = new DSPu_Amplifier(-1.0, 1);
-  Multiplexer2 = new DSPu_Multiplexer(DemuxClock, false, 2);
+  Scale = std::make_shared<DSPu_Amplifier>(-1.0, 1);
+  Multiplexer2 = std::make_shared<DSPu_Multiplexer>(DemuxClock, false, 2);
 
-  AudioOut = new DSPu_AudioOutput(Fp);
+  AudioOut = std::make_shared<DSPu_AudioOutput>(Fp);
 
 
   AudioIn->Output("out") >> OutputBuffer->Input("in");
@@ -122,13 +124,13 @@ int main(void)
   }
   while (AudioIn->GetBytesRead() != 0);
 
-  delete AudioOut;
-  delete Multiplexer2;
-  delete Scale;
-  delete Demultiplexer;
-  delete OutputBuffer;
-  delete Multiplexer;
-  delete AudioIn;
+  AudioOut.reset();
+  Multiplexer2.reset();
+  Scale.reset();
+  Demultiplexer.reset();
+  OutputBuffer.reset();
+  Multiplexer.reset();
+  AudioIn.reset();
 
   DSP::Clock::ListOfAllComponents();
   DSP::Clock::FreeClocks();
