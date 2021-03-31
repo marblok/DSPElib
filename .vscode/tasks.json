@@ -41,23 +41,23 @@
         {
             "label": "build examples Windows",
             "type": "shell",
-            "command": "make -f makefile-m64",
+            "command": "make -f examples/makefile Mbit=64 SRC_DIR=examples DSPELIB_DIR_ROOT=../_DSPE_lib_minGW_/MinGW-W64_8.1.0",
             "group": "build",
             "presentation": {
                 "echo": true
             },
-            "options": {"cwd" : "./examples"},
+            //"options": {"cwd" : "./examples"},
             "problemMatcher": "$gcc"
         },
         {
             "label": "clean examples Windows",
             "type": "shell",
-            "command": "make clean -f makefile-m64",
+            "command": "make clean -f examples/makefile SRC_DIR=examples ",
             "group": "build",
             "presentation": {
                 "echo": true
             },
-            "options": {"cwd" : "./examples"},
+            //"options": {"cwd" : "./examples"},
             "problemMatcher": "$gcc"
         },
     /*

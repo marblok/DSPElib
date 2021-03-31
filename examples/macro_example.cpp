@@ -1,19 +1,19 @@
 /*! Simple macro usage example.
  * \author Marek Blok
  * \date 2010.02.24
- * \date updated 2021.01.18
+ * \date updated 2021.03.31
  */
 #include <DSP_lib.h>
 
 class DDS_macro : public DSP::Macro
 {
   private:
-    DSPu_PCCC *alpha_state_correction;
-    DSPu_Multiplication *Alpha_state_MUL;
-    DSPu_LoopDelay *Alpha_state;
+    std::shared_ptr<DSPu_PCCC> alpha_state_correction;
+    std::shared_ptr<DSPu_Multiplication> Alpha_state_MUL;
+    std::shared_ptr<DSPu_LoopDelay> Alpha_state;
 
   public:
-  DDS_macro(DSP::Clock_ptr Fp2Clock, DSP::Float exp_w_n);
+    DDS_macro(DSP::Clock_ptr Fp2Clock, DSP::Float exp_w_n);
 
     ~DDS_macro(void);
 };
@@ -28,14 +28,14 @@ DDS_macro::DDS_macro(DSP::Clock_ptr Fp2Clock, DSP::Float w_n) : DSP::Macro("DDS"
 
   MacroInitStarted();
 
-  alpha_state_correction = new DSPu_PCCC;
+  alpha_state_correction = std::make_shared<DSPu_PCCC>();
   alpha_state_correction->SetConstInput("in.abs", 1.0);
 
-  Alpha_state_MUL = new DSPu_Multiplication(0, 3); Alpha_state_MUL->SetConstInput("in3", factor);
+  Alpha_state_MUL = std::make_shared<DSPu_Multiplication>(0, 3); Alpha_state_MUL->SetConstInput("in3", factor);
   this->MacroInput("in") >> alpha_state_correction->Input("in.arg");
   alpha_state_correction->Output("out") >> Alpha_state_MUL->Input("in2");
 
-  Alpha_state = new DSPu_LoopDelay(Fp2Clock, 1, 2); Alpha_state->SetState("in.re", 1.0);
+  Alpha_state = std::make_shared<DSPu_LoopDelay>(Fp2Clock, 1, 2); Alpha_state->SetState("in.re", 1.0);
   Alpha_state->Output("out") >> Alpha_state_MUL->Input("in1");
   Alpha_state_MUL->Output("out") >> Alpha_state->Input("in");
 
@@ -46,9 +46,10 @@ DDS_macro::DDS_macro(DSP::Clock_ptr Fp2Clock, DSP::Float w_n) : DSP::Macro("DDS"
 
 DDS_macro::~DDS_macro(void)
 {
-  delete alpha_state_correction;
-  delete Alpha_state_MUL;
-  delete Alpha_state;
+  // this is not necessary, just remains after the previous use of delete 
+  alpha_state_correction.reset();
+  Alpha_state_MUL.reset();
+  Alpha_state.reset();
 }
 
 int main(void)
