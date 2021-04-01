@@ -235,7 +235,6 @@ DSP::Component::~Component(void)
             NoOfDeprecated++;
           }
 
-          //delete OutputBlocks[ind];
           OutputBlocks[ind] = NULL;
         }
       }
@@ -6118,42 +6117,36 @@ void DSPu_FIR::Init(bool IsInputComplex, bool AreCoeficientsComplex,
   { // standard filter in the transposed implementation (state updating instead of buffer shifting)
     if (NoOfOutputs*(N-1) < 1)
     {
-      State = NULL;
+      State.clear();
     }
     else
     {
-      State=new DSP::Float[NoOfOutputs*(N-1)];
-      if (State !=  NULL)
-      {
-        memset(State, 0, sizeof(DSP::Float)*NoOfOutputs*(N-1));
-      }
+      State.clear();
+      State.resize(NoOfOutputs*(N-1), 0.0);
     }
   }
   else
   { // shaping filter implementation with buffer shifting
     if (NoOfOutputs*(N-1)*L_step < 1)
     {
-      State = NULL;
+      State.clear();
     }
     else
     {
-      State=new DSP::Float[NoOfOutputs*(N-1)*L_step];
+      State.clear();
+      State.resize(NoOfOutputs*(N-1)*L_step, 0.0);
       memmove_size = (long int)(sizeof(DSP::Float)*(NoOfOutputs*(N-1)*L_step - 1));
-      if (State !=  NULL)
-      {
-        memset(State, 0, sizeof(DSP::Float)*NoOfOutputs*(N-1)*L_step);
-      }
     }
   }
 
 
-  h=NULL; hC=NULL;
+  h.clear(); hC.clear();
 
   if (AreCoeficientsComplex)
   {
     if (N > 0)
     {
-      hC=new DSP::Complex[N];
+      hC.resize(N);
       for (ind=0; ind<N; ind++)
         hC[ind]=((DSP::Complex_ptr)h_in)[n0+M*ind];
     }
@@ -6162,7 +6155,7 @@ void DSPu_FIR::Init(bool IsInputComplex, bool AreCoeficientsComplex,
   {
     if (N > 0)
     {
-      h=new DSP::Float[N];
+      h.resize(N);
       for (ind=0; ind<N; ind++)
         h[ind]=((DSP::Float_ptr)h_in)[n0+M*ind];
     }
@@ -6225,12 +6218,9 @@ DSPu_FIR::~DSPu_FIR(void)
 {
 //  SetNoOfOutputs(0);
 
-  if (State !=  NULL)
-    delete [] State;
-  if (h !=  NULL)
-    delete [] h;
-  if (hC !=  NULL)
-    delete [] hC;
+  State.clear();
+  h.clear();
+  hC.clear();
 }
 
 #define  THIS  ((DSPu_FIR *)block)
@@ -6401,7 +6391,7 @@ void DSPu_FIR::InputExecute_RI_RH1(INPUT_EXECUTE_ARGS)
   THIS->OutputBlocks[0]->EXECUTE_PTR(
       THIS->OutputBlocks[0],
       THIS->OutputBlocks_InputNo[0],
-      value*(*THIS->h), block);
+      value*(THIS->h[0]), block);
 };
 
 //! real input - real impulse response
@@ -6413,7 +6403,7 @@ void DSPu_FIR::InputExecute_RI_RH(INPUT_EXECUTE_ARGS)
   DSP::Float *temp_h;
   int ind;
 
-  temp_h=THIS->h;
+  temp_h=THIS->h.data();
   out_value=(*temp_h)*value + THIS->State[0];
   temp_h++;
   for (ind=0; ind<THIS->N-2; ind++)
@@ -6441,7 +6431,7 @@ void DSPu_FIR::InputExecute_RI_CH1(INPUT_EXECUTE_ARGS)
   DSP::Complex out_value;
 
   out_value.set(value);
-  out_value.multiply_by(*THIS->hC);
+  out_value.multiply_by(THIS->hC[0]);
 
 //      OutputBlocks[0]->Execute(OutputBlocks_InputNo[0], out_value.re, this);
   THIS->OutputBlocks[0]->EXECUTE_PTR(
@@ -6465,7 +6455,7 @@ void DSPu_FIR::InputExecute_RI_CH(INPUT_EXECUTE_ARGS)
   int ind;
 
   //THIS->in_value.im=0.0;
-  temp_hC = THIS->hC;
+  temp_hC = THIS->hC.data();
   out_value.re=(*temp_hC).re * value + THIS->State[0];
   out_value.im=(*temp_hC).im * value + THIS->State[1];
   temp_hC++;
@@ -6508,8 +6498,8 @@ void DSPu_FIR::InputExecute_CI_RH1(INPUT_EXECUTE_ARGS)
     return;
   THIS->NoOfInputsProcessed=0;
 
-  out_value.re = THIS->in_value.re * (*THIS->h);
-  out_value.im = THIS->in_value.im * (*THIS->h);
+  out_value.re = THIS->in_value.re * (THIS->h[0]);
+  out_value.im = THIS->in_value.im * (THIS->h[0]);
 
 //    OutputBlocks[0]->Execute(OutputBlocks_InputNo[0], out_value.re, this);
   THIS->OutputBlocks[0]->EXECUTE_PTR(
@@ -6541,7 +6531,7 @@ void DSPu_FIR::InputExecute_CI_RH(INPUT_EXECUTE_ARGS)
     return;
   THIS->NoOfInputsProcessed=0;
 
-  temp_h = THIS->h;
+  temp_h = THIS->h.data();
   out_value.re = THIS->in_value.re * (*temp_h) + THIS->State[0];
   out_value.im = THIS->in_value.im * (*temp_h) + THIS->State[1];
   temp_h++;
@@ -6587,7 +6577,7 @@ void DSPu_FIR::InputExecute_CI_CH1(INPUT_EXECUTE_ARGS)
   THIS->NoOfInputsProcessed=0;
 
   out_value.set(THIS->in_value);
-  out_value.multiply_by(*THIS->hC);
+  out_value.multiply_by(THIS->hC[0]);
 
 //    OutputBlocks[0]->Execute(OutputBlocks_InputNo[0], out_value.re, this);
   THIS->OutputBlocks[0]->EXECUTE_PTR(
@@ -6619,7 +6609,7 @@ void DSPu_FIR::InputExecute_CI_CH(INPUT_EXECUTE_ARGS)
     return;
   THIS->NoOfInputsProcessed=0;
 
-  temp_hC = THIS->hC;
+  temp_hC = THIS->hC.data();
   out_value.set(THIS->in_value);
   out_value.multiply_by(*temp_hC);
   out_value.re += THIS->State[0];
@@ -6662,8 +6652,8 @@ void DSPu_FIR::InputExecute_RI_RH_L(INPUT_EXECUTE_ARGS)
 
   // ++++++++++++++++++++++++++++
   // compute output value
-  temp_h=THIS->h;
-  temp_state = THIS->State+(THIS->L_step-1);
+  temp_h=THIS->h.data();
+  temp_state = THIS->State.data()+(THIS->L_step-1);
 
   out_value=(*temp_h)*value;
   for (ind=1; ind<THIS->N; ind++)
@@ -6675,8 +6665,8 @@ void DSPu_FIR::InputExecute_RI_RH_L(INPUT_EXECUTE_ARGS)
 
   // ++++++++++++++++++++++++++++
   // update state: memmove_size = (N-1)*L
-  memmove(THIS->State+1, THIS->State, THIS->memmove_size);
-  *(THIS->State) = value;
+  memmove(&(THIS->State[1]), &(THIS->State[0]), THIS->memmove_size);
+  THIS->State[0] = value;
 
   // ++++++++++++++++++++++++++++
 //      OutputBlocks[0]->Execute(OutputBlocks_InputNo[0], out_value.re, this);
@@ -10235,8 +10225,8 @@ void DSPu_Accumulator::Init(int NoOfInputs_in, DSP::Float lambda_in, bool IsInpu
   ClockGroups.AddInputs2Group("all", 0, NoOfInputs-1);
   ClockGroups.AddOutputs2Group("all", 0, NoOfOutputs-1);
 
-  State = new DSP::Float[NoOfInputs];
-  memset(State, 0, sizeof(DSP::Float)*NoOfInputs);
+  State.clear();
+  State.resize(NoOfInputs, 0.0);
 
   lambda = lambda_in;
   one_minus_lambda = DSP::Float(1.0) - lambda;
@@ -10244,46 +10234,50 @@ void DSPu_Accumulator::Init(int NoOfInputs_in, DSP::Float lambda_in, bool IsInpu
 
 void DSPu_Accumulator::SetInitialState(DSP::Float State_init)
 {
-  SetInitialState(1, &State_init);
+  SetInitialState(DSP::Float_vector(1, State_init));
 }
 void DSPu_Accumulator::SetInitialState(DSP::Float State_init_re, DSP::Float State_init_im)
 {
-  DSP::Float temp[2];
+  DSP::Float_vector temp(2);
 
   temp[0] = State_init_re;
   temp[1] = State_init_im;
-  SetInitialState(2, temp);
+  SetInitialState(temp);
 }
 void DSPu_Accumulator::SetInitialState(DSP::Complex State_init)
 {
-  SetInitialState(2, (DSP::Float_ptr)(&State_init));
+  DSP::Float_vector temp(2);
+
+  temp[0] = State_init.re;
+  temp[1] = State_init.im;
+  SetInitialState(temp);
 }
 
 // Setting up internal state
-void DSPu_Accumulator::SetInitialState(unsigned int length, DSP::Float_ptr State_init)
+void DSPu_Accumulator::SetInitialState(const DSP::Float_vector &State_init)
 {
-  if (length > NoOfInputs)
+  if (State_init.size() > NoOfInputs)
   {
     #ifdef __DEBUG__
     DSP::log << DSP::LogMode::Error << "DSPu_Accumulator::SetInitialState"<< DSP::LogMode::second
-      << "ABORTING: length(" << length << ") > size of internal state(" << NoOfInputs << ")" << endl;
+      << "ABORTING: length(" << State_init.size() << ") > size of internal state(" << NoOfInputs << ")" << endl;
     #endif
     return;
   }
-  if (length < NoOfInputs)
+  if (State_init.size() < NoOfInputs)
   {
     #ifdef __DEBUG__
     DSP::log << "DSPu_Accumulator::SetInitialState" << DSP::LogMode::second
-      << "length(" << length << ") < size of internal state(" << NoOfInputs << ")" << endl;
+      << "length(" << State_init.size() << ") < size of internal state(" << NoOfInputs << ")" << endl;
     #endif
   }
 
-  memcpy(State, State_init, sizeof(DSP::Float)*length);
+  State = State_init;
 }
 
 DSPu_Accumulator::~DSPu_Accumulator(void)
 {
-  delete [] State;
+  State.clear();
 }
 
 #define  THIS_ ((DSPu_Accumulator *)block)
@@ -11456,9 +11450,9 @@ DSPu_Quantizer::DSPu_Quantizer(DSP::Float threshold, DSP::Float L_value, DSP::Fl
   ClockGroups.AddOutputs2Group("all", 0, NoOfOutputs-1);
 
   B = 1;
-  thresholds = new DSP::Float[B];
+  thresholds.resize(B);
   thresholds[0] = threshold;
-  q_levels = new DSP::Float[1 << B];
+  q_levels.resize(1 << B);
   q_levels[0] = L_value; q_levels[1] = U_value;
 
   output_val = 0.0;
@@ -11468,16 +11462,8 @@ DSPu_Quantizer::DSPu_Quantizer(DSP::Float threshold, DSP::Float L_value, DSP::Fl
 
 DSPu_Quantizer::~DSPu_Quantizer(void)
 {
-  if (thresholds != NULL)
-  {
-    delete [] thresholds;
-    thresholds = NULL;
-  }
-  if (q_levels != NULL)
-  {
-    delete [] q_levels;
-    q_levels = NULL;
-  }
+  thresholds.clear();
+  q_levels.clear();
 }
 
 #define THIS ((DSPu_Quantizer *)block)
@@ -11486,7 +11472,7 @@ void DSPu_Quantizer::InputExecute_1bit(INPUT_EXECUTE_ARGS)
   UNUSED_ARGUMENT(InputNo);
   UNUSED_DEBUG_ARGUMENT(Caller);
 
-  THIS->output_val = (value <= *(THIS->thresholds))? THIS->q_levels[0] : THIS->q_levels[1];
+  THIS->output_val = (value <= THIS->thresholds[0]) ? THIS->q_levels[0] : THIS->q_levels[1];
   /*
   THIS->NoOfInputsProcessed++;
   if THIS->NoOfInputsProcessed < THIS->NoOfInputs)

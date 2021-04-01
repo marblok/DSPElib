@@ -10,10 +10,17 @@ TODO::
 
   !!! Replace test_wav na własne nagranie np. "DSPE library" albo free sample 
 
+  - dodanie dodatkowych cykli przetwarzania w asynchronous, callback itp - przycina odtwarzanie obecnie audio
+
 LAST DONE:
-  - test asynchronous z wersją master
+  !!! - DSP_modules.cpp - removed some of the uses of new and delete
+
 
 CHANGES:
+- ver. 0.19.023 - <b>2021.04.01</b> Changed: 
+  - DSP_modules.cpp - removed some of the uses of new and delete
+  - DSP_modules2.cpp, DSP_sockets.cpp - removed all uses of new and delete
+
 - ver. 0.19.022 - <b>2021.04.01</b> Changed: 
   - DSP_AudioMixer.cpp - removed all uses of new and delete
   - modified input parameters list of ReadSegmentToBuffer, WriteSegmentFromBuffer

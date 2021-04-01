@@ -36,7 +36,7 @@ WSADATA DSP_socket::wsaData;
 bool DSP_socket::listen_ready = false;
 SOCKET DSP_socket::ListenSocket = INVALID_SOCKET;
 int DSP_socket::no_of_server_objects = 0;
-DSP_socket **DSP_socket::server_objects_list = NULL;
+std::vector<DSP_socket *> DSP_socket::server_objects_list;
 
 DSP_socket::DSP_socket(const string &address_with_port, bool run_as_client, DWORD ServerObjectID_in)
 {
@@ -179,16 +179,11 @@ bool DSP_socket::InitServer_ListenSocket(const string & address_with_port)
 
 bool DSP_socket::InitServer(void) //DWORD ServerObjectID_in)
 {
-  DSP_socket **server_objects_list_tmp;
-
   socket_ready = false;
 
   // 1. add this object to the server_objects_list
-  server_objects_list_tmp = new DSP_socket *[no_of_server_objects+1];
-  memcpy(server_objects_list_tmp, server_objects_list, sizeof(DSP_socket *)*no_of_server_objects);
-  server_objects_list_tmp[no_of_server_objects] = this;
-  delete [] server_objects_list;
-  server_objects_list = server_objects_list_tmp;
+  server_objects_list.resize(no_of_server_objects+1);
+  server_objects_list[no_of_server_objects] = this;
   no_of_server_objects++;
 
   // 2. update socket ID and other socket data
@@ -592,12 +587,7 @@ DSP_socket::~DSP_socket(void)
 
   if (NoOfSocketObjects == 0)
   {
-    if (server_objects_list != NULL)
-    {
-      no_of_server_objects = 0;
-      delete [] server_objects_list;
-      server_objects_list = NULL;
-    }
+    server_objects_list.clear();
   }
 }
 
@@ -678,8 +668,8 @@ void DSPu_SOCKETinput::Init(DSP::Clock_ptr ParentClock,
   BufferSize = inbuffer_size;
   inbuffer_size *= (InputSampleSize / 8);
 
-  RawBuffer = new uint8_t[inbuffer_size];
-  Buffer = new DSP::Float[NoOfOutputs * BufferSize];
+  RawBuffer.resize(inbuffer_size);
+  Buffer.resize(NoOfOutputs * BufferSize);
   BufferIndex = BufferSize;
 
   LastBytesRead_counter = DSP_FILE_READING_NOT_STARTED;
@@ -687,16 +677,8 @@ void DSPu_SOCKETinput::Init(DSP::Clock_ptr ParentClock,
 
 DSPu_SOCKETinput::~DSPu_SOCKETinput(void)
 {
-  if (RawBuffer != NULL)
-  {
-    delete [] RawBuffer;
-    RawBuffer = NULL;
-  }
-  if (Buffer != NULL)
-  {
-    delete [] Buffer;
-    Buffer = NULL;
-  }
+  RawBuffer.clear();
+  Buffer.clear();
 }
 
 bool DSPu_SOCKETinput::SetSkip(long long Offset_in)
@@ -872,11 +854,11 @@ bool DSPu_SOCKETinput::OutputExecute(OUTPUT_EXECUTE_ARGS)
 
       return false;
     }
-    in_counter = recv(THIS->ConnectSocket, (char *)THIS->RawBuffer, THIS->inbuffer_size, 0);
+    in_counter = recv(THIS->ConnectSocket, (char *)THIS->RawBuffer.data(), THIS->inbuffer_size, 0);
     THIS->LastBytesRead_counter = in_counter;
 
-    in_temp = THIS->RawBuffer;
-    temp_buffer = THIS->Buffer;
+    in_temp = THIS->RawBuffer.data();
+    temp_buffer = THIS->Buffer.data();
     for (ind = 0; ind < THIS->BufferSize; ind++)
     {
       for (ind2 = 0; ind2 < THIS->NoOfOutputs; ind2++)
@@ -1186,8 +1168,8 @@ void DSPu_SOCKEToutput::Init(unsigned int InputsNo,
   BufferSize = outbuffer_size;
   outbuffer_size *= (OutputSampleSize / 8);
 
-  RawBuffer = new uint8_t[outbuffer_size];
-  Buffer = new DSP::Float[NoOfInputs * BufferSize];
+  RawBuffer.resize(outbuffer_size);
+  Buffer.resize(NoOfInputs * BufferSize);
 
   BufferIndex = 0;
   NoOfInputsProcessed = 0;
@@ -1195,16 +1177,8 @@ void DSPu_SOCKEToutput::Init(unsigned int InputsNo,
 
 DSPu_SOCKEToutput::~DSPu_SOCKEToutput(void)
 {
-  if (Buffer != NULL)
-  {
-    delete [] Buffer;
-    Buffer = NULL;
-  }
-  if (RawBuffer != NULL)
-  {
-    delete [] RawBuffer;
-    RawBuffer = NULL;
-  }
+  Buffer.clear();
+  RawBuffer.clear();
 }
 
 void DSPu_SOCKEToutput::FlushBuffer(void)
@@ -1217,13 +1191,13 @@ void DSPu_SOCKEToutput::FlushBuffer(void)
 
   // ************************************************** //
   // Send buffer to the socket
-  Sample=Buffer;
+  Sample=Buffer.data();
   // ************************************************** //
   // Converts samples format to the one suitable for the audio device
   switch (SampleType)
   {
     case DSP::e::SampleType::ST_uchar:
-      temp8=(uint8_t *)(RawBuffer);
+      temp8=(uint8_t *)(RawBuffer.data());
       for (ind=0; ind<BufferSize * NoOfInputs; ind++)
       {
         if (*Sample < 0)
@@ -1242,7 +1216,7 @@ void DSPu_SOCKEToutput::FlushBuffer(void)
       }
       break;
     case DSP::e::SampleType::ST_short:
-      temp16=(short *)(RawBuffer);
+      temp16=(short *)(RawBuffer.data());
       for (ind=0; ind<BufferSize * NoOfInputs; ind++)
       {
         if (*Sample < 0)
@@ -1261,7 +1235,7 @@ void DSPu_SOCKEToutput::FlushBuffer(void)
       break;
     case DSP::e::SampleType::ST_float:
     default:
-      temp_float=(float *)(RawBuffer);
+      temp_float=(float *)(RawBuffer.data());
       for (ind=0; ind<BufferSize * NoOfInputs; ind++)
       {
         *temp_float = *Sample;
@@ -1289,10 +1263,10 @@ void DSPu_SOCKEToutput::FlushBuffer(void)
   //! \todo use select to check if data can be written
   // send data to socket
   // int out_counter = send(ConnectSocket, (char *)RawBuffer, outbuffer_size, 0);
-  send(ConnectSocket, (char *)RawBuffer, outbuffer_size, 0);
+  send(ConnectSocket, (char *)RawBuffer.data(), outbuffer_size, 0);
 
   // reset buffer
-  memset(Buffer, 0x00, BufferSize * NoOfInputs * sizeof(DSP::Float));
+  memset(Buffer.data(), 0x00, Buffer.size() * sizeof(DSP::Float));
   BufferIndex = 0;
 }
 

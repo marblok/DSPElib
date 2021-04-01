@@ -238,8 +238,6 @@ DSPu_DynamicCompressor::DSPu_DynamicCompressor(
                            bool IsInputComplex, int OutputDelay_in)
   : DSP::Block()
 {
-  unsigned int ind;
-
   SetName("DynamicCompressor", false);
 
   if (IsInputComplex == true)
@@ -304,17 +302,13 @@ DSPu_DynamicCompressor::DSPu_DynamicCompressor(
   {
     SamplesBufferSize = OutputDelay_in;
   }
-  if (SamplesBufferSize == 0)
-    SamplesBuffer = NULL;
-  else
-    SamplesBuffer = new DSP::Float[SamplesBufferSize];
-  for (ind = 0; ind < SamplesBufferSize; ind++)
-    SamplesBuffer[ind] = 0.0;
+
+  SamplesBuffer.clear();
+  SamplesBuffer.resize(SamplesBufferSize, 0.0);
 
   PowerBufferSize = BufferSize_in;
-  PowerBuffer = new DSP::Float[PowerBufferSize];
-  for (ind = 0; ind < PowerBufferSize; ind++)
-    PowerBuffer[ind] = 0.0;
+  PowerBuffer.clear();
+  PowerBuffer.resize(PowerBufferSize, 0.0);
 
   CurrentPower = 0.0;
   alfa = (DSP::Float(1.0)/a0 - 1)/2;
@@ -334,10 +328,8 @@ DSPu_DynamicCompressor::DSPu_DynamicCompressor(
 
 DSPu_DynamicCompressor::~DSPu_DynamicCompressor()
 {
-  if (SamplesBuffer != NULL)
-    delete [] SamplesBuffer;
-  if (PowerBuffer != NULL)
-    delete [] PowerBuffer;
+  SamplesBuffer.clear();
+  PowerBuffer.clear();
 }
 
 #define  THIS  ((DSPu_DynamicCompressor *)block)
@@ -654,27 +646,27 @@ DSPu_Farrow::DSPu_Farrow(const bool& IsComplex, const vector<DSP::Float_vector>&
   N_FSD = (unsigned long)(Farrow_coefs_in.size());
   if (NoOfOutputs == 1)
   {
-    Buffer = (uint8_t*)(new DSP::Float[N_FSD]);
+    Buffer.resize(sizeof(DSP::Float) * N_FSD);
     for (ind = 0; ind < N_FSD; ind++)
-      ((DSP::Float*)Buffer)[ind] = 0.0;
+      ((DSP::Float*)Buffer.data())[ind] = 0.0;
 
     Execute_ptr = &InputExecute_real;
   }
   else
   {
-    Buffer = (uint8_t*)(new DSP::Complex[N_FSD]);
+    Buffer.resize(sizeof(DSP::Complex)*N_FSD);
     for (ind = 0; ind < N_FSD; ind++)
-      ((DSP::Complex*)Buffer)[ind] = DSP::Complex(0.0, 0.0);
+      ((DSP::Complex*)Buffer.data())[ind] = DSP::Complex(0.0, 0.0);
 
     Execute_ptr = &InputExecute_cplx;
   }
 
   ///////////////////////////////////
   Farrow_len = (unsigned long)(Farrow_coefs_in[0].size()); // p_order+1
-  Farrow_coefs = new DSP::Float_ptr[Farrow_len];
+  Farrow_coefs.resize(Farrow_len);
   for (ind = 0; ind < Farrow_len; ind++)
   {
-    Farrow_coefs[ind] = new DSP::Float[N_FSD];
+    Farrow_coefs[ind].resize(N_FSD);
   }
 
   //  // copy with transposition
@@ -703,32 +695,8 @@ DSPu_Farrow::DSPu_Farrow(const bool& IsComplex, const vector<DSP::Float_vector>&
 
 DSPu_Farrow::~DSPu_Farrow(void)
 {
-  unsigned int ind;
-//  SetNoOfOutputs(0);
-
-  if (Buffer != NULL)
-  {
-    if (NoOfOutputs == 1)
-      delete [] ((DSP::Float *)Buffer);
-    else
-      delete [] ((DSP::Complex *)Buffer);
-    Buffer = NULL;
-  }
-
-  if (Farrow_coefs != NULL)
-  {
-    for (ind = 0; ind < Farrow_len; ind++)
-    {
-      if (Farrow_coefs[ind] != NULL)
-      {
-        delete [] Farrow_coefs[ind];
-        Farrow_coefs[ind] = NULL;
-      }
-    }
-    delete [] Farrow_coefs;
-    Farrow_coefs = NULL;
-  }
-
+  Buffer.clear();
+  Farrow_coefs.clear();
 }
 
 #define THIS ((DSPu_Farrow *)block)
@@ -740,9 +708,9 @@ void DSPu_Farrow::InputExecute_cplx(INPUT_EXECUTE_ARGS)
   if (InputNo < THIS->NoOfOutputs)
   { //update buffer
     if (InputNo == 0)
-      ((DSP::Complex *)(THIS->Buffer))[THIS->N_FSD-1].re = value;
+      ((DSP::Complex *)(THIS->Buffer.data()))[THIS->N_FSD-1].re = value;
     else
-      ((DSP::Complex *)(THIS->Buffer))[THIS->N_FSD-1].im = value;
+      ((DSP::Complex *)(THIS->Buffer.data()))[THIS->N_FSD-1].im = value;
     THIS->NoOfInputsProcessed++;
 
     if (THIS->NoOfInputsProcessed == THIS->NoOfOutputs)
@@ -766,7 +734,7 @@ void DSPu_Farrow::InputExecute_real(INPUT_EXECUTE_ARGS)
 
   if (InputNo == 0)
   { //update buffer
-    ((DSP::Float *)(THIS->Buffer))[THIS->N_FSD-1] = value;
+    ((DSP::Float *)(THIS->Buffer.data()))[THIS->N_FSD-1] = value;
     THIS->InputSampleReady = true;
     //DSP::f::InfoMessage(const_cast < char* > (THIS->GetName()), "PROCESS: InputSampleReady == true !!!");
   }
@@ -856,12 +824,12 @@ void DSPu_Farrow::Notify(DSP::Clock_ptr clock) //, bool State)
     // update buffer
     if (NoOfOutputs == 1)
     {
-      memmove((uint8_t *)Buffer, (uint8_t *)Buffer+sizeof(DSP::Float), (N_FSD-1) * sizeof(DSP::Float));
+      memmove((uint8_t *)Buffer.data(), (uint8_t *)Buffer.data()+sizeof(DSP::Float), (N_FSD-1) * sizeof(DSP::Float));
 //      ((DSP::Float_ptr)Buffer)[N_FSD-1] = 100.0;
     }
     else
     {
-      memmove((uint8_t *)Buffer, (uint8_t *)Buffer+sizeof(DSP::Complex), (N_FSD-1) * sizeof(DSP::Complex));
+      memmove((uint8_t *)Buffer.data(), (uint8_t *)Buffer.data()+sizeof(DSP::Complex), (N_FSD-1) * sizeof(DSP::Complex));
 //      ((DSP::Complex_ptr)Buffer)[N_FSD-1].re = 100.0;
 //      ((DSP::Complex_ptr)Buffer)[N_FSD-1].im = 200.0;
     }
@@ -893,7 +861,7 @@ void DSPu_Farrow::CalculateOutputSample_cplx(void)
     {
       // remember that most recent sample is the last sample
 //      temp += ((DSP::Complex *)Buffer)[N_FSD-1-ind2] * Farrow_coefs[ind][ind2];
-      tmp2 = ((DSP::Complex *)Buffer)[N_FSD-1-ind2];
+      tmp2 = ((DSP::Complex *)Buffer.data())[N_FSD-1-ind2];
       tmp2.multiply_by(Farrow_coefs[ind][ind2]);
       temp.add(tmp2);
     }
@@ -917,7 +885,7 @@ void DSPu_Farrow::CalculateOutputSample_real(void)
     temp = 0.0;
     for (ind2 = 0; ind2 < N_FSD; ind2++)
       // remember that most recent sample is the last sample
-      temp += ((DSP::Float *)Buffer)[N_FSD-1-ind2] * Farrow_coefs[ind][ind2];
+      temp += ((DSP::Float *)Buffer.data())[N_FSD-1-ind2] * Farrow_coefs[ind][ind2];
 
     currentOutput.re += temp;
   }
@@ -1022,9 +990,9 @@ void DSPu_GardnerSampling::Init(
     ClockGroups.AddOutput2Group("output", Output(tekst));
   }
 
-  y0 = new DSP::Complex[NoOfChannels];
-  y1 = new DSP::Complex[NoOfChannels];
-  y2 = new DSP::Complex[NoOfChannels];
+  y0.resize(NoOfChannels);
+  y1.resize(NoOfChannels);
+  y2.resize(NoOfChannels);
 
   /* inner state
    * 0 - waiting for y0
@@ -1143,12 +1111,9 @@ void DSPu_GardnerSampling::Init(
 
 DSPu_GardnerSampling::~DSPu_GardnerSampling()
 {
-//  delete [] state;
-//  delete [] delay;
-
-  delete [] y0;
-  delete [] y1;
-  delete [] y2;
+  y0.clear();
+  y1.clear();
+  y2.clear();
 }
 
 DSP::Float DSPu_GardnerSampling::GetSamplingPeriod(void)
@@ -1466,10 +1431,11 @@ void DSPu_GardnerSampling::InputExecute_new(INPUT_EXECUTE_ARGS)
 
 
       //y0 <= y2 (just swap memory pointers !!!)
-      DSP::Complex_ptr temp_y;
-      temp_y = THIS->y0;
-      THIS->y0 = THIS->y2;
-      THIS->y2 = temp_y;
+      // DSP::Complex_ptr temp_y;
+      // temp_y = THIS->y0;
+      // THIS->y0 = THIS->y2;
+      // THIS->y2 = temp_y;
+      std::swap(THIS->y0, THIS->y2); 
 
       THIS->delay_1++;
       THIS->state_1 = 1;

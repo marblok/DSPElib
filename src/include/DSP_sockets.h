@@ -103,7 +103,7 @@ class DSP_socket
     //! length of the server_objects_list
     static int no_of_server_objects;
     //! table of DSP_socket created in server mode
-    static DSP_socket **server_objects_list;
+    static std::vector<DSP_socket *> server_objects_list;
 
     string extract_hostname(const string& address_with_port);
     string extract_port(const string& address_with_port, const string& default_port);
@@ -184,7 +184,7 @@ class DSPu_SOCKETinput : public DSP::File, public DSP_socket, public DSP::Source
 
     //! size of the output buffer in DSP::Float * NoOfOutputs
     unsigned int BufferSize;
-    DSP::Float *Buffer;
+    DSP::Float_vector Buffer;
     unsigned int BufferIndex;
 
     unsigned int BytesRead;
@@ -194,7 +194,7 @@ class DSPu_SOCKETinput : public DSP::File, public DSP_socket, public DSP::Source
     unsigned int InputSampleSize;
     //! in bytes size of the buffer (RawBuffer) used in socket access
     unsigned int inbuffer_size;
-    uint8_t *RawBuffer;
+    std::vector<uint8_t> RawBuffer;
 
     //! number of bytes read in previous socket access
     /*! \warning is initialized with DSP_FILE_READING_NOT_STARTED
@@ -299,7 +299,7 @@ class DSPu_SOCKEToutput : public DSP_socket, public DSP::Block
 {
   private:
     unsigned int BufferSize;
-    DSP::Float *Buffer;
+    DSP::Float_vector Buffer;
     unsigned int BufferIndex;
 
     //! Type of samples send into socket
@@ -308,7 +308,7 @@ class DSPu_SOCKEToutput : public DSP_socket, public DSP::Block
     unsigned int OutputSampleSize;
     //! size of the buffers used for socket
     DWORD outbuffer_size;
-    uint8_t *RawBuffer;
+    std::vector<uint8_t> RawBuffer;
 
 
     //! To be used in constructor

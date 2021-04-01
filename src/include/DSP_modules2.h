@@ -122,8 +122,8 @@ namespace DSP {
 class DSPu_DynamicCompressor : public DSP::Block
 {
   private:
-    DSP::Float_ptr SamplesBuffer;
-    DSP::Float_ptr PowerBuffer; //! Sample Energy per PowerBufferSize
+    DSP::Float_vector SamplesBuffer;
+    DSP::Float_vector PowerBuffer; //! Sample Energy per PowerBufferSize
     unsigned int index; //! index of the current free entry in SamplesBuffer
     unsigned int power_index; //! index of the current free entry in PowerBuffer
     //output_index == index because the SampleBuffer is shorter then PowerBuffer
@@ -193,7 +193,7 @@ class DSPu_Farrow  : public DSP::Block, public DSP::Source
      *
      * \note that most recent sample is the last sample in buffer
      */
-    uint8_t *Buffer;
+    std::vector<uint8_t> Buffer;
 
     //! Order of the Farrow structure + 1 (length of Farrow polynomials)
     unsigned long Farrow_len;
@@ -203,7 +203,7 @@ class DSPu_Farrow  : public DSP::Block, public DSP::Source
      *
      *  This is transposition of the constructor input table Farrow_coefs_in.
      */
-    DSP::Float_ptr *Farrow_coefs;
+    std::vector<DSP::Float_vector> Farrow_coefs;
 
     //! variable storing currently evaluated output sample
     DSP::Complex currentOutput;
@@ -339,7 +339,7 @@ class DSPu_GardnerSampling : public DSP::Block, public DSP::Source, public DSP::
 //    int *state; //! inner state
 
     unsigned int NoOfChannels;
-    DSP::Complex_ptr y0, y1, y2;
+    DSP::Complex_vector y0, y1, y2;
 
     //! construction options
     DSPe_GardnerSamplingOptions options;

@@ -2850,9 +2850,9 @@ class DSPu_FIR : public DSP::Block
     int L_step;
 
     // if h == NULL, coefficients are complex
-    DSP::Float *h;
-    DSP::Complex *hC;
-    DSP::Float *State;
+    DSP::Float_vector h;
+    DSP::Complex_vector hC;
+    DSP::Float_vector State;
     DSP::Complex in_value;
 
     void Init(bool IsInputComplex, bool AreCoeficientsComplex,
@@ -3031,7 +3031,7 @@ class DSPu_Accumulator : public DSP::Block
 {
   private:
     DSP::Float lambda, one_minus_lambda;
-    DSP::Float *State;
+    DSP::Float_vector State;
 
     void Init(int NoOfInputs_in, DSP::Float lambda_in = 0.5, bool IsInputComplex=false);
 
@@ -3039,7 +3039,7 @@ class DSPu_Accumulator : public DSP::Block
     static void InputExecute_leakage(INPUT_EXECUTE_ARGS);
   public:
     //! Setting up internal state
-    void SetInitialState(unsigned int length, DSP::Float_ptr State_init);
+    void SetInitialState(const DSP::Float_vector &State_init);
     void SetInitialState(DSP::Float State_init);
     void SetInitialState(DSP::Float State_init_re, DSP::Float State_init_im);
     void SetInitialState(DSP::Complex State_init);
@@ -3870,9 +3870,9 @@ class DSPu_Quantizer : public DSP::Block
     //! number of bits - with sign bit
     unsigned int B;
     //! quantization thresholds
-    DSP::Float_ptr thresholds;
+    DSP::Float_vector thresholds;
     //! values corresponding to quantization levels
-    DSP::Float_ptr q_levels;
+    DSP::Float_vector q_levels;
 
     DSP::Float output_val;
 
