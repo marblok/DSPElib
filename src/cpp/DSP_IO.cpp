@@ -362,8 +362,8 @@ DSPu_FILEinput::DSPu_FILEinput(DSP::Clock_ptr ParentClock,
   SetName("FILEinput", false);
 
   // +++++++++++++++++++++++++++++++++++++++++++++ //
-  RawBuffer = NULL;
-  flt_header = NULL; tape_header = NULL; wav_header = NULL;
+  RawBuffer.clear();
+  flt_header.clear(); tape_header.clear(); wav_header.clear();
   FileHandle = NULL;
 
   ready = OpenFile(FileName, sample_type, FILEtype, NoOfChannels);
@@ -391,9 +391,9 @@ DSPu_FILEinput::DSPu_FILEinput(DSP::Clock_ptr ParentClock,
 
   // +++++++++++++++++++++++++++++++++++++++++++++ //
   //Data are stored in buffer in DSP::Float format
-  Buffer = new DSP::Float [NoOfOutputs*DSP_file_buffer_size];
+  Buffer.clear();
+  Buffer.resize(NoOfOutputs*DSP_file_buffer_size, 0.0);
   BufferIndex=0; //this means also that Buffer is empty
-  memset(Buffer, 0, NoOfOutputs*sizeof(DSP::Float)*DSP_file_buffer_size);
   // +++++++++++++++++++++++++++++++++++++++++++++ //
 
 
@@ -494,10 +494,10 @@ bool DSPu_FILEinput::OpenFile(const string &FileName,
     {
       case DSP::e::FileType::FT_flt:
         {
-          flt_header = new T_FLT_header;
-          BytesRead = (unsigned int)fread(flt_header, 1, FLT_header_LEN, FileHandle);
+          flt_header.resize(1);
+          BytesRead = (unsigned int)fread(&(flt_header[0]), 1, FLT_header_LEN, FileHandle);
 
-          if (flt_header->version() != 0)
+          if (flt_header[0].version() != 0)
           {
             ready = false;
 
@@ -507,17 +507,17 @@ bool DSPu_FILEinput::OpenFile(const string &FileName,
             #endif
           }
 
-          NoOfFileChannels = flt_header->no_of_channels();
-          SamplingRate = flt_header->sampling_rate();
+          NoOfFileChannels = flt_header[0].no_of_channels();
+          SamplingRate = flt_header[0].sampling_rate();
 
-          //! \TODO determine sample type based on flt_header->sample_type()
+          //! \TODO determine sample type based on flt_header[0].sample_type()
         }
         break;
 
       case DSP::e::FileType::FT_tape:
         {
-          tape_header = new T_TAPE_header;
-          BytesRead = (unsigned int)fread(tape_header, 1, TAPE_header_LEN, FileHandle);
+          tape_header.resize(1);
+          BytesRead = (unsigned int)fread(&(tape_header[0]), 1, TAPE_header_LEN, FileHandle);
 
           NoOfFileChannels = 2;
           if (SampleType != DSP::e::SampleType::ST_short)
@@ -533,20 +533,20 @@ bool DSPu_FILEinput::OpenFile(const string &FileName,
           #ifdef __DEBUG__
             if (sizeof(T_TAPE_header) != TAPE_header_LEN)
               DSP::log << DSP::LogMode::Error << "DSPu_FILEinput::DSPu_FILEinput" << DSP::LogMode::second << "TAPE_header_LEN does not much sizeof T_TAPE_header structure !!!" << endl;
-            if (tape_header->header_size() != TAPE_header_LEN)
+            if (tape_header[0].header_size() != TAPE_header_LEN)
               DSP::log << DSP::LogMode::Error << "DSPu_FILEinput::DSPu_FILEinput" << DSP::LogMode::second << "Unsupported *.tape file version !!!" << endl;
           #endif
 
-          SamplingRate = tape_header->sampling_rate();
+          SamplingRate = tape_header[0].sampling_rate();
         }
         break;
 
       case DSP::e::FileType::FT_wav:
         {
-          wav_header = new T_WAVEchunk;
+          wav_header.resize(1);
 
           //Read WAVE file header
-          if (wav_header->WAVEinfo(FileHandle)==false)
+          if (wav_header[0].WAVEinfo(FileHandle)==false)
           {
             ready = false;
 
@@ -558,9 +558,9 @@ bool DSPu_FILEinput::OpenFile(const string &FileName,
             #endif
           }
 
-          NoOfFileChannels = wav_header->nChannels;
+          NoOfFileChannels = wav_header[0].nChannels;
 
-          switch (wav_header->wBitsPerSample)
+          switch (wav_header[0].wBitsPerSample)
           {
             case 8:
               SampleType = DSP::e::SampleType::ST_uchar;
@@ -577,15 +577,15 @@ bool DSPu_FILEinput::OpenFile(const string &FileName,
               #ifdef __DEBUG__
               {
                 DSP::log << DSP::LogMode::Error << "DSPu_FILEinput::DSPu_FILEinput" << DSP::LogMode::second
-                  << "Unsupported PCM sample size ==> " << wav_header->wBitsPerSample << " bits!!!" << endl;
+                  << "Unsupported PCM sample size ==> " << wav_header[0].wBitsPerSample << " bits!!!" << endl;
               }
               #endif
               break;
           }
 
-          SamplingRate = wav_header->nSamplesPerSec;
+          SamplingRate = wav_header[0].nSamplesPerSec;
 
-          if (wav_header->FindDATA(FileHandle)==false)
+          if (wav_header[0].FindDATA(FileHandle)==false)
           {
             ready = false;
             #ifdef __DEBUG__
@@ -618,11 +618,10 @@ bool DSPu_FILEinput::OpenFile(const string &FileName,
       NoOfFileChannels = 1;
   }
 
-  if (RawBuffer != NULL)
-    delete [] RawBuffer;
+  RawBuffer.clear();
 
   SampleSize = GetSampleSize(SampleType);
-  RawBuffer = new uint8_t[(SampleSize*DSP_file_buffer_size+7)/8 + 1];
+  RawBuffer.resize((SampleSize*DSP_file_buffer_size+7)/8 + 1);
   BytesRead=0;
 
   // +++++++++++++++++++++++++++++++++++++++++++++ //
@@ -638,27 +637,12 @@ bool DSPu_FILEinput::CloseFile(void)
 {
   int res = -1;
 
-  if (flt_header != NULL)
-  {
-    delete flt_header;
-    flt_header = NULL;
-  }
-  if (tape_header != NULL)
-  {
-    delete tape_header;
-    tape_header = NULL;
-  }
-  if (wav_header != NULL)
-  {
-    delete wav_header;
-    wav_header = NULL;
-  }
+  flt_header.clear();
+  tape_header.clear();
+  wav_header.clear();
 
-  if (RawBuffer != NULL)
-  {
-    delete [] RawBuffer;
-    RawBuffer = NULL;
-  }
+  RawBuffer.clear();
+
   if (FileHandle != NULL)
   {
     res = fclose(FileHandle);
@@ -679,21 +663,30 @@ void dummy_GetHeader(void)
 }
 
 template <class T>
-T *DSPu_FILEinput::GetHeader(void)
+T *DSPu_FILEinput::GetHeader(const unsigned int &index)
 {
-  T *temp;
+  std::vector<T> temp;
 
   if (typeid(temp) == typeid(flt_header))
-    return (T *)flt_header;
+  {
+    if (flt_header.size() > index)
+      return (T *)(&(flt_header[index]));
+  }
   if (typeid(temp) == typeid(wav_header))
-    return (T *)wav_header;
+  {
+    if (wav_header.size() > index)
+      return (T *)(&(wav_header[index]));
+  }
   if (typeid(temp) == typeid(tape_header))
-    return (T *)tape_header;
-  return NULL;
+  {
+    if (tape_header.size() > index)
+      return (T *)(&(tape_header[index]));
+  }
+  return NULL; 
 }
-template T_FLT_header *DSPu_FILEinput::GetHeader<T_FLT_header>(void);
-template T_TAPE_header *DSPu_FILEinput::GetHeader<T_TAPE_header>(void);
-template T_WAVEchunk *DSPu_FILEinput::GetHeader<T_WAVEchunk>(void);
+template T_FLT_header *DSPu_FILEinput::GetHeader<T_FLT_header>(const unsigned int &index = 0);
+template T_TAPE_header *DSPu_FILEinput::GetHeader<T_TAPE_header>(const unsigned int &index = 0);
+template T_WAVEchunk *DSPu_FILEinput::GetHeader<T_WAVEchunk>(const unsigned int &index = 0);
 
 
 
@@ -743,8 +736,7 @@ DSPu_FILEinput::~DSPu_FILEinput(void)
 //  SetNoOfOutputs(0);
   CloseFile();
 
-  if (Buffer != NULL)
-    delete [] Buffer;
+  Buffer.clear();
 }
 
 // returns number of bytes read during last file access
@@ -802,8 +794,8 @@ long long DSPu_FILEinput::SkipSamples(long long no_to_skip)
 
 unsigned int DSPu_FILEinput::ReadSegmentToBuffer(
     unsigned int buffer_size, // in samples (raw_buffer_size == buffer_size * sample_size / 8)
-    uint8_t *raw_buffer,
-    DSP::Float   *flt_buffer,
+    std::vector<uint8_t> &raw_buffer,
+    DSP::Float_vector    &flt_buffer,
     int pad_size)
 {
   DSP::Float *tempBuffer;
@@ -822,26 +814,28 @@ unsigned int DSPu_FILEinput::ReadSegmentToBuffer(
    *  in DSPu_FILEinput internal buffer. If yes then use it before
    *  reading the file.
    */
+  raw_buffer.resize((buffer_size * SampleSize) / 8);
   if (FileHandle != NULL)
     BytesRead =
-        (unsigned int)fread(raw_buffer, 1, (SampleSize * buffer_size)/8, FileHandle);
+        (unsigned int)fread(raw_buffer.data(), 1, (SampleSize * buffer_size)/8, FileHandle);
   else
     BytesRead=0;
 
   if (BytesRead <
       ((SampleSize * buffer_size)/8))
   { //clear the end of the buffer if neccessary
-    memset(raw_buffer + BytesRead, 0,
+    memset(&(raw_buffer[BytesRead]), 0,
            (SampleSize * buffer_size)/8 - BytesRead);
   }
 
   //Now we need to convert data from RawBuffer
   //if SampleType == DSP::e::SampleType::ST_float we don't need to convert
-  tempBuffer = flt_buffer;
+  flt_buffer.resize(buffer_size * NoOfOutputs);
+  tempBuffer = flt_buffer.data();
   switch (SampleType)
   {
     case DSP::e::SampleType::ST_bit:
-      tempUChar=(uint8_t *)raw_buffer;
+      tempUChar=raw_buffer.data();
       mask=0x80;
       for (ind=0; ind<buffer_size; ind++)
       {
@@ -863,7 +857,7 @@ unsigned int DSPu_FILEinput::ReadSegmentToBuffer(
       }
       break;
     case DSP::e::SampleType::ST_bit_reversed:
-      tempUChar=(uint8_t *)raw_buffer;
+      tempUChar=raw_buffer.data();
       mask=0x01;
       for (ind=0; ind<buffer_size; ind++)
       {
@@ -885,7 +879,7 @@ unsigned int DSPu_FILEinput::ReadSegmentToBuffer(
       }
       break;
     case DSP::e::SampleType::ST_bit_text:
-      tempUChar=(uint8_t *)raw_buffer;
+      tempUChar=raw_buffer.data();
       for (ind=0; ind<buffer_size; ind++)
       {
         for (ind2=0; ind2 < NoOfOutputs; ind2++)
@@ -898,7 +892,7 @@ unsigned int DSPu_FILEinput::ReadSegmentToBuffer(
       }
       break;
     case DSP::e::SampleType::ST_uchar:
-      tempUChar=(uint8_t *)raw_buffer;
+      tempUChar=raw_buffer.data();
       for (ind=0; ind<buffer_size; ind++)
       {
         for (ind2=0; ind2 < NoOfOutputs; ind2++)
@@ -911,7 +905,7 @@ unsigned int DSPu_FILEinput::ReadSegmentToBuffer(
       }
       break;
     case DSP::e::SampleType::ST_short:
-      tempShort=(short *)raw_buffer;
+      tempShort=(short *)(raw_buffer.data());
       for (ind=0; ind<buffer_size; ind++)
       {
         for (ind2=0; ind2 < NoOfOutputs; ind2++)
@@ -924,7 +918,7 @@ unsigned int DSPu_FILEinput::ReadSegmentToBuffer(
       }
       break;
     case DSP::e::SampleType::ST_int:
-      tempInt=(int *)raw_buffer;
+      tempInt=(int *)(raw_buffer.data());
       for (ind=0; ind<buffer_size; ind++)
       {
         for (ind2=0; ind2 < NoOfOutputs; ind2++)
@@ -937,7 +931,7 @@ unsigned int DSPu_FILEinput::ReadSegmentToBuffer(
       }
       break;
     case DSP::e::SampleType::ST_float:
-      tempFloat=(float *)raw_buffer;
+      tempFloat=(float *)(raw_buffer.data());
       for (ind=0; ind<buffer_size; ind++)
       {
         for (ind2=0; ind2 < NoOfOutputs; ind2++)
@@ -4872,9 +4866,8 @@ DSPu_InputBuffer::DSPu_InputBuffer(DSP::Clock_ptr ParentClock, int BufferSize_in
   RegisterOutputClock(ParentClock);
 
   BufferSize=BufferSize_in;
-  Buffer = new DSP::Float[BufferSize*NoOfOutputs];
+  Buffer.clear(); Buffer.resize(BufferSize*NoOfOutputs, 0.0);
   BufferIndex=0;
-  memset(Buffer, 0, sizeof(DSP::Float)*BufferSize*NoOfOutputs);
 
   if (cyclic == DSP_cyclic)
   {
@@ -4900,8 +4893,7 @@ DSPu_InputBuffer::~DSPu_InputBuffer(void)
   if (NotificationFunction_ptr != NULL)
   	(*NotificationFunction_ptr)(this, DSP::c::CallbackID_signal_stop | UserCallbackID);
 
-  if (Buffer != NULL)
-    delete [] Buffer;
+  Buffer.clear();
 }
 
 void DSPu_InputBuffer::Notify(DSP::Clock_ptr clock)
@@ -4957,7 +4949,7 @@ void DSPu_InputBuffer::WriteBuffer(void *source,
   NoOfSourceSamples*=NoOfOutputs;
   if (BufferSize > NoOfSourceSamples)
   {
-    memset(Buffer, 0, sizeof(DSP::Float)*NoOfSourceSamples);
+    memset(Buffer.data(), 0, sizeof(DSP::Float)*NoOfSourceSamples);
   }
 
   switch (source_DataType)
@@ -5001,7 +4993,7 @@ bool DSPu_InputBuffer::OutputExecute(OUTPUT_EXECUTE_ARGS)
 
   DSP_THIS->BufferIndex %= (DSP_THIS->BufferSize * DSP_THIS->NoOfOutputs);
   if (DSP_THIS->BufferIndex == 0)
-    memset(DSP_THIS->Buffer, 0,
+    memset(DSP_THIS->Buffer.data(), 0,
            sizeof(DSP::Float) * DSP_THIS->BufferSize * DSP_THIS->NoOfOutputs);
 
   return true;
@@ -5020,7 +5012,7 @@ bool DSPu_InputBuffer::OutputExecute_single_channel(OUTPUT_EXECUTE_ARGS)
   DSP_THIS->BufferIndex %= DSP_THIS->BufferSize;
 
   if (DSP_THIS->BufferIndex == 0)
-    memset(DSP_THIS->Buffer, 0, sizeof(DSP::Float) * DSP_THIS->BufferSize);
+    memset(DSP_THIS->Buffer.data(), 0, sizeof(DSP::Float) * DSP_THIS->BufferSize);
 
   return true;
 }
@@ -5155,8 +5147,8 @@ DSPu_OutputBuffer::DSPu_OutputBuffer(unsigned int BufferSize_in, unsigned int No
   }
 
   ///////////////////////////////////////////////
-  OutputsValues = new DSP::Float[NoOfOutputs];
-  memset(OutputsValues, 0, NoOfOutputs*sizeof(DSP::Float));
+  OutputsValues.clear();
+  OutputsValues.resize(NoOfOutputs, 0.0);
 
   NotificationFunction_ptr = NULL;
   CallbackFunction_ptr = func_ptr;
@@ -5167,7 +5159,7 @@ DSPu_OutputBuffer::DSPu_OutputBuffer(unsigned int BufferSize_in, unsigned int No
 
   if (CallbackFunction_ptr != NULL)
   {
-    (*CallbackFunction_ptr)(DSP::c::Callback_Init, NoOfOutputs, NULL, &UserData_ptr, UserCallbackID, this);
+    (*CallbackFunction_ptr)(DSP::c::Callback_Init, NoOfOutputs, OutputsValues, &UserData_ptr, UserCallbackID, this);
   }
 }
 
@@ -5215,8 +5207,7 @@ DSPu_OutputBuffer::DSPu_OutputBuffer(unsigned int BufferSize_in, unsigned int No
   }
 
   ///////////////////////////////////////////////
-  OutputsValues = new DSP::Float[NoOfOutputs];
-  memset(OutputsValues, 0, NoOfOutputs*sizeof(DSP::Float));
+  OutputsValues.clear(); OutputsValues.resize(NoOfOutputs);
 
   NotificationFunction_ptr = NULL;
   CallbackFunction_ptr = func_ptr;
@@ -5228,7 +5219,7 @@ DSPu_OutputBuffer::DSPu_OutputBuffer(unsigned int BufferSize_in, unsigned int No
 
   if (CallbackFunction_ptr != NULL)
   {
-    (*CallbackFunction_ptr)(DSP::c::Callback_Init, NoOfOutputs, NULL, &UserData_ptr, UserCallbackID, this);
+    (*CallbackFunction_ptr)(DSP::c::Callback_Init, NoOfOutputs, OutputsValues, &UserData_ptr, UserCallbackID, this);
   }
 }
 
@@ -5236,19 +5227,12 @@ DSPu_OutputBuffer::~DSPu_OutputBuffer(void)
 {
   if (NotificationFunction_ptr != NULL)
   	(*NotificationFunction_ptr)(this, DSP::c::CallbackID_signal_stop | UserCallbackID);
-  if (CallbackFunction_ptr != NULL)
-    (*CallbackFunction_ptr)(DSP::c::Callback_Delete, NoOfOutputs, NULL, &UserData_ptr, UserCallbackID, this);
+  if (CallbackFunction_ptr != NULL) {
+    (*CallbackFunction_ptr)(DSP::c::Callback_Delete, NoOfOutputs, OutputsValues, &UserData_ptr, UserCallbackID, this);
+  }
 
-  if (Buffer != NULL)
-  {
-    delete [] Buffer;
-    Buffer = NULL;
-  }
-  if (OutputsValues != NULL)
-  {
-    delete [] OutputsValues;
-    OutputsValues = NULL;
-  }
+  Buffer.clear();
+  OutputsValues.clear();
 }
 
 void DSPu_OutputBuffer::Init(unsigned int BufferSize_in, unsigned int NoOfChannels,
@@ -5303,7 +5287,7 @@ void DSPu_OutputBuffer::Init(unsigned int BufferSize_in, unsigned int NoOfChanne
 
   ClockGroups.AddInputs2Group("input", 0, NoOfInputs-1);
 
-  OutputsValues = NULL;
+  OutputsValues.clear();
   OutputSamples_ready = false;
 
   switch (cyclic)
@@ -5324,9 +5308,9 @@ void DSPu_OutputBuffer::Init(unsigned int BufferSize_in, unsigned int NoOfChanne
   }
 
   BufferSize=BufferSize_in;
-  Buffer = new DSP::Float[BufferSize*NoOfInputs];
+  Buffer.clear();
+  Buffer.resize(BufferSize*NoOfInputs, 0.0);
   BufferIndex=0;
-  memset(Buffer, 0, sizeof(DSP::Float)*BufferSize*NoOfInputs);
 }
 
 // copies dest_size bytes to the dest buffer
@@ -5445,7 +5429,7 @@ long int DSPu_OutputBuffer::ReadBuffer(void *dest, long int dest_size,
         #endif // __DEBUG__
         step = (int)(reset - (BufferSize - BufferIndex));
 
-        out = Buffer; in = out + step*NoOfInputs;
+        out = Buffer.data(); in = out + step*NoOfInputs;
         size = (int)(NoOfInputs*sizeof(DSP::Float));
         for (ind = 0; ind < BufferIndex-step; ind++)
         {
@@ -5461,7 +5445,7 @@ long int DSPu_OutputBuffer::ReadBuffer(void *dest, long int dest_size,
   return  NoOfDestSamples/NoOfInputs;
 }
 
-DSP::Float_ptr DSPu_OutputBuffer::AccessBuffer(void)
+const DSP::Float_vector &DSPu_OutputBuffer::AccessBuffer(void)
 {
   return Buffer;
 }
@@ -5517,8 +5501,8 @@ void DSPu_OutputBuffer::InputExecute(INPUT_EXECUTE_ARGS)
       { 
         if (DSP_THIS->IsCyclic == false)
         { // place for one input sample needed
-          memcpy(DSP_THIS->Buffer, DSP_THIS->Buffer+DSP_THIS->NoOfInputs, (DSP_THIS->BufferSize-1)*DSP_THIS->NoOfInputs*sizeof(DSP::Float));
-          memset(DSP_THIS->Buffer+(DSP_THIS->BufferSize - 1) * DSP_THIS->NoOfInputs, 0, DSP_THIS->NoOfInputs*sizeof(DSP::Float));
+          memcpy(&(DSP_THIS->Buffer[0]), &(DSP_THIS->Buffer[DSP_THIS->NoOfInputs]), (DSP_THIS->BufferSize-1)*DSP_THIS->NoOfInputs*sizeof(DSP::Float));
+          memset(&(DSP_THIS->Buffer[(DSP_THIS->BufferSize - 1) * DSP_THIS->NoOfInputs]), 0, DSP_THIS->NoOfInputs*sizeof(DSP::Float));
           DSP_THIS->BufferIndex--;
         }
       }
@@ -5567,8 +5551,8 @@ void DSPu_OutputBuffer::InputExecute_with_output(INPUT_EXECUTE_ARGS)
       {
         if (DSP_THIS->IsCyclic == false)
         { // place for one input sample needed
-          memcpy(DSP_THIS->Buffer, DSP_THIS->Buffer+DSP_THIS->NoOfInputs, (DSP_THIS->BufferSize-1)*DSP_THIS->NoOfInputs*sizeof(DSP::Float));
-          memset(DSP_THIS->Buffer+(DSP_THIS->BufferSize - 1) * DSP_THIS->NoOfInputs, 0, DSP_THIS->NoOfInputs*sizeof(DSP::Float));
+          memcpy(&(DSP_THIS->Buffer[0]), &(DSP_THIS->Buffer[DSP_THIS->NoOfInputs]), (DSP_THIS->BufferSize-1)*DSP_THIS->NoOfInputs*sizeof(DSP::Float));
+          memset(&(DSP_THIS->Buffer[(DSP_THIS->BufferSize - 1) * DSP_THIS->NoOfInputs]), 0, DSP_THIS->NoOfInputs*sizeof(DSP::Float));
           DSP_THIS->BufferIndex--;
         }
       }

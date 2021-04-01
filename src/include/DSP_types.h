@@ -158,6 +158,11 @@ namespace DSP {
   typedef DSP::Complex * Complex_ptr;
 
   typedef void * void_ptr;
+
+
+  typedef std::vector<DSP::Float > Float_vector;
+  typedef std::vector<DSP::Prec_Float > Prec_Float_vector;
+  typedef std::vector<DSP::Complex > Complex_vector;
 }
 
 //! Pointer to the callback function
@@ -202,7 +207,7 @@ typedef void (*DSPu_callback_ptr)(unsigned int, DSP::Float_ptr,
  *
  */
 typedef void (*DSPu_buffer_callback_ptr)(unsigned int,
-                                  unsigned int, DSP::Float_ptr,
+                                  unsigned int, DSP::Float_vector &,
                                   DSP::void_ptr *, unsigned int,
                                   DSP::Component_ptr);
 
@@ -521,12 +526,6 @@ namespace DSP {
   #define OUTPUT_EXECUTE_PTR(source, clock) OutputExecute_ptr((DSP::Source_ptr)source)
 #endif
 
-
-namespace DSP {
-  typedef std::vector<DSP::Float > Float_vector;
-  typedef std::vector<DSP::Prec_Float > Prec_Float_vector;
-  typedef std::vector<DSP::Complex > Complex_vector;
-}
 
 
 #include <DSP_DOT.h>

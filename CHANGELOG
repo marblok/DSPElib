@@ -5,9 +5,13 @@ TODO::
 
   update Linux makefile
 
+  - DSP_IO.cpp - removed all used of new and delete - in progress !!!!
+
+  !!! Replace test_wav na własne nagranie np. "DSPE library" albo free sample 
 
 LAST DONE:
-
+  - DSP_AudioMixer.cpp - removed all used of new and delete
+  - DSPu_buffer_callback_ptr uses vector instead of pointer to output values buffer
 
 
 CHANGES:

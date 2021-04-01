@@ -26,7 +26,7 @@ LIBS := -lwinmm -lws2_32
 DFLAGS         = -DWIN32 -DDEVCPP 
 # -D INCLUDE_DSPE_EXAMPLES # TODO: użycie w ramach kompilacji Main.cpp w trybie DEBUG
 CFLAGS_release = $(comflag) -std=c++0x -O3 -Wall -c -fmessage-length=0 -fno-strict-aliasing 
-CFLAGS_debug   = $(comflag) -std=c++0x -O0 -g3 -Wall -c -fmessage-length=0 -W -Wshadow -Wconversion -fstrict-aliasing
+CFLAGS_debug   = $(comflag) -std=c++0x -O0 -g3 -Wall -c -fmessage-length=0 -W -Wshadow -Wconversion -fstrict-aliasing -fmax-errors=5
 # -U__STRICT_ANSI__ jest potrzebne do kompilacji debug_new.cpp, jezeli pominac ten plik to mozna rowniez wyrzucic te opcje
 #CFLAGS_debug   = $(comflag) -std=c++0x -O0 -g3 -Wall -c -fmessage-length=0 -W -Wshadow -Wco#nversion -fstrict-aliasing -U__STRICT_ANSI__
 LINKER_FLAGS_debug   = $(comflag)  -static-libgcc -static-libstdc++ -static

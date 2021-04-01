@@ -19,9 +19,9 @@ const string TAudioMixer::PCMwaveFileName= "PCM wave file";
 
 #ifdef WIN32
   UINT TAudioMixer::WaveInCaps_size = 0;
-  WAVEINCAPS  *TAudioMixer::WaveInCaps = NULL;
+  std::vector<WAVEINCAPS> TAudioMixer::WaveInCaps;
   UINT TAudioMixer::WaveOutCaps_size = 0;
-  WAVEOUTCAPS *TAudioMixer::WaveOutCaps = NULL;
+  std::vector<WAVEOUTCAPS> TAudioMixer::WaveOutCaps;
 #endif // WIN32
 
 string TAudioMixer::GetWaveInDevName(UINT DevNo)
@@ -35,18 +35,17 @@ string TAudioMixer::GetWaveInDevName(UINT DevNo)
   {
     if (ile != WaveInCaps_size)
     {
-      if (WaveInCaps != NULL)
-        delete [] WaveInCaps;
-      WaveInCaps = new WAVEINCAPS[ile+1];
+      WaveInCaps.clear();
+      WaveInCaps.resize(ile+1);
 
       for (ind=0; ind < ile; ind++)
-        waveInGetDevCaps(ind, WaveInCaps+ind, sizeof(WAVEINCAPS));
+        waveInGetDevCaps(ind, &(WaveInCaps[ind]), sizeof(WAVEINCAPS));
       WaveInCaps_size = ile;
-      waveInGetDevCaps(WAVE_MAPPER, WaveInCaps+WaveInCaps_size, sizeof(WAVEINCAPS));
+      waveInGetDevCaps(WAVE_MAPPER, &(WaveInCaps[WaveInCaps_size]), sizeof(WAVEINCAPS));
     }
   }
   else
-    return NULL;
+    return "";
 
   if (DevNo == WAVE_MAPPER)
     return WaveInCaps[WaveInCaps_size].szPname;
@@ -55,7 +54,7 @@ string TAudioMixer::GetWaveInDevName(UINT DevNo)
 #else
   (void)DevNo; // unused
 #endif // WIN32
-  return NULL;
+  return "";
 }
 
 string TAudioMixer::GetWaveOutDevName(UINT DevNo)
@@ -69,18 +68,17 @@ string TAudioMixer::GetWaveOutDevName(UINT DevNo)
   {
     if (ile != WaveOutCaps_size)
     {
-      if (WaveOutCaps != NULL)
-        delete [] WaveOutCaps;
-      WaveOutCaps = new WAVEOUTCAPS[ile+1];
+      WaveOutCaps.clear();
+      WaveOutCaps.resize(ile+1);
 
       for (ind=0; ind < ile; ind++)
-        waveOutGetDevCaps(ind, WaveOutCaps+ind, sizeof(WAVEOUTCAPS));
+        waveOutGetDevCaps(ind, &(WaveOutCaps[ind]), sizeof(WAVEOUTCAPS));
       WaveOutCaps_size = ile;
-      waveOutGetDevCaps(WAVE_MAPPER, WaveOutCaps+WaveOutCaps_size, sizeof(WAVEOUTCAPS));
+      waveOutGetDevCaps(WAVE_MAPPER, &(WaveOutCaps[WaveOutCaps_size]), sizeof(WAVEOUTCAPS));
     }
   }
   else
-    return NULL;
+    return "";
 
   if (DevNo == WAVE_MAPPER)
     return WaveOutCaps[WaveOutCaps_size].szPname;
@@ -89,7 +87,7 @@ string TAudioMixer::GetWaveOutDevName(UINT DevNo)
 #else
   (void)DevNo; // unused
 #endif // WIN32
-  return NULL;
+  return "";
 }
 
 //===============================================================//
@@ -110,29 +108,29 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
     MIXERCAPS MixerCaps_in, MixerCaps_out;
   //  MIXERLINE MixerLine;
     MIXERLINECONTROLS MixerLineControl;
-    MIXERCONTROL *MixerControls;
+    std::vector<MIXERCONTROL> MixerControls;
     MIXERCONTROLDETAILS MixerControlDetails;
 
-    Memorized_ControlWAVEIN_BOOLEAN=NULL;
-    Memorized_ControlWAVEIN_UNSIGNED=NULL;
-    Memorized_OUT_LinesStates  = NULL;
-    Memorized_OUT_LinesVolumes = NULL;
+    Memorized_ControlWAVEIN_BOOLEAN.clear();
+    Memorized_ControlWAVEIN_UNSIGNED.clear();
+    Memorized_OUT_LinesStates.clear();
+    Memorized_OUT_LinesVolumes.clear();
 
     // INPUTS
-    MixerLinesWAVEIN=NULL;
-    MixerControlsWAVEIN_VOLUME=NULL;
-    MixerControlsWAVEIN_VOLUME_supported=NULL;
-    MixerControlsWAVEIN_MUTE=NULL;
-    MixerControlsWAVEIN_MUTE_supported=NULL;
-    MixerControlDetailsWAVEIN_LISTTEXT=NULL;
+    MixerLinesWAVEIN.clear();
+    MixerControlsWAVEIN_VOLUME.clear();
+    MixerControlsWAVEIN_VOLUME_supported.clear();
+    MixerControlsWAVEIN_MUTE.clear();
+    MixerControlsWAVEIN_MUTE_supported.clear();
+    MixerControlDetailsWAVEIN_LISTTEXT.clear();
     MixerSupported=false;
 
     // OUTPUTS
-    MixerLinesOUT=NULL;
-    MixerControlsOUT_VOL = NULL; //pointer for controls for outputs volume
-    MixerControlsOUT_VOL_supported = NULL;
-    MixerControlsOUT_MUTE = NULL; //pointer for controls for outputs MUTE
-    MixerControlsOUT_MUTE_supported = NULL;
+    MixerLinesOUT.clear();
+    MixerControlsOUT_VOL.clear(); //pointer for controls for outputs volume
+    MixerControlsOUT_VOL_supported.clear();
+    MixerControlsOUT_MUTE.clear(); //pointer for controls for outputs MUTE
+    MixerControlsOUT_MUTE_supported.clear();
     MixerSupportedOUT=false;
 
 
@@ -243,16 +241,16 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
       }
       #endif
 
-      MixerControls = NULL;
+      MixerControls.clear();
       InputMixer_support = false;
       if (MixerLineWAVEIN.cControls > 0)
       {
         //Get WAVEIN line controls
-        MixerControls=new MIXERCONTROL [MixerLineWAVEIN.cControls];
+        MixerControls.resize(MixerLineWAVEIN.cControls);
         MixerLineControl.cbStruct=sizeof(MIXERLINECONTROLS);
         MixerLineControl.dwLineID=MixerLineWAVEIN.dwLineID;
         MixerLineControl.cControls=MixerLineWAVEIN.cControls;
-        MixerLineControl.pamxctrl=MixerControls;
+        MixerLineControl.pamxctrl=MixerControls.data();
         MixerLineControl.cbmxctrl=sizeof(MIXERCONTROL);
     //    rs=mixerGetLineControls((void *)hMixer, //HMIXEROBJ hmxobj,
     //      &MixerLineControl, MIXER_GETLINECONTROLSF_ALL);
@@ -278,7 +276,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
           if ((MixerControls[ind].dwControlType==MIXERCONTROL_CONTROLTYPE_MIXER) ||
               (MixerControls[ind].dwControlType==MIXERCONTROL_CONTROLTYPE_MUX))
           {
-            CopyMemory(&MixerControlWAVEIN,MixerControls+ind,sizeof(MIXERCONTROL));
+            CopyMemory(&MixerControlWAVEIN,&(MixerControls[ind]),sizeof(MIXERCONTROL));
             InputMixer_support = true;
             MixerSupported=true;
             #ifdef __DEBUG__
@@ -293,7 +291,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
           }
           if (MixerControls[ind].dwControlType==MIXERCONTROL_CONTROLTYPE_VOLUME)
           {
-            CopyMemory(&MixerControlWAVEIN_VOLUME,MixerControls+ind,sizeof(MIXERCONTROL));
+            CopyMemory(&MixerControlWAVEIN_VOLUME,&(MixerControls[ind]),sizeof(MIXERCONTROL));
             MixerControlWAVEIN_VOLUME_supported = true;
             #ifdef __DEBUG__
             {
@@ -308,7 +306,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
           }
           if (MixerControls[ind].dwControlType==MIXERCONTROL_CONTROLTYPE_MUTE)
           {
-            CopyMemory(&MixerControlWAVEIN_MUTE,MixerControls+ind,sizeof(MIXERCONTROL));
+            CopyMemory(&MixerControlWAVEIN_MUTE,&(MixerControls[ind]),sizeof(MIXERCONTROL));
             MixerControlWAVEIN_MUTE_supported = true;
             #ifdef __DEBUG__
             {
@@ -333,16 +331,13 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
         #endif
         Mixer_InputLinesNumber = MixerControlWAVEIN.cMultipleItems;
 
-        /*! \bug 2006_01_23 Obs�uga przypadku, gdy MixerControlWAVEIN.cMultipleItems != MixerLineWAVEIN.cControls
-         *    wi�cej lub mniej controlek w mikserze ni� jest faktycznie obs�ugiwanych linii wej�ciowych
-         */
         //Get attached lines names and IDs //MixerControlDetails
         MixerControlDetails.cbStruct=sizeof(MIXERCONTROLDETAILS);
         MixerControlDetails.dwControlID=MixerControlWAVEIN.dwControlID;
         MixerControlDetails.cChannels=1; //one mixer ON/OFF control per channel
         MixerControlDetails.cMultipleItems=Mixer_InputLinesNumber;
         MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_LISTTEXT);
-        MixerControlDetailsWAVEIN_LISTTEXT=new MIXERCONTROLDETAILS_LISTTEXT[Mixer_InputLinesNumber];
+        MixerControlDetailsWAVEIN_LISTTEXT.resize(Mixer_InputLinesNumber);
         MixerControlDetails.paDetails=&(MixerControlDetailsWAVEIN_LISTTEXT[0]);
         rs=mixerGetControlDetails((HMIXEROBJ)hMixer_in, &MixerControlDetails, MIXER_GETCONTROLDETAILSF_LISTTEXT);
         #ifdef __DEBUG__
@@ -371,9 +366,9 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
       if (InputMixer_support==true)
       { // Card supports global MIXER or MULTIPLEXER for input lines
         //allocate memory for volume controls for each source line
-        MixerControlsWAVEIN_VOLUME=new MIXERCONTROL [Mixer_InputLinesNumber];
-        MixerControlsWAVEIN_VOLUME_supported=new bool [Mixer_InputLinesNumber];
-        MixerLinesWAVEIN=new MIXERLINE [Mixer_InputLinesNumber];
+        MixerControlsWAVEIN_VOLUME.resize(Mixer_InputLinesNumber);
+        MixerControlsWAVEIN_VOLUME_supported.resize(Mixer_InputLinesNumber);
+        MixerLinesWAVEIN.resize(Mixer_InputLinesNumber);
 
         //For each line get it's details and controls then find //MIXERCONTROL_CONTROLTYPE_VOLUME
         //mixerGetLineDetails
@@ -385,7 +380,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
           MixerLinesWAVEIN[ind].cbStruct=sizeof(MIXERLINE);
           MixerLinesWAVEIN[ind].dwLineID=MixerControlDetailsWAVEIN_LISTTEXT[ind].dwParam1;
           rs=mixerGetLineInfo((HMIXEROBJ)hMixer_in, //the identifier of a waveform-audio input device in the range of zero to one less than the number of devices returned by the waveInGetNumDevs function
-                              MixerLinesWAVEIN+ind, MIXER_GETLINEINFOF_LINEID | MIXER_OBJECTF_HMIXER);
+                              &(MixerLinesWAVEIN[ind]), MIXER_GETLINEINFOF_LINEID | MIXER_OBJECTF_HMIXER);
           #ifdef __DEBUG__
           {
             stringstream ss;
@@ -399,11 +394,11 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
             MixerLinesWAVEIN_MAXcChannels=MixerLinesWAVEIN[ind].cChannels;
 
           //Get controls properties of particular WAVEIN line
-          MixerControls=new MIXERCONTROL [MixerLinesWAVEIN[ind].cControls];
+          MixerControls.resize(MixerLinesWAVEIN[ind].cControls);
           MixerLineControl.cbStruct=sizeof(MIXERLINECONTROLS);
           MixerLineControl.dwLineID=MixerLinesWAVEIN[ind].dwLineID;
           MixerLineControl.cControls=MixerLinesWAVEIN[ind].cControls;
-          MixerLineControl.pamxctrl=MixerControls;
+          MixerLineControl.pamxctrl=MixerControls.data();
           MixerLineControl.cbmxctrl=sizeof(MIXERCONTROL);
           rs=mixerGetLineControls((HMIXEROBJ)hMixer_in, //HMIXEROBJ hmxobj,
             &MixerLineControl, MIXER_GETLINECONTROLSF_ALL);
@@ -417,13 +412,13 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
           }
           #endif
           //Find control MIXERCONTROL_CONTROLTYPE_VOLUME and copy it
-          ZeroMemory(MixerControlsWAVEIN_VOLUME+ind,sizeof(MIXERCONTROL));
+          ZeroMemory(&(MixerControlsWAVEIN_VOLUME[ind]),sizeof(MIXERCONTROL));
           MixerControlsWAVEIN_VOLUME_supported[ind] = false;
           for (ind_2=0; ind_2<(int)MixerLinesWAVEIN[ind].cControls; ind_2++)
           {
             if (MixerControls[ind_2].dwControlType==MIXERCONTROL_CONTROLTYPE_VOLUME)
             {
-              CopyMemory(MixerControlsWAVEIN_VOLUME+ind,MixerControls+ind_2,sizeof(MIXERCONTROL));
+              CopyMemory(&(MixerControlsWAVEIN_VOLUME[ind]),&(MixerControls[ind_2]),sizeof(MIXERCONTROL));
               MixerControlsWAVEIN_VOLUME_supported[ind] = true;
               #ifdef __DEBUG__
               {
@@ -448,18 +443,14 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
         #endif
 
         //Free memory
-        if (MixerLinesWAVEIN !=NULL)
-        {
-          delete [] MixerLinesWAVEIN;
-          MixerLinesWAVEIN=NULL;
-        }
+        MixerLinesWAVEIN.clear();
 
-        // number of inpu lines
+        // number of input lines
         Mixer_InputLinesNumber = MixerLineWAVEIN.cConnections;
 
         // get lines info MixerLineWAVEIN.cConnections
-        MixerLinesWAVEIN=new MIXERLINE [Mixer_InputLinesNumber];
-        MixerControlDetailsWAVEIN_LISTTEXT=new MIXERCONTROLDETAILS_LISTTEXT[Mixer_InputLinesNumber];
+        MixerLinesWAVEIN.resize(Mixer_InputLinesNumber);
+        MixerControlDetailsWAVEIN_LISTTEXT.resize(Mixer_InputLinesNumber);
         for (ind=0; ind<(int)Mixer_InputLinesNumber; ind++)
         {
           //get WAVEIN source lines properties
@@ -468,7 +459,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
           MixerLinesWAVEIN[ind].dwSource=ind;
           // MixerLinesWAVEIN[ind].dwLineID=MixerControlDetailsWAVEIN_LISTTEXT[ind].dwParam1;
           rs=mixerGetLineInfo((HMIXEROBJ)hMixer_in, //the identifier of a waveform-audio input device in the range of zero to one less than the number of devices returned by the waveInGetNumDevs function
-                              MixerLinesWAVEIN+ind, MIXER_GETLINEINFOF_SOURCE | MIXER_OBJECTF_HMIXER);
+                              &(MixerLinesWAVEIN[ind]), MIXER_GETLINEINFOF_SOURCE | MIXER_OBJECTF_HMIXER);
           #ifdef __DEBUG__
           {
             stringstream ss;
@@ -491,10 +482,10 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
 
         // get volume & on/off controls
         //allocate memory for volume controls for each source line
-        MixerControlsWAVEIN_VOLUME=new MIXERCONTROL [Mixer_InputLinesNumber];
-        MixerControlsWAVEIN_VOLUME_supported=new bool [Mixer_InputLinesNumber];
-        MixerControlsWAVEIN_MUTE=new MIXERCONTROL [Mixer_InputLinesNumber];
-        MixerControlsWAVEIN_MUTE_supported=new bool [Mixer_InputLinesNumber];
+        MixerControlsWAVEIN_VOLUME.resize(Mixer_InputLinesNumber);
+        MixerControlsWAVEIN_VOLUME_supported.resize(Mixer_InputLinesNumber);
+        MixerControlsWAVEIN_MUTE.resize(Mixer_InputLinesNumber);
+        MixerControlsWAVEIN_MUTE_supported.resize(Mixer_InputLinesNumber);
 
         MixerLinesWAVEIN_MAXcChannels=0;
         for (ind=0; ind<(int)Mixer_InputLinesNumber; ind++)
@@ -504,11 +495,11 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
             MixerLinesWAVEIN_MAXcChannels=MixerLinesWAVEIN[ind].cChannels;
 
           //Get controls properties of particular WAVEIN line
-          MixerControls=new MIXERCONTROL [MixerLinesWAVEIN[ind].cControls];
+          MixerControls.resize(MixerLinesWAVEIN[ind].cControls);
           MixerLineControl.cbStruct=sizeof(MIXERLINECONTROLS);
           MixerLineControl.dwLineID=MixerLinesWAVEIN[ind].dwLineID;
           MixerLineControl.cControls=MixerLinesWAVEIN[ind].cControls;
-          MixerLineControl.pamxctrl=MixerControls;
+          MixerLineControl.pamxctrl=MixerControls.data();
           MixerLineControl.cbmxctrl=sizeof(MIXERCONTROL);
           rs=mixerGetLineControls((HMIXEROBJ)hMixer_in, //HMIXEROBJ hmxobj,
             &MixerLineControl, MIXER_GETLINECONTROLSF_ALL | MIXER_OBJECTF_HMIXER);
@@ -521,15 +512,15 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
           }
           #endif
           //Find control MIXERCONTROL_CONTROLTYPE_VOLUME and copy it
-          ZeroMemory(MixerControlsWAVEIN_VOLUME+ind,sizeof(MIXERCONTROL));
+          ZeroMemory(&(MixerControlsWAVEIN_VOLUME[ind]),sizeof(MIXERCONTROL));
           MixerControlsWAVEIN_VOLUME_supported[ind] = false;
-          ZeroMemory(MixerControlsWAVEIN_MUTE+ind,sizeof(MIXERCONTROL));
+          ZeroMemory(&(MixerControlsWAVEIN_MUTE[ind]),sizeof(MIXERCONTROL));
           MixerControlsWAVEIN_MUTE_supported[ind] = false;
           for (ind_2=0; ind_2<(int)MixerLinesWAVEIN[ind].cControls; ind_2++)
           {
             if (MixerControls[ind_2].dwControlType==MIXERCONTROL_CONTROLTYPE_VOLUME)
             {
-              CopyMemory(MixerControlsWAVEIN_VOLUME+ind,MixerControls+ind_2,sizeof(MIXERCONTROL));
+              CopyMemory(&(MixerControlsWAVEIN_VOLUME[ind]),&(MixerControls[ind_2]),sizeof(MIXERCONTROL));
               MixerControlsWAVEIN_VOLUME_supported[ind] = true;
               #ifdef __DEBUG__
               {
@@ -558,7 +549,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
        */
             if (MixerControls[ind_2].dwControlType==MIXERCONTROL_CONTROLTYPE_MUTE)
             {
-              CopyMemory(MixerControlsWAVEIN_MUTE+ind,MixerControls+ind_2,sizeof(MIXERCONTROL));
+              CopyMemory(&(MixerControlsWAVEIN_MUTE[ind]),&(MixerControls[ind_2]),sizeof(MIXERCONTROL));
               MixerControlsWAVEIN_MUTE_supported[ind] = true;
               #ifdef __DEBUG__
               {
@@ -576,11 +567,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
       }
 
       //Free memory //Not needed any longer
-      if (MixerControls !=NULL)
-      {
-        delete [] MixerControls;
-        MixerControls=NULL;
-      }
+      MixerControls.clear();
 
       PCMwaveFileActive=false;
       PCMwaveFileActiveValue=1.0;
@@ -634,11 +621,11 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
       if ( MixerSupportedOUT == true )
       {
         //Get controls properties of main output line
-        MixerControls=new MIXERCONTROL [MixerLineOUT.cControls];
+        MixerControls.resize(MixerLineOUT.cControls);
         MixerLineControl.cbStruct=sizeof(MIXERLINECONTROLS);
         MixerLineControl.dwLineID=MixerLineOUT.dwLineID;
         MixerLineControl.cControls=MixerLineOUT.cControls;
-        MixerLineControl.pamxctrl=MixerControls;
+        MixerLineControl.pamxctrl=MixerControls.data();
         MixerLineControl.cbmxctrl=sizeof(MIXERCONTROL);
         rs=mixerGetLineControls((HMIXEROBJ)hMixer_out, //HMIXEROBJ hmxobj,
           &MixerLineControl, MIXER_GETLINECONTROLSF_ALL);
@@ -657,7 +644,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
         {
           if (MixerControls[ind].dwControlType == MIXERCONTROL_CONTROLTYPE_VOLUME)
           {
-            CopyMemory(&MixerControlOUT_VOL,MixerControls+ind,sizeof(MIXERCONTROL));
+            CopyMemory(&MixerControlOUT_VOL,&(MixerControls[ind]),sizeof(MIXERCONTROL));
             MixerSupportedOUT = true;
             #ifdef __DEBUG__
             {
@@ -677,7 +664,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
           {
             if (MixerControls[ind].dwControlType == MIXERCONTROL_CONTROLTYPE_MUTE)
             {
-              CopyMemory(&MixerControlOUT_MUTE,MixerControls+ind,sizeof(MIXERCONTROL));
+              CopyMemory(&MixerControlOUT_MUTE,&(MixerControls[ind]),sizeof(MIXERCONTROL));
               MixerSupportedOUT = true;
               #ifdef __DEBUG__
               {
@@ -694,16 +681,16 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
         {
           //Get attached lines
           //allocate memory for volume controls for each source line
-          MixerLinesOUT=new MIXERLINE [MixerLineOUT.cConnections];
+          MixerLinesOUT.resize(MixerLineOUT.cConnections);
 
           //For each line get it's details and controls then find //MIXERCONTROL_CONTROLTYPE_VOLUME
           MixerLinesOUT_MAXcChannels=MixerLineOUT.cChannels;
 
           //allocate memory for volume controls for each source line
-          MixerControlsOUT_VOL=new MIXERCONTROL [MixerLineOUT.cConnections];
-          MixerControlsOUT_VOL_supported = new bool [MixerLineOUT.cConnections];
-          MixerControlsOUT_MUTE=new MIXERCONTROL [MixerLineOUT.cConnections];
-          MixerControlsOUT_MUTE_supported = new bool [MixerLineOUT.cConnections];
+          MixerControlsOUT_VOL.resize(MixerLineOUT.cConnections);
+          MixerControlsOUT_VOL_supported.resize(MixerLineOUT.cConnections);
+          MixerControlsOUT_MUTE.resize(MixerLineOUT.cConnections);
+          MixerControlsOUT_MUTE_supported.resize(MixerLineOUT.cConnections);
 
 
           for (ind=0; ind<(int)MixerLineOUT.cConnections; ind++)
@@ -713,7 +700,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
             MixerLinesOUT[ind].dwDestination = MixerLineOUT.dwDestination;
             MixerLinesOUT[ind].dwSource=ind;
             rs=mixerGetLineInfo((HMIXEROBJ)hMixer_out, //the identifier of a waveform-audio input device in the range of zero to one less than the number of devices returned by the waveInGetNumDevs function
-                                MixerLinesOUT+ind, MIXER_GETLINEINFOF_SOURCE | MIXER_OBJECTF_HMIXER);
+                                &(MixerLinesOUT[ind]), MIXER_GETLINEINFOF_SOURCE | MIXER_OBJECTF_HMIXER);
             #ifdef __DEBUG__
             {
               stringstream ss;
@@ -725,11 +712,11 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
             #endif
 
             //Get controls properties of particular OUTPUT line
-            MixerControls=new MIXERCONTROL [MixerLinesOUT[ind].cControls];
+            MixerControls.resize(MixerLinesOUT[ind].cControls);
             MixerLineControl.cbStruct=sizeof(MIXERLINECONTROLS);
             MixerLineControl.dwLineID=MixerLinesOUT[ind].dwLineID;
             MixerLineControl.cControls=MixerLinesOUT[ind].cControls;
-            MixerLineControl.pamxctrl=MixerControls;
+            MixerLineControl.pamxctrl=MixerControls.data();
             MixerLineControl.cbmxctrl=sizeof(MIXERCONTROL);
             rs=mixerGetLineControls((HMIXEROBJ)hMixer_out, //HMIXEROBJ hmxobj,
               &MixerLineControl, MIXER_GETLINECONTROLSF_ALL);
@@ -743,15 +730,15 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
             }
             #endif
             //Find control MIXERCONTROL_CONTROLTYPE_VOLUME and copy it
-            ZeroMemory(MixerControlsOUT_VOL+ind,sizeof(MIXERCONTROL));
+            ZeroMemory(&(MixerControlsOUT_VOL[ind]),sizeof(MIXERCONTROL));
             MixerControlsOUT_VOL_supported[ind] = false;
-            ZeroMemory(MixerControlsOUT_MUTE+ind,sizeof(MIXERCONTROL));
+            ZeroMemory(&(MixerControlsOUT_MUTE[ind]),sizeof(MIXERCONTROL));
             MixerControlsOUT_MUTE_supported[ind] = false;
             for (ind_2=0; ind_2<(int)MixerLinesOUT[ind].cControls; ind_2++)
             {
               if (MixerControls[ind_2].dwControlType==MIXERCONTROL_CONTROLTYPE_VOLUME)
               {
-                CopyMemory(MixerControlsOUT_VOL+ind,MixerControls+ind_2,sizeof(MIXERCONTROL));
+                CopyMemory(&(MixerControlsOUT_VOL[ind]),&(MixerControls[ind_2]),sizeof(MIXERCONTROL));
                 MixerControlsOUT_VOL_supported[ind] = true;
                 #ifdef __DEBUG__
                 {
@@ -770,7 +757,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
             {
               if (MixerControls[ind_2].dwControlType==MIXERCONTROL_CONTROLTYPE_MUTE)
               {
-                CopyMemory(MixerControlsOUT_MUTE+ind,MixerControls+ind_2,sizeof(MIXERCONTROL));
+                CopyMemory(&(MixerControlsOUT_MUTE[ind]),&(MixerControls[ind_2]),sizeof(MIXERCONTROL));
                 MixerControlsOUT_MUTE_supported[ind] = true;
                 #ifdef __DEBUG__
                 {
@@ -785,11 +772,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
                 //break;
               }
             }
-            if (MixerControls !=NULL)
-            {
-              delete [] MixerControls;
-              MixerControls=NULL;
-            }
+            MixerControls.clear();
           }
 
         }
@@ -797,12 +780,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
 
 
         // ************************************ //
-        if (MixerControls !=NULL)
-        {
-          delete [] MixerControls;
-          MixerControls=NULL;
-        }
-
+        MixerControls.clear();
 
         // ****************************************************** //
         // Get names, types and control IDs  for separate ouput lines volume (and mute controls)
@@ -812,11 +790,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
       MixerSupported &= MixerSupportedOUT; //if MixerSupportedOUT false then MixerSupported also false
 
       //Free memory //Not needed any longer
-      if (MixerControls!=NULL)
-      {
-        delete [] MixerControls;
-        MixerControls=NULL;
-      }
+      MixerControls.clear();
     }
 
   #else
@@ -877,67 +851,18 @@ TAudioMixer::~TAudioMixer(void)
     rs=mixerClose(hMixer_in);
     rs=mixerClose(hMixer_out);
 
-    if (MixerLinesWAVEIN!=NULL)
-    {
-      delete [] MixerLinesWAVEIN;
-      MixerLinesWAVEIN=NULL;
-    }
+    MixerLinesWAVEIN.clear();
+    MixerControlsWAVEIN_VOLUME.clear();
+    MixerControlsWAVEIN_VOLUME_supported.clear();
+    MixerControlsWAVEIN_MUTE.clear();
+    MixerControlsWAVEIN_MUTE_supported.clear();
+    MixerControlDetailsWAVEIN_LISTTEXT.clear();
 
-    if (MixerControlsWAVEIN_VOLUME!=NULL)
-    {
-      delete [] MixerControlsWAVEIN_VOLUME;
-      MixerControlsWAVEIN_VOLUME=NULL;
-    }
-    if (MixerControlsWAVEIN_VOLUME_supported!=NULL)
-    {
-      delete [] MixerControlsWAVEIN_VOLUME_supported;
-      MixerControlsWAVEIN_VOLUME_supported=NULL;
-    }
-    if (MixerControlsWAVEIN_MUTE!=NULL)
-    {
-      delete [] MixerControlsWAVEIN_MUTE;
-      MixerControlsWAVEIN_MUTE=NULL;
-    }
-    if (MixerControlsWAVEIN_MUTE_supported!=NULL)
-    {
-      delete [] MixerControlsWAVEIN_MUTE_supported;
-      MixerControlsWAVEIN_MUTE_supported=NULL;
-    }
-
-    if (MixerControlDetailsWAVEIN_LISTTEXT!=NULL)
-    {
-      delete [] MixerControlDetailsWAVEIN_LISTTEXT;
-      MixerControlDetailsWAVEIN_LISTTEXT=NULL;
-    }
-
-
-    if (MixerLinesOUT!=NULL)
-    {
-      delete [] MixerLinesOUT;
-      MixerLinesOUT=NULL;
-    }
-
-    if (MixerControlsOUT_VOL!=NULL)
-    {
-      delete [] MixerControlsOUT_VOL;
-      MixerControlsOUT_VOL=NULL;
-    }
-    if (MixerControlsOUT_VOL_supported!=NULL)
-    {
-      delete [] MixerControlsOUT_VOL_supported;
-      MixerControlsOUT_VOL_supported=NULL;
-    }
-
-    if (MixerControlsOUT_MUTE!=NULL)
-    {
-      delete [] MixerControlsOUT_MUTE;
-      MixerControlsOUT_MUTE=NULL;
-    }
-    if (MixerControlsOUT_MUTE_supported!=NULL)
-    {
-      delete [] MixerControlsOUT_MUTE_supported;
-      MixerControlsOUT_MUTE_supported=NULL;
-    }
+    MixerLinesOUT.clear();
+    MixerControlsOUT_VOL.clear();
+    MixerControlsOUT_VOL_supported.clear();
+    MixerControlsOUT_MUTE.clear();
+    MixerControlsOUT_MUTE_supported.clear();
 
   #endif
 
@@ -947,18 +872,11 @@ TAudioMixer::~TAudioMixer(void)
 
   // ************************************ //
 #ifdef WIN32
-  if (WaveInCaps != NULL)
-  {
-    delete [] WaveInCaps;
-    WaveInCaps = NULL;
-    WaveInCaps_size = 0;
-  }
-  if (WaveOutCaps != NULL)
-  {
-    delete [] WaveOutCaps;
-    WaveOutCaps = NULL;
-    WaveOutCaps_size = 0;
-  }
+  WaveInCaps.clear();
+  WaveInCaps_size = 0;
+
+  WaveOutCaps.clear();
+  WaveOutCaps_size = 0;
 #endif // WIN32
   // ************************************ //
 }
@@ -996,12 +914,10 @@ void TAudioMixer::MemorizeMixerSettings_WAVEIN(void)
     Memorized_WAVEIN_MasterVolume[0]=GetSourceLineVolume(DSP::AM_MasterControl);
 
     // Other controls
-    if (Memorized_ControlWAVEIN_BOOLEAN!=NULL)
-      delete [] Memorized_ControlWAVEIN_BOOLEAN;
-    Memorized_ControlWAVEIN_BOOLEAN=new MIXERCONTROLDETAILS_BOOLEAN[Mixer_InputLinesNumber];
-    if (Memorized_ControlWAVEIN_UNSIGNED!=NULL)
-      delete [] Memorized_ControlWAVEIN_UNSIGNED;
-    Memorized_ControlWAVEIN_UNSIGNED=new MIXERCONTROLDETAILS_UNSIGNED[MixerLinesWAVEIN_MAXcChannels*Mixer_InputLinesNumber];
+    Memorized_ControlWAVEIN_BOOLEAN.clear();
+    Memorized_ControlWAVEIN_BOOLEAN.resize(Mixer_InputLinesNumber);
+    Memorized_ControlWAVEIN_UNSIGNED.clear();
+    Memorized_ControlWAVEIN_UNSIGNED.resize(MixerLinesWAVEIN_MAXcChannels*Mixer_InputLinesNumber);
 
     if (InputMixer_support == true)
     { //Mixer/Multiplexer Controls
@@ -1049,7 +965,7 @@ void TAudioMixer::MemorizeMixerSettings_WAVEIN(void)
         MixerControlDetails.cChannels=MixerLinesWAVEIN[ind].cChannels; //one mixer ON/OFF control per channel
         MixerControlDetails.cMultipleItems=0; //MixerControlsWAVEIN[ind].cMultipleItems;
         MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_UNSIGNED);
-        MixerControlDetails.paDetails=Memorized_ControlWAVEIN_UNSIGNED+MixerLinesWAVEIN_MAXcChannels*ind;
+        MixerControlDetails.paDetails=&(Memorized_ControlWAVEIN_UNSIGNED[MixerLinesWAVEIN_MAXcChannels*ind]);
         rs=mixerGetControlDetails((HMIXEROBJ)hMixer_in, &MixerControlDetails, MIXER_GETCONTROLDETAILSF_VALUE);
       }
     }
@@ -1070,17 +986,8 @@ void TAudioMixer::ForgetMixerSettings_WAVEIN(void)
   MixerSettingsMemorized_WAVEIN=false;
 
   #ifdef WIN32
-    if (Memorized_ControlWAVEIN_BOOLEAN!=NULL)
-    {
-      delete [] Memorized_ControlWAVEIN_BOOLEAN;
-      Memorized_ControlWAVEIN_BOOLEAN=NULL;
-    }
-
-    if (Memorized_ControlWAVEIN_UNSIGNED!=NULL)
-    {
-      delete [] Memorized_ControlWAVEIN_UNSIGNED;
-      Memorized_ControlWAVEIN_UNSIGNED=NULL;
-    }
+    Memorized_ControlWAVEIN_BOOLEAN.clear();
+    Memorized_ControlWAVEIN_UNSIGNED.clear();
   #else
 
     #ifdef __DEBUG__
@@ -1154,16 +1061,11 @@ void TAudioMixer::RestoreMixerSettings_WAVEIN(void)
           MixerControlDetails.cChannels=MixerLinesWAVEIN[ind].cChannels; //one mixer ON/OFF control per channel
           MixerControlDetails.cMultipleItems=0; //MixerControlsWAVEIN[ind].cMultipleItems;
           MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_UNSIGNED);
-          MixerControlDetails.paDetails=Memorized_ControlWAVEIN_UNSIGNED+MixerLinesWAVEIN_MAXcChannels*ind;
+          MixerControlDetails.paDetails=&(Memorized_ControlWAVEIN_UNSIGNED[MixerLinesWAVEIN_MAXcChannels*ind]);
           rs=mixerSetControlDetails((HMIXEROBJ)hMixer_in, &MixerControlDetails, MIXER_SETCONTROLDETAILSF_VALUE);
         }
       }
     }
-    //  if (Memorized_ControlWAVEIN_BOOLEAN!=NULL)
-    //  {
-    //    delete [] Memorized_ControlWAVEIN_BOOLEAN;
-    //    Memorized_ControlWAVEIN_BOOLEAN=NULL;
-    //  }
 
   #else
 
@@ -1202,12 +1104,10 @@ void TAudioMixer::MemorizeMixerSettings_OUT(void)
     DSP::log << "TAudioMixer::MemorizeMixerSettings_OUT" << DSP::LogMode::second << "GetNumberOfDestLines() = " << ile << endl;
   }
 #endif
-  if (Memorized_OUT_LinesStates!=NULL)
-    delete [] Memorized_OUT_LinesStates;
-  Memorized_OUT_LinesStates=new DSP::e::AM_MutedState[2*ile];
-  if (Memorized_OUT_LinesVolumes!=NULL)
-    delete [] Memorized_OUT_LinesVolumes;
-  Memorized_OUT_LinesVolumes=new double[2*ile];
+  Memorized_OUT_LinesStates.clear();
+  Memorized_OUT_LinesStates.resize(2*ile);
+  Memorized_OUT_LinesVolumes.clear();
+  Memorized_OUT_LinesVolumes.resize(2*ile);
 
   for (ind=0; ind<ile; ind++)
   {
@@ -1235,17 +1135,8 @@ void TAudioMixer::ForgetMixerSettings_OUT(void)
 {
   MixerSettingsMemorized_OUT=false;
 
-  if (Memorized_OUT_LinesStates!=NULL)
-  {
-    delete [] Memorized_OUT_LinesStates;
-    Memorized_OUT_LinesStates=NULL;
-  }
-
-  if (Memorized_OUT_LinesVolumes!=NULL)
-  {
-    delete [] Memorized_OUT_LinesVolumes;
-    Memorized_OUT_LinesVolumes=NULL;
-  }
+  Memorized_OUT_LinesStates.clear();
+  Memorized_OUT_LinesVolumes.clear();
 }
 
 
@@ -1259,7 +1150,7 @@ string TAudioMixer::GetSourceLineName(int ind)
     if (ind == DSP::AM_MasterControl)
       LineName=MixerLineWAVEIN.szName;
     else
-      if (MixerControlDetailsWAVEIN_LISTTEXT!=NULL)
+      if (MixerControlDetailsWAVEIN_LISTTEXT.size() > 0)
   	    if ((ind>=0) && (ind<(int)Mixer_InputLinesNumber))
     	    LineName=MixerControlDetailsWAVEIN_LISTTEXT[ind].szName;
   #endif
@@ -1277,7 +1168,7 @@ string TAudioMixer::GetDestLineName(int ind)
   LineName= "";
 
   #ifdef WIN32
-    if (MixerLinesOUT != NULL)
+    if (MixerLinesOUT.size() > 0)
     {
       if (ind == DSP::AM_MasterControl)
         LineName=MixerLineOUT.szName;
@@ -1313,7 +1204,7 @@ void TAudioMixer::RestoreMixerSettings_OUT(void)
 
   //Master Line connections Controls
   ile = GetNumberOfDestLines();
-  if (Memorized_OUT_LinesStates!=NULL)
+  if (Memorized_OUT_LinesStates.size() > 0)
     for (ind=0; ind<ile; ind++)
     {
       if (Memorized_OUT_LinesStates[ind*2+1] == DSP::e::AM_MutedState::MUTED_INACTIVE)
@@ -1326,7 +1217,7 @@ void TAudioMixer::RestoreMixerSettings_OUT(void)
       }
     }
 
-  if (Memorized_OUT_LinesVolumes!=NULL)
+  if (Memorized_OUT_LinesVolumes.size() > 0)
     for (ind=0; ind<ile; ind++)
     {
       if (Memorized_OUT_LinesVolumes[ind*2+1] < 0)
@@ -1352,7 +1243,7 @@ DWORD TAudioMixer::GetSourceLineType(int ind)
     if (ind == DSP::AM_MasterControl)
       LineType=MixerLineWAVEIN.dwComponentType;
     else
-      if (MixerLinesWAVEIN!=NULL)
+      if (MixerLinesWAVEIN.size() > 0)
         if ((ind>=0) && (ind<(int)Mixer_InputLinesNumber))
           LineType=MixerLinesWAVEIN[ind].dwComponentType;
   #else
@@ -1372,7 +1263,7 @@ DWORD TAudioMixer::GetDestLineType(int ind)
   LineType = 0xffffffff;
 
   #ifdef WIN32
-    if (MixerLinesOUT != NULL)
+    if (MixerLinesOUT.size() > 0)
       if ((ind>=0) && (ind<(int)MixerLineOUT.cConnections))
         LineType=MixerLinesOUT[ind].dwComponentType;
   #else
@@ -1482,13 +1373,13 @@ bool TAudioMixer::GetSourceLineState(int LineNo)
   #ifdef WIN32
     int ind;
     MIXERCONTROLDETAILS MixerControlDetails;
-    MIXERCONTROLDETAILS_BOOLEAN *temp;
+    std::vector<MIXERCONTROLDETAILS_BOOLEAN> temp;
     bool result;
 
     // Master control
     if (LineNo == DSP::AM_MasterControl)
     {
-      temp = new MIXERCONTROLDETAILS_BOOLEAN[1];
+      temp.resize(1);
 
       if (MixerControlWAVEIN_MUTE_supported == true)
       {
@@ -1497,7 +1388,7 @@ bool TAudioMixer::GetSourceLineState(int LineNo)
         MixerControlDetails.cChannels=1; //one mixer ON/OFF control per channel
         MixerControlDetails.cMultipleItems=0; // single line control
         MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_BOOLEAN);
-        MixerControlDetails.paDetails=temp;
+        MixerControlDetails.paDetails=temp.data();
 
         rs=mixerGetControlDetails((HMIXEROBJ)hMixer_in, &MixerControlDetails, MIXER_SETCONTROLDETAILSF_VALUE);
 
@@ -1514,13 +1405,12 @@ bool TAudioMixer::GetSourceLineState(int LineNo)
       }
 
       result = (temp[0].fValue > 0);
-      delete [] temp;
       return result;
     }
 
 
     // other lines
-    temp=new MIXERCONTROLDETAILS_BOOLEAN [Mixer_InputLinesNumber];
+    temp.resize(Mixer_InputLinesNumber);
 
     //We should reread lines state
     if (InputMixer_support == true)
@@ -1530,7 +1420,7 @@ bool TAudioMixer::GetSourceLineState(int LineNo)
       MixerControlDetails.cChannels=1; //one mixer ON/OFF control per channel
       MixerControlDetails.cMultipleItems=Mixer_InputLinesNumber;
       MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_BOOLEAN);
-      MixerControlDetails.paDetails=temp;
+      MixerControlDetails.paDetails=temp.data();
       rs=mixerGetControlDetails((HMIXEROBJ)hMixer_in, &MixerControlDetails, MIXER_GETCONTROLDETAILSF_VALUE);
     }
     else
@@ -1544,7 +1434,7 @@ bool TAudioMixer::GetSourceLineState(int LineNo)
           MixerControlDetails.cChannels=1; //one mixer ON/OFF control per channel
           MixerControlDetails.cMultipleItems=0; // single line control
           MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_BOOLEAN);
-          MixerControlDetails.paDetails=temp+ind;
+          MixerControlDetails.paDetails=&(temp[ind]);
 
           rs=mixerGetControlDetails((HMIXEROBJ)hMixer_in, &MixerControlDetails, MIXER_SETCONTROLDETAILSF_VALUE);
 
@@ -1564,12 +1454,10 @@ bool TAudioMixer::GetSourceLineState(int LineNo)
 
     if ((LineNo < 0) || (LineNo >= (int)Mixer_InputLinesNumber))
     {
-      delete [] temp;
       return false;
     }
 
     result = (temp[LineNo].fValue > 0);
-    delete [] temp;
     return result;
 
   #else
@@ -1588,7 +1476,7 @@ DSP::e::AM_MutedState TAudioMixer::GetDestLineState(int LineNo, int Channel)
   #ifdef WIN32
     int ile;
     MIXERCONTROLDETAILS MixerControlDetails;
-    MIXERCONTROLDETAILS_BOOLEAN *temp;
+    std::vector<MIXERCONTROLDETAILS_BOOLEAN> temp;
     DSP::e::AM_MutedState left, right, any_channel;
 
     if (MixerSupportedOUT == false)
@@ -1598,14 +1486,14 @@ DSP::e::AM_MutedState TAudioMixer::GetDestLineState(int LineNo, int Channel)
     {
       ile = MixerLineOUT.cChannels;
 
-      temp=new MIXERCONTROLDETAILS_BOOLEAN [ile];
+      temp.resize(ile);
 
       MixerControlDetails.cbStruct=sizeof(MIXERCONTROLDETAILS);
       MixerControlDetails.dwControlID=MixerControlOUT_MUTE.dwControlID;
       MixerControlDetails.cChannels=ile;
       MixerControlDetails.cMultipleItems=0;
       MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_BOOLEAN);
-      MixerControlDetails.paDetails=temp;
+      MixerControlDetails.paDetails=temp.data();
       rs=mixerGetControlDetails((HMIXEROBJ)hMixer_out, &MixerControlDetails, MIXER_GETCONTROLDETAILSF_VALUE);
       if (rs != MMSYSERR_NOERROR)
       {
@@ -1642,7 +1530,7 @@ DSP::e::AM_MutedState TAudioMixer::GetDestLineState(int LineNo, int Channel)
       if (right == DSP::e::AM_MutedState::MUTED_NO)
         any_channel = DSP::e::AM_MutedState::MUTED_NO;
 
-      delete [] temp;
+      temp.clear();
 
       switch (Channel)
       {
@@ -1667,7 +1555,7 @@ DSP::e::AM_MutedState TAudioMixer::GetDestLineState(int LineNo, int Channel)
       if (ile <= 0)
         ile = 1;
       ile *= MixerLinesOUT[LineNo].cChannels;
-      temp=new MIXERCONTROLDETAILS_BOOLEAN [ile];
+      temp.resize(ile);
 
       //Otczytanie stanu kontrolki
       MixerControlDetails.cbStruct=sizeof(MIXERCONTROLDETAILS);
@@ -1677,7 +1565,7 @@ DSP::e::AM_MutedState TAudioMixer::GetDestLineState(int LineNo, int Channel)
       MixerControlDetails.cMultipleItems=MixerControlsOUT_MUTE[LineNo].cMultipleItems;
 
       MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_BOOLEAN);
-      MixerControlDetails.paDetails=temp;
+      MixerControlDetails.paDetails=temp.data();
       rs=mixerGetControlDetails((HMIXEROBJ)hMixer_out, &MixerControlDetails, MIXER_GETCONTROLDETAILSF_VALUE);
       if (rs != MMSYSERR_NOERROR)
       {
@@ -1719,7 +1607,7 @@ DSP::e::AM_MutedState TAudioMixer::GetDestLineState(int LineNo, int Channel)
         any_channel = DSP::e::AM_MutedState::MUTED_NO;
 
       // free temp
-      delete [] temp;
+      temp.clear();
     }
     else // if (MixerControlsOUT_MUTE_supported[LineNo] == true)
     {
@@ -1759,9 +1647,9 @@ void TAudioMixer::SetSourceLineState(int LineNo, bool IsActive)
 
   #ifdef WIN32
     MIXERCONTROLDETAILS MixerControlDetails;
-    MIXERCONTROLDETAILS_BOOLEAN *temp;
+    std::vector<MIXERCONTROLDETAILS_BOOLEAN> temp;
 
-    temp=new MIXERCONTROLDETAILS_BOOLEAN [Mixer_InputLinesNumber];
+    temp.resize(Mixer_InputLinesNumber);
 
     if (LineNo == DSP::AM_MasterControl)
     {
@@ -1778,11 +1666,10 @@ void TAudioMixer::SetSourceLineState(int LineNo, bool IsActive)
         MixerControlDetails.cChannels=1; //one mixer ON/OFF control per channel
         MixerControlDetails.cMultipleItems=0; // single line control
         MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_BOOLEAN);
-        MixerControlDetails.paDetails=temp;
+        MixerControlDetails.paDetails=temp.data();
 
         rs=mixerSetControlDetails((HMIXEROBJ)hMixer_in, &MixerControlDetails, MIXER_SETCONTROLDETAILSF_VALUE);
       }
-      delete [] temp;
       return;
     }
 
@@ -1799,7 +1686,7 @@ void TAudioMixer::SetSourceLineState(int LineNo, bool IsActive)
         MixerControlDetails.cChannels=1; //one mixer ON/OFF control per channel
         MixerControlDetails.cMultipleItems=Mixer_InputLinesNumber;
         MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_BOOLEAN);
-        MixerControlDetails.paDetails=temp;
+        MixerControlDetails.paDetails=temp.data();
         rs=mixerGetControlDetails((HMIXEROBJ)hMixer_in, &MixerControlDetails, MIXER_GETCONTROLDETAILSF_VALUE);
 
         if (IsActive == true)
@@ -1812,7 +1699,7 @@ void TAudioMixer::SetSourceLineState(int LineNo, bool IsActive)
         MixerControlDetails.cChannels=1; //one mixer ON/OFF control per channel
         MixerControlDetails.cMultipleItems=Mixer_InputLinesNumber;
         MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_BOOLEAN);
-        MixerControlDetails.paDetails=temp;
+        MixerControlDetails.paDetails=temp.data();
 
         rs=mixerSetControlDetails((HMIXEROBJ)hMixer_in, &MixerControlDetails, MIXER_SETCONTROLDETAILSF_VALUE);
       }
@@ -1831,14 +1718,14 @@ void TAudioMixer::SetSourceLineState(int LineNo, bool IsActive)
           MixerControlDetails.cChannels=1; //one mixer ON/OFF control per channel
           MixerControlDetails.cMultipleItems=0; // single line control
           MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_BOOLEAN);
-          MixerControlDetails.paDetails=temp;
+          MixerControlDetails.paDetails=temp.data();
 
           rs=mixerSetControlDetails((HMIXEROBJ)hMixer_in, &MixerControlDetails, MIXER_SETCONTROLDETAILSF_VALUE);
         }
       }
     }
 
-    delete [] temp;
+    temp.clear();
 
   #else
 
@@ -1866,9 +1753,9 @@ void TAudioMixer::SetActiveSourceLine(int ActiveNo)
   #ifdef WIN32
     int ind;
     MIXERCONTROLDETAILS MixerControlDetails;
-    MIXERCONTROLDETAILS_BOOLEAN *temp;
+    std::vector<MIXERCONTROLDETAILS_BOOLEAN> temp;
 
-    temp=new MIXERCONTROLDETAILS_BOOLEAN [Mixer_InputLinesNumber];
+    temp.resize(Mixer_InputLinesNumber);
 
     // ************************************ //
     if (MixerControlWAVEIN_MUTE_supported == true)
@@ -1880,7 +1767,7 @@ void TAudioMixer::SetActiveSourceLine(int ActiveNo)
       MixerControlDetails.cChannels=1; //one mixer ON/OFF control per channel
       MixerControlDetails.cMultipleItems=0; // single line control
       MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_BOOLEAN);
-      MixerControlDetails.paDetails=temp;
+      MixerControlDetails.paDetails=temp.data();
 
       rs=mixerSetControlDetails((HMIXEROBJ)hMixer_in, &MixerControlDetails, MIXER_SETCONTROLDETAILSF_VALUE);
     }
@@ -1900,7 +1787,7 @@ void TAudioMixer::SetActiveSourceLine(int ActiveNo)
       MixerControlDetails.cChannels=1; //one mixer ON/OFF control per channel
       MixerControlDetails.cMultipleItems=Mixer_InputLinesNumber;
       MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_BOOLEAN);
-      MixerControlDetails.paDetails=temp;
+      MixerControlDetails.paDetails=temp.data();
 
       rs=mixerSetControlDetails((HMIXEROBJ)hMixer_in, &MixerControlDetails, MIXER_SETCONTROLDETAILSF_VALUE);
     }
@@ -1922,7 +1809,7 @@ void TAudioMixer::SetActiveSourceLine(int ActiveNo)
           MixerControlDetails.cChannels=1; //one mixer ON/OFF control per channel
           MixerControlDetails.cMultipleItems=0; // single line control
           MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_BOOLEAN);
-          MixerControlDetails.paDetails=temp+ind;
+          MixerControlDetails.paDetails=&(temp[ind]);
 
           rs=mixerSetControlDetails((HMIXEROBJ)hMixer_in, &MixerControlDetails, MIXER_SETCONTROLDETAILSF_VALUE);
         }
@@ -1934,7 +1821,7 @@ void TAudioMixer::SetActiveSourceLine(int ActiveNo)
       }
     }
 
-    delete [] temp;
+    temp.clear();
 
   #else
 
@@ -1986,7 +1873,7 @@ bool TAudioMixer::SetActiveSourceLineVolume(double Vol)
 
   #ifdef WIN32
     MIXERCONTROLDETAILS MixerControlDetails;
-    MIXERCONTROLDETAILS_UNSIGNED pom_UNSIGNED;
+    MIXERCONTROLDETAILS_UNSIGNED tmp_UNSIGNED;
     DWORD output;
 
     MixerControlDetails.cbStruct=sizeof(MIXERCONTROLDETAILS);
@@ -2001,12 +1888,12 @@ bool TAudioMixer::SetActiveSourceLineVolume(double Vol)
       MixerControlDetails.cChannels=1; //WaveIn_cChannels; one mixer ON/OFF control per channel
       MixerControlDetails.cMultipleItems=0;
       MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_UNSIGNED);
-      MixerControlDetails.paDetails=&(pom_UNSIGNED);
+      MixerControlDetails.paDetails=&(tmp_UNSIGNED);
 
       output=(DWORD)(Vol*(MixerControlsWAVEIN_VOLUME[Active].Bounds.dwMaximum -   //union
                           MixerControlsWAVEIN_VOLUME[Active].Bounds.dwMinimum));
       output+=MixerControlsWAVEIN_VOLUME[Active].Bounds.dwMinimum;
-      pom_UNSIGNED.dwValue=output;
+      tmp_UNSIGNED.dwValue=output;
 
       rs=mixerSetControlDetails((HMIXEROBJ)hMixer_in, &MixerControlDetails, MIXER_SETCONTROLDETAILSF_VALUE);
       return true;
@@ -2027,7 +1914,7 @@ bool TAudioMixer::SetSourceLineVolume(int LineNo, double Vol)
 
   #ifdef WIN32
     MIXERCONTROLDETAILS MixerControlDetails;
-    MIXERCONTROLDETAILS_UNSIGNED pom_UNSIGNED;
+    MIXERCONTROLDETAILS_UNSIGNED tmp_UNSIGNED;
     DWORD output;
 
     if (LineNo==DSP::AM_MasterControl)
@@ -2042,12 +1929,12 @@ bool TAudioMixer::SetSourceLineVolume(int LineNo, double Vol)
         MixerControlDetails.cChannels=1; //WaveIn_cChannels; one mixer ON/OFF control per channel
         MixerControlDetails.cMultipleItems=0;
         MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_UNSIGNED);
-        MixerControlDetails.paDetails=&(pom_UNSIGNED);
+        MixerControlDetails.paDetails=&(tmp_UNSIGNED);
 
         output=(DWORD)(Vol*(MixerControlWAVEIN_VOLUME.Bounds.dwMaximum -   //union
                             MixerControlWAVEIN_VOLUME.Bounds.dwMinimum));
         output+=MixerControlWAVEIN_VOLUME.Bounds.dwMinimum;
-        pom_UNSIGNED.dwValue=output;
+        tmp_UNSIGNED.dwValue=output;
 
         rs=mixerSetControlDetails((HMIXEROBJ)hMixer_in, &MixerControlDetails, MIXER_SETCONTROLDETAILSF_VALUE);
       }
@@ -2069,12 +1956,12 @@ bool TAudioMixer::SetSourceLineVolume(int LineNo, double Vol)
       MixerControlDetails.cChannels=1; //WaveIn_cChannels; one mixer ON/OFF control per channel
       MixerControlDetails.cMultipleItems=0;
       MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_UNSIGNED);
-      MixerControlDetails.paDetails=&(pom_UNSIGNED);
+      MixerControlDetails.paDetails=&(tmp_UNSIGNED);
 
       output=(DWORD)(Vol*(MixerControlsWAVEIN_VOLUME[LineNo].Bounds.dwMaximum -   //union
                           MixerControlsWAVEIN_VOLUME[LineNo].Bounds.dwMinimum));
       output+=MixerControlsWAVEIN_VOLUME[LineNo].Bounds.dwMinimum;
-      pom_UNSIGNED.dwValue=output;
+      tmp_UNSIGNED.dwValue=output;
 
       rs=mixerSetControlDetails((HMIXEROBJ)hMixer_in, &MixerControlDetails, MIXER_SETCONTROLDETAILSF_VALUE);
       return true;
@@ -2097,7 +1984,7 @@ bool TAudioMixer::SetDestLineVolume(int LineNo, double Vol_Left, double Vol_Righ
 
   #ifdef WIN32
     MIXERCONTROLDETAILS MixerControlDetails;
-    MIXERCONTROLDETAILS_UNSIGNED *pom_UNSIGNED;
+    std::vector<MIXERCONTROLDETAILS_UNSIGNED> tmp_UNSIGNED;
   //  int Active;
     DWORD output_L, output_R;
     int ind, ile;
@@ -2106,14 +1993,14 @@ bool TAudioMixer::SetDestLineVolume(int LineNo, double Vol_Left, double Vol_Righ
     {
       ile = MixerLineOUT.cChannels;
 
-      pom_UNSIGNED = new MIXERCONTROLDETAILS_UNSIGNED[ile];
+      tmp_UNSIGNED.resize(ile);
 
       MixerControlDetails.cbStruct=sizeof(MIXERCONTROLDETAILS);
       MixerControlDetails.dwControlID=MixerControlOUT_VOL.dwControlID;
       MixerControlDetails.cChannels=ile; //WaveIn_cChannels; one mixer ON/OFF control per channel
       MixerControlDetails.cMultipleItems=0;
       MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_UNSIGNED);
-      MixerControlDetails.paDetails=pom_UNSIGNED;
+      MixerControlDetails.paDetails=tmp_UNSIGNED.data();
 
       output_L=(DWORD)(Vol_Left* (MixerControlOUT_VOL.Bounds.dwMaximum -   //union
                                   MixerControlOUT_VOL.Bounds.dwMinimum));
@@ -2126,11 +2013,11 @@ bool TAudioMixer::SetDestLineVolume(int LineNo, double Vol_Left, double Vol_Righ
         switch (ind)
         {
           case 0:
-            pom_UNSIGNED[ind].dwValue=output_L;
+            tmp_UNSIGNED[ind].dwValue=output_L;
             break;
           case 1:
           default:
-            pom_UNSIGNED[ind].dwValue=output_R;
+            tmp_UNSIGNED[ind].dwValue=output_R;
             break;
         }
       }
@@ -2141,7 +2028,6 @@ bool TAudioMixer::SetDestLineVolume(int LineNo, double Vol_Left, double Vol_Righ
         MixerControlDetails.cChannels--;
         rs=mixerSetControlDetails((HMIXEROBJ)hMixer_out, &MixerControlDetails, MIXER_SETCONTROLDETAILSF_VALUE);
       }
-      delete [] pom_UNSIGNED;
       return true;
     }
 
@@ -2159,14 +2045,14 @@ bool TAudioMixer::SetDestLineVolume(int LineNo, double Vol_Left, double Vol_Righ
   //  if (Channel >= ile)
   //    return -1.0;
 
-    pom_UNSIGNED = new MIXERCONTROLDETAILS_UNSIGNED[ile];
+    tmp_UNSIGNED.resize(ile);
 
     MixerControlDetails.cbStruct=sizeof(MIXERCONTROLDETAILS);
     MixerControlDetails.dwControlID=MixerControlsOUT_VOL[LineNo].dwControlID;
     MixerControlDetails.cChannels=ile; //WaveIn_cChannels; one mixer ON/OFF control per channel
     MixerControlDetails.cMultipleItems=0;
     MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_UNSIGNED);
-    MixerControlDetails.paDetails=pom_UNSIGNED;
+    MixerControlDetails.paDetails=tmp_UNSIGNED.data();
 
     output_L=(DWORD)(Vol_Left* (MixerControlsOUT_VOL[LineNo].Bounds.dwMaximum -   //union
                                 MixerControlsOUT_VOL[LineNo].Bounds.dwMinimum));
@@ -2179,11 +2065,11 @@ bool TAudioMixer::SetDestLineVolume(int LineNo, double Vol_Left, double Vol_Righ
       switch (ind)
       {
         case 0:
-          pom_UNSIGNED[ind].dwValue=output_L;
+          tmp_UNSIGNED[ind].dwValue=output_L;
           break;
         case 1:
         default:
-          pom_UNSIGNED[ind].dwValue=output_R;
+          tmp_UNSIGNED[ind].dwValue=output_R;
           break;
       }
     }
@@ -2195,7 +2081,6 @@ bool TAudioMixer::SetDestLineVolume(int LineNo, double Vol_Left, double Vol_Righ
       rs=mixerSetControlDetails((HMIXEROBJ)hMixer_out, &MixerControlDetails, MIXER_SETCONTROLDETAILSF_VALUE);
     }
 
-    delete [] pom_UNSIGNED;
     return true;
 
   #else
@@ -2216,7 +2101,7 @@ bool TAudioMixer::SetDestLineState(int LineNo, DSP::e::AM_MutedState IsMuted_Lef
 
   #ifdef WIN32
     MIXERCONTROLDETAILS MixerControlDetails;
-    MIXERCONTROLDETAILS_BOOLEAN *pom_BOOL;
+    std::vector<MIXERCONTROLDETAILS_BOOLEAN> tmp_BOOL;
 //  int Active;
     int ind, ile;
 
@@ -2224,14 +2109,14 @@ bool TAudioMixer::SetDestLineState(int LineNo, DSP::e::AM_MutedState IsMuted_Lef
     {
       ile = MixerLineOUT.cChannels;
 
-      pom_BOOL = new MIXERCONTROLDETAILS_BOOLEAN[ile];
+      tmp_BOOL.resize(ile);
 
       MixerControlDetails.cbStruct=sizeof(MIXERCONTROLDETAILS);
       MixerControlDetails.dwControlID=MixerControlOUT_MUTE.dwControlID;
       MixerControlDetails.cChannels=ile; //WaveIn_cChannels; one mixer ON/OFF control per channel
       MixerControlDetails.cMultipleItems=0;
       MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_BOOLEAN);
-      MixerControlDetails.paDetails=pom_BOOL;
+      MixerControlDetails.paDetails=tmp_BOOL.data();
 
       for (ind=0; ind < ile; ind++)
       {
@@ -2239,16 +2124,16 @@ bool TAudioMixer::SetDestLineState(int LineNo, DSP::e::AM_MutedState IsMuted_Lef
         {
           case 0:
             if (IsMuted_Left == DSP::e::AM_MutedState::MUTED_YES)
-              pom_BOOL[ind].fValue=1;
+              tmp_BOOL[ind].fValue=1;
             else
-              pom_BOOL[ind].fValue=0;
+              tmp_BOOL[ind].fValue=0;
             break;
           case 1:
           default:
             if (IsMuted_Right == DSP::e::AM_MutedState::MUTED_YES)
-              pom_BOOL[ind].fValue=1;
+              tmp_BOOL[ind].fValue=1;
             else
-              pom_BOOL[ind].fValue=0;
+              tmp_BOOL[ind].fValue=0;
             break;
         }
       }
@@ -2260,7 +2145,6 @@ bool TAudioMixer::SetDestLineState(int LineNo, DSP::e::AM_MutedState IsMuted_Lef
         rs=mixerSetControlDetails((HMIXEROBJ)hMixer_out, &MixerControlDetails, MIXER_SETCONTROLDETAILSF_VALUE);
       }
 
-      delete [] pom_BOOL;
       return true;
     }
 
@@ -2278,14 +2162,14 @@ bool TAudioMixer::SetDestLineState(int LineNo, DSP::e::AM_MutedState IsMuted_Lef
   //  if (Channel >= ile)
   //    return -1.0;
 
-    pom_BOOL = new MIXERCONTROLDETAILS_BOOLEAN[ile];
+    tmp_BOOL.resize(ile);
 
     MixerControlDetails.cbStruct=sizeof(MIXERCONTROLDETAILS);
     MixerControlDetails.dwControlID=MixerControlsOUT_MUTE[LineNo].dwControlID;
     MixerControlDetails.cChannels=ile; //WaveIn_cChannels; one mixer ON/OFF control per channel
     MixerControlDetails.cMultipleItems=0;
     MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_BOOLEAN);
-    MixerControlDetails.paDetails=pom_BOOL;
+    MixerControlDetails.paDetails=tmp_BOOL.data();
 
     for (ind=0; ind < ile; ind++)
     {
@@ -2293,16 +2177,16 @@ bool TAudioMixer::SetDestLineState(int LineNo, DSP::e::AM_MutedState IsMuted_Lef
       {
         case 0:
           if (IsMuted_Left == DSP::e::AM_MutedState::MUTED_YES)
-            pom_BOOL[ind].fValue=1;
+            tmp_BOOL[ind].fValue=1;
           else
-            pom_BOOL[ind].fValue=0;
+            tmp_BOOL[ind].fValue=0;
           break;
         case 1:
         default:
           if (IsMuted_Right == DSP::e::AM_MutedState::MUTED_YES)
-            pom_BOOL[ind].fValue=1;
+            tmp_BOOL[ind].fValue=1;
           else
-            pom_BOOL[ind].fValue=0;
+            tmp_BOOL[ind].fValue=0;
           break;
       }
     }
@@ -2314,7 +2198,6 @@ bool TAudioMixer::SetDestLineState(int LineNo, DSP::e::AM_MutedState IsMuted_Lef
       rs=mixerSetControlDetails((HMIXEROBJ)hMixer_out, &MixerControlDetails, MIXER_SETCONTROLDETAILSF_VALUE);
     }
 
-    delete [] pom_BOOL;
     return true;
 
   #else
@@ -2329,7 +2212,7 @@ bool TAudioMixer::SetDestLineState(int LineNo, DSP::e::AM_MutedState IsMuted_Lef
 double TAudioMixer::GetActiveSourceLineVolume(void)
 {
 //  MIXERCONTROLDETAILS MixerControlDetails;
-//  MIXERCONTROLDETAILS_UNSIGNED pom_UNSIGNED;
+//  MIXERCONTROLDETAILS_UNSIGNED tmp_UNSIGNED;
   int Active;
 //  double output;
 
@@ -2347,10 +2230,10 @@ double TAudioMixer::GetActiveSourceLineVolume(void)
   MixerControlDetails.cChannels=1; //WaveIn_cChannels; one mixer ON/OFF control per channel
   MixerControlDetails.cMultipleItems=0;
   MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_UNSIGNED);
-  MixerControlDetails.paDetails=&(pom_UNSIGNED);
+  MixerControlDetails.paDetails=&(tmp_UNSIGNED);
   rs=mixerGetControlDetails((HMIXEROBJ)hMixer, &MixerControlDetails, MIXER_GETCONTROLDETAILSF_VALUE);
 
-  output=(pom_UNSIGNED.dwValue-MixerControlsWAVEIN[Active].Bounds.dwMinimum);
+  output=(tmp_UNSIGNED.dwValue-MixerControlsWAVEIN[Active].Bounds.dwMinimum);
   output/=(MixerControlsWAVEIN[Active].Bounds.dwMaximum -
            MixerControlsWAVEIN[Active].Bounds.dwMinimum);
 
@@ -2365,7 +2248,7 @@ double TAudioMixer::GetSourceLineVolume(int LineNo)
 
   #ifdef WIN32
     MIXERCONTROLDETAILS MixerControlDetails;
-    MIXERCONTROLDETAILS_UNSIGNED pom_UNSIGNED;
+    MIXERCONTROLDETAILS_UNSIGNED tmp_UNSIGNED;
     double output;
 
     int ile;
@@ -2386,10 +2269,10 @@ double TAudioMixer::GetSourceLineVolume(int LineNo)
         MixerControlDetails.cChannels=1; //WaveIn_cChannels; one mixer ON/OFF control per channel
         MixerControlDetails.cMultipleItems=0;
         MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_UNSIGNED);
-        MixerControlDetails.paDetails=&(pom_UNSIGNED);
+        MixerControlDetails.paDetails=&(tmp_UNSIGNED);
         rs=mixerGetControlDetails((HMIXEROBJ)hMixer_in, &MixerControlDetails, MIXER_GETCONTROLDETAILSF_VALUE);
 
-        output=(pom_UNSIGNED.dwValue-MixerControlWAVEIN_VOLUME.Bounds.dwMinimum);
+        output=(tmp_UNSIGNED.dwValue-MixerControlWAVEIN_VOLUME.Bounds.dwMinimum);
         output/=(MixerControlWAVEIN_VOLUME.Bounds.dwMaximum -
                 MixerControlWAVEIN_VOLUME.Bounds.dwMinimum);
       }
@@ -2417,10 +2300,10 @@ double TAudioMixer::GetSourceLineVolume(int LineNo)
       MixerControlDetails.cChannels=1; //WaveIn_cChannels; one mixer ON/OFF control per channel
       MixerControlDetails.cMultipleItems=0;
       MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_UNSIGNED);
-      MixerControlDetails.paDetails=&(pom_UNSIGNED);
+      MixerControlDetails.paDetails=&(tmp_UNSIGNED);
       rs=mixerGetControlDetails((HMIXEROBJ)hMixer_in, &MixerControlDetails, MIXER_GETCONTROLDETAILSF_VALUE);
 
-      output=(pom_UNSIGNED.dwValue-MixerControlsWAVEIN_VOLUME[LineNo].Bounds.dwMinimum);
+      output=(tmp_UNSIGNED.dwValue-MixerControlsWAVEIN_VOLUME[LineNo].Bounds.dwMinimum);
       output/=(MixerControlsWAVEIN_VOLUME[LineNo].Bounds.dwMaximum -
               MixerControlsWAVEIN_VOLUME[LineNo].Bounds.dwMinimum);
     }
@@ -2440,7 +2323,7 @@ double TAudioMixer::GetDestLineVolume(int LineNo, int Channel)
 {
   #ifdef WIN32
     MIXERCONTROLDETAILS MixerControlDetails;
-    MIXERCONTROLDETAILS_UNSIGNED *pom_UNSIGNED;
+    std::vector<MIXERCONTROLDETAILS_UNSIGNED> tmp_UNSIGNED;
     double output;
     int ile;
 
@@ -2448,14 +2331,14 @@ double TAudioMixer::GetDestLineVolume(int LineNo, int Channel)
     {
       ile = MixerLineOUT.cChannels;
 
-      pom_UNSIGNED = new MIXERCONTROLDETAILS_UNSIGNED[ile];
+      tmp_UNSIGNED.resize(ile);
 
       MixerControlDetails.cbStruct=sizeof(MIXERCONTROLDETAILS);
       MixerControlDetails.dwControlID=MixerControlOUT_VOL.dwControlID;
       MixerControlDetails.cChannels=ile;
       MixerControlDetails.cMultipleItems=0;
       MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_UNSIGNED);
-      MixerControlDetails.paDetails=pom_UNSIGNED;
+      MixerControlDetails.paDetails=tmp_UNSIGNED.data();
       rs=mixerGetControlDetails((HMIXEROBJ)hMixer_out, &MixerControlDetails, MIXER_GETCONTROLDETAILSF_VALUE);
       if (rs != MMSYSERR_NOERROR)
       {
@@ -2467,17 +2350,17 @@ double TAudioMixer::GetDestLineVolume(int LineNo, int Channel)
       switch (Channel)
       {
         case 0:
-          output=(pom_UNSIGNED[0].dwValue-MixerControlOUT_VOL.Bounds.dwMinimum);
+          output=(tmp_UNSIGNED[0].dwValue-MixerControlOUT_VOL.Bounds.dwMinimum);
           break;
         case 1:
-          output=(pom_UNSIGNED[1].dwValue-MixerControlOUT_VOL.Bounds.dwMinimum);
+          output=(tmp_UNSIGNED[1].dwValue-MixerControlOUT_VOL.Bounds.dwMinimum);
           break;
         case -1:
         default:
-          output=(pom_UNSIGNED[0].dwValue-MixerControlOUT_VOL.Bounds.dwMinimum);
+          output=(tmp_UNSIGNED[0].dwValue-MixerControlOUT_VOL.Bounds.dwMinimum);
           if (ile > 1)
           {
-            output+=(pom_UNSIGNED[1].dwValue-MixerControlOUT_VOL.Bounds.dwMinimum);
+            output+=(tmp_UNSIGNED[1].dwValue-MixerControlOUT_VOL.Bounds.dwMinimum);
             output /= 2;
           }
           break;
@@ -2487,8 +2370,6 @@ double TAudioMixer::GetDestLineVolume(int LineNo, int Channel)
       //if (ile < Channel)
       if ((ile <= 0) || (ile-1 < Channel))
         output = -1.0;
-
-      delete [] pom_UNSIGNED;
 
       return output;
     }
@@ -2508,14 +2389,14 @@ double TAudioMixer::GetDestLineVolume(int LineNo, int Channel)
     if (Channel >= ile)
       return -1.0;
 
-    pom_UNSIGNED = new MIXERCONTROLDETAILS_UNSIGNED[ile];
+    tmp_UNSIGNED.resize(ile);
 
     MixerControlDetails.cbStruct=sizeof(MIXERCONTROLDETAILS);
     MixerControlDetails.dwControlID=MixerControlsOUT_VOL[LineNo].dwControlID;
     MixerControlDetails.cChannels=ile;
     MixerControlDetails.cMultipleItems=0;
     MixerControlDetails.cbDetails=sizeof(MIXERCONTROLDETAILS_UNSIGNED);
-    MixerControlDetails.paDetails=pom_UNSIGNED;
+    MixerControlDetails.paDetails=tmp_UNSIGNED.data();
     rs=mixerGetControlDetails((HMIXEROBJ)hMixer_out, &MixerControlDetails, MIXER_GETCONTROLDETAILSF_VALUE);
     if (rs != MMSYSERR_NOERROR)
     {
@@ -2527,17 +2408,17 @@ double TAudioMixer::GetDestLineVolume(int LineNo, int Channel)
     switch (Channel)
     {
       case 0:
-        output=(pom_UNSIGNED[0].dwValue-MixerControlsOUT_VOL[LineNo].Bounds.dwMinimum);
+        output=(tmp_UNSIGNED[0].dwValue-MixerControlsOUT_VOL[LineNo].Bounds.dwMinimum);
         break;
       case 1:
-        output=(pom_UNSIGNED[1].dwValue-MixerControlsOUT_VOL[LineNo].Bounds.dwMinimum);
+        output=(tmp_UNSIGNED[1].dwValue-MixerControlsOUT_VOL[LineNo].Bounds.dwMinimum);
         break;
       case -1:
       default:
-        output=(pom_UNSIGNED[0].dwValue-MixerControlsOUT_VOL[LineNo].Bounds.dwMinimum);
+        output=(tmp_UNSIGNED[0].dwValue-MixerControlsOUT_VOL[LineNo].Bounds.dwMinimum);
         if (ile > 1)
         {
-          output+=(pom_UNSIGNED[1].dwValue-MixerControlsOUT_VOL[LineNo].Bounds.dwMinimum);
+          output+=(tmp_UNSIGNED[1].dwValue-MixerControlsOUT_VOL[LineNo].Bounds.dwMinimum);
           output /= 2;
         }
         break;
@@ -2546,8 +2427,6 @@ double TAudioMixer::GetDestLineVolume(int LineNo, int Channel)
              MixerControlsOUT_VOL[LineNo].Bounds.dwMinimum);
     if (ile < Channel)
       output = -1.0;
-
-    delete [] pom_UNSIGNED;
 
     return output;
 

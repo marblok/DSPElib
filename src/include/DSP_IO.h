@@ -397,7 +397,7 @@ class DSPu_FILEinput : public DSP::File, public DSP::Source
     //! detected no of channels written in file
     unsigned int NoOfFileChannels;
 
-    DSP::Float *Buffer;
+    DSP::Float_vector Buffer;
     unsigned int BufferIndex;
 
     unsigned int BytesRead;
@@ -405,18 +405,18 @@ class DSPu_FILEinput : public DSP::File, public DSP::Source
 
     // in bits (all channels together)
     //unsigned int InputSampleSize; ==> moved to DSP::File
-    uint8_t *RawBuffer;
+    std::vector<uint8_t> RawBuffer;
 
     static bool OutputExecute_Dummy(OUTPUT_EXECUTE_ARGS);
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
 
     // Variables storing headers
     //! *.flt header
-    T_FLT_header  *flt_header;
+    std::vector<T_FLT_header>  flt_header;
     //! *.tape header
-    T_TAPE_header *tape_header;
+    std::vector<T_TAPE_header> tape_header;
     //! *.wav header
-    T_WAVEchunk *wav_header;
+    std::vector<T_WAVEchunk> wav_header;
 
     bool CloseFile(void);
   public:
@@ -455,7 +455,7 @@ class DSPu_FILEinput : public DSP::File, public DSP::Source
      *   .
      */
     template <class T>
-    T *GetHeader(void);
+    T *GetHeader(const unsigned int &index = 0);
 
     DSP::File_ptr Convert2File(void)
     { return GetPointer2File(); };
@@ -495,15 +495,12 @@ class DSPu_FILEinput : public DSP::File, public DSP::Source
        /*! \note raw_buffer_size == buffer_size * sample_size / 8.
         *  \note Raw sample size can be determined with
         *  DSPu_FILEinput::GetSampleSize function
-        *
-        * \warning this buffer must be allocated and deleted by the user.
         */
-       uint8_t        *raw_buffer,
+       std::vector<uint8_t> &raw_buffer,
        //! Buffer where read data will be stored in DSP::Float format
        /*! \note size == buffer_size * no_of_channels
-        * \warning this buffer must be allocated and deleted by the user.
         */
-       DSP::Float   *flt_buffer,
+       DSP::Float_vector    &flt_buffer,
        //!number of sample components leave free after each (multicomponent) sample
        /*! eg. {re0, im0, {pad}, re1, im1, {pad}, ...}
         */
@@ -938,7 +935,7 @@ class DSPu_InputBuffer : public DSP::Source
     //! actual size = BufferSize*sizeof(DSP::Float)*NoOfOutputs
     long int BufferSize, BufferIndex;
     //! data are internally stored in DSP::Float format
-    DSP::Float_ptr Buffer;
+    DSP::Float_vector Buffer;
 
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
     static bool OutputExecute_single_channel(OUTPUT_EXECUTE_ARGS);
@@ -1014,7 +1011,7 @@ class DSPu_OutputBuffer : public DSP::Block, public DSP::Source
     //! callback function pointer
     DSPu_buffer_callback_ptr CallbackFunction_ptr;
     //! Table for output values from callback function
-    DSP::Float *OutputsValues;
+    DSP::Float_vector OutputsValues;
     //! if true block must output samples values from OutputsValues table
     bool OutputSamples_ready;
     //! Variable storing the user data pointer from callback function
@@ -1042,7 +1039,7 @@ class DSPu_OutputBuffer : public DSP::Block, public DSP::Source
     //! actual size = BufferSize*sizeof(DSP::Float)*NoOfInputs
     long int BufferSize, BufferIndex;
     //! data are internally stored in DSP::Float format
-    DSP::Float_ptr Buffer;
+    DSP::Float_vector Buffer;
     //! Buffer wraps up if TRUE
     bool IsCyclic;
     //! Buffer stops when full if TRUE
@@ -1138,7 +1135,7 @@ class DSPu_OutputBuffer : public DSP::Block, public DSP::Source
     long int ReadBuffer(void *dest, long int dest_size,
                         long int reset=-1, DSP::e::SampleType dest_DataType=DSP::e::SampleType::ST_float);
     //! low level access to the buffer
-    DSP::Float_ptr AccessBuffer(void);
+    const DSP::Float_vector &AccessBuffer(void);
 
     //! returns number of samples already in the buffer
     /*! \note Actual number of entries equals returned value

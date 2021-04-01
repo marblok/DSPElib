@@ -1801,7 +1801,7 @@ DSP::Float_ptr read_buffer = NULL;
 int buffer_size;
 int No_of_samples=0;
 
-void FFTout_clbk(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP::Float_ptr OutputSamples, DSP::void_ptr *UserDataPtr, unsigned int UserDefinedIdentifier, DSP::Component_ptr Caller)
+void FFTout_clbk(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP::Float_vector &OutputSamples, DSP::void_ptr *UserDataPtr, unsigned int UserDefinedIdentifier, DSP::Component_ptr Caller)
 {
   UNUSED_ARGUMENT(UserDataPtr);
   UNUSED_ARGUMENT(UserDefinedIdentifier);
@@ -1825,9 +1825,9 @@ void FFTout_clbk(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP::Float_p
 
   //counter =
   dsp_buffer->ReadBuffer(read_buffer,
-                                   buffer_size, // read all samples
-                                   -1,  // full reset
-                                   DSP::e::SampleType::ST_float); // write to read_buffer in float format
+                         buffer_size, // read all samples
+                         -1,  // full reset
+                         DSP::e::SampleType::ST_float); // write to read_buffer in float format
 
   // output real samples
   for (unsigned int ind = 0; ind < NoOfOutputs; ind ++)
@@ -2212,7 +2212,7 @@ int test_11()
 #define buffer_size 4
 //DSP::Float_ptr read_buffer = NULL;
 
-void BufferCallback(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP::Float_ptr OutputSamples, DSP::void_ptr *UserDataPtr, unsigned int UserDefinedIdentifier, DSP::Component_ptr Caller)
+void BufferCallback(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP::Float_vector &OutputSamples, DSP::void_ptr *UserDataPtr, unsigned int UserDefinedIdentifier, DSP::Component_ptr Caller)
 {
   UNUSED_ARGUMENT(NoOfOutputs);
   UNUSED_ARGUMENT(UserDataPtr);

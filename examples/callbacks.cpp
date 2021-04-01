@@ -10,7 +10,7 @@
 #define buffer_size 4
 DSP::Float_vector read_buffer;
 
-void BufferCallback(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP::Float_ptr OutputSamples, DSP::void_ptr *UserDataPtr, unsigned int UserDefinedIdentifier, DSP::Component_ptr Caller)
+void BufferCallback(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP::Float_vector &OutputSamples, DSP::void_ptr *UserDataPtr, unsigned int UserDefinedIdentifier, DSP::Component_ptr Caller)
 {
   if (NoOfInputs == DSP::c::Callback_Init)
   {
