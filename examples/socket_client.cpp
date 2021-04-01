@@ -24,12 +24,12 @@ int main(void)
   //Fp = AudioIn.GetSamplingRate();
 
   // use client socket
-  //DSPu_SOCKETinput in_socket(MasterClock, "153.19.48.213", true);
-  DSPu_SOCKETinput in_socket(MasterClock, "127.0.0.1", true, 0x00000002);
+  //DSP::u::SOCKETinput in_socket(MasterClock, "153.19.48.213", true);
+  DSP::u::SOCKETinput in_socket(MasterClock, "127.0.0.1", true, 0x00000002);
   Fp = 22050;
 
-  DSPu_SOCKEToutput out_socket("127.0.0.1", true, 0x00000001);
-  DSPu_AudioOutput AudioOut(Fp);
+  DSP::u::SOCKEToutput out_socket("127.0.0.1", true, 0x00000001);
+  DSP::u::AudioOutput AudioOut(Fp);
 
   in_socket.Output("out") >> AudioOut.Input("in");
   AudioIn.Output("out")   >> out_socket.Input("in");

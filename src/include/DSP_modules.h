@@ -620,7 +620,7 @@ class DSP::name
  *
  * \note In some cases source must wait for external events before it is ready
  *   to output samples, even though all other sources are ready. For example
- *   DSPu_AudioInput source must wait until the soundcard colects audio samples.
+ *   DSP::u::AudioInput source must wait until the soundcard colects audio samples.
  *   In such cases DSP::Clock::InputNeedsMoreTime table value must be set <b>true</b>
  *   for the master clock related to the source output clock before output execute
  *   function returns <b>false</b>.
@@ -752,7 +752,7 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
     //! Number of blocks registered in ComponentsTable
     static long int NoOfComponentsInTable;
     //! Base number of slots reserved in ComponentsTable
-    #define ComponentsTableSegmentSize 1024
+    static const unsigned long ComponentsTableSegmentSize;
     //! returns given component's index in ComponentsTable
     /*! Returns -1 if component not on the list
      */

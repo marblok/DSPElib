@@ -39,9 +39,9 @@ int main(void)
   MorseHold.Output("out") >> Mul.Input("in2");
 
   // use server socket
-//  DSPu_SOCKEToutput out_socket("0.0.0.0", false, 0x00000003);
+//  DSP::u::SOCKEToutput out_socket("0.0.0.0", false, 0x00000003);
   string bind_address = "0.0.0.0:10000";
-  DSPu_SOCKEToutput out_socket(bind_address, false, 0x00000003);
+  DSP::u::SOCKEToutput out_socket(bind_address, false, 0x00000003);
   out_socket.SetName(bind_address);
   Mul.Output("out") >> out_socket.Input("in");
 
@@ -49,7 +49,7 @@ int main(void)
   DSPu_FILEoutput WAVEfile("morse_key.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp1/5);
   MorseKey.Output("out") >> MorseDec.Input("in");
   MorseDec.Output("out") >> WAVEfile.Input("in");
-  //DSPu_AudioOutput AudioOut(Fp);
+  //DSP::u::AudioOutput AudioOut(Fp);
   //Mul.Output("out") >> AudioOut.Input("in");
 
   DSP::Component::CheckInputsOfAllComponents();

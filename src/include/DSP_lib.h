@@ -11,7 +11,7 @@
 
 #define DSP_VER_MAJOR 0
 #define DSP_VER_MINOR 19
-#define DSP_VER_BUILD 23 // !!! without zeroes before, else this will be treated as octal number
+#define DSP_VER_BUILD 24 // !!! without zeroes before, else this will be treated as octal number
 #define DSP_VER_YEAR  2021
 #define DSP_VER       DSP_VER_MAJOR.DSP_VER_MINOR.DSP_VER_BUILD
 
@@ -602,7 +602,7 @@ string DSP_lib_version_string();
  *  This example outputs to audio card first channel from DSPElib.wav file.
  *
  *  \note It is better idea to dynamically create objects DSPu_WaveInput
- *        and DSPu_AudioOutput.
+ *        and DSP::u::AudioOutput.
  *
  *  \include hello.cpp
  *
@@ -732,8 +732,8 @@ string DSP_lib_version_string();
  *   .
  *
  *  \section inout_units Input/Output units (8)
- *   -# DSPu_AudioInput Creates object for recording audio
- *   -# DSPu_AudioOutput Creates object for playing audio
+ *   -# DSP::u::AudioInput Creates object for recording audio
+ *   -# DSP::u::AudioOutput Creates object for playing audio
  *   -# DSPu_FILEinput Multichannel file input block - sample format can be specified
  *   -# DSPu_FILEoutput Multichannel file output block - sample format can be specified
  *   -# DSPu_InputBuffer Source block providing input from the memory buffer

@@ -61,7 +61,7 @@ int main(void)
   std::shared_ptr<DSPu_WaveInput>     AudioIn;
   std::shared_ptr<DSPu_OutputBuffer>  OutputBuffer;
   std::shared_ptr<DSPu_Multiplexer>   Multiplexer;
-  std::shared_ptr<DSPu_AudioOutput>   AudioOut;
+  std::shared_ptr<DSP::u::AudioOutput>   AudioOut;
   std::shared_ptr<DSPu_Demultiplexer> Demultiplexer;
   std::shared_ptr<DSPu_Amplifier>     Scale;
   std::shared_ptr<DSPu_Multiplexer>   Multiplexer2;
@@ -98,7 +98,7 @@ int main(void)
   Scale = std::make_shared<DSPu_Amplifier>(-1.0, 1);
   Multiplexer2 = std::make_shared<DSPu_Multiplexer>(DemuxClock, false, 2);
 
-  AudioOut = std::make_shared<DSPu_AudioOutput>(Fp);
+  AudioOut = std::make_shared<DSP::u::AudioOutput>(Fp);
 
 
   AudioIn->Output("out") >> OutputBuffer->Input("in");

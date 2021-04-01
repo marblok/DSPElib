@@ -2,6 +2,7 @@ TODO::
   DWORD => unsigned long
   DSPu_FIR => use vectors instead of pointers as an input
   ? DSP::Clock_ptr => migrate to std::shared_ptr
+  move all enums into DSP::e::
 
   update Linux makefile
 
@@ -14,11 +15,18 @@ TODO::
 
 LAST DONE:
   !!! - DSP_modules.cpp - removed some of the uses of new and delete
-  !!! DSPu_AudioInput, DSPu_AudioOutput => move into DSP::u:: namespace
+
 
 
 
 CHANGES:
+- ver. 0.19.024 - <b>2021.04.01</b> Changed: 
+  - DSPu_AudioInput, DSPu_AudioOutput moved into DSP::u:: namespace DSP::u::AudioInput, DSP::u::AudioOutput
+  - DSPu_SOCKETinput, DSPu_SOCKEToutput moved into DSP::u:: namespace DSP::u::SOCKETinput, DSP::u::SOCKEToutput
+  - DSP_socket moved into DSP namespace DSP::Socket
+  - DSPe_AudioBufferType => DSP::e::AudioBufferType
+  - DSP_IO.h changed several defines into consts and moved them into DSP namespace, e.g. DSP_file_buffer_size => DSP::File_buffer_size
+
 - ver. 0.19.023 - <b>2021.04.01</b> Changed: 
   - change of examples wav file 
   - DSP_modules.cpp - removed some of the uses of new and delete

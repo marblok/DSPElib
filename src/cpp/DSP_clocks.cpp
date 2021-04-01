@@ -413,7 +413,7 @@ unsigned long DSP::Clock::Execute(DSP::Clock_ptr ReferenceClock,
   unsigned long cycles_to_process;
 //  bool *NotifyDone;
 
-  long int timeout_counter=0;
+  unsigned long timeout_counter=0;
 
   if (ReferenceClock==NULL)
   {
@@ -516,7 +516,7 @@ unsigned long DSP::Clock::Execute(DSP::Clock_ptr ReferenceClock,
             if (InputNeedsMoreTime[ReferenceClock->MasterClockIndex] == true)
             {
               timeout_counter++;
-              if (timeout_counter > MAX_timeout_counter)
+              if (timeout_counter > DSP::MAX_timeout_counter)
                 break;
 
               /*! \todo_later in the future use DSP::f::Sleep(0)

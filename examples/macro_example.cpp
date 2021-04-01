@@ -70,7 +70,7 @@ int main(void)
   Fp = AudioIn.GetSamplingRate();
   DDS_macro DDS(MasterClock, 0.15*DSP_M_PIx1);
   DSPu_Amplifier gain(1.0/2);
-  DSPu_AudioOutput AudioOut(Fp, 2);
+  DSP::u::AudioOutput AudioOut(Fp, 2);
   DSPu_FILEoutput FileOut("test_out.wav", DSP::e::SampleType::ST_short, 2, DSP::e::FileType::FT_wav, Fp);
 
   AudioIn.Output("out") >> gain.Input("in");

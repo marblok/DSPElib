@@ -43,7 +43,7 @@ int main(int argn, char *args[])
   // DSPu_SamplingRateConversion *Resampler_OutIn = NULL;
   // DSPu_Amplifier *Factor = NULL;
   // DSPu_LoopDelay *Delay = NULL;
-  // DSPu_AudioOutput *SoundOut = NULL;
+  // DSP::u::AudioOutput *SoundOut = NULL;
   // DSPu_FILEoutput *FileOut = NULL;
 
   /*************************************************************/
@@ -74,7 +74,7 @@ int main(int argn, char *args[])
       break;
       
     case 1: //Input from soundcard
-      blocks["SoundIn"] = std::make_shared<DSPu_AudioInput>(MasterClock, Fp1, 1, 16);
+      blocks["SoundIn"] = std::make_shared<DSP::u::AudioInput>(MasterClock, Fp1, 1, 16);
       break;
       
     case 0: //Input from file
@@ -140,7 +140,7 @@ int main(int argn, char *args[])
   
   /*************************************************************/
   // Output to the soundcard 
-  blocks["SoundOut"] = std::make_shared<DSPu_AudioOutput>(Fp2, 1, 16);
+  blocks["SoundOut"] = std::make_shared<DSP::u::AudioOutput>(Fp2, 1, 16);
   // Output to the mono 16bit *.wav file 
   blocks["FileOut"]  = std::make_shared<DSPu_FILEoutput>("multirate.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp2);
 

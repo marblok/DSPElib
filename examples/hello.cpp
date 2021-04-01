@@ -28,7 +28,7 @@ int test_hello(void)
   DSPu_WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
   Fp = AudioIn.GetSamplingRate();
 
-  DSPu_AudioOutput AudioOut(Fp);
+  DSP::u::AudioOutput AudioOut(Fp);
 
   AudioIn.Output("out") >> AudioOut.Input("in");
 

@@ -75,10 +75,10 @@ namespace DSP {
     enum struct SampleType;
     enum struct FileType;
   }
-}
 
-class T_WAVEchunk;
-typedef T_WAVEchunk * T_WAVEchunk_ptr;
+  class T_WAVEchunk;
+  typedef T_WAVEchunk * T_WAVEchunk_ptr;
+}
 
 //  16-bit types  -----------------------------------------------------------//
 #if USHRT_MAX == 0xffff

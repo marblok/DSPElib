@@ -31,7 +31,7 @@ int main(void)
   DSPu_Hold hold(SignalActivatedClock, MasterClock);
   DSPu_Amplifier gain2(8);
 
-  DSPu_AudioOutput AudioOut(Fp, 1);
+  DSP::u::AudioOutput AudioOut(Fp, 1);
   DSPu_FILEoutput FileOut("test_out.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp);
 
   AudioIn.Output("out") >> ABS.Input("in");

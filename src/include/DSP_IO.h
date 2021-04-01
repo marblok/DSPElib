@@ -45,27 +45,29 @@
 //#define AUDIO_DEBUG_MESSAGES_ON
 #define AUDIO_DEBUG_MESSAGES_OFF
 
-#define DSP_file_buffer_size  8192
-#define DSP_DefaultSamplingFrequency 8000
-
-//! Reference sampling frequency for which buffer sizes are selected
-#define DSP_ReferenceFs 48000
-// (1024*4) for Fp=48000 ==> 85ms ==> 11,72 buffer per second
-#define DSP_reference_audio_outbuffer_size (1024*4) //(1024*64)
-#define DSP_reference_audio_inbuffer_size  (1024*4)
-
-enum DSPe_AudioBufferType {DSP_AB_none=0, DSP_AB_IN=1, DSP_AB_OUT=2};
-
-//! Number of input buffers in DSPu_AudioInput
-#define DSP_NoOfAudioInputBuffers 4
-//! Number of output buffers in DSPu_AudioOutput
-/*! with one  spare buffer
- *
- *  in this case its internal buffer
- */
-#define DSP_NoOfAudioOutputBuffers 3
-
 namespace DSP {
+  const unsigned long File_buffer_size = 8192;
+  const unsigned long DefaultSamplingFrequency = 8000;
+
+  //! Reference sampling frequency for which buffer sizes are selected
+  const unsigned long ReferenceFs = 48000;
+  // (1024*4) for Fp=48000 ==> 85ms ==> 11,72 buffer per second
+  const unsigned long Reference_audio_outbuffer_size = (1024*4); //(1024*64)
+  const unsigned long Reference_audio_inbuffer_size = (1024*4);
+
+  namespace e {
+    enum struct AudioBufferType {none=0, input=1, output=2};
+  }
+
+  //! Number of input buffers in DSP::u::AudioInput
+  const unsigned long NoOfAudioInputBuffers = 4;
+  //! Number of output buffers in DSP::u::AudioOutput
+  /*! with one  spare buffer
+  *
+  *  in this case its internal buffer
+  */
+  const unsigned long NoOfAudioOutputBuffers = 3;
+
   namespace f { //! Special functions namespace
     unsigned long ReadCoefficientsFromFile(DSP::Float_vector &Buffer, unsigned long N, const string &FileName, const string &FileDir, DSP::e::SampleType type, unsigned long offset);
     unsigned long ReadCoefficientsFromFile(DSP::Complex_vector &Buffer, unsigned long N, const string &FileName, const string &FileDir, DSP::e::SampleType type, unsigned long offset);
@@ -80,13 +82,19 @@ namespace DSP {
     */
     bool GetWAVEfileParams(const string &FileName, const string &FileDir, T_WAVEchunk_ptr WAVEparams);
 
-    //! returns audio buffer size for given Fs based on reference values given for DSP_ReferenceFs
-    DWORD GetAudioBufferSize(unsigned long SamplingFreq, DSPe_AudioBufferType type);
+    //! returns audio buffer size for given Fs based on reference values given for DSP::ReferenceFs
+    DWORD GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP::e::AudioBufferType &type);
 
     #ifdef WINMMAPI
       //! Issues error message and returns true if error detected
       bool AudioCheckError(MMRESULT result);
     #endif
+  }
+
+  //! Namespace for units' classes (componenst: blocks and sources)
+  namespace u {
+    class AudioInput;
+    class AudioOutput;
   }
 }
 
@@ -112,146 +120,148 @@ unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Float_vector &Buffer, unsign
                      DSP::e::SampleType type=DSP::e::SampleType::ST_float,
                      unsigned long offset=0);
 
-/*! \todo Add support for Sony Wave64 (.w64)
- */
-class T_WAVEchunk
-{
-  public:
-    char Type[4];  // "RIFF"
-    DWORD size;    // chunk size = file size - 8 (size of chunk header)
+namespace DSP {
+  /*! \todo Add support for Sony Wave64 (.w64)
+  */
+  class T_WAVEchunk
+  {
+    public:
+      char Type[4];  // "RIFF"
+      DWORD size;    // chunk size = file size - 8 (size of chunk header)
 
-    char SubType[4]; // "WAVE"
+      char SubType[4]; // "WAVE"
 
-    char FmtType[4]; // "fmt "
-    DWORD Fmtsize;   // 16 + extra bytes
+      char FmtType[4]; // "fmt "
+      DWORD Fmtsize;   // 16 + extra bytes
 
-    WORD wFormatTag; // Data encoding format: 1 - PCM
-    WORD nChannels;  // Number of channels
-    DWORD nSamplesPerSec;   // Samples per second
-    DWORD nAvgBytesPerSec;  // Avg transfer rate = nSamplesPerSec*nBlockAlign;
-    WORD  nBlockAlign;      // Block alignment
-    WORD  wBitsPerSample;   // Bits per sample
+      WORD wFormatTag; // Data encoding format: 1 - PCM
+      WORD nChannels;  // Number of channels
+      DWORD nSamplesPerSec;   // Samples per second
+      DWORD nAvgBytesPerSec;  // Avg transfer rate = nSamplesPerSec*nBlockAlign;
+      WORD  nBlockAlign;      // Block alignment
+      WORD  wBitsPerSample;   // Bits per sample
 
-    char DataType[4];
-    DWORD DataSize; // numbers if bytes of samples' data (without padding byte)
-                    // note: data segment must be padded with 0 if it is not of even length
-    // END OF HEADER //
+      char DataType[4];
+      DWORD DataSize; // numbers if bytes of samples' data (without padding byte)
+                      // note: data segment must be padded with 0 if it is not of even length
+      // END OF HEADER //
 
-    DWORD BytesRead;
-    int HeaderSize;
+      DWORD BytesRead;
+      int HeaderSize;
 
-    bool WAVEinfo(FILE *hIn);
-    bool FindDATA(FILE *hIn);
+      bool WAVEinfo(FILE *hIn);
+      bool FindDATA(FILE *hIn);
 
-    void PrepareHeader(DWORD nSamplesPerSec_in = 8000, WORD nChannels_in = 1, WORD  wBitsPerSample_in = 16);
-    bool WriteHeader(FILE *hOut);
-    bool UpdateHeader(FILE *hOut);
+      void PrepareHeader(DWORD nSamplesPerSec_in = 8000, WORD nChannels_in = 1, WORD  wBitsPerSample_in = 16);
+      bool WriteHeader(FILE *hOut);
+      bool UpdateHeader(FILE *hOut);
 
-    T_WAVEchunk(void);
-    // zeruj stan
-    void clear();
+      T_WAVEchunk(void);
+      // zeruj stan
+      void clear();
 
-    friend bool DSP::f::GetWAVEfileParams(const string &FileName, const string &FileDir, T_WAVEchunk_ptr WAVEparams);
-  
-  private:
-    int strncmpi(const char* str1, const char* str2, int N);
-};
+      friend bool DSP::f::GetWAVEfileParams(const string &FileName, const string &FileDir, T_WAVEchunk_ptr WAVEparams);
+    
+    private:
+      int strncmpi(const char* str1, const char* str2, int N);
+  };
 
 
-#define FLT_header_LEN 8
-/*! DSP::e::FileType::FT_flt : floating point content file header
- * - 3 B - file version (ubit24)
- *    - 1B - header version
- *    - 2B - sample type
- *    0x00 0x0000 - sample_type = 'float'; sample_size = 4;
- *    0x00 0x0001 - sample_type = 'uchar'; sample_size = 1;
- *    0x00 0x0002 - sample_type = 'short'; sample_size = 2;
- *    0x00 0x0003 - sample_type = 'int';   sample_size = 4;
- * - 1 B - number of channels       (uint8)
- * - 4 B - sampling rate            (uint32)
- */
-class T_FLT_header
-{
-  private:
-    unsigned char data[FLT_header_LEN];
-  public:
-//    unsigned char  version;        1B
-    unsigned char version(void);
-    void version(unsigned char val);
-//    unsigned short sample_type;    2B
-    unsigned short sample_type(void);
-    void sample_type(unsigned short val);
-//    unsigned char  no_of_channels; 1B
-    unsigned char no_of_channels(void);
-    void no_of_channels(unsigned char val);
-//    unsigned int   sampling_rate;  4B
-    unsigned int sampling_rate(void);
-    void sampling_rate(unsigned int val);
-};
+  const unsigned long FLT_header_LEN = 8;
+  /*! DSP::e::FileType::FT_flt : floating point content file header
+  * - 3 B - file version (ubit24)
+  *    - 1B - header version
+  *    - 2B - sample type
+  *    0x00 0x0000 - sample_type = 'float'; sample_size = 4;
+  *    0x00 0x0001 - sample_type = 'uchar'; sample_size = 1;
+  *    0x00 0x0002 - sample_type = 'short'; sample_size = 2;
+  *    0x00 0x0003 - sample_type = 'int';   sample_size = 4;
+  * - 1 B - number of channels       (uint8)
+  * - 4 B - sampling rate            (uint32)
+    */
+  class T_FLT_header
+  {
+    private:
+      unsigned char data[FLT_header_LEN];
+    public:
+  //    unsigned char  version;        1B
+      unsigned char version(void);
+      void version(unsigned char val);
+  //    unsigned short sample_type;    2B
+      unsigned short sample_type(void);
+      void sample_type(unsigned short val);
+  //    unsigned char  no_of_channels; 1B
+      unsigned char no_of_channels(void);
+      void no_of_channels(unsigned char val);
+  //    unsigned int   sampling_rate;  4B
+      unsigned int sampling_rate(void);
+      void sampling_rate(unsigned int val);
+  };
 
-#define TAPE_header_LEN 1388
-/*! DSP::e::FileType::FT_tape : tape file header
- */
-class T_TAPE_header
-{
-  public:
-    unsigned int TotalSize; // length of following header // actual header size + 4
-    char Filename[256];
-    char CFG_filename[256];
+  const unsigned long TAPE_header_LEN = 1388;
+  /*! DSP::e::FileType::FT_tape : tape file header
+  */
+  class T_TAPE_header
+  {
+    public:
+      unsigned int TotalSize; // length of following header // actual header size + 4
+      char Filename[256];
+      char CFG_filename[256];
 
-    unsigned int SwRev;
-    unsigned int HwRev;
-    unsigned int file_pointer;
-    unsigned int TAPE_TYPE;
+      unsigned int SwRev;
+      unsigned int HwRev;
+      unsigned int file_pointer;
+      unsigned int TAPE_TYPE;
 
-    unsigned int start_time; //time_t
-    unsigned int end_time;   //time_t
+      unsigned int start_time; //time_t
+      unsigned int end_time;   //time_t
 
-    unsigned int TotalSamples;
-    unsigned int current_sample;
+      unsigned int TotalSamples;
+      unsigned int current_sample;
 
-    //long long loop_start;
-    unsigned int loop_start_MSW;
-    unsigned int loop_start_LSW;
-    //long long loop_end;
-    unsigned int loop_end_MSW;
-    unsigned int loop_end_LSW;
-    unsigned int loop;
+      //long long loop_start;
+      unsigned int loop_start_MSW;
+      unsigned int loop_start_LSW;
+      //long long loop_end;
+      unsigned int loop_end_MSW;
+      unsigned int loop_end_LSW;
+      unsigned int loop;
 
-    unsigned int group_size_32;
-    unsigned int block_size;
-    unsigned int block_count;
-    unsigned int fifo_size;
+      unsigned int group_size_32;
+      unsigned int block_size;
+      unsigned int block_count;
+      unsigned int fifo_size;
 
-    char comment[256];
-    char misc[20];
+      char comment[256];
+      char misc[20];
 
-    unsigned int status;
-    int time_stamps;
+      unsigned int status;
+      int time_stamps;
 
-    float central_frequency;
-    float cplx_datarate;
+      float central_frequency;
+      float cplx_datarate;
 
-    unsigned char reserved[512];
+      unsigned char reserved[512];
 
-  public:
-    //! size of the TAPE file header
-    unsigned int header_size(void)
-    { return TotalSize + 4; };
+    public:
+      //! size of the TAPE file header
+      unsigned int header_size(void)
+      { return TotalSize + 4; };
 
-    //! always 2 <==> short // DSP::e::SampleType::ST_short
-    unsigned short sample_type(void)
-    { return 0x0002; };
+      //! always 2 <==> short // DSP::e::SampleType::ST_short
+      unsigned short sample_type(void)
+      { return 0x0002; };
 
-    //! no_of_channels always == 2
-    unsigned char no_of_channels(void)
-    { return 2; };
+      //! no_of_channels always == 2
+      unsigned char no_of_channels(void)
+      { return 2; };
 
-    //! \todo implement sampling rate detection
-    unsigned int sampling_rate(void)
-    { return 0; };
-    void sampling_rate(unsigned int val);
-};
+      //! \todo implement sampling rate detection
+      unsigned int sampling_rate(void)
+      { return 0; };
+      void sampling_rate(unsigned int val);
+  };
+}
 
 //! Block for connecting loose outputs
 /*! If there is output which we don't need,
@@ -314,7 +324,7 @@ class DSPu_WaveInput : public DSP::File, public DSP::Source//: public CAudioInpu
   private:
     //FILE *hIn;
     bool FileEnd;
-    T_WAVEchunk WAVEchunk;
+    DSP::T_WAVEchunk WAVEchunk;
     string FileName;
     string FileDir;
 
@@ -412,11 +422,11 @@ class DSPu_FILEinput : public DSP::File, public DSP::Source
 
     // Variables storing headers
     //! *.flt header
-    std::vector<T_FLT_header>  flt_header;
+    std::vector<DSP::T_FLT_header>  flt_header;
     //! *.tape header
-    std::vector<T_TAPE_header> tape_header;
+    std::vector<DSP::T_TAPE_header> tape_header;
     //! *.wav header
-    std::vector<T_WAVEchunk> wav_header;
+    std::vector<DSP::T_WAVEchunk> wav_header;
 
     bool CloseFile(void);
   public:
@@ -552,7 +562,7 @@ class DSPu_FILEoutput  : public DSP::File, public DSP::Block
     DSP::e::FileType FileType;
     //! true if file type imposes no input scaling
     bool FileType_no_scaling;
-    T_WAVEchunk WAV_header;
+    DSP::T_WAVEchunk WAV_header;
 
     //DSP::Float *Buffer;
     unsigned int BufferIndex;
@@ -695,10 +705,10 @@ class DSPu_FILEoutput  : public DSP::File, public DSP::Block
  *
  *  \Fixed <b>2005.07.23</b> No longer tries to process audio when audio object creation failed
  */
-class DSPu_AudioInput : public DSP::Source
+class DSP::u::AudioInput : public DSP::Source
 {
   private:
-    T_WAVEchunk WAVEchunk;
+    DSP::T_WAVEchunk WAVEchunk;
     #ifdef WINMMAPI
       HWAVEIN hWaveIn;
     #endif
@@ -720,7 +730,7 @@ class DSPu_AudioInput : public DSP::Source
     //! in samples times number of channels
     DWORD InBufferLen;
     //! Buffer for storing samples in DSP::Float format
-    DSP::Float_vector InBuffers[DSP_NoOfAudioInputBuffers];
+    DSP::Float_vector InBuffers[DSP::NoOfAudioInputBuffers];
     //! current read index in current InBuffer
     unsigned int BufferIndex;
     //! Index of the next buffer to fill
@@ -761,7 +771,7 @@ class DSPu_AudioInput : public DSP::Source
     //! Addresses of audio object connected with CallbackInstances;
     /*! Current callback instanse is also the index to this array
      */
-    static std::vector<DSPu_AudioInput *> AudioObjects;
+    static std::vector<DSP::u::AudioInput *> AudioObjects;
 
     #ifdef WINMMAPI
       static void CALLBACK waveInProc_uchar(HWAVEIN hwi, UINT uMsg,
@@ -773,16 +783,16 @@ class DSPu_AudioInput : public DSP::Source
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
 
   public:
-//    DSPu_AudioInput(DSP::Clock_ptr ParentClock); //SamplingFrequency=8000;
+//    DSP::u::AudioInput(DSP::Clock_ptr ParentClock); //SamplingFrequency=8000;
     /*!  \Fixed <b>2007.10.31</b> WaveIn device can now be selected,
      *     if WaveInDevNo is out of range WAVE_MAPPER is used.
      */
-    DSPu_AudioInput(DSP::Clock_ptr ParentClock,
+    AudioInput(DSP::Clock_ptr ParentClock,
                    long int SamplingFreq=8000,
                    unsigned int OutputsNo=1, //just one channel
                    char BitPrec=16,
                    unsigned int WaveInDevNo=UINT_MAX); // use WAVE_MAPPER
-    ~DSPu_AudioInput(void);
+    ~AudioInput(void);
 //    void SourceDescription(TStringList *);
 
     //! return No of free audio buffer
@@ -811,16 +821,16 @@ class DSPu_AudioInput : public DSP::Source
  *
  * \Fixed <b>2005.07.23</b> No longer tries to process audio when audio object creation failed
  */
-class DSPu_AudioOutput : public DSP::Block
+class DSP::u::AudioOutput : public DSP::Block
 {
   private:
-    T_WAVEchunk WAVEchunk;
+    DSP::T_WAVEchunk WAVEchunk;
     #ifdef WINMMAPI
       HWAVEOUT hWaveOut;
     #endif
 
     //! Index of the buffer which must be used next time
-    unsigned char NextBufferInd;
+    unsigned long NextBufferInd;
     //! Type of samples in WaveOutBuffers
     DSP::e::SampleType OutSampleType;
     #ifdef WINMMAPI
@@ -854,7 +864,7 @@ class DSPu_AudioOutput : public DSP::Block
     //! Addresses of audio object connected with CallbackInstances;
     /*! Current callback instanse is also the index to this array
      */
-    static std::vector<DSPu_AudioOutput *> AudioObjects;
+    static std::vector<DSP::u::AudioOutput *> AudioObjects;
 
     //! (returns number of samples read per channel)
     DWORD GetAudioSegment(void);
@@ -875,17 +885,17 @@ class DSPu_AudioOutput : public DSP::Block
      */
     static void InputExecute(INPUT_EXECUTE_ARGS);
   public:
-    DSPu_AudioOutput(void); //SamplingFrequency=8000;
-    //! DSPu_AudioOutput constructor
+    AudioOutput(void); //SamplingFrequency=8000;
+    //! DSP::u::AudioOutput constructor
     /*! \Fixed <b>2005.04.14</b> Cannot be initialized after previous object destruction
      *  \Fixed <b>2007.10.31</b> WaveOut device can now be selected,
      *     if WaveOutDevNo is out of range WAVE_MAPPER is used.
      */
-    DSPu_AudioOutput(unsigned long SamplingFreq, //=8000,
+    AudioOutput(unsigned long SamplingFreq, //=8000,
                     unsigned int InputsNo=1, //just one channel
                     unsigned char BitPrec=16,
                     unsigned int WaveOutDevNo=UINT_MAX);
-    ~DSPu_AudioOutput(void);
+    ~AudioOutput(void);
 
 //    void SourceDescription(TStringList *);
 };

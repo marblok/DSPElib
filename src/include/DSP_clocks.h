@@ -18,11 +18,15 @@
 
 namespace DSP {
   class Clock;
-}
-class DSPu_SOCKETinput; // required for friend class ::DSPu_SOCKETinput
-class DSPu_AudioInput; // required for friend class ::DSPu_SOCKETinput
 
-#define MAX_timeout_counter 1000
+  namespace u {
+    class AudioInput; // required for friend class ::DSP::u::SOCKETinput
+    class SOCKETinput; // required for friend class ::DSP::u::SOCKETinput
+  }
+
+  const unsigned long MAX_timeout_counter = 1000;
+}
+
 
 // ***************************************************** //
 // ***************************************************** //
@@ -233,8 +237,8 @@ class DSP::Clock
     /*! e.g. audio card input
      */
     volatile static bool *InputNeedsMoreTime;
-    friend class ::DSPu_AudioInput;
-    friend class ::DSPu_SOCKETinput;
+    friend class DSP::u::AudioInput;
+    friend class ::DSP::u::SOCKETinput;
 
     //! Processes all sources related to given clock: SourcesTable
     /*! (returns false when not all sources could be processed)

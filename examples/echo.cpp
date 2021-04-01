@@ -29,7 +29,7 @@ int main(void)
   DSPu_Amplifier Scale(0.7);
   Scale.SetName("0.7");
 
-  DSPu_AudioOutput AudioOut(Fp);
+  DSP::u::AudioOutput AudioOut(Fp);
 
   // Examples of connections
   AudioIn.Output("out") >> Add.Input("in1");

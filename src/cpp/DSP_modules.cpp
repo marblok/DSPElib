@@ -20,6 +20,8 @@
 DSP::Component_ptr *DSP::Component::ComponentsTable=NULL;
 long int DSP::Component::ComponentsTableSize=0;
 long int DSP::Component::NoOfComponentsInTable=0;
+const unsigned long DSP::Component::ComponentsTableSegmentSize = 1024;
+
 
 //**************************************//
 /*! \Fixed <b>2006.04.30</b> In release mode do not store component name (to free more memory)

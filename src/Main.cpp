@@ -473,7 +473,7 @@ int test_1(int argc, char*argv[])
 
 long int CheckFs(const string &WaveName, const string &Dir)
 {
-  T_WAVEchunk WaveParams;
+  DSP::T_WAVEchunk WaveParams;
 
   if (DSP::f::GetWAVEfileParams(WaveName, Dir, &WaveParams))
     return WaveParams.nSamplesPerSec;
@@ -863,8 +863,8 @@ int test_2()
 
 
 //  DSPu_DDScos  FileIn(false, 1.0, (M_PIx2*(440))/Fs, 0.0);
-  DSPu_AudioOutput AudioOut(Fs,2);
-//  DSPu_AudioOutput AudioOut2(Fs);
+  DSP::u::AudioOutput AudioOut(Fs,2);
+//  DSP::u::AudioOutput AudioOut2(Fs);
 
   DSPu_Addition Sum(2);
   DSPu_Amplifier Gain(0.75);
@@ -965,7 +965,7 @@ int test_3()
 //  DSPu_FILEoutput FileOut3("test3.out", DSP::e::SampleType::ST_float, 1);
 //  Select.Output("out") >> FileOut3.Input("in");
 
-  DSPu_AudioOutput AudioOut(Fs,2);
+  DSP::u::AudioOutput AudioOut(Fs,2);
   AudioOut.DefineInput("in1",0);
   AudioOut.DefineInput("in2",1);
   FileIn.Output("out") >> AudioOut.Input("in1");
@@ -977,8 +977,8 @@ int test_3()
 //
 //int log_ind=1; char log_buffer[1024];
 //
-//  DSPu_AudioOutput AudioOut1(Fs,1);
-//  /* \class DSPu_AudioOutput \todo zrobi moliwo?c wypuszczenia tylko lewego lub prawego kanau
+//  DSP::u::AudioOutput AudioOut1(Fs,1);
+//  /* \class DSP::u::AudioOutput \todo zrobi moliwo?c wypuszczenia tylko lewego lub prawego kanau
 //   * z zerowym drugim
 //   */
 //
@@ -991,7 +991,7 @@ int test_3()
 //  DSPu_Addition Sum(2);
 //  DSPu_Amplifier Gain(0.75);
 //  DSP_LoopDelay Delay(MasterClock, 3000);
-//  DSPu_AudioOutput AudioOut2(Fs,1);
+//  DSP::u::AudioOutput AudioOut2(Fs,1);
 //
 //  AudioOut1.DefineInput("in1",0);
 //  FileIn2.Output("out1") >> Decym.Input("in");
@@ -1113,7 +1113,7 @@ int MeduzaSimulation(void)
   DSPu_FILEoutput SignalOutput("Signal.out");
   InterpOut.Output("out") >> SignalOutput.Input("in");
 
-  DSPu_AudioOutput AudioOut((long)Fs2,1);
+  DSP::u::AudioOutput AudioOut((long)Fs2,1);
   InterpOut.Output("out") >> AudioOut.Input("in");
 
 //sprintf(log_buffer,">> %i <<", log_ind++);
@@ -1514,7 +1514,7 @@ int test_5()
 
   MasterClock=DSP::Clock::CreateMasterClock();
 
-  DSPu_AudioInput AudioIn(MasterClock, Fp);
+  DSP::u::AudioInput AudioIn(MasterClock, Fp);
   AudioIn.SetName("Test");
 
   DSPu_DDScos AudioIn2(MasterClock);
@@ -1529,7 +1529,7 @@ DSPu_IIR Acum(a_in);
   AudioIn2_frequ.Output("out") >> Acum.Input("in");
   Acum.Output("out") >> AudioIn2.Input("puls");
 
-  DSPu_AudioOutput AudioOut(Fp);
+  DSP::u::AudioOutput AudioOut(Fp);
 
 DSPu_Addition Sum;
   AudioIn2.Output("out") >> Sum.Input("in1");
@@ -1679,8 +1679,8 @@ int test_7()
   DDS = new DDS_macro(MasterClock, 0.15f*M_PIx1f);
   DSPu_Amplifier *gain;
   gain = new DSPu_Amplifier(1.0/2);
-  DSPu_AudioOutput *AudioOut;
-  AudioOut = new DSPu_AudioOutput(Fp, 2);
+  DSP::u::AudioOutput *AudioOut;
+  AudioOut = new DSP::u::AudioOutput(Fp, 2);
   DSPu_FILEoutput *FileOut;
   FileOut = new DSPu_FILEoutput("test_out.wav", DSP::e::SampleType::ST_short, 2, DSP::e::FileType::FT_wav, Fp);
 
@@ -1746,7 +1746,7 @@ int test_8()
 
 
     /*
-    //DSPu_AudioOutput AudioOut(Fp);
+    //DSP::u::AudioOutput AudioOut(Fp);
     DSPu_RawDecimator DecM44(MasterClock, 8);
     //DSPu_RawDecimator DecM11(MasterClock, 11);
     DSPu_FILEoutput WAVEfile("out.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp/8);
@@ -1894,7 +1894,7 @@ int test_9()
   DSPu_FIR H_sh(h_sh, 0, 1, L_IFIR);
   DSPu_FIR H_ir(h_ir);
 
-//  DSPu_AudioOutput SoundOut(Fp2, 1, 16);
+//  DSP::u::AudioOutput SoundOut(Fp2, 1, 16);
   DSPu_FILEoutput FileOut_a("matlab/cw3_zad2.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp1);
   DSPu_FILEoutput FileOut_b("matlab/cw3_zad2.flt", DSP::e::SampleType::ST_float, 1, DSP::e::FileType::FT_flt, Fp1);
 
@@ -2267,7 +2267,7 @@ int test_12(void)
   DSPu_WaveInput     *AudioIn;
   DSPu_OutputBuffer  *OutputBuffer;
   DSPu_Multiplexer   *Multiplexer;
-  DSPu_AudioOutput   *AudioOut;
+  DSP::u::AudioOutput   *AudioOut;
   DSPu_Demultiplexer *Demultiplexer;
   DSPu_Amplifier     *Scale;
   DSPu_Multiplexer   *Multiplexer2;
@@ -2304,7 +2304,7 @@ int test_12(void)
   Scale = new DSPu_Amplifier(-1.0, 1);
   Multiplexer2 = new DSPu_Multiplexer(DemuxClock, false, 2);
 
-  AudioOut = new DSPu_AudioOutput(Fp);
+  AudioOut = new DSP::u::AudioOutput(Fp);
 
 
   AudioIn->Output("out") >> OutputBuffer->Input("in");
@@ -2641,7 +2641,7 @@ int test_ZPSTC_cw_3()
 
 
   // Output to the soundcard
-  DSPu_AudioOutput SoundOut(Fp2, 1, 16);
+  DSP::u::AudioOutput SoundOut(Fp2, 1, 16);
   DSPu_FILEoutput FileOut1("cw3_zad3a.flt", DSP::e::SampleType::ST_float, 2, DSP::e::FileType::FT_flt, Fp1);
   // Output to the mono 16bit *.wav file
   DSPu_FILEoutput FileOut2a("cw3_zad3b.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp2);

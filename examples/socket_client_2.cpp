@@ -35,14 +35,14 @@ int main(void)
   MasterClock=DSP::Clock::CreateMasterClock();
 
   // use client socket
-//  DSPu_SOCKETinput in_socket(MasterClock, "127.0.0.1", true, 0x00000003);
+//  DSP::u::SOCKETinput in_socket(MasterClock, "127.0.0.1", true, 0x00000003);
   string server_address = "127.0.0.1:10000";
-  DSPu_SOCKETinput in_socket(MasterClock, server_address, true, 0x00000003);
+  DSP::u::SOCKETinput in_socket(MasterClock, server_address, true, 0x00000003);
   in_socket.SetName(server_address);
   Fp1 = 8000;  Fp2 = 11025;
   M = 320; L = 441;
   DSPu_SamplingRateConversion SRC(false,MasterClock, L, M, h_SRC);
-  DSPu_AudioOutput AudioOut(Fp2);
+  DSP::u::AudioOutput AudioOut(Fp2);
 
   in_socket.Output("out") >> SRC.Input("in");
   SRC.Output("out") >> AudioOut.Input("in");
