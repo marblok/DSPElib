@@ -486,17 +486,11 @@ class DSPu_FILEinput : public DSP::File, public DSP::Source
     long long SkipSamples(long long no_to_skip);
 
     //! Reads segment for file and stores it in the buffer
-    /*! Returns number of read bytes.
+    /*! \note Size of the segment read depends on the flt_buffer size.
+     *
+     * Returns number of read bytes.
      */
     unsigned int ReadSegmentToBuffer(
-       //! buffer size in samples
-       unsigned int buffer_size,
-       //! Raw buffer which will be used internally by the function
-       /*! \note raw_buffer_size == buffer_size * sample_size / 8.
-        *  \note Raw sample size can be determined with
-        *  DSPu_FILEinput::GetSampleSize function
-        */
-       std::vector<uint8_t> &raw_buffer,
        //! Buffer where read data will be stored in DSP::Float format
        /*! \note size == buffer_size * no_of_channels
         */
@@ -654,21 +648,10 @@ class DSPu_FILEoutput  : public DSP::File, public DSP::Block
      * \warning This function ignores file blocking state.
      */
     unsigned int WriteSegmentFromBuffer(
-       //! buffer size in samples
-       unsigned int buffer_size,
-       //! Raw buffer which will be used internally by the function
-       /*!\note raw_buffer_size == buffer_size * sample_size / 8.
-        * \note Raw sample size can be determined with
-        *  DSPu_FILEoutput::GetSampleSize function
-        *
-        * \warning this buffer must be allocated and deleted by the user.
-        */
-       uint8_t     *raw_buffer,
        //! Buffer where data which must be written is stored in DSP::Float format
        /*! \note size == buffer_size * no_of_channels
-        *  \warning this buffer must be allocated and deleted by the user.
         */
-       DSP::Float   *flt_buffer,
+       const DSP::Float_vector &flt_buffer,
        //! number of samples to skip after each written sample
        int skip = 0
        );
@@ -778,7 +761,7 @@ class DSPu_AudioInput : public DSP::Source
     //! Addresses of audio object connected with CallbackInstances;
     /*! Current callback instanse is also the index to this array
      */
-    static DSPu_AudioInput **AudioObjects;
+    static std::vector<DSPu_AudioInput *> AudioObjects;
 
     #ifdef WINMMAPI
       static void CALLBACK waveInProc_uchar(HWAVEIN hwi, UINT uMsg,
@@ -841,11 +824,11 @@ class DSPu_AudioOutput : public DSP::Block
     //! Type of samples in WaveOutBuffers
     DSP::e::SampleType OutSampleType;
     #ifdef WINMMAPI
-      WAVEHDR *waveHeaderOut;
+      std::vector<WAVEHDR> waveHeaderOut;
     #endif
     DWORD WaveOutBufferLen;  // in bytes
     //! Buffers for audio samples prepared for playing
-    uint8_t **WaveOutBuffers;
+    std::vector<std::vector<uint8_t>> WaveOutBuffers;
 
     //! size of the buffers used internally with WMM driver
     DWORD audio_outbuffer_size;
@@ -853,7 +836,7 @@ class DSPu_AudioOutput : public DSP::Block
     //! in samples times number of channels
     DWORD OutBufferLen;
     //! Buffer for storing samples in DSP::Float format
-    DSP::Float_ptr OutBuffer;
+    DSP::Float_vector OutBuffer;
     unsigned int BufferIndex;
 
     //! Prepares buffers for playing and sends it to the audio device
@@ -871,7 +854,7 @@ class DSPu_AudioOutput : public DSP::Block
     //! Addresses of audio object connected with CallbackInstances;
     /*! Current callback instanse is also the index to this array
      */
-    static DSPu_AudioOutput **AudioObjects;
+    static std::vector<DSPu_AudioOutput *> AudioObjects;
 
     //! (returns number of samples read per channel)
     DWORD GetAudioSegment(void);

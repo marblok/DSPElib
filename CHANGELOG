@@ -5,16 +5,21 @@ TODO::
 
   update Linux makefile
 
-  - DSP_IO.cpp - removed all used of new and delete - in progress !!!!
+
+  !!! Add TELEsound and PiAPS_sound projects to GitLab and start addaptation to new library version
 
   !!! Replace test_wav na własne nagranie np. "DSPE library" albo free sample 
 
 LAST DONE:
-  - DSP_AudioMixer.cpp - removed all used of new and delete
-  - DSPu_buffer_callback_ptr uses vector instead of pointer to output values buffer
-
+  - test asynchronous z wersją master
 
 CHANGES:
+- ver. 0.19.022 - <b>2021.04.01</b> Changed: 
+  - DSP_AudioMixer.cpp - removed all uses of new and delete
+  - modified input parameters list of ReadSegmentToBuffer, WriteSegmentFromBuffer
+  - DSP_IO.cpp - removed all uses of new and delete
+  - DSPu_buffer_callback_ptr uses vector instead of pointer to output values buffer
+
 - ver. 0.19.020 - <b>2021.03.31</b> Changed: 
   - changes towards C++11 in DSP_IO.cpp/DSP_IO.h
   - several other changes towards C++11

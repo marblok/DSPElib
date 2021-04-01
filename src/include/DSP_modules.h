@@ -1090,7 +1090,7 @@ class DSP::File
 {
   protected:
     FILE *FileHandle;
-    //! in bits (all channel together)
+    //! in bits (all channels together)
     unsigned int SampleSize;
     long long skip_counter;
 

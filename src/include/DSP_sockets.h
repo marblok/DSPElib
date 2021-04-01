@@ -265,21 +265,21 @@ class DSPu_SOCKETinput : public DSP::File, public DSP_socket, public DSP::Source
     /*! Returns number of read bytes.
      */
     unsigned int ReadSegmentToBuffer(
-       //! buffer size in samples
-       unsigned int buffer_size,
-       //! Raw buffer which will be used internally by the function
-       /*! \note raw_buffer_size == buffer_size * sample_size / 8.
-        *  \note Raw sample size can be determined with
-        *  DSPu_FILEinput::GetSampleSize function
-        *
-        * \warning this buffer must be allocated and deleted by the user.
-        */
-       char        *raw_buffer,
+      //  //! buffer size in samples
+      //  unsigned int buffer_size,
+      //  //! Raw buffer which will be used internally by the function
+      //  /*! \note raw_buffer_size == buffer_size * sample_size / 8.
+      //   *  \note Raw sample size can be determined with
+      //   *  DSPu_FILEinput::GetSampleSize function
+      //   *
+      //   * \warning this buffer must be allocated and deleted by the user.
+      //   */
+      //  char        *raw_buffer,
        //! Buffer where read data will be stored in DSP::Float format
        /*! \note size == buffer_size * no_of_channels
         * \warning this buffer must be allocated and deleted by the user.
         */
-       DSP::Float   *flt_buffer
+       DSP::Float_vector &flt_buffer
        );
 };
 
