@@ -14,12 +14,16 @@ TODO::
 
 LAST DONE:
   !!! - DSP_modules.cpp - removed some of the uses of new and delete
+  !!! DSPu_AudioInput, DSPu_AudioOutput => move into DSP::u:: namespace
+
 
 
 CHANGES:
 - ver. 0.19.023 - <b>2021.04.01</b> Changed: 
+  - change of examples wav file 
   - DSP_modules.cpp - removed some of the uses of new and delete
   - DSP_modules2.cpp, DSP_sockets.cpp - removed all uses of new and delete
+  - minor changes in examples
 
 - ver. 0.19.022 - <b>2021.04.01</b> Changed: 
   - DSP_AudioMixer.cpp - removed all uses of new and delete

@@ -81,7 +81,7 @@ int main(int argn, char *args[])
     default:
       input_mode = 0;
       
-      blocks["SoundIn"] = std::make_shared<DSPu_WaveInput>(MasterClock, "test.wav", ".", 1);
+      blocks["SoundIn"] = std::make_shared<DSPu_WaveInput>(MasterClock, "DSPElib.wav", ".", 1);
       Fp1 = ((DSPu_WaveInput *)blocks["SoundIn"]->Convert2Source())->GetSamplingRate();
       
       if (Fp1 != 22050)

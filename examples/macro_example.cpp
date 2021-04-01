@@ -66,7 +66,7 @@ int main(void)
   MasterClock=DSP::Clock::CreateMasterClock();
 
 
-  DSPu_WaveInput AudioIn(MasterClock, "test.wav", ".");
+  DSPu_WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
   Fp = AudioIn.GetSamplingRate();
   DDS_macro DDS(MasterClock, 0.15*DSP_M_PIx1);
   DSPu_Amplifier gain(1.0/2);

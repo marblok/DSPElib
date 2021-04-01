@@ -1,7 +1,7 @@
 /*! Simple asynchronous clocks usage example.
  * \author Marek Blok
  * \date 2010.02.26
- * \date updated 2021.01.18
+ * \date updated 2021.04.01
  */
 #include <DSP_lib.h>
 
@@ -22,7 +22,7 @@ int main(void)
   SignalActivatedClock=DSP::Clock::CreateMasterClock();
 
 
-  DSPu_WaveInput AudioIn(MasterClock, "test.wav", ".", 1);
+  DSPu_WaveInput AudioIn(MasterClock, "DSPElib.wav", ".", 1);
   Fp = AudioIn.GetSamplingRate();
   DSPu_ABS ABS(false);
   DSPu_Amplifier gain(-8);
@@ -73,6 +73,8 @@ int main(void)
     temp++;
   }
   while (AudioIn.GetBytesRead() != 0);
+  // process a bit more so the buffered samples are also sent to output
+  DSP::Clock::Execute(MasterClock, Fp/8);
 
   DSP::Clock::FreeClocks();
   DSP::log << "MAIN" << DSP::LogMode::second << "end" << endl;

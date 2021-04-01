@@ -140,7 +140,7 @@ string DSP_lib_version_string();
 // Examples list
 /*!
  *  \example hello.cpp
- *  This example outputs to audio card first channel from test.wav file.
+ *  This example outputs to audio card first channel from DSPElib.wav file.
  */
 /*!
  *  \example multirate.cpp
@@ -599,7 +599,7 @@ string DSP_lib_version_string();
 /*!
  * \page lib_use_hello_ex Hello world example
  *
- *  This example outputs to audio card first channel from test.wav file.
+ *  This example outputs to audio card first channel from DSPElib.wav file.
  *
  *  \note It is better idea to dynamically create objects DSPu_WaveInput
  *        and DSPu_AudioOutput.
@@ -634,7 +634,7 @@ string DSP_lib_version_string();
  *  then again in echo loopback.
  *
  *  Input:
- *    -# test.wav file
+ *    -# DSPElib.wav file
  *    -# soundcard
  *    -# chirp generator
  *    .

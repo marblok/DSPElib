@@ -25,7 +25,7 @@ int test_hello(void)
  
   MasterClock=DSP::Clock::CreateMasterClock();
 
-  DSPu_WaveInput AudioIn(MasterClock, "test.wav", ".");
+  DSPu_WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
   Fp = AudioIn.GetSamplingRate();
 
   DSPu_AudioOutput AudioOut(Fp);

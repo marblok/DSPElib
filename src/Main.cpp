@@ -335,7 +335,7 @@ int test_1(int argc, char*argv[])
 
   DSP::Clock_ptr MasterClock, Fp1Zegar;
   MasterClock=NULL;
-  string InputName="test.wav";
+  string InputName="DSPElib.wav";
   string OutputName="output.flt";
 //  DSPu_WaveInput WaveInput(InputName, ".", 1);
   DSPu_FILEinput WaveInput(MasterClock, InputName, 1, DSP::e::SampleType::ST_float);
@@ -580,7 +580,7 @@ void Process(long int Fs, const string &WaveName, const string &Dir)
   // ************************************************* //
 
   DSPu_WaveInput FileIn(MasterClock, WaveName, Dir, 1);
-//  DSPu_FILEinput FileIn("waves/test.wav", DSP::e::SampleType::ST_short, 1);
+//  DSPu_FILEinput FileIn("waves/DSPElib.wav", DSP::e::SampleType::ST_short, 1);
 //  DSPu_COSpulse FileIn(false, 1.0, 0.0, 0.0, 0.0, 0, 10, 0, NULL);
 //  DSPu_COSpulse FileIn(false, 1.0);
   Zegar1=FileIn.GetOutputClock();
@@ -851,15 +851,15 @@ int test_2()
 
   MasterClock=DSP::Clock::CreateMasterClock();
 
-  Fs=CheckFs("test.wav", "waves");
-  Fs2=CheckFs("test2.wav", "waves");
-  DSPu_WaveInput FileIn2(MasterClock, "test2.wav", "waves", 1);
+  Fs=CheckFs("DSPElib.wav", "examples");
+  Fs2=CheckFs("test2.wav", "examples");
+  DSPu_WaveInput FileIn2(MasterClock, "test2.wav", "examples", 1);
   DSPu_RawDecimator Decym(MasterClock, Fs2/Fs);
   DSPu_Amplifier GainIn(0.5);
 
   Zegar1=FileIn2.GetOutputClock();
   Zegar2=DSP::Clock::GetClock(Zegar1, 1, Fs2/Fs);
-  DSPu_WaveInput FileIn(Zegar2, "test.wav", "waves", 1);
+  DSPu_WaveInput FileIn(Zegar2, "DSPElib.wav", "examples", 1);
 
 
 //  DSPu_DDScos  FileIn(false, 1.0, (M_PIx2*(440))/Fs, 0.0);
@@ -903,10 +903,10 @@ int test_2()
    val-=0.1;
   }
 */
-   Fs=CheckFs("test.wav", "waves");
+   Fs=CheckFs("DSPElib.wav", "examples");
    if (Fs > 0)
    {
-      Process(Fs, "test.wav", "waves");
+      Process(Fs, "DSPElib.wav", "examples");
    }
 
 /*
@@ -935,13 +935,13 @@ int test_3()
 
   MasterClock=DSP::Clock::CreateMasterClock();
 
-  Fs=CheckFs("test.wav", "waves");
-  Fs2=CheckFs("test2.wav", "waves");
+  Fs=CheckFs("DSPElib.wav", "examples");
+  Fs2=CheckFs("test2.wav", "examples");
 
   printf("Fs = %li, Fs2 = %li\n", Fs, Fs2);
 
-  DSPu_WaveInput FileIn2(MasterClock, "test.wav", "waves", 1);
-  DSPu_WaveInput FileIn(MasterClock, "test2.wav", "waves", 1);
+  DSPu_WaveInput FileIn2(MasterClock, "DSPElib.wav", "examples", 1);
+  DSPu_WaveInput FileIn(MasterClock, "test2.wav", "examples", 1);
   DSPu_RawDecimator Decym(MasterClock, Fs/Fs2);
 
   FileIn2.Output("out") >> Decym.Input("in");
@@ -1153,7 +1153,7 @@ int test_4()
   char filename[]="S2.wav";
   char dir_name[]="c:/Meduza_2004/Input";
 //  char dir_name[]="e:/Meduza2004";
-//  char filename[]="test.wav";
+//  char filename[]="DSPElib.wav";
 //  char dir_name[]=".";
 
 //  DSP::f::SetLogState(DSP_LS_console | DSP_LS_file | DSP_LS_errors_only);
@@ -1673,7 +1673,7 @@ int test_7()
 
 
   DSPu_WaveInput *AudioIn;
-  AudioIn = new DSPu_WaveInput(MasterClock, "test.wav", ".");
+  AudioIn = new DSPu_WaveInput(MasterClock, "DSPElib.wav", ".");
   Fp = AudioIn->GetSamplingRate();
   DDS_macro *DDS;
   DDS = new DDS_macro(MasterClock, 0.15f*M_PIx1f);
@@ -2049,7 +2049,7 @@ int test_11()
   InputClock=DSP::Clock::CreateMasterClock();
 
 
-  //DSPu_WaveInput AudioIn(MasterClock, "test.wav", ".");
+  //DSPu_WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
   //F_symb = AudioIn.GetSamplingRate();
 
 
@@ -2280,7 +2280,7 @@ int test_12(void)
   MasterClock=DSP::Clock::CreateMasterClock();
 
 
-  AudioIn = new DSPu_WaveInput(MasterClock, "test.wav", ".");
+  AudioIn = new DSPu_WaveInput(MasterClock, "DSPElib.wav", ".");
   Fp = AudioIn->GetSamplingRate();
 
   //callback_type = 0; // just copy samples
@@ -2615,7 +2615,7 @@ int test_ZPSTC_cw_3()
   SymbolClock=DSP::Clock::CreateMasterClock();
 
 
-  //DSPu_WaveInput AudioIn(MasterClock, "test.wav", ".");
+  //DSPu_WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
   //F_symb = AudioIn.GetSamplingRate();
 
   DSPu_FILEinput BinData(SymbolClock, "/Dev-Cpp/ZPSTC/Cw3/Cw3_zad3.cpp", 2U, DSP::e::SampleType::ST_bit, DSP::e::FileType::FT_raw);

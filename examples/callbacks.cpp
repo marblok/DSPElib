@@ -1,7 +1,7 @@
 /*! Simple Digital Signal Processing Engine usage example.
  * \author Marek Blok
  * \date 2008.05.28
- * \date updated 2021.03.31
+ * \date updated 2021.04.01
  */
 #include <memory>
 
@@ -74,7 +74,7 @@ int main(void)
   MasterClock=DSP::Clock::CreateMasterClock();
 
 
-  AudioIn = std::make_shared<DSPu_WaveInput>(MasterClock, "test.wav", ".");
+  AudioIn = std::make_shared<DSPu_WaveInput>(MasterClock, "DSPElib.wav", ".");
   Fp = AudioIn->GetSamplingRate();
 
   //callback_type = 0; // just copy samples
@@ -123,6 +123,8 @@ int main(void)
     temp++;
   }
   while (AudioIn->GetBytesRead() != 0);
+  // process a bit more so the buffered samples are also sent to output
+  DSP::Clock::Execute(MasterClock, Fp/8);
 
   AudioOut.reset();
   Multiplexer2.reset();
