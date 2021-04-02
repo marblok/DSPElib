@@ -5,7 +5,7 @@
  * Module blocks providing input and output from external devices
  * like hard drive or sound card.
  *
- * \todo fully integrate DSPu_WaveInput with DSPu_FILEinput
+ * \todo fully integrate DSP::u::WaveInput with DSP::u::FileInput
  *
  * \author Marek Blok
  */
@@ -83,7 +83,7 @@ namespace DSP {
     bool GetWAVEfileParams(const string &FileName, const string &FileDir, T_WAVEchunk_ptr WAVEparams);
 
     //! returns audio buffer size for given Fs based on reference values given for DSP::ReferenceFs
-    DWORD GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP::e::AudioBufferType &type);
+    uint32_t GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP::e::AudioBufferType &type);
 
     #ifdef WINMMAPI
       //! Issues error message and returns true if error detected
@@ -93,8 +93,17 @@ namespace DSP {
 
   //! Namespace for units' classes (componenst: blocks and sources)
   namespace u {
+    class Vacuum;
+
     class AudioInput;
     class AudioOutput;
+
+    class FileInput;
+    class FileOutput;
+    class WaveInput;
+
+    class InputBuffer;
+    class OutputBuffer;
   }
 }
 
@@ -127,32 +136,32 @@ namespace DSP {
   {
     public:
       char Type[4];  // "RIFF"
-      DWORD size;    // chunk size = file size - 8 (size of chunk header)
+      uint32_t size;    // chunk size = file size - 8 (size of chunk header)
 
       char SubType[4]; // "WAVE"
 
       char FmtType[4]; // "fmt "
-      DWORD Fmtsize;   // 16 + extra bytes
+      uint32_t Fmtsize;   // 16 + extra bytes
 
-      WORD wFormatTag; // Data encoding format: 1 - PCM
-      WORD nChannels;  // Number of channels
-      DWORD nSamplesPerSec;   // Samples per second
-      DWORD nAvgBytesPerSec;  // Avg transfer rate = nSamplesPerSec*nBlockAlign;
-      WORD  nBlockAlign;      // Block alignment
-      WORD  wBitsPerSample;   // Bits per sample
+      uint16_t wFormatTag; // Data encoding format: 1 - PCM
+      uint16_t nChannels;  // Number of channels
+      uint32_t nSamplesPerSec;   // Samples per second
+      uint32_t nAvgBytesPerSec;  // Avg transfer rate = nSamplesPerSec*nBlockAlign;
+      uint16_t  nBlockAlign;      // Block alignment
+      uint16_t  wBitsPerSample;   // Bits per sample
 
       char DataType[4];
-      DWORD DataSize; // numbers if bytes of samples' data (without padding byte)
+      uint32_t DataSize; // numbers if bytes of samples' data (without padding byte)
                       // note: data segment must be padded with 0 if it is not of even length
       // END OF HEADER //
 
-      DWORD BytesRead;
+      uint32_t BytesRead;
       int HeaderSize;
 
       bool WAVEinfo(FILE *hIn);
       bool FindDATA(FILE *hIn);
 
-      void PrepareHeader(DWORD nSamplesPerSec_in = 8000, WORD nChannels_in = 1, WORD  wBitsPerSample_in = 16);
+      void PrepareHeader(uint32_t nSamplesPerSec_in = 8000, uint16_t nChannels_in = 1, uint16_t  wBitsPerSample_in = 16);
       bool WriteHeader(FILE *hOut);
       bool UpdateHeader(FILE *hOut);
 
@@ -279,7 +288,7 @@ namespace DSP {
  *    -# "in.re" == "in1.re"\n
  *       "in.im" == "in1.im"\n
  *
- * \test Test DSPu_Vacuum block for multiple inputs
+ * \test Test DSP::u::Vacuum block for multiple inputs
  *
  * \bug <b>2006.09.04</b> This block should not require any parameters.
  *   It should accept any number of output lines connected to its inputs.
@@ -289,16 +298,16 @@ namespace DSP {
  *    .
  *
  */
-class DSPu_Vacuum : public DSP::Block
+class DSP::u::Vacuum : public DSP::Block
 {
   private:
     void Init(bool AreInputsComplex, unsigned int NoOfInputs);
 
     static void InputExecute(INPUT_EXECUTE_ARGS);
   public:
-    DSPu_Vacuum(unsigned int NoOfInputs=1);
-    DSPu_Vacuum(bool AreInputsComplex, unsigned int NoOfInputs=1);
-    ~DSPu_Vacuum(void);
+    Vacuum(unsigned int NoOfInputs=1);
+    Vacuum(bool AreInputsComplex, unsigned int NoOfInputs=1);
+    ~Vacuum(void);
 };
 
 //! Creates object for *.wav files reading
@@ -319,7 +328,7 @@ class DSPu_Vacuum : public DSP::Block
  *   - Input: none
  *
  */
-class DSPu_WaveInput : public DSP::File, public DSP::Source//: public CAudioInput
+class DSP::u::WaveInput : public DSP::File, public DSP::Source//: public CAudioInput
 {
   private:
     //FILE *hIn;
@@ -328,17 +337,17 @@ class DSPu_WaveInput : public DSP::File, public DSP::Source//: public CAudioInpu
     string FileName;
     string FileDir;
 
-    DWORD ReadBufferLen;  // in bytes
+    uint32_t ReadBufferLen;  // in bytes
     std::vector<char>  ReadBuffer;
-    DWORD AudioBufferLen;  // in bytes
+    uint32_t AudioBufferLen;  // in bytes
     unsigned int BufferIndex;
     std::vector<DSP::Float> AudioBuffer;
     bool ConvertionNeeded;
 
     //! Number of bytes to read remaining in file
-    DWORD BytesRemainingInFile;
+    uint32_t BytesRemainingInFile;
     //! number of bytes read during last file access
-    DWORD BytesRead;
+    uint32_t BytesRead;
 
 
     unsigned int SegmentSize;
@@ -349,7 +358,7 @@ class DSPu_WaveInput : public DSP::File, public DSP::Source//: public CAudioInpu
     //! Closes opened WAV file
     bool CloseFile(void);
     //! Reads next file segment (returns number of samples read per channel)
-    DWORD ReadAudioSegment(void);
+    uint32_t ReadAudioSegment(void);
 
     /*!  if file has more channels then zeros are set to excesive outputs
      *  if file has less channels then execive channels are discarded
@@ -360,10 +369,10 @@ class DSPu_WaveInput : public DSP::File, public DSP::Source//: public CAudioInpu
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
 
   public:
-    DSPu_WaveInput(DSP::Clock_ptr ParentClock,
+    WaveInput(DSP::Clock_ptr ParentClock,
                   const string &FileName_in, const string &FileDir_in,
                   unsigned int OutputsNo=1); //just one channel
-    ~DSPu_WaveInput(void);
+    ~WaveInput(void);
 
     bool SetSkip(long long Offset);
 
@@ -400,7 +409,7 @@ class DSPu_WaveInput : public DSP::File, public DSP::Source//: public CAudioInpu
  *
  * DSP::e::SampleType: DSP::e::SampleType::ST_bit and DSP::e::SampleType::ST_bit_reversed give -1.0 & +1.0 values
  */
-class DSPu_FILEinput : public DSP::File, public DSP::Source
+class DSP::u::FileInput : public DSP::File, public DSP::Source
 {
   private:
     DSP::e::SampleType SampleType;
@@ -443,13 +452,13 @@ class DSPu_FILEinput : public DSP::File, public DSP::Source
     //! NoOfChannels - expected no of outputs (channels in input file)
     /*! NoOfChannels == 0 - autodetect no of channels
      */
-    DSPu_FILEinput(DSP::Clock_ptr ParentClock,
+    FileInput(DSP::Clock_ptr ParentClock,
                    const string &FileName,
                    unsigned int NoOfChannels = 1U,
                    DSP::e::SampleType sample_type=DSP::e::SampleType::ST_float,
                    DSP::e::FileType FILEtype = DSP::e::FileType::FT_raw
                   );
-    ~DSPu_FILEinput(void);
+    ~FileInput(void);
 
     bool SetSkip(long long Offset);
 
@@ -475,7 +484,7 @@ class DSPu_FILEinput : public DSP::File, public DSP::Source
     long int GetSamplingRate(void);
     //! Returns raw sample size in bytes corresponding to given SampleType
     /*! \note For SampleType = DSP::e::SampleType::ST_none returns internal raw sample size
-     *   used in DSPu_FILEinput.
+     *   used in DSP::u::FileInput.
      *
      *  \warning Sample size is given in bits and encloses all channels
      */
@@ -555,7 +564,7 @@ class DSPu_FILEinput : public DSP::File, public DSP::Source
  * \note NoOfChannels cannot be larger then UCHAR_MAX (255)
  *
  */
-class DSPu_FILEoutput  : public DSP::File, public DSP::Block
+class DSP::u::FileOutput  : public DSP::File, public DSP::Block
 {
   private:
     DSP::e::SampleType SampleType;
@@ -621,15 +630,15 @@ class DSPu_FILEoutput  : public DSP::File, public DSP::Block
     /*! Create object but not the file.
      * \note Use ReOpen to create file.
      */
-    DSPu_FILEoutput(unsigned char NoOfChannels=1);
+    FileOutput(unsigned char NoOfChannels=1);
     /*! \test constant inputs must be tested
      */
-    DSPu_FILEoutput(const string &FileName,
+    FileOutput(const string &FileName,
                    DSP::e::SampleType sample_type=DSP::e::SampleType::ST_float,
                    unsigned int NoOfChannels=1,
                    DSP::e::FileType file_type=DSP::e::FileType::FT_raw,
                    long int sampling_rate = -1);
-    ~DSPu_FILEoutput(void);
+    ~FileOutput(void);
 
     bool SetSkip(long long Offset);
 
@@ -644,7 +653,7 @@ class DSPu_FILEoutput  : public DSP::File, public DSP::Block
     unsigned int GetRawBufferSize(unsigned int NoOfSamples = 0);
     //! Returns raw sample size in bytes corresponding to given SampleType
     /*! \note For SampleType = DSP::e::SampleType::ST_none returns internal raw sample size
-     *   used in DSPu_FILEoutput.
+     *   used in DSP::u::FileOutput.
      *
      *  \warning Sample size is given in bits and encloses all channels
      */
@@ -720,15 +729,15 @@ class DSP::u::AudioInput : public DSP::Source
     #ifdef WINMMAPI
       std::vector<WAVEHDR> waveHeaderIn;
     #endif
-    DWORD WaveInBufferLen;  // in bytes
+    uint32_t WaveInBufferLen;  // in bytes
     //! Buffers for audio samples prepared for playing
     std::vector<std::vector<char>> WaveInBuffers;
 
     //! size of the buffers used internally with WMM driver
-    DWORD audio_inbuffer_size;
+    uint32_t audio_inbuffer_size;
 
     //! in samples times number of channels
-    DWORD InBufferLen;
+    uint32_t InBufferLen;
     //! Buffer for storing samples in DSP::Float format
     DSP::Float_vector InBuffers[DSP::NoOfAudioInputBuffers];
     //! current read index in current InBuffer
@@ -764,7 +773,7 @@ class DSP::u::AudioInput : public DSP::Source
     bool StopAudio(void);
     bool StopRecording;
     //! (returns number of samples read per channel)
-    DWORD GetAudioSegment(void);
+    uint32_t GetAudioSegment(void);
 
     static unsigned long Next_CallbackInstance;
     unsigned long Current_CallbackInstance;
@@ -775,9 +784,9 @@ class DSP::u::AudioInput : public DSP::Source
 
     #ifdef WINMMAPI
       static void CALLBACK waveInProc_uchar(HWAVEIN hwi, UINT uMsg,
-        DWORD dwInstance, DWORD dwParam1, DWORD dwParam2);
+        uint32_t dwInstance, uint32_t dwParam1, uint32_t dwParam2);
       static void CALLBACK waveInProc_short(HWAVEIN hwi, UINT uMsg,
-        DWORD dwInstance, DWORD dwParam1, DWORD dwParam2);
+        uint32_t dwInstance, uint32_t dwParam1, uint32_t dwParam2);
     #endif
 
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
@@ -836,15 +845,15 @@ class DSP::u::AudioOutput : public DSP::Block
     #ifdef WINMMAPI
       std::vector<WAVEHDR> waveHeaderOut;
     #endif
-    DWORD WaveOutBufferLen;  // in bytes
+    uint32_t WaveOutBufferLen;  // in bytes
     //! Buffers for audio samples prepared for playing
     std::vector<std::vector<uint8_t>> WaveOutBuffers;
 
     //! size of the buffers used internally with WMM driver
-    DWORD audio_outbuffer_size;
+    uint32_t audio_outbuffer_size;
 
     //! in samples times number of channels
-    DWORD OutBufferLen;
+    uint32_t OutBufferLen;
     //! Buffer for storing samples in DSP::Float format
     DSP::Float_vector OutBuffer;
     unsigned int BufferIndex;
@@ -867,11 +876,11 @@ class DSP::u::AudioOutput : public DSP::Block
     static std::vector<DSP::u::AudioOutput *> AudioObjects;
 
     //! (returns number of samples read per channel)
-    DWORD GetAudioSegment(void);
+    uint32_t GetAudioSegment(void);
 
     #ifdef WINMMAPI
       static void CALLBACK waveOutProc(HWAVEOUT hwo, UINT uMsg,
-        DWORD dwInstance, DWORD dwParam1, DWORD dwParam2);
+        uint32_t dwInstance, uint32_t dwParam1, uint32_t dwParam2);
     #endif
 
     void Init(unsigned long SamplingFreq,
@@ -913,13 +922,13 @@ class DSP::u::AudioOutput : public DSP::Block
  *       "out.im" == "out2" - (imag component if exist)
  *    -# "out" - all outputs together
  */
-class DSPu_InputBuffer : public DSP::Source
+class DSP::u::InputBuffer : public DSP::Source
 {
   private:
     //! callback function ID
     unsigned int UserCallbackID;
     //! callback notification function pointer
-    DSPu_notify_callback_ptr NotificationFunction_ptr;
+    DSP::Notify_callback_ptr NotificationFunction_ptr;
     //! Number of cycles between notifications
     int NotificationsStep;
     //! executes when notification or callback function must be processed
@@ -961,11 +970,11 @@ class DSPu_InputBuffer : public DSP::Source
      *
      *  \warning CallbackIdentifier cannot be larger than CallbackID_mask.
      */
-    DSPu_InputBuffer(DSP::Clock_ptr ParentClock, int BufferSize_in,
+    InputBuffer(DSP::Clock_ptr ParentClock, int BufferSize_in,
                      unsigned int NoOfChannels=1, DSPe_buffer_type cyclic=DSP_standard,
-                     int NotificationsStep_in = -1, DSPu_notify_callback_ptr func_ptr = NULL,
+                     int NotificationsStep_in = -1, DSP::Notify_callback_ptr func_ptr = NULL,
                      unsigned int CallbackIdentifier=0);
-    ~DSPu_InputBuffer(void);
+    ~InputBuffer(void);
 
     //! copies source_size bytes from the source buffer to block's internal buffer
     /*! \Fixed <b>2005.03.17</b> Error in buffer size checking for multiple channels
@@ -993,16 +1002,16 @@ class DSPu_InputBuffer : public DSP::Source
  *    .
  *   .
  */
-class DSPu_OutputBuffer : public DSP::Block, public DSP::Source
+class DSP::u::OutputBuffer : public DSP::Block, public DSP::Source
 {
   private:
     //unsigned int ind;
     //! callback function ID
     unsigned int UserCallbackID;
     //! callback notification function pointer
-    DSPu_notify_callback_ptr NotificationFunction_ptr;
+    DSP::Notify_callback_ptr NotificationFunction_ptr;
     //! callback function pointer
-    DSPu_buffer_callback_ptr CallbackFunction_ptr;
+    DSP::Buffer_callback_ptr CallbackFunction_ptr;
     //! Table for output values from callback function
     DSP::Float_vector OutputsValues;
     //! if true block must output samples values from OutputsValues table
@@ -1075,9 +1084,9 @@ class DSPu_OutputBuffer : public DSP::Block, public DSP::Source
      *
      *
      */
-    DSPu_OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in=1, DSPe_buffer_type cyclic=DSP_stop_when_full,
-                      DSP::Clock_ptr ParentClock = NULL, int NotificationsStep_in = -1,
-                      DSPu_notify_callback_ptr func_ptr = NULL, unsigned int CallbackIdentifier=0);
+    OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in=1, DSPe_buffer_type cyclic=DSP_stop_when_full,
+                 DSP::Clock_ptr ParentClock = NULL, int NotificationsStep_in = -1,
+                 DSP::Notify_callback_ptr func_ptr = NULL, unsigned int CallbackIdentifier=0);
     /*! Version with output lines.
      *
      *  Callback function:
@@ -1088,23 +1097,23 @@ class DSPu_OutputBuffer : public DSP::Block, public DSP::Source
      *    InputSamples will always be NULL.
      *  \note Buffer MUST be read in callback function with reset set to <b>true</b>.
      */
-    DSPu_OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in, DSPe_buffer_type cyclic,
-                      DSP::Clock_ptr ParentClock, int NotificationsStep_in, unsigned int NoOfOutputs_in,
-                      DSPu_buffer_callback_ptr func_ptr, unsigned int CallbackIdentifier=0);
+    OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in, DSPe_buffer_type cyclic,
+                 DSP::Clock_ptr ParentClock, int NotificationsStep_in, unsigned int NoOfOutputs_in,
+                 DSP::Buffer_callback_ptr func_ptr, unsigned int CallbackIdentifier=0);
     //! Mixed block version with notifications controlled by given notifications clock
     /*! \note NotificationsStep is determined from
      *    ParentClock and NotificationsClock relations.
      *    If NotificationsClock is not simply M times slower then
      *    ParentClock then NotificationsStep will be set -1.
-     *    In that case DSPu_OutputBuffer::ReadBuffer with reset set to -2
-     *    means the same as DSPu_OutputBuffer::ReadBuffer with reset set to -1.
+     *    In that case DSP::u::OutputBuffer::ReadBuffer with reset set to -2
+     *    means the same as DSP::u::OutputBuffer::ReadBuffer with reset set to -1.
      *
      * \note If NoOfOutputs_in > 0  NotificationsClock has also the meaning of OutputClock.
      */
-    DSPu_OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in, DSPe_buffer_type cyclic,
-                      DSP::Clock_ptr ParentClock, DSP::Clock_ptr NotificationsClock,
-                      unsigned int NoOfOutputs_in, DSPu_buffer_callback_ptr func_ptr, unsigned int CallbackIdentifier=0);
-    ~DSPu_OutputBuffer(void);
+    OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in, DSPe_buffer_type cyclic,
+                 DSP::Clock_ptr ParentClock, DSP::Clock_ptr NotificationsClock,
+                 unsigned int NoOfOutputs_in, DSP::Buffer_callback_ptr func_ptr, unsigned int CallbackIdentifier=0);
+    ~OutputBuffer(void);
 
     //! Copies dest_size bytes to the dest buffer from block's internal buffer
     /*!

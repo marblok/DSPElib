@@ -541,7 +541,7 @@ unsigned long DSP::Clock::Execute(DSP::Clock_ptr ReferenceClock,
                 {
                   #ifdef __DEBUG__
                     DSP::log << "DSP::Clock::Execute" << DSP::LogMode::second << "Not all sources processed but no source is ready" << endl;
-                    DSP::log << "DSP::Clock::Execute" << DSP::LogMode::second << ">> Check if there is the feedback loop without DSPu_LoopDelay." << endl;
+                    DSP::log << "DSP::Clock::Execute" << DSP::LogMode::second << ">> Check if there is the feedback loop without DSP::u::LoopDelay." << endl;
                     DSP::log << "DSP::Clock::Execute  >>" << DSP::LogMode::second
                       << "Number of signal activated clocks still on the list:" << *SignalActivatedClocksListLength_ptr << endl;
                     for (clock_ind=0; clock_ind<(*ListLength); clock_ind++)

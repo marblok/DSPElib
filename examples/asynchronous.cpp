@@ -22,30 +22,30 @@ int main(void)
   SignalActivatedClock=DSP::Clock::CreateMasterClock();
 
 
-  DSPu_WaveInput AudioIn(MasterClock, "DSPElib.wav", ".", 1);
+  DSP::u::WaveInput AudioIn(MasterClock, "DSPElib.wav", ".", 1);
   Fp = AudioIn.GetSamplingRate();
-  DSPu_ABS ABS(false);
-  DSPu_Amplifier gain(-8);
-  DSPu_Addition sum; sum.SetConstInput("in2",0.9);
+  DSP::u::ABS ABS(false);
+  DSP::u::Amplifier gain(-8);
+  DSP::u::Addition sum; sum.SetConstInput("in2",0.9);
 
-  DSPu_Hold hold(SignalActivatedClock, MasterClock);
-  DSPu_Amplifier gain2(8);
+  DSP::u::Hold hold(SignalActivatedClock, MasterClock);
+  DSP::u::Amplifier gain2(8);
 
   DSP::u::AudioOutput AudioOut(Fp, 1);
-  DSPu_FILEoutput FileOut("test_out.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp);
+  DSP::u::FileOutput FileOut("test_out.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp);
 
   AudioIn.Output("out") >> ABS.Input("in");
   ABS.Output("out") >> gain.Input("in");
   gain.Output("out") >> sum.Input("in1");
 
   #ifdef use_clock_trigger
-    DSPu_ClockTrigger CT(MasterClock, SignalActivatedClock);
-    DSPu_SampleSelector sampler(MasterClock, SignalActivatedClock, false);
+    DSP::u::ClockTrigger CT(MasterClock, SignalActivatedClock);
+    DSP::u::SampleSelector sampler(MasterClock, SignalActivatedClock, false);
 
     sum.Output("out") >> CT.Input("act");
     sampler.Output("out") >> hold.Input("in");
   #else
-    DSPu_SampleSelector sampler(MasterClock, SignalActivatedClock, true);
+    DSP::u::SampleSelector sampler(MasterClock, SignalActivatedClock, true);
 
     sum.Output("out") >> sampler.Input("act");
     sampler.Output("out") >> hold.Input("in");

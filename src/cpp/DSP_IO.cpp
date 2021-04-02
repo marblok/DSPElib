@@ -35,7 +35,7 @@ unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Float_vector &Buffer, unsign
 {
   FILE *plik;
   string file_name;
-  DWORD ValuesRead;
+  uint32_t ValuesRead;
   unsigned int ind;
 
   file_name = FileDir;
@@ -58,7 +58,7 @@ unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Float_vector &Buffer, unsign
           {
             vector<uint8_t> tempBuffer;
             tempBuffer.resize(N);
-            ValuesRead=(DWORD)fread(tempBuffer.data(), sizeof(uint8_t), N, plik);
+            ValuesRead=(uint32_t)fread(tempBuffer.data(), sizeof(uint8_t), N, plik);
             //convertion
             for (ind=0; ind<ValuesRead; ind++)
               Buffer[ind]=((DSP::Float)(tempBuffer[ind]-80))/0x80;
@@ -69,7 +69,7 @@ unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Float_vector &Buffer, unsign
           {
             vector<short> tempBuffer;
             tempBuffer.resize(N);
-            ValuesRead=(DWORD)fread(tempBuffer.data(), sizeof(short), N, plik);
+            ValuesRead=(uint32_t)fread(tempBuffer.data(), sizeof(short), N, plik);
             //convertion
             for (ind=0; ind<ValuesRead; ind++)
               Buffer[ind]=((DSP::Float)(tempBuffer[ind]))/0x8000;
@@ -78,7 +78,7 @@ unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Float_vector &Buffer, unsign
         case DSP::e::SampleType::ST_float:
           //reading
           {
-            ValuesRead=(DWORD)fread(Buffer.data(), sizeof(float), N, plik);
+            ValuesRead=(uint32_t)fread(Buffer.data(), sizeof(float), N, plik);
             //no need for convertion
           }
           break;
@@ -106,7 +106,7 @@ unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Complex_vector &Buffer, unsi
 {
   FILE *plik;
   string file_name;
-  DWORD ValuesRead;
+  uint32_t ValuesRead;
   unsigned int ind;
 
   file_name = FileDir;
@@ -129,7 +129,7 @@ unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Complex_vector &Buffer, unsi
           {
             vector<uint8_t> tempBuffer;
             tempBuffer.resize(2*N);
-            ValuesRead=(DWORD)fread(tempBuffer.data(), sizeof(uint8_t), 2*N, plik);
+            ValuesRead=(uint32_t)fread(tempBuffer.data(), sizeof(uint8_t), 2*N, plik);
             //convertion
             for (ind=0; ind<ValuesRead; ind=ind+2) {
               Buffer[ind].set(
@@ -144,7 +144,7 @@ unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Complex_vector &Buffer, unsi
           {
             vector<short> tempBuffer;
             tempBuffer.resize(2*N);
-            ValuesRead=(DWORD)fread(tempBuffer.data(), sizeof(short), 2*N, plik);
+            ValuesRead=(uint32_t)fread(tempBuffer.data(), sizeof(short), 2*N, plik);
             //convertion
             for (ind=0; ind<ValuesRead; ind=ind+2) {
               Buffer[ind].set(
@@ -159,7 +159,7 @@ unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Complex_vector &Buffer, unsi
           {
             vector<DSP::Float> tempBuffer;
             tempBuffer.resize(2*N);
-            ValuesRead=(DWORD)fread(Buffer.data(), sizeof(float), 2*N, plik);
+            ValuesRead=(uint32_t)fread(Buffer.data(), sizeof(float), 2*N, plik);
             // convertion
             for (ind=0; ind<ValuesRead; ind=ind+2) {
               Buffer[ind]=DSP::Complex(tempBuffer[ind], tempBuffer[ind+1]);
@@ -223,7 +223,7 @@ void DSP::T_FLT_header::sampling_rate(unsigned int val)
 
 //*****************************************************//
 //*****************************************************//
-DSPu_Vacuum::DSPu_Vacuum(unsigned int NoOfInputs_in)
+DSP::u::Vacuum::Vacuum(unsigned int NoOfInputs_in)
   : DSP::Block()
 {
   Init(false, NoOfInputs_in);
@@ -231,7 +231,7 @@ DSPu_Vacuum::DSPu_Vacuum(unsigned int NoOfInputs_in)
   Execute_ptr = &InputExecute;
 }
 
-DSPu_Vacuum::DSPu_Vacuum(bool AreInputsComplex, unsigned int NoOfInputs_in)
+DSP::u::Vacuum::Vacuum(bool AreInputsComplex, unsigned int NoOfInputs_in)
   : DSP::Block()
 {
   Init(AreInputsComplex, NoOfInputs_in);
@@ -239,7 +239,7 @@ DSPu_Vacuum::DSPu_Vacuum(bool AreInputsComplex, unsigned int NoOfInputs_in)
   Execute_ptr = &InputExecute;
 }
 
-void DSPu_Vacuum::Init(bool AreInputsComplex, unsigned int NoOfInputs_in)
+void DSP::u::Vacuum::Init(bool AreInputsComplex, unsigned int NoOfInputs_in)
 {
   unsigned int ind;
   string temp;
@@ -296,11 +296,11 @@ void DSPu_Vacuum::Init(bool AreInputsComplex, unsigned int NoOfInputs_in)
   ClockGroups.AddInputs2Group("all", 0, NoOfInputs-1);
 }
 
-DSPu_Vacuum::~DSPu_Vacuum()
+DSP::u::Vacuum::~Vacuum()
 {
 }
 
-void DSPu_Vacuum::InputExecute(INPUT_EXECUTE_ARGS)
+void DSP::u::Vacuum::InputExecute(INPUT_EXECUTE_ARGS)
 {
   UNUSED_ARGUMENT(InputNo);
   UNUSED_ARGUMENT(value);
@@ -349,7 +349,7 @@ DSP::e::FileType DSP::f::FileExtToFileType(const string &filename)
 
 //*****************************************************//
 //*****************************************************//
-DSPu_FILEinput::DSPu_FILEinput(DSP::Clock_ptr ParentClock,
+DSP::u::FileInput::FileInput(DSP::Clock_ptr ParentClock,
                   const string &FileName,
                   unsigned int NoOfChannels,
                   DSP::e::SampleType sample_type,
@@ -359,7 +359,7 @@ DSPu_FILEinput::DSPu_FILEinput(DSP::Clock_ptr ParentClock,
   string temp;
   bool ready;
 
-  SetName("FILEinput", false);
+  SetName("FileInput", false);
 
   // +++++++++++++++++++++++++++++++++++++++++++++ //
   RawBuffer.clear();
@@ -374,7 +374,7 @@ DSPu_FILEinput::DSPu_FILEinput(DSP::Clock_ptr ParentClock,
     if (FILEtype == DSP::e::FileType::FT_raw)
     {
       #ifdef __DEBUG__
-        DSP::log << DSP::LogMode::Error << "DSPu_FILEinput::DSPu_FILEinput" << DSP::LogMode::second
+        DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::LogMode::second
           << "Detection of no of channels is not supported for DSP::e::FileType::FT_raw (defaulting to 1 channels)" << endl;
         NoOfChannels = 1;
       #endif
@@ -402,7 +402,7 @@ DSPu_FILEinput::DSPu_FILEinput(DSP::Clock_ptr ParentClock,
     //NoOfChannels = 2;
     //! \bug support for reading files with different number of channels then number of block's outputs
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "DSPu_FILEinput::DSPu_FILEinput" << DSP::LogMode::second << "Wrong number of channels for *.tape file !!!" << endl;
+      DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::LogMode::second << "Wrong number of channels for *.tape file !!!" << endl;
     #endif
     ready = false;
   }
@@ -410,7 +410,7 @@ DSPu_FILEinput::DSPu_FILEinput(DSP::Clock_ptr ParentClock,
   if (NoOfOutputs != NoOfFileChannels)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "DSPu_FILEinput::DSPu_FILEinput" << DSP::LogMode::second
+      DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::LogMode::second
         << "Incorrect number of input channels: expected "
         << NoOfOutputs << " but found " << NoOfFileChannels << "!!!" << endl;
     #endif
@@ -456,7 +456,7 @@ DSPu_FILEinput::DSPu_FILEinput(DSP::Clock_ptr ParentClock,
 
   // +++++++++++++++++++++++++++++++++++++++++++++ //
   if (ready == false) {
-    DSP::log << DSP::LogMode::Error << "DSPu_FILEinput" << DSP::LogMode::second
+    DSP::log << DSP::LogMode::Error << "DSP::u::FileInput" << DSP::LogMode::second
       << "Block <" << GetName() << "> failed to open file \"" << FileName << "\"" << endl;
     OutputExecute_ptr = &OutputExecute_Dummy;
   }
@@ -464,17 +464,17 @@ DSPu_FILEinput::DSPu_FILEinput(DSP::Clock_ptr ParentClock,
     OutputExecute_ptr = &OutputExecute;
 }
 
-bool DSPu_FILEinput::SetSkip(long long Offset)
+bool DSP::u::FileInput::SetSkip(long long Offset)
 {
   UNUSED_ARGUMENT(Offset);
 
   #ifdef __DEBUG__
-    DSP::log << DSP::LogMode::Error << "DSPu_FILEinput::SetSkip" << DSP::LogMode::second << "not implemented yet" << endl;
+    DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::SetSkip" << DSP::LogMode::second << "not implemented yet" << endl;
   #endif
   return false;
 }
 
-bool DSPu_FILEinput::OpenFile(const string &FileName,
+bool DSP::u::FileInput::OpenFile(const string &FileName,
     DSP::e::SampleType sample_type, DSP::e::FileType FILEtype,
     unsigned int Default_NoOfChannels)
 {
@@ -502,7 +502,7 @@ bool DSPu_FILEinput::OpenFile(const string &FileName,
             ready = false;
 
             #ifdef __DEBUG__
-              DSP::log << DSP::LogMode::Error << "DSPu_FILEinput::DSPu_FILEinput" << DSP::LogMode::second << "Unsupported *.flt file version !!!" << endl;
+              DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::LogMode::second << "Unsupported *.flt file version !!!" << endl;
               //! \todo verify if file header data match constructor parameters
             #endif
           }
@@ -526,15 +526,15 @@ bool DSPu_FILEinput::OpenFile(const string &FileName,
             ready = false;
 
             #ifdef __DEBUG__
-              DSP::log << DSP::LogMode::Error << "DSPu_FILEinput::DSPu_FILEinput" << DSP::LogMode::second << "Unsupported *.tape file sample type!!!" << endl;
+              DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::LogMode::second << "Unsupported *.tape file sample type!!!" << endl;
             #endif
           }
 
           #ifdef __DEBUG__
             if (sizeof(DSP::T_TAPE_header) != DSP::TAPE_header_LEN)
-              DSP::log << DSP::LogMode::Error << "DSPu_FILEinput::DSPu_FILEinput" << DSP::LogMode::second << "TAPE_header_LEN does not much sizeof T_TAPE_header structure !!!" << endl;
+              DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::LogMode::second << "TAPE_header_LEN does not much sizeof T_TAPE_header structure !!!" << endl;
             if (tape_header[0].header_size() != DSP::TAPE_header_LEN)
-              DSP::log << DSP::LogMode::Error << "DSPu_FILEinput::DSPu_FILEinput" << DSP::LogMode::second << "Unsupported *.tape file version !!!" << endl;
+              DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::LogMode::second << "Unsupported *.tape file version !!!" << endl;
           #endif
 
           SamplingRate = tape_header[0].sampling_rate();
@@ -552,7 +552,7 @@ bool DSPu_FILEinput::OpenFile(const string &FileName,
 
             #ifdef __DEBUG__
             {
-              DSP::log << DSP::LogMode::Error << "DSPu_FILEinput::DSPu_FILEinput" << DSP::LogMode::second
+              DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::LogMode::second
                 << "This (" << FileName << ") is not PCM WAVE file or file is corrupted !!!" << endl;
             }
             #endif
@@ -576,7 +576,7 @@ bool DSPu_FILEinput::OpenFile(const string &FileName,
               ready = false;
               #ifdef __DEBUG__
               {
-                DSP::log << DSP::LogMode::Error << "DSPu_FILEinput::DSPu_FILEinput" << DSP::LogMode::second
+                DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::LogMode::second
                   << "Unsupported PCM sample size ==> " << wav_header[0].wBitsPerSample << " bits!!!" << endl;
               }
               #endif
@@ -590,7 +590,7 @@ bool DSPu_FILEinput::OpenFile(const string &FileName,
             ready = false;
             #ifdef __DEBUG__
             {
-              DSP::log << DSP::LogMode::Error << "DSPu_FILEinput::DSPu_FILEinput" << DSP::LogMode::second
+              DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::LogMode::second
                 << "No data have been found in PCM file " << FileName << "!!!" << endl;
             }
             #endif
@@ -633,7 +633,7 @@ bool DSPu_FILEinput::OpenFile(const string &FileName,
   return ready;
 }
 
-bool DSPu_FILEinput::CloseFile(void)
+bool DSP::u::FileInput::CloseFile(void)
 {
   int res = -1;
 
@@ -652,10 +652,10 @@ bool DSPu_FILEinput::CloseFile(void)
   return (res == 0);
 }
 
-//! needed to get function DSPu_FILEinput::GetHeader instances into library
+//! needed to get function DSP::u::FileInput::GetHeader instances into library
 void dummy_GetHeader(void)
 {
-  DSPu_FILEinput *temp = NULL;
+  DSP::u::FileInput *temp = NULL;
 
   temp->GetHeader<DSP::T_TAPE_header>();
   temp->GetHeader<DSP::T_FLT_header>();
@@ -663,7 +663,7 @@ void dummy_GetHeader(void)
 }
 
 template <class T>
-T *DSPu_FILEinput::GetHeader(const unsigned int &index)
+T *DSP::u::FileInput::GetHeader(const unsigned int &index)
 {
   std::vector<T> temp;
 
@@ -684,13 +684,13 @@ T *DSPu_FILEinput::GetHeader(const unsigned int &index)
   }
   return NULL; 
 }
-template DSP::T_FLT_header *DSPu_FILEinput::GetHeader<DSP::T_FLT_header>(const unsigned int &index = 0);
-template DSP::T_TAPE_header *DSPu_FILEinput::GetHeader<DSP::T_TAPE_header>(const unsigned int &index = 0);
-template DSP::T_WAVEchunk *DSPu_FILEinput::GetHeader<DSP::T_WAVEchunk>(const unsigned int &index = 0);
+template DSP::T_FLT_header *DSP::u::FileInput::GetHeader<DSP::T_FLT_header>(const unsigned int &index = 0);
+template DSP::T_TAPE_header *DSP::u::FileInput::GetHeader<DSP::T_TAPE_header>(const unsigned int &index = 0);
+template DSP::T_WAVEchunk *DSP::u::FileInput::GetHeader<DSP::T_WAVEchunk>(const unsigned int &index = 0);
 
 
 
-unsigned int DSPu_FILEinput::GetSampleSize(DSP::e::SampleType SampleType_in)
+unsigned int DSP::u::FileInput::GetSampleSize(DSP::e::SampleType SampleType_in)
 {
   unsigned int sample_size;
 
@@ -711,19 +711,19 @@ unsigned int DSPu_FILEinput::GetSampleSize(DSP::e::SampleType SampleType_in)
       sample_size=1;
       if ((DSP::File_buffer_size % 8) != 0)
       {
-        DSP::log << DSP::LogMode::Error << "DSPu_FILEinput" << DSP::LogMode::second << "Can't read bit stream corectly:"
+        DSP::log << DSP::LogMode::Error << "DSP::u::FileInput" << DSP::LogMode::second << "Can't read bit stream corectly:"
           " DSP::File_buffer_size is not a multiply of byte size (8 bits)" << endl;
       }
       break;
     case DSP::e::SampleType::ST_short:
       sample_size=8*sizeof(short);
       break;
-    case DSP::e::SampleType::ST_none: // return internal sample size used in DSPu_FILEinput
+    case DSP::e::SampleType::ST_none: // return internal sample size used in DSP::u::FileInput
       sample_size = SampleSize/NoOfFileChannels;
       break;
     default:
       sample_size=8*sizeof(short);
-      DSP::log << DSP::LogMode::Error << "DSPu_FILEinput" << DSP::LogMode::second << "Unsupported data type" << endl;
+      DSP::log << DSP::LogMode::Error << "DSP::u::FileInput" << DSP::LogMode::second << "Unsupported data type" << endl;
       break;
   }
   sample_size*=NoOfFileChannels;
@@ -731,7 +731,7 @@ unsigned int DSPu_FILEinput::GetSampleSize(DSP::e::SampleType SampleType_in)
   return sample_size;
 }
 
-DSPu_FILEinput::~DSPu_FILEinput(void)
+DSP::u::FileInput::~FileInput(void)
 {
 //  SetNoOfOutputs(0);
   CloseFile();
@@ -740,12 +740,12 @@ DSPu_FILEinput::~DSPu_FILEinput(void)
 }
 
 // returns number of bytes read during last file access
-unsigned int DSPu_FILEinput::GetBytesRead(void)
+unsigned int DSP::u::FileInput::GetBytesRead(void)
 {
   return BytesRead;
 }
 // returns sampling rate of audio sample
-long int DSPu_FILEinput::GetSamplingRate(void)
+long int DSP::u::FileInput::GetSamplingRate(void)
 {
   return SamplingRate;
 }
@@ -754,7 +754,7 @@ long int DSPu_FILEinput::GetSamplingRate(void)
 /* If NoOfSamples == 0 return allocated internal raw buffer size.
  * \note FlushBuffer requires one additional byte bot bit modes
  */
-unsigned int DSPu_FILEinput::GetRawBufferSize(unsigned int NoOfSamples)
+unsigned int DSP::u::FileInput::GetRawBufferSize(unsigned int NoOfSamples)
 {
   if (NoOfSamples == 0)
     return (SampleSize * DSP::File_buffer_size + 7)/8;
@@ -767,7 +767,7 @@ unsigned int DSPu_FILEinput::GetRawBufferSize(unsigned int NoOfSamples)
  *
  *  \note Returned value is NoOfSamples * NoOfChannels.
  */
-unsigned int DSPu_FILEinput::GetFltBufferSize(unsigned int NoOfSamples)
+unsigned int DSP::u::FileInput::GetFltBufferSize(unsigned int NoOfSamples)
 {
   if (NoOfSamples == 0)
     return (NoOfOutputs * DSP::File_buffer_size);
@@ -776,7 +776,7 @@ unsigned int DSPu_FILEinput::GetFltBufferSize(unsigned int NoOfSamples)
 }
 
 //! moves file pointer no_to_skip samples forward
-long long DSPu_FILEinput::SkipSamples(long long no_to_skip)
+long long DSP::u::FileInput::SkipSamples(long long no_to_skip)
 {
   long long no_of_bytes_to_skip;
 
@@ -792,7 +792,7 @@ long long DSPu_FILEinput::SkipSamples(long long no_to_skip)
   return 0;
 }
 
-unsigned int DSPu_FILEinput::ReadSegmentToBuffer(
+unsigned int DSP::u::FileInput::ReadSegmentToBuffer(
     DSP::Float_vector    &flt_buffer,
     int pad_size)
 {
@@ -813,7 +813,7 @@ unsigned int DSPu_FILEinput::ReadSegmentToBuffer(
   //! \TODO in input/output operations use int16_t and int32_t instead short and int
 
   /*! \todo <b>27.07.2008</b> Check first if there is something to read
-   *  in DSPu_FILEinput internal buffer. If yes then use it before
+   *  in DSP::u::FileInput internal buffer. If yes then use it before
    *  reading the file.
    */
   if (FileHandle != NULL)
@@ -948,9 +948,9 @@ unsigned int DSPu_FILEinput::ReadSegmentToBuffer(
   return BytesRead;
 }
 
-#define DSP_THIS ((DSPu_FILEinput *)source)
+#define DSP_THIS ((DSP::u::FileInput *)source)
 // Input file could not be open so output zeros
-bool DSPu_FILEinput::OutputExecute_Dummy(OUTPUT_EXECUTE_ARGS)
+bool DSP::u::FileInput::OutputExecute_Dummy(OUTPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(clock);
 
@@ -965,7 +965,7 @@ bool DSPu_FILEinput::OutputExecute_Dummy(OUTPUT_EXECUTE_ARGS)
   return true;
 }
 // returns true if source is ready
-bool DSPu_FILEinput::OutputExecute(OUTPUT_EXECUTE_ARGS)
+bool DSP::u::FileInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
 { // we assume only one output
   UNUSED_DEBUG_ARGUMENT(clock);
   unsigned int ind2;
@@ -991,7 +991,7 @@ bool DSPu_FILEinput::OutputExecute(OUTPUT_EXECUTE_ARGS)
 
 //*****************************************************//
 //*****************************************************//
-DSPu_FILEoutput::DSPu_FILEoutput(unsigned char NoOfChannels) : DSP::Block()
+DSP::u::FileOutput::FileOutput(unsigned char NoOfChannels) : DSP::Block()
 {
   string temp;
   ReOpen_FileType = DSP::e::FileType::FT_raw;
@@ -1005,7 +1005,7 @@ DSPu_FILEoutput::DSPu_FILEoutput(unsigned char NoOfChannels) : DSP::Block()
 
   BufferIndex = 0;
 
-  SetName("FILEoutput", false);
+  SetName("FileOutput", false);
   SetNoOfOutputs(0);
   if (NoOfChannels == 0)
     NoOfChannels=1;
@@ -1058,7 +1058,7 @@ DSPu_FILEoutput::DSPu_FILEoutput(unsigned char NoOfChannels) : DSP::Block()
   UnblockFile = false;
 }
 
-DSPu_FILEoutput::DSPu_FILEoutput(const string &FileName,
+DSP::u::FileOutput::FileOutput(const string &FileName,
                 DSP::e::SampleType sample_type,
                 unsigned int NoOfChannels,
                 DSP::e::FileType file_type, long int sampling_rate)
@@ -1066,7 +1066,7 @@ DSPu_FILEoutput::DSPu_FILEoutput(const string &FileName,
 {
   string temp;
 
-  SetName("FILEoutput", false);
+  SetName("FileOutput", false);
   SetNoOfOutputs(0);
   if (NoOfChannels == 0)
     NoOfChannels=1;
@@ -1117,17 +1117,17 @@ DSPu_FILEoutput::DSPu_FILEoutput(const string &FileName,
 }
 
 //! returns number of bytes read during last file access
-unsigned int DSPu_FILEoutput::GetBytesRead(void)
+unsigned int DSP::u::FileOutput::GetBytesRead(void)
 {
   return 0;
 }
 //! returns sampling rate of audio sample
-long int DSPu_FILEoutput::GetSamplingRate(void)
+long int DSP::u::FileOutput::GetSamplingRate(void)
 {
   return ReOpen_sampling_rate;
 }
 
-bool DSPu_FILEoutput::Open(const string &FileName, DSP::e::SampleType sample_type, unsigned int NoOfChannels,
+bool DSP::u::FileOutput::Open(const string &FileName, DSP::e::SampleType sample_type, unsigned int NoOfChannels,
                            DSP::e::FileType file_type, long int sampling_rate)
 {
   FileType = file_type;
@@ -1140,7 +1140,7 @@ bool DSPu_FILEoutput::Open(const string &FileName, DSP::e::SampleType sample_typ
   if (NoOfChannels > UCHAR_MAX)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "DSPu_FILEoutput::Open" << DSP::LogMode::second << "NoOfChannels to large (> UCHAR_MAX)" << endl;
+      DSP::log << DSP::LogMode::Error << "DSP::u::FileOutput::Open" << DSP::LogMode::second << "NoOfChannels to large (> UCHAR_MAX)" << endl;
     #endif
     NoOfChannels = UCHAR_MAX;
   }
@@ -1185,7 +1185,7 @@ bool DSPu_FILEoutput::Open(const string &FileName, DSP::e::SampleType sample_typ
     case DSP::e::SampleType::ST_bit_reversed:
       if ((DSP::File_buffer_size % 8) != 0)
       {
-        DSP::log << DSP::LogMode::Error << "DSPu_FILEoutput" << DSP::LogMode::second << "Can't write bit stream correctly:"
+        DSP::log << DSP::LogMode::Error << "DSP::u::FileOutput" << DSP::LogMode::second << "Can't write bit stream correctly:"
           " DSP::File_buffer_size is not a multiply of byte size (8 bits)" << endl;
       }
       // "0 / 1" byte by byte
@@ -1196,7 +1196,7 @@ bool DSPu_FILEoutput::Open(const string &FileName, DSP::e::SampleType sample_typ
       break;
     default:
       #ifdef __DEBUG__
-        DSP::log << DSP::LogMode::Error << "DSPu_FILEoutput" << DSP::LogMode::second << "Unsupported data type changing to DSP::e::SampleType::ST_short" << endl;
+        DSP::log << DSP::LogMode::Error << "DSP::u::FileOutput" << DSP::LogMode::second << "Unsupported data type changing to DSP::e::SampleType::ST_short" << endl;
       #endif
       SampleType = DSP::e::SampleType::ST_short;
       Execute_ptr = &InputExecute_short;
@@ -1223,12 +1223,12 @@ bool DSPu_FILEoutput::Open(const string &FileName, DSP::e::SampleType sample_typ
             break;
           default:
             #ifdef  __DEBUG__
-              DSP::log << DSP::LogMode::Error << "DSPu_FILEoutput" << DSP::LogMode::second << "*.wav: unsupported sample type" << endl;
+              DSP::log << DSP::LogMode::Error << "DSP::u::FileOutput" << DSP::LogMode::second << "*.wav: unsupported sample type" << endl;
             #endif
             break;
         }
 
-        WAV_header.PrepareHeader((DWORD)sampling_rate, (WORD)NoOfInputs, (WORD)(SampleSize/NoOfInputs));
+        WAV_header.PrepareHeader((uint32_t)sampling_rate, (uint16_t)NoOfInputs, (uint16_t)(SampleSize/NoOfInputs));
         WAV_header.WriteHeader(FileHandle);
 
         FlushBuffer_type = E_FlushBuffer(FlushBuffer_type | E_FB_update_header);
@@ -1242,7 +1242,7 @@ bool DSPu_FILEoutput::Open(const string &FileName, DSP::e::SampleType sample_typ
             case DSP::e::SampleType::ST_short: // 16bit
               break;
             default:
-              DSP::log << DSP::LogMode::Error << "DSPu_FILEoutput", "*.tape: unsupported sample type");
+              DSP::log << DSP::LogMode::Error << "DSP::u::FileOutput", "*.tape: unsupported sample type");
               break;
           }
         #endif
@@ -1283,7 +1283,7 @@ bool DSPu_FILEoutput::Open(const string &FileName, DSP::e::SampleType sample_typ
               break;
             default:
               #ifdef  __DEBUG__
-                DSP::log << DSP::LogMode::Error << "DSPu_FILEoutput" << DSP::LogMode::second << "*.flt: unsupported sample type" << endl;
+                DSP::log << DSP::LogMode::Error << "DSP::u::FileOutput" << DSP::LogMode::second << "*.flt: unsupported sample type" << endl;
               #endif
               break;
           }
@@ -1327,20 +1327,20 @@ bool DSP::File::SetOffset(long long Offset, DSPe_offset_mode mode)
     case DSP_OM_standard:
     default:
       #ifdef __DEBUG__
-        DSP::log << DSP::LogMode::Error << "DSPu_FILEoutput:: SetOffset" << DSP::LogMode::second << "The mode is unsuported" << endl;
+        DSP::log << DSP::LogMode::Error << "DSP::u::FileOutput:: SetOffset" << DSP::LogMode::second << "The mode is unsuported" << endl;
       #endif
       break;
   }
   return result;
 }
 
-bool DSPu_FILEoutput::SetSkip(long long Offset)
+bool DSP::u::FileOutput::SetSkip(long long Offset)
 {
   skip_counter = Offset;
   return true;
 }
 
-unsigned int DSPu_FILEoutput::GetSampleSize(DSP::e::SampleType SampleType_in)
+unsigned int DSP::u::FileOutput::GetSampleSize(DSP::e::SampleType SampleType_in)
 {
   unsigned int sample_size;
 
@@ -1372,7 +1372,7 @@ unsigned int DSPu_FILEoutput::GetSampleSize(DSP::e::SampleType SampleType_in)
       sample_size=1;
       if ((DSP::File_buffer_size % 8) != 0)
       {
-        DSP::log << DSP::LogMode::Error << "DSPu_FILEoutput::GetSampleSize" << DSP::LogMode::second << "Can't write bit stream corectly:"
+        DSP::log << DSP::LogMode::Error << "DSP::u::FileOutput::GetSampleSize" << DSP::LogMode::second << "Can't write bit stream corectly:"
           " DSP::File_buffer_size is not a multiply of byte size (8 bits)" << endl;
       }
       break;
@@ -1381,7 +1381,7 @@ unsigned int DSPu_FILEoutput::GetSampleSize(DSP::e::SampleType SampleType_in)
       break;
     default:
       #ifdef __DEBUG__
-        DSP::log << DSP::LogMode::Error << "DSPu_FILEoutput::GetSampleSize" << DSP::LogMode::second << "Unsupported data type changing to DSP::e::SampleType::ST_short" << endl;
+        DSP::log << DSP::LogMode::Error << "DSP::u::FileOutput::GetSampleSize" << DSP::LogMode::second << "Unsupported data type changing to DSP::e::SampleType::ST_short" << endl;
       #endif
       sample_size=8*sizeof(short);
       break;
@@ -1390,13 +1390,13 @@ unsigned int DSPu_FILEoutput::GetSampleSize(DSP::e::SampleType SampleType_in)
   return sample_size;
 }
 
-DSPu_FILEoutput::~DSPu_FILEoutput(void)
+DSP::u::FileOutput::~FileOutput(void)
 {
 //  SetNoOfOutputs(0);
   Close();
 }
 
-void DSPu_FILEoutput::Flush(void)
+void DSP::u::FileOutput::Flush(void)
 {
   if (FileHandle != NULL)
   {
@@ -1426,7 +1426,7 @@ void DSPu_FILEoutput::Flush(void)
   }
 }
 
-void DSPu_FILEoutput::Close(void)
+void DSP::u::FileOutput::Close(void)
 {
   Stored_Execute_ptr = NULL;
   IsBlocked = false;
@@ -1442,7 +1442,7 @@ void DSPu_FILEoutput::Close(void)
   }
 }
 
-void DSPu_FILEoutput::PerformReOpen(void)
+void DSP::u::FileOutput::PerformReOpen(void)
 {
   Close();
   Open(ReOpen_FileName, ReOpen_SampleType, NoOfInputs,
@@ -1451,7 +1451,7 @@ void DSPu_FILEoutput::PerformReOpen(void)
   ReOpenFile = false;
 }
 
-void DSPu_FILEoutput::ReOpen(const string &FileName, DSP::e::SampleType sample_type,
+void DSP::u::FileOutput::ReOpen(const string &FileName, DSP::e::SampleType sample_type,
                              DSP::e::FileType file_type, long int sampling_rate)
 {
   ReOpen_FileName = FileName;
@@ -1463,12 +1463,12 @@ void DSPu_FILEoutput::ReOpen(const string &FileName, DSP::e::SampleType sample_t
   ReOpenFile = true;
 }
 
-bool DSPu_FILEoutput::BlockOutput(bool block)
+bool DSP::u::FileOutput::BlockOutput(bool block)
 {
   if (FileHandle == NULL)
   {
     #ifdef __DEBUG__
-      DSP::log << "DSPu_FILEoutput::BlockOutput" << DSP::LogMode::second << "Warning: FileHandle == NULL !!!" << endl;
+      DSP::log << "DSP::u::FileOutput::BlockOutput" << DSP::LogMode::second << "Warning: FileHandle == NULL !!!" << endl;
     #endif
     return false;
   }
@@ -1488,7 +1488,7 @@ bool DSPu_FILEoutput::BlockOutput(bool block)
   return true;
 }
 
-void DSPu_FILEoutput::PerformBlock(bool block)
+void DSP::u::FileOutput::PerformBlock(bool block)
 {
   if (block == true)
   {
@@ -1511,7 +1511,7 @@ void DSPu_FILEoutput::PerformBlock(bool block)
 // Returns raw buffer size in bytes needed for NoOfSamples samples.
 /* If NoOfSamples == 0 return allocated internal raw buffer size.
  */
-unsigned int DSPu_FILEoutput::GetRawBufferSize(unsigned int NoOfSamples)
+unsigned int DSP::u::FileOutput::GetRawBufferSize(unsigned int NoOfSamples)
 {
   if (NoOfSamples == 0)
     return (SampleSize * DSP::File_buffer_size + 7)/8;
@@ -1519,7 +1519,7 @@ unsigned int DSPu_FILEoutput::GetRawBufferSize(unsigned int NoOfSamples)
     return (SampleSize * NoOfSamples + 7)/8;
 }
 
-unsigned int DSPu_FILEoutput::WriteSegmentFromBuffer(
+unsigned int DSP::u::FileOutput::WriteSegmentFromBuffer(
                                     const DSP::Float_vector &flt_buffer,
                                     int skip)
 {
@@ -1649,7 +1649,7 @@ unsigned int DSPu_FILEoutput::WriteSegmentFromBuffer(
       break;
 
     default:
-      DSP::log << DSP::LogMode::Error << "DSPu_FILEoutput::WriteSegmentToBuffer" << DSP::LogMode::second << "Unsupported file sample type - write aborted" << endl;
+      DSP::log << DSP::LogMode::Error << "DSP::u::FileOutput::WriteSegmentToBuffer" << DSP::LogMode::second << "Unsupported file sample type - write aborted" << endl;
       return 0;
   }
 
@@ -1658,9 +1658,9 @@ unsigned int DSPu_FILEoutput::WriteSegmentFromBuffer(
   return BytesWritten;
 }
 
-#define  DSP_THIS  ((DSPu_FILEoutput *)block)
+#define  DSP_THIS  ((DSP::u::FileOutput *)block)
 // Just ignore inputs and process block and reopen signals
-void DSPu_FILEoutput::InputExecute_Dummy(INPUT_EXECUTE_ARGS)
+void DSP::u::FileOutput::InputExecute_Dummy(INPUT_EXECUTE_ARGS)
 { // we assume only one input
   UNUSED_ARGUMENT(InputNo);
   UNUSED_ARGUMENT(value);
@@ -1694,7 +1694,7 @@ void DSPu_FILEoutput::InputExecute_Dummy(INPUT_EXECUTE_ARGS)
 
 // returns true if successfully processed given value
 // value is put on input number InputNo
-void DSPu_FILEoutput::InputExecute_float(INPUT_EXECUTE_ARGS)
+void DSP::u::FileOutput::InputExecute_float(INPUT_EXECUTE_ARGS)
 { // we assume only one input
   UNUSED_DEBUG_ARGUMENT(Caller);
 
@@ -1747,7 +1747,7 @@ void DSPu_FILEoutput::InputExecute_float(INPUT_EXECUTE_ARGS)
   }
 };
 
-void DSPu_FILEoutput::InputExecute_scaled_float(INPUT_EXECUTE_ARGS)
+void DSP::u::FileOutput::InputExecute_scaled_float(INPUT_EXECUTE_ARGS)
 { // we assume only one input
   UNUSED_DEBUG_ARGUMENT(Caller);
 
@@ -1801,7 +1801,7 @@ void DSPu_FILEoutput::InputExecute_scaled_float(INPUT_EXECUTE_ARGS)
   }
 };
 
-void DSPu_FILEoutput::InputExecute_uchar(INPUT_EXECUTE_ARGS)
+void DSP::u::FileOutput::InputExecute_uchar(INPUT_EXECUTE_ARGS)
 { // we assume only one input
   UNUSED_DEBUG_ARGUMENT(Caller);
 
@@ -1864,7 +1864,7 @@ void DSPu_FILEoutput::InputExecute_uchar(INPUT_EXECUTE_ARGS)
   }
 };
 
-void DSPu_FILEoutput::InputExecute_uchar_no_scaling(INPUT_EXECUTE_ARGS)
+void DSP::u::FileOutput::InputExecute_uchar_no_scaling(INPUT_EXECUTE_ARGS)
 { // we assume only one input
   UNUSED_DEBUG_ARGUMENT(Caller);
 
@@ -1924,7 +1924,7 @@ void DSPu_FILEoutput::InputExecute_uchar_no_scaling(INPUT_EXECUTE_ARGS)
   }
 };
 
-void DSPu_FILEoutput::InputExecute_short(INPUT_EXECUTE_ARGS)
+void DSP::u::FileOutput::InputExecute_short(INPUT_EXECUTE_ARGS)
 { // we assume only one input
   UNUSED_DEBUG_ARGUMENT(Caller);
   int temp;
@@ -1990,7 +1990,7 @@ void DSPu_FILEoutput::InputExecute_short(INPUT_EXECUTE_ARGS)
   #endif
 };
 
-void DSPu_FILEoutput::InputExecute_short_no_scaling(INPUT_EXECUTE_ARGS)
+void DSP::u::FileOutput::InputExecute_short_no_scaling(INPUT_EXECUTE_ARGS)
 { // we assume only one input
   UNUSED_DEBUG_ARGUMENT(Caller);
 
@@ -2049,7 +2049,7 @@ void DSPu_FILEoutput::InputExecute_short_no_scaling(INPUT_EXECUTE_ARGS)
   }
 };
 
-void DSPu_FILEoutput::InputExecute_int(INPUT_EXECUTE_ARGS)
+void DSP::u::FileOutput::InputExecute_int(INPUT_EXECUTE_ARGS)
 { // we assume only one input
   UNUSED_DEBUG_ARGUMENT(Caller);
   long long temp;
@@ -2110,7 +2110,7 @@ void DSPu_FILEoutput::InputExecute_int(INPUT_EXECUTE_ARGS)
   }
 };
 
-void DSPu_FILEoutput::InputExecute_int_no_scaling(INPUT_EXECUTE_ARGS)
+void DSP::u::FileOutput::InputExecute_int_no_scaling(INPUT_EXECUTE_ARGS)
 { // we assume only one input
   UNUSED_DEBUG_ARGUMENT(Caller);
 
@@ -2169,7 +2169,7 @@ void DSPu_FILEoutput::InputExecute_int_no_scaling(INPUT_EXECUTE_ARGS)
   }
 };
 
-void DSPu_FILEoutput::InputExecute_bit_text(INPUT_EXECUTE_ARGS)
+void DSP::u::FileOutput::InputExecute_bit_text(INPUT_EXECUTE_ARGS)
 { // we assume only one input
   UNUSED_DEBUG_ARGUMENT(Caller);
 
@@ -2224,7 +2224,7 @@ void DSPu_FILEoutput::InputExecute_bit_text(INPUT_EXECUTE_ARGS)
 };
 
 // is used for both >>bit<< & >>bit_reversed<< real work is done in FlushBuffer
-void DSPu_FILEoutput::InputExecute_bit(INPUT_EXECUTE_ARGS)
+void DSP::u::FileOutput::InputExecute_bit(INPUT_EXECUTE_ARGS)
 { // we assume only one input
   UNUSED_DEBUG_ARGUMENT(Caller);
 
@@ -2278,7 +2278,7 @@ void DSPu_FILEoutput::InputExecute_bit(INPUT_EXECUTE_ARGS)
   }
 };
 
-void DSPu_FILEoutput::InputExecute_blocked(INPUT_EXECUTE_ARGS)
+void DSP::u::FileOutput::InputExecute_blocked(INPUT_EXECUTE_ARGS)
 { // we assume only one input
   UNUSED_ARGUMENT(InputNo);
   UNUSED_ARGUMENT(value);
@@ -2313,42 +2313,42 @@ void DSPu_FILEoutput::InputExecute_blocked(INPUT_EXECUTE_ARGS)
 /*
 // returns true if successfully processed given value
 // value is put on input number InputNo
-void DSPu_FILEoutput::InputExecute(DSP::Block *block, int InputNo, DSP::Float value, DSP::Component_ptr Caller)
+void DSP::u::FileOutput::InputExecute(DSP::Block *block, int InputNo, DSP::Float value, DSP::Component_ptr Caller)
 { // we assume only one input
-  ((DSPu_FILEoutput *)block)->Buffer[((DSPu_FILEoutput *)block)->BufferIndex * ((DSPu_FILEoutput *)block)->NoOfInputs + InputNo]=value;
-  ((DSPu_FILEoutput *)block)->NoOfInputsProcessed++;
+  ((DSP::u::FileOutput *)block)->Buffer[((DSP::u::FileOutput *)block)->BufferIndex * ((DSP::u::FileOutput *)block)->NoOfInputs + InputNo]=value;
+  ((DSP::u::FileOutput *)block)->NoOfInputsProcessed++;
 
-  if (((DSPu_FILEoutput *)block)->NoOfInputsProcessed == ((DSPu_FILEoutput *)block)->NoOfInputs)
+  if (((DSP::u::FileOutput *)block)->NoOfInputsProcessed == ((DSP::u::FileOutput *)block)->NoOfInputs)
   {
-    if (((DSPu_FILEoutput *)block)->SamplesToSkipCounter > 0)
+    if (((DSP::u::FileOutput *)block)->SamplesToSkipCounter > 0)
     {
-      ((DSPu_FILEoutput *)block)->SamplesToSkipCounter--;
-      ((DSPu_FILEoutput *)block)->NoOfInputsProcessed = ((DSPu_FILEoutput *)block)->InitialNoOfInputsProcessed;
+      ((DSP::u::FileOutput *)block)->SamplesToSkipCounter--;
+      ((DSP::u::FileOutput *)block)->NoOfInputsProcessed = ((DSP::u::FileOutput *)block)->InitialNoOfInputsProcessed;
       return;
     }
 
-    ((DSPu_FILEoutput *)block)->BufferIndex++;
-    ((DSPu_FILEoutput *)block)->BufferIndex %= DSP::File_buffer_size;
+    ((DSP::u::FileOutput *)block)->BufferIndex++;
+    ((DSP::u::FileOutput *)block)->BufferIndex %= DSP::File_buffer_size;
 
-    if (((DSPu_FILEoutput *)block)->BufferIndex == 0)
+    if (((DSP::u::FileOutput *)block)->BufferIndex == 0)
     { // Data must be written to file from buffer
       //First we need to convert data from RawBuffer
       //if SampleType == DSP::e::SampleType::ST_float we don't need to convert
-      ((DSPu_FILEoutput *)block)->FlushBuffer();
+      ((DSP::u::FileOutput *)block)->FlushBuffer();
     }
 
     //NoOfInputsProcessed=0;
-    if (((DSPu_FILEoutput *)block)->IsUsingConstants)
+    if (((DSP::u::FileOutput *)block)->IsUsingConstants)
     {
-      for (int ind=0; ind < ((DSPu_FILEoutput *)block)->NoOfInputs; ind++)
-        if (((DSPu_FILEoutput *)block)->IsConstantInput[ind])
+      for (int ind=0; ind < ((DSP::u::FileOutput *)block)->NoOfInputs; ind++)
+        if (((DSP::u::FileOutput *)block)->IsConstantInput[ind])
         {
-          ((DSPu_FILEoutput *)block)->Buffer[((DSPu_FILEoutput *)block)->BufferIndex * ((DSPu_FILEoutput *)block)->NoOfInputs + InputNo] =
-             ((DSPu_FILEoutput *)block)->ConstantInputValues[ind];
-          ((DSPu_FILEoutput *)block)->NoOfInputsProcessed++;
+          ((DSP::u::FileOutput *)block)->Buffer[((DSP::u::FileOutput *)block)->BufferIndex * ((DSP::u::FileOutput *)block)->NoOfInputs + InputNo] =
+             ((DSP::u::FileOutput *)block)->ConstantInputValues[ind];
+          ((DSP::u::FileOutput *)block)->NoOfInputsProcessed++;
         }
     }
-    ((DSPu_FILEoutput *)block)->NoOfInputsProcessed = ((DSPu_FILEoutput *)block)->InitialNoOfInputsProcessed;
+    ((DSP::u::FileOutput *)block)->NoOfInputsProcessed = ((DSP::u::FileOutput *)block)->InitialNoOfInputsProcessed;
   }
 
   #ifdef VerboseCompilation
@@ -2357,7 +2357,7 @@ void DSPu_FILEoutput::InputExecute(DSP::Block *block, int InputNo, DSP::Float va
 };
 */
 
-void DSPu_FILEoutput::FlushBuffer(void)
+void DSP::u::FileOutput::FlushBuffer(void)
 {
   uint8_t *tempUChar, mask;
   uint8_t *tempBuffer;
@@ -2378,7 +2378,7 @@ void DSPu_FILEoutput::FlushBuffer(void)
     {
     #ifdef __DEBUG__
       case DSP::e::SampleType::ST_short:
-        DSP::log << "DSPu_FILEoutput::FlushBuffer" << DSP::LogMode::second << "DSP::e::SampleType::ST_short no longer supported" << endl;
+        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::LogMode::second << "DSP::e::SampleType::ST_short no longer supported" << endl;
         /*
         tempBuffer_float=Buffer;
 
@@ -2392,7 +2392,7 @@ void DSPu_FILEoutput::FlushBuffer(void)
         */
         break;
       case DSP::e::SampleType::ST_float:
-        DSP::log << "DSPu_FILEoutput::FlushBuffer" << DSP::LogMode::second << "DSP::e::SampleType::ST_float no longer supported" << endl;
+        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::LogMode::second << "DSP::e::SampleType::ST_float no longer supported" << endl;
         /*
         tempBuffer_float=Buffer;
 
@@ -2406,10 +2406,10 @@ void DSPu_FILEoutput::FlushBuffer(void)
         */
         break;
       case DSP::e::SampleType::ST_tchar:
-        DSP::log << "DSPu_FILEoutput::FlushBuffer" << DSP::LogMode::second << "DSP::e::SampleType::ST_tchar no longer supported" << endl;
+        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::LogMode::second << "DSP::e::SampleType::ST_tchar no longer supported" << endl;
         break;
       case DSP::e::SampleType::ST_uchar:
-        DSP::log << "DSPu_FILEoutput::FlushBuffer" << DSP::LogMode::second << "DSP::e::SampleType::ST_uchar no longer supported" << endl;
+        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::LogMode::second << "DSP::e::SampleType::ST_uchar no longer supported" << endl;
         /*
         tempBuffer_float=Buffer;
 
@@ -2423,7 +2423,7 @@ void DSPu_FILEoutput::FlushBuffer(void)
         */
         break;
       case DSP::e::SampleType::ST_bit_text:
-        DSP::log << "DSPu_FILEoutput::FlushBuffer" << DSP::LogMode::second << "DSP::e::SampleType::ST_bit_text no longer supported" << endl;
+        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::LogMode::second << "DSP::e::SampleType::ST_bit_text no longer supported" << endl;
         /*
         tempBuffer_float=Buffer;
 
@@ -2486,7 +2486,7 @@ void DSPu_FILEoutput::FlushBuffer(void)
         break;
       default:
         #ifdef __DEBUG__
-          DSP::log << "DSPu_FILEoutput::FlushBuffer" << DSP::LogMode::second << "Unsupported format detected" << endl;
+          DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::LogMode::second << "Unsupported format detected" << endl;
         #endif
         break;
     }
@@ -2498,7 +2498,7 @@ void DSPu_FILEoutput::FlushBuffer(void)
 }
 
 
-void DSPu_FILEoutput::raw_FlushBuffer(void)
+void DSP::u::FileOutput::raw_FlushBuffer(void)
 {
   if (FileHandle != NULL)
   {
@@ -2552,7 +2552,7 @@ bool DSP::f::GetWAVEfileParams(const string &FileName, const string &FileDir,
 }
 
 // Creates object for *.wav files reading
-DSPu_WaveInput::DSPu_WaveInput(DSP::Clock_ptr ParentClock,
+DSP::u::WaveInput::WaveInput(DSP::Clock_ptr ParentClock,
                              const string &FileName_in, const string &FileDir_in,
                              unsigned int OutputsNo)
   : DSP::File(), DSP::Source()
@@ -2607,7 +2607,7 @@ DSPu_WaveInput::DSPu_WaveInput(DSP::Clock_ptr ParentClock,
 }
 
 
-DSPu_WaveInput::~DSPu_WaveInput(void)
+DSP::u::WaveInput::~WaveInput(void)
 {
   CloseFile();
 
@@ -2615,12 +2615,12 @@ DSPu_WaveInput::~DSPu_WaveInput(void)
   AudioBuffer.clear();
 }
 
-bool DSPu_WaveInput::SetSkip(long long Offset)
+bool DSP::u::WaveInput::SetSkip(long long Offset)
 {
   UNUSED_ARGUMENT(Offset);
 
   #ifdef __DEBUG__
-    DSP::log << DSP::LogMode::Error << "DSPu_FILEinput::SetSkip" << DSP::LogMode::second << "not implemented yet" << endl;
+    DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::SetSkip" << DSP::LogMode::second << "not implemented yet" << endl;
   #endif
   return false;
 }
@@ -2628,7 +2628,7 @@ bool DSPu_WaveInput::SetSkip(long long Offset)
 
 //bool CWaveInput::StartCaptureAudio(void)
 //To be used in constructor
-bool DSPu_WaveInput::Init(void)
+bool DSP::u::WaveInput::Init(void)
 {
   string tekst;
   int len;
@@ -2636,7 +2636,7 @@ bool DSPu_WaveInput::Init(void)
   BufferIndex=0; //this means also that Buffer is empty
 
   ConvertionNeeded=true; //inner buffer in DSP::Float format
-  AudioBufferLen = (DWORD)(NoOfOutputs*SegmentSize*sizeof(DSP::Float));
+  AudioBufferLen = (uint32_t)(NoOfOutputs*SegmentSize*sizeof(DSP::Float));
   AudioBuffer.clear();
   AudioBuffer.resize(AudioBufferLen/sizeof(DSP::Float), 0.0);
 
@@ -2654,7 +2654,7 @@ bool DSPu_WaveInput::Init(void)
   if (FileHandle == NULL)
   {
     #ifdef __DEBUG__
-      DSP::log << "DSPu_WaveInput::Init" << DSP::LogMode::second
+      DSP::log << "DSP::u::WaveInput::Init" << DSP::LogMode::second
         << "(Input file \"" << tekst
         << "\" in block <" << GetName() << "> could not be opened" << endl;
     #endif
@@ -2671,7 +2671,7 @@ bool DSPu_WaveInput::Init(void)
   if (WAVEchunk.WAVEinfo(FileHandle)==false)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "DSPu_WaveInput::Init" << DSP::LogMode::second
+      DSP::log << DSP::LogMode::Error << "DSP::u::WaveInput::Init" << DSP::LogMode::second
         << "This (" << FileName << ") is not PCM WAVE file or file is corrupted !!!" << endl;
     #endif
     fclose(FileHandle);
@@ -2700,7 +2700,7 @@ bool DSPu_WaveInput::Init(void)
               << WAVEchunk.wBitsPerSample << "bits";
          break;
      }
-    DSP::log << "DSPu_WaveInput::Init" << DSP::LogMode::second << temp.str() << endl;
+    DSP::log << "DSP::u::WaveInput::Init" << DSP::LogMode::second << temp.str() << endl;
   }
   #endif
   //SampleSize = WAVEchunk.wBitsPerSample * WAVEchunk.nChannels;
@@ -2709,7 +2709,7 @@ bool DSPu_WaveInput::Init(void)
   if (WAVEchunk.FindDATA(FileHandle)==false)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "DSPu_WaveInput::Init" << DSP::LogMode::second
+      DSP::log << DSP::LogMode::Error << "DSP::u::WaveInput::Init" << DSP::LogMode::second
         << "No data have been found in PCM file " << FileName << "!!!" << endl;
     #endif
     fclose(FileHandle);
@@ -2731,7 +2731,7 @@ bool DSPu_WaveInput::Init(void)
   return (FileHandle!=NULL);
 }
 
-bool DSPu_WaveInput::CloseFile(void)
+bool DSP::u::WaveInput::CloseFile(void)
 {
   if (FileHandle!=NULL)
   {
@@ -2745,7 +2745,7 @@ bool DSPu_WaveInput::CloseFile(void)
 /*  if file has more channels then zeros are set to excesive outputs
  *  if file has less channels then execive channels are discarded
  */
-DWORD DSPu_WaveInput::ReadAudioSegment(void)
+uint32_t DSP::u::WaveInput::ReadAudioSegment(void)
 {
   if (FileEnd == true)
   { // AudioBuffer must be cleaned (reset)
@@ -2757,9 +2757,9 @@ DWORD DSPu_WaveInput::ReadAudioSegment(void)
   {
     //ReadFile(hIn, ReadBuffer, ReadBufferLen, &BytesRead, NULL);
     if (BytesRemainingInFile < ReadBufferLen)
-      BytesRead=(DWORD)fread(ReadBuffer.data(), 1, BytesRemainingInFile, FileHandle);
+      BytesRead=(uint32_t)fread(ReadBuffer.data(), 1, BytesRemainingInFile, FileHandle);
     else
-      BytesRead=(DWORD)fread(ReadBuffer.data(), 1, ReadBufferLen, FileHandle);
+      BytesRead=(uint32_t)fread(ReadBuffer.data(), 1, ReadBufferLen, FileHandle);
     BytesRemainingInFile-=BytesRead;
     if (BytesRead!=ReadBufferLen)
     {
@@ -2822,29 +2822,29 @@ DWORD DSPu_WaveInput::ReadAudioSegment(void)
         #ifdef __DEBUG__
           else
           {
-            DSP::log << DSP::LogMode::Error << "DSPu_WaveInput::ReadAudioSegment" << DSP::LogMode::second << "unsupported PCM sample size" << endl;
+            DSP::log << DSP::LogMode::Error << "DSP::u::WaveInput::ReadAudioSegment" << DSP::LogMode::second << "unsupported PCM sample size" << endl;
           }
         #endif
 
     }
-    return (DWORD)(BytesRead/sizeof(DSP::Float)/WAVEchunk.nChannels);
+    return (uint32_t)(BytesRead/sizeof(DSP::Float)/WAVEchunk.nChannels);
   }
 }
 
 // returns number of bytes read during last file access
-unsigned int DSPu_WaveInput::GetBytesRead(void)
+unsigned int DSP::u::WaveInput::GetBytesRead(void)
 {
   return BytesRead;
 }
 
 // returns sampling rate of audio sample
-long int DSPu_WaveInput::GetSamplingRate(void)
+long int DSP::u::WaveInput::GetSamplingRate(void)
 {
   return SamplingRate;
 }
 
-#define DSP_THIS ((DSPu_WaveInput *)source)
-bool DSPu_WaveInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
+#define DSP_THIS ((DSP::u::WaveInput *)source)
+bool DSP::u::WaveInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
 { // we assume only one output
   UNUSED_DEBUG_ARGUMENT(clock);
   unsigned int ind;
@@ -2860,7 +2860,7 @@ bool DSPu_WaveInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
    * and just after the ReadAudioSegment above
    * sets the pointer to AudioBuffer and after each read increases just like temp.
    *
-   * Check the above also in case of DSPu_FILEinput
+   * Check the above also in case of DSP::u::FileInput
    */
   temp = DSP_THIS->AudioBuffer.data() +
          DSP_THIS->BufferIndex * DSP_THIS->NoOfOutputs;
@@ -3024,9 +3024,9 @@ void DSP::T_WAVEchunk::clear() {
 }
 
 void DSP::T_WAVEchunk::PrepareHeader(
-    DWORD nSamplesPerSec_in,
-    WORD  nChannels_in,
-    WORD  wBitsPerSample_in)
+    uint32_t nSamplesPerSec_in,
+    uint16_t  nChannels_in,
+    uint16_t  wBitsPerSample_in)
 {
   memcpy(Type, "RIFF", 4);
   size = 0; // file size - 8
@@ -3044,7 +3044,7 @@ void DSP::T_WAVEchunk::PrepareHeader(
     if ((wBitsPerSample % 8) != 0)
       DSP::log << DSP::LogMode::Error << "T_WAVEchunk::PrepareHeader" << DSP::LogMode::second << "wBitsPerSample_in in not a multiple of 8" << endl;
   #endif
-  nBlockAlign = (WORD)(wBitsPerSample / 8 * nChannels);
+  nBlockAlign = (uint16_t)(wBitsPerSample / 8 * nChannels);
   nAvgBytesPerSec = nSamplesPerSec * nBlockAlign;
 
   memcpy(DataType, "data ", 4);
@@ -3057,7 +3057,7 @@ bool DSP::T_WAVEchunk::WriteHeader(FILE *hOut)
 {
   if ((HeaderSize > 0) && (hOut != NULL))
   {
-    BytesRead=(DWORD)fwrite(this,1,HeaderSize,hOut);
+    BytesRead=(uint32_t)fwrite(this,1,HeaderSize,hOut);
 
     if ((int)BytesRead == HeaderSize)
       return true;
@@ -3086,8 +3086,8 @@ bool DSP::T_WAVEchunk::UpdateHeader(FILE *hOut)
     len = ftell(hOut);
 #endif
     // 3. Compute size and DataSize
-    size = (DWORD)(len - 8);
-    DataSize = (DWORD)(len - HeaderSize);
+    size = (uint32_t)(len - 8);
+    DataSize = (uint32_t)(len - HeaderSize);
     // 4. Add padding if necessary
     if ((DataSize % 2) == 1)
     {
@@ -3102,7 +3102,7 @@ bool DSP::T_WAVEchunk::UpdateHeader(FILE *hOut)
 //    fseeko64(hOut, 0, SEEK_SET);
     fseek(hOut, 0, SEEK_SET);
 #endif
-    BytesRead=(DWORD)fwrite(this,1,HeaderSize,hOut);
+    BytesRead=(uint32_t)fwrite(this,1,HeaderSize,hOut);
 
     // 6. Restore position in the file
     fsetpos(hOut, &pos);
@@ -3121,15 +3121,15 @@ bool DSP::T_WAVEchunk::WAVEinfo(FILE *hIn)
 //12  read(hIn, SubType, 4); "WAVE"
 //16  read(hIn, FmtType, 4); "fmt "
 //20  read(hIn, Fmt_size, 4);
-//22(2)  WORD wFormatTag; // Data encoding format
-//24(4)  WORD nChannels;  // Number of channels
-//28(8)  DWORD nSamplesPerSec;   // Samples per second
-//32(12)  DWORD nAvgBytesPerSec;  // Avg transfer rate
-//34(14)  WORD  nBlockAlign;      // Block alignment
-//36(16)  WORD  nBitsPerSample;   // Bits per sample
+//22(2)  uint16_t wFormatTag; // Data encoding format
+//24(4)  uint16_t nChannels;  // Number of channels
+//28(8)  uint32_t nSamplesPerSec;   // Samples per second
+//32(12)  uint32_t nAvgBytesPerSec;  // Avg transfer rate
+//34(14)  uint16_t  nBlockAlign;      // Block alignment
+//36(16)  uint16_t  nBitsPerSample;   // Bits per sample
 
 //  ReadFile(hIn, this, 36, &BytesRead, NULL);
-  BytesRead=(DWORD)fread(this,1,36,hIn);
+  BytesRead=(uint32_t)fread(this,1,36,hIn);
   if (BytesRead<36)
     return false; //Something is wrong
   if (Fmtsize>16)
@@ -3176,13 +3176,13 @@ int DSP::T_WAVEchunk::strncmpi(const char* str1, const char* str2, int N)
 
 bool DSP::T_WAVEchunk::FindDATA(FILE *hIn)
 {
-  DWORD BytesRead_temp;
+  uint32_t BytesRead_temp;
 
 //  ReadFile(hIn, DataType, 4, &BytesRead_temp, NULL);
-  BytesRead_temp=(DWORD)fread(DataType,1,4,hIn);
+  BytesRead_temp=(uint32_t)fread(DataType,1,4,hIn);
   BytesRead+=BytesRead_temp;
 //  ReadFile(hIn, &DataSize, 4, &BytesRead_temp, NULL);
-  BytesRead_temp=(DWORD)fread(&DataSize,1,4,hIn);
+  BytesRead_temp=(uint32_t)fread(&DataSize,1,4,hIn);
   BytesRead+=BytesRead_temp;
 
   //  while (strncasecmp(DataType, "DATA", 4)!=0)
@@ -3192,10 +3192,10 @@ bool DSP::T_WAVEchunk::FindDATA(FILE *hIn)
 //    fseeko64(hIn, DataSize+(DataSize%2), SEEK_CUR);
     fseek(hIn, DataSize+(DataSize%2), SEEK_CUR);
 //    ReadFile(hIn, DataType, 4, &BytesRead_temp, NULL);
-    BytesRead_temp=(DWORD)fread(DataType,1,4,hIn);
+    BytesRead_temp=(uint32_t)fread(DataType,1,4,hIn);
     BytesRead+=BytesRead_temp;
 //    ReadFile(hIn, &DataSize, 4, &BytesRead_temp, NULL);
-    BytesRead_temp=(DWORD)fread(&DataSize,1,4,hIn);
+    BytesRead_temp=(uint32_t)fread(&DataSize,1,4,hIn);
     BytesRead+=BytesRead_temp;
     if (BytesRead_temp==0) //eof(hIn))
     {
@@ -3256,9 +3256,9 @@ __fastcall CDirectXInput::~CDirectXInput(void)
 //---------------------------------------------------------------------------
 inline void __fastcall CDirectXInput::Execute()
 {
-  DWORD Wait_result, Ktory;
+  uint32_t Wait_result, Ktory;
   LPVOID CaptureBuforLock;
-  DWORD CaptureBuforLockLen;
+  uint32_t CaptureBuforLockLen;
 
   if (Error != DS_OK)
     return;
@@ -3370,7 +3370,7 @@ HRESULT CDirectXInput::CreateAudioInBuffer(void)
   WaveFormat.nChannels=1;
   WaveFormat.wBitsPerSample=16;
   WaveFormat.nSamplesPerSec=SamplingFrequency;
-  WaveFormat.nBlockAlign=(WORD)(WaveFormat.nChannels*
+  WaveFormat.nBlockAlign=(uint16_t)(WaveFormat.nChannels*
     WaveFormat.wBitsPerSample/8);
   WaveFormat.nAvgBytesPerSec=WaveFormat.nSamplesPerSec*
     WaveFormat.nBlockAlign;
@@ -3578,9 +3578,9 @@ inline void CDirectXInput::SourceDescription(TStringList *Text)
   };
 #endif
 
-DWORD DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP::e::AudioBufferType &type)
+uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP::e::AudioBufferType &type)
 {
-  DWORD size;
+  uint32_t size;
 
   switch (type)
   {
@@ -3603,13 +3603,13 @@ DWORD DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP::e
        << "Buffer size (" << (SamplingFreq * size) / DSP::ReferenceFs << ") > UINT32_MAX" << endl;
   }
 #endif
-  size = (DWORD)((SamplingFreq * size) / DSP::ReferenceFs);
+  size = (uint32_t)((SamplingFreq * size) / DSP::ReferenceFs);
   return size;
 }
 
 #ifdef WINMMAPI
   void CALLBACK DSP::u::AudioOutput::waveOutProc(HWAVEOUT hwo, UINT uMsg,
-    DWORD dwInstance, DWORD dwParam1, DWORD dwParam2)
+    uint32_t dwInstance, uint32_t dwParam1, uint32_t dwParam2)
   {
     UNUSED_ARGUMENT(hwo);
     UNUSED_ARGUMENT(uMsg);
@@ -3661,7 +3661,7 @@ DWORD DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP::e
 
   //! \bug allow user to select number of internal buffers
   void CALLBACK DSP::u::AudioInput::waveInProc_short(HWAVEIN hwi, UINT uMsg,
-    DWORD dwInstance, DWORD dwParam1, DWORD dwParam2)
+    uint32_t dwInstance, uint32_t dwParam1, uint32_t dwParam2)
   {
     UNUSED_ARGUMENT(hwi);
     UNUSED_ARGUMENT(dwParam1);
@@ -3783,7 +3783,7 @@ DWORD DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP::e
 
   //! \bug allow user to select number of internal buffers
   void CALLBACK DSP::u::AudioInput::waveInProc_uchar(HWAVEIN hwi, UINT uMsg,
-    DWORD dwInstance, DWORD dwParam1, DWORD dwParam2)
+    uint32_t dwInstance, uint32_t dwParam1, uint32_t dwParam2)
   {
     UNUSED_ARGUMENT(hwi);
     UNUSED_ARGUMENT(dwParam1);
@@ -4023,11 +4023,11 @@ void DSP::u::AudioOutput::Init(unsigned long SamplingFreq,
   #ifdef WINMMAPI
     //Wypeniamy struktur wfx
     wfx.wf.wFormatTag=WAVE_FORMAT_PCM;
-    wfx.wf.nChannels=(WORD)NoOfInputs;
+    wfx.wf.nChannels=(uint16_t)NoOfInputs;
     wfx.wf.nSamplesPerSec=(UINT)SamplingFreq;
     wfx.wBitsPerSample=BitPrec;
     wfx.wf.nAvgBytesPerSec=wfx.wf.nSamplesPerSec*(wfx.wBitsPerSample/8);
-    wfx.wf.nBlockAlign=(WORD)(wfx.wf.nChannels*(wfx.wBitsPerSample/8));
+    wfx.wf.nBlockAlign=(uint16_t)(wfx.wf.nChannels*(wfx.wBitsPerSample/8));
 
     if (WaveOutDevNo >= (UINT)waveOutGetNumDevs())
       result=waveOutOpen(&hWaveOut,
@@ -4200,11 +4200,11 @@ void DSP::u::AudioInput::Init(DSP::Clock_ptr ParentClock,
   #ifdef WINMMAPI
     //Wypeniamy struktur wfx
     wfx.wf.wFormatTag=WAVE_FORMAT_PCM;
-    wfx.wf.nChannels=(WORD)NoOfOutputs;
+    wfx.wf.nChannels=(uint16_t)NoOfOutputs;
     wfx.wf.nSamplesPerSec=(UINT)SamplingFreq;
     wfx.wBitsPerSample=BitPrec;
     wfx.wf.nAvgBytesPerSec=wfx.wf.nSamplesPerSec*(wfx.wBitsPerSample/8);
-    wfx.wf.nBlockAlign=(WORD)(wfx.wf.nChannels*(wfx.wBitsPerSample/8));
+    wfx.wf.nBlockAlign=(uint16_t)(wfx.wf.nChannels*(wfx.wBitsPerSample/8));
 
     if (waveInGetNumDevs() <= WaveInDevNo)
       result=waveInOpen(&hWaveIn,
@@ -4424,7 +4424,7 @@ void DSP::u::AudioOutput::FlushBuffer(void)
     short *temp16;
     DSP::Float_ptr Sample;
     short Znak;
-    DWORD ind;
+    uint32_t ind;
 
     // ************************************************** //
     // Send buffer to the audio device
@@ -4741,9 +4741,9 @@ bool DSP::u::AudioInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
  *       "out.im" == "out2" - (imag component if exist)
  *    -# "out" - all outputs together
  */
-DSPu_InputBuffer::DSPu_InputBuffer(DSP::Clock_ptr ParentClock, int BufferSize_in,
+DSP::u::InputBuffer::InputBuffer(DSP::Clock_ptr ParentClock, int BufferSize_in,
                                    unsigned int NoOfChannels, DSPe_buffer_type cyclic,
-                                   int NotificationsStep_in, DSPu_notify_callback_ptr func_ptr,
+                                   int NotificationsStep_in, DSP::Notify_callback_ptr func_ptr,
                                    unsigned int CallbackIdentifier)
   : DSP::Source()
 {
@@ -4832,7 +4832,7 @@ DSPu_InputBuffer::DSPu_InputBuffer(DSP::Clock_ptr ParentClock, int BufferSize_in
   	(*NotificationFunction_ptr)(this, DSP::c::CallbackID_signal_start | UserCallbackID);
 }
 
-DSPu_InputBuffer::~DSPu_InputBuffer(void)
+DSP::u::InputBuffer::~InputBuffer(void)
 {
   if (NotificationFunction_ptr != NULL)
   	(*NotificationFunction_ptr)(this, DSP::c::CallbackID_signal_stop | UserCallbackID);
@@ -4840,7 +4840,7 @@ DSPu_InputBuffer::~DSPu_InputBuffer(void)
   Buffer.clear();
 }
 
-void DSPu_InputBuffer::Notify(DSP::Clock_ptr clock)
+void DSP::u::InputBuffer::Notify(DSP::Clock_ptr clock)
 {
   UNUSED_ARGUMENT(clock);
 
@@ -4850,7 +4850,7 @@ void DSPu_InputBuffer::Notify(DSP::Clock_ptr clock)
 
 // copies source_size bytes from the source buffer
 // to block's internal buffer (the rest is set to zero
-void DSPu_InputBuffer::WriteBuffer(void *source,
+void DSP::u::InputBuffer::WriteBuffer(void *source,
   long int source_size, DSP::e::SampleType source_DataType)
 {
   int InputSampleSize;
@@ -4876,14 +4876,14 @@ void DSPu_InputBuffer::WriteBuffer(void *source,
   #ifdef __DEBUG__
     if (NoOfSourceSamples*InputSampleSize != source_size)
     {
-      DSP::log << DSP::LogMode::Error << "DSPu_InputBuffer::WriteBuffer" << DSP::LogMode::second
+      DSP::log << DSP::LogMode::Error << "DSP::u::InputBuffer::WriteBuffer" << DSP::LogMode::second
         << "(" << this->GetName() << ") source_size ("
         << source_size << ") doesn't match source_DataType" << endl;
     }
     if (BufferSize < NoOfSourceSamples)
     {
       stringstream tekst;
-      DSP::log << DSP::LogMode::Error << "DSPu_InputBuffer::WriteBuffer" << DSP::LogMode::second
+      DSP::log << DSP::LogMode::Error << "DSP::u::InputBuffer::WriteBuffer" << DSP::LogMode::second
         << "(" << this->GetName() << ") source_size ("
         << source_size << ") larger then Buffer size\n" << endl;
     }
@@ -4920,8 +4920,8 @@ void DSPu_InputBuffer::WriteBuffer(void *source,
 
 }
 
-#define DSP_THIS ((DSPu_InputBuffer *)source)
-bool DSPu_InputBuffer::OutputExecute(OUTPUT_EXECUTE_ARGS)
+#define DSP_THIS ((DSP::u::InputBuffer *)source)
+bool DSP::u::InputBuffer::OutputExecute(OUTPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(clock);
   unsigned int ind;
@@ -4943,7 +4943,7 @@ bool DSPu_InputBuffer::OutputExecute(OUTPUT_EXECUTE_ARGS)
   return true;
 }
 
-bool DSPu_InputBuffer::OutputExecute_single_channel(OUTPUT_EXECUTE_ARGS)
+bool DSP::u::InputBuffer::OutputExecute_single_channel(OUTPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(clock);
 
@@ -4961,7 +4961,7 @@ bool DSPu_InputBuffer::OutputExecute_single_channel(OUTPUT_EXECUTE_ARGS)
   return true;
 }
 
-bool DSPu_InputBuffer::OutputExecute_cyclic(OUTPUT_EXECUTE_ARGS)
+bool DSP::u::InputBuffer::OutputExecute_cyclic(OUTPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(clock);
   unsigned int ind;
@@ -4980,7 +4980,7 @@ bool DSPu_InputBuffer::OutputExecute_cyclic(OUTPUT_EXECUTE_ARGS)
   return true;
 }
 
-bool DSPu_InputBuffer::OutputExecute_cyclic_single_channel(OUTPUT_EXECUTE_ARGS)
+bool DSP::u::InputBuffer::OutputExecute_cyclic_single_channel(OUTPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(clock);
 
@@ -5008,9 +5008,9 @@ bool DSPu_InputBuffer::OutputExecute_cyclic_single_channel(OUTPUT_EXECUTE_ARGS)
  *    -# "in" - all inputs together
  *   - Output: none
  */
-DSPu_OutputBuffer::DSPu_OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in, DSPe_buffer_type cyclic,
+DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in, DSPe_buffer_type cyclic,
                                      DSP::Clock_ptr ParentClock, int NotificationsStep_in,
-                                     DSPu_notify_callback_ptr func_ptr, unsigned int CallbackIdentifier)
+                                     DSP::Notify_callback_ptr func_ptr, unsigned int CallbackIdentifier)
   : DSP::Block(), DSP::Source()
 {
   DSP::Clock_ptr NotificationClock;
@@ -5038,10 +5038,10 @@ DSPu_OutputBuffer::DSPu_OutputBuffer(unsigned int BufferSize_in, unsigned int No
   	(*NotificationFunction_ptr)(this, DSP::c::CallbackID_signal_start | UserCallbackID);
 }
 
-DSPu_OutputBuffer::DSPu_OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in,
+DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in,
                                      DSPe_buffer_type cyclic, DSP::Clock_ptr ParentClock,
                                      int NotificationsStep_in, unsigned int NoOfOutputs_in,
-                                     DSPu_buffer_callback_ptr func_ptr, unsigned int CallbackIdentifier)
+                                     DSP::Buffer_callback_ptr func_ptr, unsigned int CallbackIdentifier)
   : DSP::Block(), DSP::Source()
 {
   vector<unsigned int> tempOut;
@@ -5107,9 +5107,9 @@ DSPu_OutputBuffer::DSPu_OutputBuffer(unsigned int BufferSize_in, unsigned int No
   }
 }
 
-DSPu_OutputBuffer::DSPu_OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in, DSPe_buffer_type cyclic,
+DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in, DSPe_buffer_type cyclic,
                                      DSP::Clock_ptr ParentClock, DSP::Clock_ptr NotificationsClock,
-                                     unsigned int NoOfOutputs_in, DSPu_buffer_callback_ptr func_ptr, unsigned int CallbackIdentifier)
+                                     unsigned int NoOfOutputs_in, DSP::Buffer_callback_ptr func_ptr, unsigned int CallbackIdentifier)
   : DSP::Block(), DSP::Source()
 {
   vector <unsigned int> tempOut;
@@ -5167,7 +5167,7 @@ DSPu_OutputBuffer::DSPu_OutputBuffer(unsigned int BufferSize_in, unsigned int No
   }
 }
 
-DSPu_OutputBuffer::~DSPu_OutputBuffer(void)
+DSP::u::OutputBuffer::~OutputBuffer(void)
 {
   if (NotificationFunction_ptr != NULL)
   	(*NotificationFunction_ptr)(this, DSP::c::CallbackID_signal_stop | UserCallbackID);
@@ -5179,7 +5179,7 @@ DSPu_OutputBuffer::~DSPu_OutputBuffer(void)
   OutputsValues.clear();
 }
 
-void DSPu_OutputBuffer::Init(unsigned int BufferSize_in, unsigned int NoOfChannels,
+void DSP::u::OutputBuffer::Init(unsigned int BufferSize_in, unsigned int NoOfChannels,
                              DSPe_buffer_type cyclic, int NotificationsStep_in)
 {
   string temp;
@@ -5259,7 +5259,7 @@ void DSPu_OutputBuffer::Init(unsigned int BufferSize_in, unsigned int NoOfChanne
 
 // copies dest_size bytes to the dest buffer
 // from block's internal buffer (the rest is set to zero)
-long int DSPu_OutputBuffer::ReadBuffer(void *dest, long int dest_size,
+long int DSP::u::OutputBuffer::ReadBuffer(void *dest, long int dest_size,
                                        long int reset, DSP::e::SampleType dest_DataType)
 {
   int OutputSampleSize;
@@ -5269,7 +5269,7 @@ long int DSPu_OutputBuffer::ReadBuffer(void *dest, long int dest_size,
   #ifdef __DEBUG__
     if (dest == NULL)
     {
-      DSP::log << DSP::LogMode::Error << "DSPu_OutputBuffer::ReadBuffer" << DSP::LogMode::second << "dest == NULL !!!" << endl;
+      DSP::log << DSP::LogMode::Error << "DSP::u::OutputBuffer::ReadBuffer" << DSP::LogMode::second << "dest == NULL !!!" << endl;
       return 0;
     }
   #endif
@@ -5293,7 +5293,7 @@ long int DSPu_OutputBuffer::ReadBuffer(void *dest, long int dest_size,
   #ifdef __DEBUG__
     if (NoOfDestSamples*OutputSampleSize != dest_size)
     {
-      DSP::log << DSP::LogMode::Error << "DSPu_OutputBuffer::ReadBuffer" << DSP::LogMode::second
+      DSP::log << DSP::LogMode::Error << "DSP::u::OutputBuffer::ReadBuffer" << DSP::LogMode::second
          << "(" << this->GetName() << ") dest_size (" << dest_size << ") doesn't match dest_DataType" << endl;
     }
   #endif
@@ -5368,7 +5368,7 @@ long int DSPu_OutputBuffer::ReadBuffer(void *dest, long int dest_size,
         //128       128                   256           256
         #ifdef __DEBUG__
           if (reset - (BufferSize - BufferIndex) > INT_MAX) {
-            DSP::log << DSP::LogMode::Error << "DSPu_OutputBuffer::ReadBuffer" << DSP::LogMode::second << "step > INT_MAX" << endl;
+            DSP::log << DSP::LogMode::Error << "DSP::u::OutputBuffer::ReadBuffer" << DSP::LogMode::second << "step > INT_MAX" << endl;
           }
         #endif // __DEBUG__
         step = (int)(reset - (BufferSize - BufferIndex));
@@ -5389,18 +5389,18 @@ long int DSPu_OutputBuffer::ReadBuffer(void *dest, long int dest_size,
   return  NoOfDestSamples/NoOfInputs;
 }
 
-const DSP::Float_vector &DSPu_OutputBuffer::AccessBuffer(void)
+const DSP::Float_vector &DSP::u::OutputBuffer::AccessBuffer(void)
 {
   return Buffer;
 }
 
 
-long int DSPu_OutputBuffer::NoOfSamples(void)
+long int DSP::u::OutputBuffer::NoOfSamples(void)
 {
   return  BufferIndex; // BufferIndex/NoOfInputs;
 }
 
-long int DSPu_OutputBuffer::GetBufferSize(int mode)
+long int DSP::u::OutputBuffer::GetBufferSize(int mode)
 {
   switch (mode)
   {
@@ -5414,7 +5414,7 @@ long int DSPu_OutputBuffer::GetBufferSize(int mode)
   }
 }
 
-void DSPu_OutputBuffer::Notify(DSP::Clock_ptr clock)
+void DSP::u::OutputBuffer::Notify(DSP::Clock_ptr clock)
 {
   UNUSED_ARGUMENT(clock);
 
@@ -5430,8 +5430,8 @@ void DSPu_OutputBuffer::Notify(DSP::Clock_ptr clock)
   }
 }
 
-#define DSP_THIS ((DSPu_OutputBuffer *)block)
-void DSPu_OutputBuffer::InputExecute(INPUT_EXECUTE_ARGS)
+#define DSP_THIS ((DSP::u::OutputBuffer *)block)
+void DSP::u::OutputBuffer::InputExecute(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
 
@@ -5481,7 +5481,7 @@ void DSPu_OutputBuffer::InputExecute(INPUT_EXECUTE_ARGS)
   }
 }
 
-void DSPu_OutputBuffer::InputExecute_with_output(INPUT_EXECUTE_ARGS)
+void DSP::u::OutputBuffer::InputExecute_with_output(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
 
@@ -5543,9 +5543,9 @@ void DSPu_OutputBuffer::InputExecute_with_output(INPUT_EXECUTE_ARGS)
 }
 #undef DSP_THIS
 
-#define  DSP_THIS  ((DSPu_OutputBuffer *)source)
+#define  DSP_THIS  ((DSP::u::OutputBuffer *)source)
 //Execution as a source block
-bool DSPu_OutputBuffer::OutputExecute(OUTPUT_EXECUTE_ARGS)
+bool DSP::u::OutputBuffer::OutputExecute(OUTPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(clock);
 
@@ -5564,7 +5564,7 @@ bool DSPu_OutputBuffer::OutputExecute(OUTPUT_EXECUTE_ARGS)
   #ifdef __DEBUG__
   else
   {
-    DSP::log << DSP::LogMode::Error << "DSPu_OutputBuffer::OutputExecute" << DSP::LogMode::second << "DSP_THIS->OutputSamples_ready == false" << endl;
+    DSP::log << DSP::LogMode::Error << "DSP::u::OutputBuffer::OutputExecute" << DSP::LogMode::second << "DSP_THIS->OutputSamples_ready == false" << endl;
   }
   #endif
 
@@ -5580,7 +5580,7 @@ class DSPi_ExternalSleep
 
     DSP::ExternalSleep_ptr tmp_external_function;
   public:
-    void Sleep(DWORD time)
+    void Sleep(uint32_t time)
     {
       if (tmp_external_function == NULL)
       {
@@ -5624,7 +5624,7 @@ void DSP::f::SetSleepFunction(DSP::ExternalSleep_ptr new_function)
   DSPo_SleepObject.tmp_external_function = new_function;
 }
 
-void DSP::f::Sleep(DWORD time)
+void DSP::f::Sleep(uint32_t time)
 {
   DSPo_SleepObject.Sleep(time);
 
@@ -5639,14 +5639,14 @@ void DSP::f::Sleep(DWORD time)
     else
       Sleep(time);
 / *
-    DWORD result;
+    uint32_t result;
 
     result = MsgWaitForMultipleObjects(
-      1, //DWORD nCount,
+      1, //uint32_t nCount,
       const HANDLE* pHandles,
       false, //BOOL bWaitAll,
-      time, //DWORD dwMilliseconds,
-      QS_ALLEVENTS | QS_ALLINPUT | QS_ALLPOSTMESSAGE | QS_PAINT | QS_RAWINPUT | QS_SENDMESSAGE |QS_TIMER // DWORD dwWakeMask
+      time, //uint32_t dwMilliseconds,
+      QS_ALLEVENTS | QS_ALLINPUT | QS_ALLPOSTMESSAGE | QS_PAINT | QS_RAWINPUT | QS_SENDMESSAGE |QS_TIMER // uint32_t dwWakeMask
       );
 * /
   #else
@@ -5664,7 +5664,7 @@ void DSP::f::Sleep(DWORD time)
 bool DSP::LoadCoef::Open(const string &Filename, const string &Dir)
 {
   FILE *plik;
-  DWORD ValuesRead;
+  uint32_t ValuesRead;
   unsigned char temp_uchar;
 
   this->filename = Dir;
@@ -5681,35 +5681,35 @@ bool DSP::LoadCoef::Open(const string &Filename, const string &Dir)
   plik=fopen(this->filename.c_str(), "rb");
   if (plik != NULL)
   {
-    ValuesRead=(DWORD)fread(&(this->file_version), sizeof(unsigned char), 1, plik);
+    ValuesRead=(uint32_t)fread(&(this->file_version), sizeof(unsigned char), 1, plik);
     this->header_size = int(ValuesRead * sizeof(unsigned char));
 
     switch (this->file_version)
     {
       case 0x00:
-        ValuesRead=(DWORD)fread(&(this->sample_dim), sizeof(unsigned char), 1, plik);
+        ValuesRead=(uint32_t)fread(&(this->sample_dim), sizeof(unsigned char), 1, plik);
         this->header_size += ValuesRead * (int)sizeof(unsigned char);
 
-        ValuesRead=(DWORD)fread(&(temp_uchar), sizeof(unsigned char), 1, plik);
+        ValuesRead=(uint32_t)fread(&(temp_uchar), sizeof(unsigned char), 1, plik);
         this->sample_type = (DSP::e::SampleType)temp_uchar;
         this->header_size += ValuesRead * (int)sizeof(unsigned char);
 
-        ValuesRead=(DWORD)fread(&(temp_uchar), sizeof(unsigned char), 1, plik);
+        ValuesRead=(uint32_t)fread(&(temp_uchar), sizeof(unsigned char), 1, plik);
         this->NoOfVectors = temp_uchar;
         this->header_size += ValuesRead * (int)sizeof(unsigned char);
         break;
       case 0x01:
-        ValuesRead=(DWORD)fread(&(this->Fp),sizeof(unsigned int), 1, plik);
+        ValuesRead=(uint32_t)fread(&(this->Fp),sizeof(unsigned int), 1, plik);
         this->header_size += ValuesRead * (int)sizeof(unsigned int);
 
-        ValuesRead=(DWORD)fread(&(this->sample_dim), sizeof(unsigned char), 1, plik);
+        ValuesRead=(uint32_t)fread(&(this->sample_dim), sizeof(unsigned char), 1, plik);
         this->header_size += ValuesRead * (int)sizeof(unsigned char);
 
-        ValuesRead=(DWORD)fread(&(temp_uchar), sizeof(unsigned char), 1, plik);
+        ValuesRead=(uint32_t)fread(&(temp_uchar), sizeof(unsigned char), 1, plik);
         this->sample_type = (DSP::e::SampleType)temp_uchar;
         this->header_size += ValuesRead * (int)sizeof(unsigned char);
 
-        ValuesRead=(DWORD)fread(&(temp_uchar), sizeof(unsigned char), 1, plik);
+        ValuesRead=(uint32_t)fread(&(temp_uchar), sizeof(unsigned char), 1, plik);
         this->NoOfVectors = temp_uchar;
         this->header_size += ValuesRead * (int)sizeof(unsigned char);
         break;
@@ -5756,7 +5756,7 @@ int DSP::LoadCoef::GetNoOfVectors(void)
 int DSP::LoadCoef::GetSize(int vector_no)
 {
   FILE *plik;
-  DWORD ValuesRead;
+  uint32_t ValuesRead;
   unsigned short vector_size;
   int current_vector_no;
 
@@ -5771,7 +5771,7 @@ int DSP::LoadCoef::GetSize(int vector_no)
     {
       do
       {
-        ValuesRead=(DWORD)fread(&(vector_size), sizeof(unsigned short), 1, plik);
+        ValuesRead=(uint32_t)fread(&(vector_size), sizeof(unsigned short), 1, plik);
 
         if (ValuesRead == 0)
         {
@@ -5814,7 +5814,7 @@ bool DSP::LoadCoef::Load(DSP::Complex_vector &FIR_coef, int vector_index)
 {
   FILE *plik;
   std::vector<uint8_t> buffer;
-  DWORD ValuesRead, Values2Read;
+  uint32_t ValuesRead, Values2Read;
   int current_vector_no;
 
   current_vector_no = 0;
@@ -5826,7 +5826,7 @@ bool DSP::LoadCoef::Load(DSP::Complex_vector &FIR_coef, int vector_index)
 //    if (fseeko64(plik, this->header_size, SEEK_SET)==0)
     if (fseek(plik, this->header_size, SEEK_SET)==0)
     {
-      ValuesRead=(DWORD)fread(&(Values2Read), sizeof(unsigned short), 1, plik);
+      ValuesRead=(uint32_t)fread(&(Values2Read), sizeof(unsigned short), 1, plik);
       if (ValuesRead == 0)
         return false;
 
@@ -5836,7 +5836,7 @@ bool DSP::LoadCoef::Load(DSP::Complex_vector &FIR_coef, int vector_index)
         fseek(plik, Values2Read * this->sample_size * this->sample_dim, SEEK_CUR);
         current_vector_no++;
 
-        ValuesRead=(DWORD)fread(&(Values2Read), sizeof(unsigned short), 1, plik);
+        ValuesRead=(uint32_t)fread(&(Values2Read), sizeof(unsigned short), 1, plik);
         if (ValuesRead == 0)
           return false;
       }
@@ -5845,7 +5845,7 @@ bool DSP::LoadCoef::Load(DSP::Complex_vector &FIR_coef, int vector_index)
       buffer.resize(this->sample_size * this->sample_dim);
       for (unsigned int ind = 0; ind < Values2Read; ind++)
       {
-        ValuesRead=(DWORD)fread(buffer.data(), this->sample_size*sizeof(unsigned char), this->sample_dim, plik);
+        ValuesRead=(uint32_t)fread(buffer.data(), this->sample_size*sizeof(unsigned char), this->sample_dim, plik);
 
         switch (this->sample_type)
         {
@@ -5881,7 +5881,7 @@ bool DSP::LoadCoef::Load(DSP::Float_vector &FIR_coef, int vector_index)
 {
   FILE *plik;
   std::vector<uint8_t> buffer;
-  DWORD ValuesRead, Values2Read;
+  uint32_t ValuesRead, Values2Read;
   int current_vector_no;
 
   current_vector_no = 0;
@@ -5893,7 +5893,7 @@ bool DSP::LoadCoef::Load(DSP::Float_vector &FIR_coef, int vector_index)
 //    if (fseeko64(plik, this->header_size, SEEK_SET)==0)
     if (fseek(plik, this->header_size, SEEK_SET)==0)
     {
-      ValuesRead=(DWORD)fread(&(Values2Read), sizeof(unsigned short), 1, plik);
+      ValuesRead=(uint32_t)fread(&(Values2Read), sizeof(unsigned short), 1, plik);
       if (ValuesRead == 0)
         return false;
 
@@ -5903,7 +5903,7 @@ bool DSP::LoadCoef::Load(DSP::Float_vector &FIR_coef, int vector_index)
         fseek(plik, Values2Read * this->sample_size * this->sample_dim, SEEK_CUR);
         current_vector_no++;
 
-        ValuesRead=(DWORD)fread(&(Values2Read), sizeof(unsigned short), 1, plik);
+        ValuesRead=(uint32_t)fread(&(Values2Read), sizeof(unsigned short), 1, plik);
         if (ValuesRead == 0)
           return false;
       }
@@ -5912,7 +5912,7 @@ bool DSP::LoadCoef::Load(DSP::Float_vector &FIR_coef, int vector_index)
       buffer.resize(this->sample_size * this->sample_dim);
       for (unsigned int ind = 0; ind < Values2Read; ind++)
       {
-        ValuesRead=(DWORD)fread(buffer.data(), this->sample_size*sizeof(unsigned char), this->sample_dim, plik);
+        ValuesRead=(uint32_t)fread(buffer.data(), this->sample_size*sizeof(unsigned char), this->sample_dim, plik);
 
         switch (this->sample_type)
         {

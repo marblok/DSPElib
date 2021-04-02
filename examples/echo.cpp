@@ -20,13 +20,13 @@ int main(void)
 
   MasterClock=DSP::Clock::CreateMasterClock();
 
-  DSPu_WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
+  DSP::u::WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
   Fp = AudioIn.GetSamplingRate();
 
-  DSPu_Addition Add(2U);
-  DSPu_LoopDelay Delay(MasterClock, Fp/2);
+  DSP::u::Addition Add(2U);
+  DSP::u::LoopDelay Delay(MasterClock, Fp/2);
   Delay.SetName("0.5s");
-  DSPu_Amplifier Scale(0.7);
+  DSP::u::Amplifier Scale(0.7);
   Scale.SetName("0.7");
 
   DSP::u::AudioOutput AudioOut(Fp);

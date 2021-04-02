@@ -23,10 +23,10 @@ void BufferCallback(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP::Floa
     return;
   }
 
-  DSPu_OutputBuffer *dsp_buffer;
+  DSP::u::OutputBuffer *dsp_buffer;
   int ind, counter;
 
-  dsp_buffer = (DSPu_OutputBuffer *)Caller->Convert2Block();
+  dsp_buffer = (DSP::u::OutputBuffer *)Caller->Convert2Block();
   counter = dsp_buffer->ReadBuffer(read_buffer.data(),
                                    buffer_size*sizeof(DSP::Float), // read all samples
                                    -2,  // reset only NotificationsStep slots in buffer block
@@ -58,13 +58,13 @@ int main(void)
   long int Fp;
   int callback_type;
 
-  std::shared_ptr<DSPu_WaveInput>     AudioIn;
-  std::shared_ptr<DSPu_OutputBuffer>  OutputBuffer;
-  std::shared_ptr<DSPu_Multiplexer>   Multiplexer;
+  std::shared_ptr<DSP::u::WaveInput>     AudioIn;
+  std::shared_ptr<DSP::u::OutputBuffer>  OutputBuffer;
+  std::shared_ptr<DSP::u::Multiplexer>   Multiplexer;
   std::shared_ptr<DSP::u::AudioOutput>   AudioOut;
-  std::shared_ptr<DSPu_Demultiplexer> Demultiplexer;
-  std::shared_ptr<DSPu_Amplifier>     Scale;
-  std::shared_ptr<DSPu_Multiplexer>   Multiplexer2;
+  std::shared_ptr<DSP::u::Demultiplexer> Demultiplexer;
+  std::shared_ptr<DSP::u::Amplifier>     Scale;
+  std::shared_ptr<DSP::u::Multiplexer>   Multiplexer2;
 
   DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file);
   DSP::log.SetLogFileName("log_file.log");
@@ -74,12 +74,12 @@ int main(void)
   MasterClock=DSP::Clock::CreateMasterClock();
 
 
-  AudioIn = std::make_shared<DSPu_WaveInput>(MasterClock, "DSPElib.wav", ".");
+  AudioIn = std::make_shared<DSP::u::WaveInput>(MasterClock, "DSPElib.wav", ".");
   Fp = AudioIn->GetSamplingRate();
 
   //callback_type = 0; // just copy samples
   callback_type = 1; // inverse spectrum
-  OutputBuffer = std::make_shared<DSPu_OutputBuffer>(buffer_size,
+  OutputBuffer = std::make_shared<DSP::u::OutputBuffer>(buffer_size,
                               1,
                               DSP_standard,
                               MasterClock,
@@ -89,14 +89,14 @@ int main(void)
                               callback_type);
   BufferClock = OutputBuffer->GetOutputClock();
 
-  Multiplexer = std::make_shared<DSPu_Multiplexer> (BufferClock, false, buffer_size);
+  Multiplexer = std::make_shared<DSP::u::Multiplexer> (BufferClock, false, buffer_size);
   MuxClock = Multiplexer->GetOutputClock();
 
-  Demultiplexer = std::make_shared<DSPu_Demultiplexer>(false, 2);
+  Demultiplexer = std::make_shared<DSP::u::Demultiplexer>(false, 2);
   DemuxClock = DSP::Clock::GetClock(MuxClock, 1,2);
 
-  Scale = std::make_shared<DSPu_Amplifier>(-1.0, 1);
-  Multiplexer2 = std::make_shared<DSPu_Multiplexer>(DemuxClock, false, 2);
+  Scale = std::make_shared<DSP::u::Amplifier>(-1.0, 1);
+  Multiplexer2 = std::make_shared<DSP::u::Multiplexer>(DemuxClock, false, 2);
 
   AudioOut = std::make_shared<DSP::u::AudioOutput>(Fp);
 

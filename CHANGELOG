@@ -1,25 +1,28 @@
 TODO::
-  DWORD => unsigned long
-  DSPu_FIR => use vectors instead of pointers as an input
+  
   ? DSP::Clock_ptr => migrate to std::shared_ptr
   move all enums into DSP::e::
 
   update Linux makefile
-
-
   !!! Add TELEsound and PiAPS_sound projects to GitLab and start addaptation to new library version
 
-  !!! Replace test_wav na własne nagranie np. "DSPE library" albo free sample 
-
-  - dodanie dodatkowych cykli przetwarzania w asynchronous, callback itp - przycina odtwarzanie obecnie audio
 
 LAST DONE:
-  !!! - DSP_modules.cpp - removed some of the uses of new and delete
-
 
 
 
 CHANGES:
+- ver. 0.20.000 - <b>2021.04.02</b> Changed: 
+  - all DSPu_ moved into DSP::u:: namespace with some capitalization changes in blocks names
+  - DSP_modules.cpp - removed some of the uses of new and delete
+  - DSPu_callback_ptr, DSPu_buffer_callback_ptr, DSPu_notify_callback_ptr => DSP::Callback_ptr, DSP::Buffer_callback_ptr, DSP::Notify_callback_ptr
+  - DSP::Rand => DSP::Randomization
+  - DSP::u::rand, DSP::u::binrand => DSP::u::Rand, DSP::u::BinRand
+  - removed uses of BYTE, WORD, DWORD, MAXDWORD and MAXWORD
+  - added additional processign cycles in asynchronous.cpp and callback.cpp examples to avoid audio truncation 
+  - replaces test_wav with DSPElib.wav
+  - DSPu_FIR use now vectors instead of pointers as input parameters
+
 - ver. 0.19.024 - <b>2021.04.01</b> Changed: 
   - DSPu_AudioInput, DSPu_AudioOutput moved into DSP::u:: namespace DSP::u::AudioInput, DSP::u::AudioOutput
   - DSPu_SOCKETinput, DSPu_SOCKEToutput moved into DSP::u:: namespace DSP::u::SOCKETinput, DSP::u::SOCKEToutput

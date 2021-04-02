@@ -54,7 +54,7 @@ int main1(int argc, char*argv)
     #endif
     return 1;
   }
-  DSPu_WaveInput WaveInput(MasterClock, InputFileName, ".");
+  DSP::u::WaveInput WaveInput(MasterClock, InputFileName, ".");
   WaveInput.DefineOutput("x[n]",0);
 
 // ********************************************************* //
@@ -63,30 +63,30 @@ int main1(int argc, char*argv)
   //Demodulacja pilota z czstotliwoci 15800 do czstotliwosci 1500
   // //cao? czyli kanay i pilot symetrycznie : (12*200+200+100=2700)/2
   // tylko kana?y symetrycznie (12*200=2400)/2+300=1500
-  DSPu_DDScos  Heter1(MasterClock, true, 1.0, (M_PIx2*(1500-15800))/Fs, 0.0);
+  DSP::u::DDScos  Heter1(MasterClock, true, 1.0, (M_PIx2*(1500-15800))/Fs, 0.0);
   Heter1.DefineOutput("x",0);
   Heter1.DefineOutput("y",1);
 
-  DSPu_Multiplication Mul1(1, 1);
+  DSP::u::Multiplication Mul1(1, 1);
   Mul1.DefineOutput("x",0);
   Mul1.DefineOutput("y",1);
 
   // / * decymacja z filtacj dolnopasmow * /
-  // / * \todo implement this using: DSPu_SamplingRateConversion * /
+  // / * \todo implement this using: DSP::u::SamplingRateConversion * /
   DSP::Float h_FIR[]={-0.00469737357514, -0.02189844354959,  -0.01863144426339,
                       0.08394044867363,  0.27332881783852,   0.37579179117021,
                       0.27332881783852,  0.08394044867363,  -0.01863144426339,
                      -0.02189844354959, -0.00469737357514};
-  DSPu_FIR filter1(true, 11, h_FIR);
+  DSP::u::FIR filter1(true, 11, h_FIR);
   filter1.DefineOutput("x",0);
   filter1.DefineOutput("y",1);
 
-  DSPu_RawDecimator Decymator1(MasterClock, 15, 2); Fs1=Fs/15;
+  DSP::u::RawDecimator Decymator1(MasterClock, 15, 2); Fs1=Fs/15;
   Decymator1.DefineOutput("x",0);
   Decymator1.DefineOutput("y",1);
 
   // ****************************
-  DSPu_Splitter Splitter1(true, 2);
+  DSP::u::Splitter Splitter1(true, 2);
   Splitter1.DefineOutput("x1",0);
   Splitter1.DefineOutput("y1",1);
   Splitter1.DefineOutput("x2",2);
@@ -94,7 +94,7 @@ int main1(int argc, char*argv)
 
 
   // / * i zapis do plikw wav * /
-  DSPu_FILEoutput DemodOut("Demod_complex.out", DSP::e::SampleType::ST_float, 2);
+  DSP::u::FileOutput DemodOut("Demod_complex.out", DSP::e::SampleType::ST_float, 2);
 //  WaveInput.SetOutput(0, &DemodOut, 0); // WaveInput.SetOutput(1, &DemodOut, 1);
 
   DSP::_connect_class::connect_to_block(WaveInput.Output("x[n]")(),) &Mul1, 0);
@@ -118,35 +118,35 @@ int main1(int argc, char*argv)
   Clock1=Decymator1.GetOutputClock(0);
   Clock2=DSP::Clock::GetClock(Clock1,1,15); //This clock is needed before the block which creates it is created !!
 
-  DSPu_LoopDelay  PilotFreqDelay(Clock2, 1);
-//  DSPu_Delay  PilotFreqDelay(1);
+  DSP::u::LoopDelay  PilotFreqDelay(Clock2, 1);
+//  DSP::u::Delay  PilotFreqDelay(1);
   PilotFreqDelay.DefineOutput("out", 0);
 
-  DSPu_Zeroinserter Hold1(Clock2, 15, true);
+  DSP::u::Zeroinserter Hold1(Clock2, 15, true);
   Hold1.DefineOutput("out", 0);
 
-  DSPu_Addition   PilotFreqSum(2U,0U); PilotFreqSum.SetName("PilotFreqSum");
+  DSP::u::Addition   PilotFreqSum(2U,0U); PilotFreqSum.SetName("PilotFreqSum");
   PilotFreqSum.DefineOutput("sum", 0);
 
-  DSPu_Splitter   PilotFreqSplit(3U);
+  DSP::u::Splitter   PilotFreqSplit(3U);
   PilotFreqSplit.DefineOutput("out1", 0);
   PilotFreqSplit.DefineOutput("out2", 1);
   PilotFreqSplit.DefineOutput("out3", 2);
 
 
 // i zapis do pliku
-DSPu_FILEoutput PilotErrorLoopOut("Pilot_loop_error.out", DSP::e::SampleType::ST_float, 1);
+DSP::u::FileOutput PilotErrorLoopOut("Pilot_loop_error.out", DSP::e::SampleType::ST_float, 1);
 
 
   // / * \todo heterodynowanie korekcyjne pilota do czstotliwoci 1500Hz * /
-  DSPu_DDScos CorrHeter(Clock1, true);
+  DSP::u::DDScos CorrHeter(Clock1, true);
   CorrHeter.SetConstInput("ampl",1.0); //Amplitude
 //CorrHeter.SetConstInput(1,0.0); //Angular frequency
   CorrHeter.SetConstInput("phase",0.0); //Initial phase
   CorrHeter.DefineOutput("re", 0);
   CorrHeter.DefineOutput("im", 1);
 
-  DSPu_Multiplication CorrMul(0, 2);
+  DSP::u::Multiplication CorrMul(0, 2);
   CorrMul.DefineOutput("re", 0);
   CorrMul.DefineOutput("im", 1);
 
@@ -167,11 +167,11 @@ DSPu_FILEoutput PilotErrorLoopOut("Pilot_loop_error.out", DSP::e::SampleType::ST
 
 
 //  / *   \todo heterodynowanie pilota do zerowej pulsacji * /
-    DSPu_DDScos  Heter2(Clock1, true, 1.0, (M_PIx2*(-1500))/Fs1, 0.0);
+    DSP::u::DDScos  Heter2(Clock1, true, 1.0, (M_PIx2*(-1500))/Fs1, 0.0);
     Heter2.DefineOutput("re", 0);
     Heter2.DefineOutput("im", 1);
 
-    DSPu_Multiplication Mul2(0, 2);
+    DSP::u::Multiplication Mul2(0, 2);
     Mul2.DefineOutput("re",0);
     Mul2.DefineOutput("im",1);
 
@@ -180,11 +180,11 @@ DSPu_FILEoutput PilotErrorLoopOut("Pilot_loop_error.out", DSP::e::SampleType::ST
                         0.08394044867363,  0.27332881783852,   0.37579179117021,
                         0.27332881783852,  0.08394044867363,  -0.01863144426339,
                        -0.02189844354959, -0.00469737357514};
-    DSPu_FIR filter2(true, 11, h_FIR2);
+    DSP::u::FIR filter2(true, 11, h_FIR2);
     filter2.DefineOutput("re", 0);
     filter2.DefineOutput("im", 1);
 
-    DSPu_RawDecimator Decymator2(Clock1, 15, 2); Fs2=Fs1/15;
+    DSP::u::RawDecimator Decymator2(Clock1, 15, 2); Fs2=Fs1/15;
     Decymator2.SetName("Pilot decimator");
     Decymator2.DefineOutput("out.re", 0);
     Decymator2.DefineOutput("out.im", 1);
@@ -207,7 +207,7 @@ DSPu_FILEoutput PilotErrorLoopOut("Pilot_loop_error.out", DSP::e::SampleType::ST
 // * between the block to which output we connect and
 // * the block witch is connected to this output.
 // *
-// * This would allow for add splitter and fileoutput without
+// * This would allow for add splitter and FileOutput without
 // * interfering into the current algorithm structure
 // * /
 
@@ -223,13 +223,13 @@ DSPu_FILEoutput PilotErrorLoopOut("Pilot_loop_error.out", DSP::e::SampleType::ST
 //    DSP::Float h2[]={23.0, 0.0, -23.0};
     DSP::Float h1[]={0.0, 1.0};
     DSP::Float h2[]={1.0, 0.0, -1.0};
-    DSPu_FIR filter_y1(true, 2, h1);
+    DSP::u::FIR filter_y1(true, 2, h1);
     filter_y1.DefineOutput("re",0);
     filter_y1.DefineOutput("im",1);
-    DSPu_FIR filter_y2(true, 3, h2);
+    DSP::u::FIR filter_y2(true, 3, h2);
     filter_y2.DefineOutput("re",0);
     filter_y2.DefineOutput("im",1);
-    DSPu_Splitter Splitter_y(true, 3);
+    DSP::u::Splitter Splitter_y(true, 3);
     Splitter_y.DefineOutput("out1.re",0);
     Splitter_y.DefineOutput("out1.im",1);
     Splitter_y.DefineOutput("out2.re",2);
@@ -239,7 +239,7 @@ DSPu_FILEoutput PilotErrorLoopOut("Pilot_loop_error.out", DSP::e::SampleType::ST
 //    Decymator2.SetOutput(0, &Splitter_y, 0); Decymator2.SetOutput(1, &Splitter_y, 1);
 
     // / * i zapis do pliku* /
-    DSPu_FILEoutput PilotOut("Pilot_corr.out", DSP::e::SampleType::ST_float, 2);
+    DSP::u::FileOutput PilotOut("Pilot_corr.out", DSP::e::SampleType::ST_float, 2);
 
     DSP::_connect_class::connect_to_block(Splitter_y.Output("out1.re"), &filter_y1, 0);
     DSP::_connect_class::connect_to_block(Splitter_y.Output("out1.im"), &filter_y1, 1);
@@ -248,24 +248,24 @@ DSPu_FILEoutput PilotErrorLoopOut("Pilot_loop_error.out", DSP::e::SampleType::ST
     DSP::_connect_class::connect_to_block(Splitter_y.Output("out3.re"), &PilotOut, 0);
     DSP::_connect_class::connect_to_block(Splitter_y.Output("out3.im"), &PilotOut, 1);
 
-DSPu_Splitter HeterSplit(true, 2);
+DSP::u::Splitter HeterSplit(true, 2);
 HeterSplit.DefineOutput("out1.re", 0);
 HeterSplit.DefineOutput("out1.im", 1);
 HeterSplit.DefineOutput("out2.re", 2);
 HeterSplit.DefineOutput("out2.im", 3);
 
 // / * i zapis do pliku* /
-DSPu_FILEoutput HeterOut("Heter.out", DSP::e::SampleType::ST_float, 2);
+DSP::u::FileOutput HeterOut("Heter.out", DSP::e::SampleType::ST_float, 2);
 
-    DSPu_Multiplication Mul_y1_im(2);
+    DSP::u::Multiplication Mul_y1_im(2);
     Mul_y1_im.DefineOutput("out");
 
-    DSPu_Multiplication Mul_y1_re(3);
+    DSP::u::Multiplication Mul_y1_re(3);
 //    Mul_y1_re.SetConstInput(2,-1.0);
     Mul_y1_re.SetConstInput("in2",-1.0);
     Mul_y1_re.DefineOutput("out");
 
-    DSPu_Addition Sum_err(2); Sum_err.SetName("Sum_err");
+    DSP::u::Addition Sum_err(2); Sum_err.SetName("Sum_err");
     Sum_err.DefineOutput("sum");
 
 
@@ -286,15 +286,15 @@ DSPu_FILEoutput HeterOut("Heter.out", DSP::e::SampleType::ST_float, 2);
     DSP::_connect_class::connect_to_block(Mul_y1_im.Output("out"), &Sum_err, 1);
 
 
-    DSPu_Amplifier GainError(+0.5);
+    DSP::u::Amplifier GainError(+0.5);
     GainError.DefineOutput("out");
 
-    DSPu_Splitter ErrorSplit(2U); ErrorSplit.SetName("ErrorSplit");
+    DSP::u::Splitter ErrorSplit(2U); ErrorSplit.SetName("ErrorSplit");
     ErrorSplit.DefineOutput("out1",0);
     ErrorSplit.DefineOutput("out2",1);
 
   // * i zapis do pliku* /
-  DSPu_FILEoutput PilotErrorOut("Pilot_error.out", DSP::e::SampleType::ST_float, 1);
+  DSP::u::FileOutput PilotErrorOut("Pilot_error.out", DSP::e::SampleType::ST_float, 1);
 
 
     DSP::_connect_class::connect_to_block(Sum_err.Output("sum"),&ErrorSplit, 0);
@@ -337,12 +337,12 @@ int test_1(int argc, char*argv[])
   MasterClock=NULL;
   string InputName="DSPElib.wav";
   string OutputName="output.flt";
-//  DSPu_WaveInput WaveInput(InputName, ".", 1);
-  DSPu_FILEinput WaveInput(MasterClock, InputName, 1, DSP::e::SampleType::ST_float);
-  DSPu_FILEoutput FILEoutput(OutputName, DSP::e::SampleType::ST_float, 2);
+//  DSP::u::WaveInput WaveInput(InputName, ".", 1);
+  DSP::u::FileInput WaveInput(MasterClock, InputName, 1, DSP::e::SampleType::ST_float);
+  DSP::u::FileOutput FileOutput(OutputName, DSP::e::SampleType::ST_float, 2);
 
-  DSPu_CMPO test;
-//  DSPu_Angle test2;
+  DSP::u::CMPO test;
+//  DSP::u::Angle test2;
 
   WaveInput.Output("out") >> test.Input("in.re");
   //  WaveInput.Output("out") >> test.Input("in.im");
@@ -350,7 +350,7 @@ int test_1(int argc, char*argv[])
 //  test.Output("out") >> test2.Input("in");
   DSP::File_ptr temp_file = WaveInput.Convert2File();
 
-  test.Output("out") >> FILEoutput.Input("in");
+  test.Output("out") >> FileOutput.Input("in");
 
   Fp1Zegar=WaveInput.GetOutputClock();
   DSP::Clock::Execute(Fp1Zegar, 120000);
@@ -370,23 +370,23 @@ int test_1(int argc, char*argv[])
   N_hI=DSP_ReadCoefficientsFromFile(hI, 256,
                      CoefficientsName, ".", DSP::e::SampleType::ST_float);
 
-  DSPu_FILEinput FILEinput(InputName, DSP::e::SampleType::ST_float, 2);
-  Fp1Zegar=FILEinput.GetOutputClock();
+  DSP::u::FileInput FileInput(InputName, DSP::e::SampleType::ST_float, 2);
+  Fp1Zegar=FileInput.GetOutputClock();
 
   //real input OK
-  DSPu_SamplingRateConversion Convertor(true, 2,5, N_hI, hI, Fp1Zegar);
+  DSP::u::SamplingRateConversion Convertor(true, 2,5, N_hI, hI, Fp1Zegar);
   Fp2Zegar=Convertor.GetOutputClock();
 
-  DSPu_FILEoutput FILEoutput(OutputName, DSP::e::SampleType::ST_float, 2);
-  DSPu_Vacuum Empty1(true);
+  DSP::u::FileOutput FileOutput(OutputName, DSP::e::SampleType::ST_float, 2);
+  DSP::u::Vacuum Empty1(true);
 
-  FILEinput.Output("out") >> Convertor.Input("in");
+  FileInput.Output("out") >> Convertor.Input("in");
   Convertor.Output("out") >> Empty1.Input("in");
-  Convertor.Output("out") >> FILEoutput.Input("in");
+  Convertor.Output("out") >> FileOutput.Input("in");
 */
 
 /*
-//  DSPu_FIR test
+//  DSP::u::FIR test
   // real input + real coefficients // OK
   // real input + complex coefficients // OK
   // complex input + real coefficients // OK
@@ -395,12 +395,12 @@ int test_1(int argc, char*argv[])
   string InputName2="delta_im.flt";
   DSP::Clock_ptr MainZegar;
 
-  DSPu_FILEinput FILEinput(InputName);
-  FILEinput.DefineOutput("file");
-  MainZegar=FILEinput.GetOutputClock();
+  DSP::u::FileInput FileInput(InputName);
+  FileInput.DefineOutput("file");
+  MainZegar=FileInput.GetOutputClock();
 
-  DSPu_FILEinput FILEinput2(InputName2);
-  FILEinput2.DefineOutput("file");
+  DSP::u::FileInput FileInput2(InputName2);
+  FileInput2.DefineOutput("file");
 
 
   DSP::Float h_re[]={1.0, 1.5, -1.2};
@@ -408,16 +408,16 @@ int test_1(int argc, char*argv[])
                      {1.5, 2.5},
                      {-1.2, -1.2},
                      {0.0, 0.1}};
-  DSPu_FIR Filter1(true, 4, h_re);
+  DSP::u::FIR Filter1(true, 4, h_re);
   Filter1.DefineOutput("re", 0);
   Filter1.DefineOutput("im", 1);
   Filter1.DefineOutput("out", 0,1);
 
-  DSPu_FILEoutput ResponseOut("Response.out", DSP::e::SampleType::ST_float, 2);
+  DSP::u::FileOutput ResponseOut("Response.out", DSP::e::SampleType::ST_float, 2);
   ResponseOut.DefineInput("complex.in",0,1);
 
-  FILEinput.Output("file"), &Filter1, 0);
-  FILEinput2.Output("file"), &Filter1, 1);
+  FileInput.Output("file"), &Filter1, 0);
+  FileInput2.Output("file"), &Filter1, 1);
 
 //  Filter1.Output("re"), &ResponseOut,0);
 //  Filter1.Output("im"), &ResponseOut,1);
@@ -425,32 +425,32 @@ int test_1(int argc, char*argv[])
 */
 
 /*
-//  DSPu_IIR test
+//  DSP::u::IIR test
 
   DSP::Float a[]={1.0, -0.25};  DSP::Float b[]={1.0, 0.0};
-//  DSPu_IIR Filter1(2, a); // OK
-//  DSPu_IIR Filter1(2, a, 2, b); // OK
-//  DSPu_IIR Filter1(1, a, 1, b); // OK
-//  DSP::Float_ptr temp=NULL; DSPu_IIR Filter1(0, temp, 0, temp); // OK
-//  DSPu_IIR Filter1(true, 2, a, 2, b); // OK
+//  DSP::u::IIR Filter1(2, a); // OK
+//  DSP::u::IIR Filter1(2, a, 2, b); // OK
+//  DSP::u::IIR Filter1(1, a, 1, b); // OK
+//  DSP::Float_ptr temp=NULL; DSP::u::IIR Filter1(0, temp, 0, temp); // OK
+//  DSP::u::IIR Filter1(true, 2, a, 2, b); // OK
 
   DSP::Complex aC[2], bC[2];
   aC[0].set(0.5, 0.1);  aC[1].set(-0.2, -0.3);
   bC[0].set(1.0);  bC[1].set(0.0);
-//  DSPu_IIR Filter1(2, aC); // OK
-//  DSPu_IIR Filter1(2, aC, 2, bC); // OK
-//  DSPu_IIR Filter1(1, aC, 1, bC); // OK
-//  DSP::Complex_ptr temp=NULL; DSPu_IIR Filter1(0, temp, 0, temp); // OK
-  DSPu_IIR Filter1(true, 2, aC, 2, bC); // OK
-  FILEinput.SetOutput(0,&Filter1, 0);
-  FILEinput2.SetOutput(0,&Filter1, 1);
+//  DSP::u::IIR Filter1(2, aC); // OK
+//  DSP::u::IIR Filter1(2, aC, 2, bC); // OK
+//  DSP::u::IIR Filter1(1, aC, 1, bC); // OK
+//  DSP::Complex_ptr temp=NULL; DSP::u::IIR Filter1(0, temp, 0, temp); // OK
+  DSP::u::IIR Filter1(true, 2, aC, 2, bC); // OK
+  FileInput.SetOutput(0,&Filter1, 0);
+  FileInput2.SetOutput(0,&Filter1, 1);
 
 //TEST bC different than {1.0, 0.0} // OK
 //TEST a[0] or aC[0] != 1.0 // OK
 
-//TEST DSPu_IIR with complex input // OK
+//TEST DSP::u::IIR with complex input // OK
 
-  DSPu_FILEoutput ResponseOut("Response.out", DSP::e::SampleType::ST_float, 2);
+  DSP::u::FileOutput ResponseOut("Response.out", DSP::e::SampleType::ST_float, 2);
   Filter1.SetOutput(0, &ResponseOut, 0);
   Filter1.SetOutput(1, &ResponseOut, 1);
 */
@@ -494,7 +494,7 @@ int ReadResamplerCoef(const string &name, const string &dir)
 
   temp.resize(1);  temp[0]=0.0;
   //read filter response length
-  DSP::f::ReadCoefficientsFromFile(temp, 1, name, dir, DSP::e::SampleType::ST_float,DWORD(FilterOffset*sizeof(float)));
+  DSP::f::ReadCoefficientsFromFile(temp, 1, name, dir, DSP::e::SampleType::ST_float,uint32_t(FilterOffset*sizeof(float)));
   N_LPF=int(temp[0]);
 
   return N_LPF;
@@ -521,19 +521,19 @@ long int ReadResamplerCoef(const string &name, const string &dir, DSP::Float_vec
   FilterOffset+=3;
 
   //read filter response length
-  DSP::f::ReadCoefficientsFromFile(temp, 1, name, dir, DSP::e::SampleType::ST_float,DWORD(FilterOffset*sizeof(float)));
+  DSP::f::ReadCoefficientsFromFile(temp, 1, name, dir, DSP::e::SampleType::ST_float,uint32_t(FilterOffset*sizeof(float)));
   N_LPF=int(temp[0]);
 
   // read filter coefficients
   DSP::f::ReadCoefficientsFromFile(h_LPF, N_LPF,
-    name, dir, DSP::e::SampleType::ST_float,DWORD((FilterOffset+1)*sizeof(float)));
+    name, dir, DSP::e::SampleType::ST_float,uint32_t((FilterOffset+1)*sizeof(float)));
   return Fs;
 }
 
 int ReadIIRCoef(const string &name, const string &dir)
 { //Read IIR filter order
   DSP::Float_vector temp(1);
-  DWORD ile;
+  uint32_t ile;
 
   temp[0]=0.0;
   ile=DSP::f::ReadCoefficientsFromFile(temp, 1, name, dir, DSP::e::SampleType::ST_float, 0);
@@ -550,7 +550,7 @@ int ReadIIRCoef(const string &name, const string &dir, int Order,
   DSP::f::ReadCoefficientsFromFile(A, Order+1,
     name, dir, DSP::e::SampleType::ST_float, sizeof(float));
   DSP::f::ReadCoefficientsFromFile(B, Order+1,
-    name, dir, DSP::e::SampleType::ST_float, DWORD((2*(Order+1)+1)*sizeof(float)));
+    name, dir, DSP::e::SampleType::ST_float, uint32_t((2*(Order+1)+1)*sizeof(float)));
 
   DSP::f::ReadCoefficientsFromFile(temp, 1, name, dir, DSP::e::SampleType::ST_float, (unsigned long)((4*(Order+1)+1)*sizeof(float)));
 
@@ -579,10 +579,10 @@ void Process(long int Fs, const string &WaveName, const string &Dir)
 
   // ************************************************* //
 
-  DSPu_WaveInput FileIn(MasterClock, WaveName, Dir, 1);
-//  DSPu_FILEinput FileIn("waves/DSPElib.wav", DSP::e::SampleType::ST_short, 1);
-//  DSPu_COSpulse FileIn(false, 1.0, 0.0, 0.0, 0.0, 0, 10, 0, NULL);
-//  DSPu_COSpulse FileIn(false, 1.0);
+  DSP::u::WaveInput FileIn(MasterClock, WaveName, Dir, 1);
+//  DSP::u::FileInput FileIn("waves/DSPElib.wav", DSP::e::SampleType::ST_short, 1);
+//  DSP::u::COSpulse FileIn(false, 1.0, 0.0, 0.0, 0.0, 0, 10, 0, NULL);
+//  DSP::u::COSpulse FileIn(false, 1.0);
   Zegar1=FileIn.GetOutputClock();
 
 
@@ -605,7 +605,7 @@ void Process(long int Fs, const string &WaveName, const string &Dir)
   }
   M1=Decym_Fs/8000;
 
-  DSPu_SamplingRateConversion Stage1(false, Zegar1, L1, M1, h_LPF1);
+  DSP::u::SamplingRateConversion Stage1(false, Zegar1, L1, M1, h_LPF1);
   Zegar2=Stage1.GetOutputClock();
 
 
@@ -621,7 +621,7 @@ void Process(long int Fs, const string &WaveName, const string &Dir)
   M2=4;
 
 
-  DSPu_SamplingRateConversion Stage2(false, Zegar2, 1, M2, h_LPF2);
+  DSP::u::SamplingRateConversion Stage2(false, Zegar2, 1, M2, h_LPF2);
   Zegar3=Stage2.GetOutputClock();
 
 
@@ -654,27 +654,27 @@ void Process(long int Fs, const string &WaveName, const string &Dir)
     return;
   }
 
-  DSPu_Splitter SplitterIIR(6U);
-  DSPu_Delay IIRdelay1(IIR_delay[0]);
-  DSPu_Delay IIRdelay2(IIR_delay[1]);
-  DSPu_Delay IIRdelay3(IIR_delay[2]);
-  DSPu_Delay IIRdelay4(IIR_delay[3]);
-  DSPu_Delay IIRdelay5(IIR_delay[4]);
+  DSP::u::Splitter SplitterIIR(6U);
+  DSP::u::Delay IIRdelay1(IIR_delay[0]);
+  DSP::u::Delay IIRdelay2(IIR_delay[1]);
+  DSP::u::Delay IIRdelay3(IIR_delay[2]);
+  DSP::u::Delay IIRdelay4(IIR_delay[3]);
+  DSP::u::Delay IIRdelay5(IIR_delay[4]);
 
 /*
   DSP::Complex h_temp[]={{1.0, 0.0}};
-  DSPu_FIR IIRfilter1(false, 1, h_temp);
-  DSPu_FIR IIRfilter2(false, 1, h_temp);
-  DSPu_FIR IIRfilter3(false, 1, h_temp);
-  DSPu_FIR IIRfilter4(false, 1, h_temp);
-  DSPu_FIR IIRfilter5(false, 1, h_temp);
+  DSP::u::FIR IIRfilter1(false, 1, h_temp);
+  DSP::u::FIR IIRfilter2(false, 1, h_temp);
+  DSP::u::FIR IIRfilter3(false, 1, h_temp);
+  DSP::u::FIR IIRfilter4(false, 1, h_temp);
+  DSP::u::FIR IIRfilter5(false, 1, h_temp);
 */
 
-  DSPu_IIR IIRfilter1(IIR_A[0], IIR_B[0]);
-  DSPu_IIR IIRfilter2(IIR_A[1], IIR_B[1]);
-  DSPu_IIR IIRfilter3(IIR_A[2], IIR_B[2]);
-  DSPu_IIR IIRfilter4(IIR_A[3], IIR_B[3]);
-  DSPu_IIR IIRfilter5(IIR_A[4], IIR_B[4]);
+  DSP::u::IIR IIRfilter1(IIR_A[0], IIR_B[0]);
+  DSP::u::IIR IIRfilter2(IIR_A[1], IIR_B[1]);
+  DSP::u::IIR IIRfilter3(IIR_A[2], IIR_B[2]);
+  DSP::u::IIR IIRfilter4(IIR_A[3], IIR_B[3]);
+  DSP::u::IIR IIRfilter5(IIR_A[4], IIR_B[4]);
 
   for (ind=0; ind<5; ind++)
   {
@@ -683,53 +683,53 @@ void Process(long int Fs, const string &WaveName, const string &Dir)
   }
 
   // ************************************************* //
-  DSPu_Splitter SplitIIR1(true,2);
-  DSPu_Splitter SplitIIR2(true,2);
-  DSPu_Splitter SplitIIR3(true,2);
-  DSPu_Splitter SplitIIR4(true,2);
-  DSPu_Splitter SplitIIR5(true,2);
+  DSP::u::Splitter SplitIIR1(true,2);
+  DSP::u::Splitter SplitIIR2(true,2);
+  DSP::u::Splitter SplitIIR3(true,2);
+  DSP::u::Splitter SplitIIR4(true,2);
+  DSP::u::Splitter SplitIIR5(true,2);
 
   // ************************************************* //
-  DSPu_ABS a1;
-  DSPu_ABS a2;
-  DSPu_ABS a3;
-  DSPu_ABS a4;
-  DSPu_ABS a5;
+  DSP::u::ABS a1;
+  DSP::u::ABS a2;
+  DSP::u::ABS a3;
+  DSP::u::ABS a4;
+  DSP::u::ABS a5;
 
   // ************************************************* //
-  DSPu_CMPO  b1;
-  DSPu_Angle w1;
-  DSPu_CMPO  b2;
-  DSPu_Angle w2;
-  DSPu_CMPO  b3;
-  DSPu_Angle w3;
-  DSPu_CMPO  b4;
-  DSPu_Angle w4;
-  DSPu_CMPO  b5;
-  DSPu_Angle w5;
+  DSP::u::CMPO  b1;
+  DSP::u::Angle w1;
+  DSP::u::CMPO  b2;
+  DSP::u::Angle w2;
+  DSP::u::CMPO  b3;
+  DSP::u::Angle w3;
+  DSP::u::CMPO  b4;
+  DSP::u::Angle w4;
+  DSP::u::CMPO  b5;
+  DSP::u::Angle w5;
 
   // ************************************************* //
-//  DSPu_Splitter a1_split(2);
-//  DSPu_Splitter a2_split(2);
-//  DSPu_Splitter a3_split(2);
-//  DSPu_Splitter a4_split(2);
-//  DSPu_Splitter a5_split(2);
-  DSPu_Maximum Maks(5);
-  DSPu_Splitter MaksIndSplitter(2U);
+//  DSP::u::Splitter a1_split(2);
+//  DSP::u::Splitter a2_split(2);
+//  DSP::u::Splitter a3_split(2);
+//  DSP::u::Splitter a4_split(2);
+//  DSP::u::Splitter a5_split(2);
+  DSP::u::Maximum Maks(5);
+  DSP::u::Splitter MaksIndSplitter(2U);
 
   // ************************************************* //
-//  DSPu_Splitter w1_split(2);
-//  DSPu_Splitter w2_split(2);
-//  DSPu_Splitter w3_split(2);
-//  DSPu_Splitter w4_split(2);
-//  DSPu_Splitter w5_split(2);
-  DSPu_Selector PulsSelect(5U);
+//  DSP::u::Splitter w1_split(2);
+//  DSP::u::Splitter w2_split(2);
+//  DSP::u::Splitter w3_split(2);
+//  DSP::u::Splitter w4_split(2);
+//  DSP::u::Splitter w5_split(2);
+  DSP::u::Selector PulsSelect(5U);
 
   // ************************************************* //
-  DSPu_FILEoutput FileOut("test.out", DSP::e::SampleType::ST_float, 1);
-  DSPu_FILEoutput FileIndOut("test_ind.out", DSP::e::SampleType::ST_float, 1);
-  DSPu_FILEoutput FileMaxOut("test_max.out", DSP::e::SampleType::ST_float, 1);
-  DSPu_FILEoutput FilePulsOut("test_puls.out", DSP::e::SampleType::ST_float, 1);
+  DSP::u::FileOutput FileOut("test.out", DSP::e::SampleType::ST_float, 1);
+  DSP::u::FileOutput FileIndOut("test_ind.out", DSP::e::SampleType::ST_float, 1);
+  DSP::u::FileOutput FileMaxOut("test_max.out", DSP::e::SampleType::ST_float, 1);
+  DSP::u::FileOutput FilePulsOut("test_puls.out", DSP::e::SampleType::ST_float, 1);
 
 
   // ************************************************* //
@@ -750,8 +750,8 @@ void Process(long int Fs, const string &WaveName, const string &Dir)
   a1.Output("out") >> Maks.Input("in1");
   w1.Output("out") >> PulsSelect.Input("in1");
 
-//  DSPu_FILEoutput FileOut_Amp2("test_a2.out", DSP::e::SampleType::ST_float, 1);
-//  DSPu_FILEoutput FileOut_Puls2("test_w2.out", DSP::e::SampleType::ST_float, 1);
+//  DSP::u::FileOutput FileOut_Amp2("test_a2.out", DSP::e::SampleType::ST_float, 1);
+//  DSP::u::FileOutput FileOut_Puls2("test_w2.out", DSP::e::SampleType::ST_float, 1);
 //  a1.Output("out") >> FileOut_Amp1.Input("in");
 //  w1.Output("out") >> FileOut_Puls1.Input("in");
 
@@ -766,8 +766,8 @@ void Process(long int Fs, const string &WaveName, const string &Dir)
   a2.Output("out") >> Maks.Input("in2");
   w2.Output("out") >> PulsSelect.Input("in2");
 
-//  DSPu_FILEoutput FileOut_Amp1("test_a1.out", DSP::e::SampleType::ST_float, 1);
-//  DSPu_FILEoutput FileOut_Puls1("test_w1.out", DSP::e::SampleType::ST_float, 1);
+//  DSP::u::FileOutput FileOut_Amp1("test_a1.out", DSP::e::SampleType::ST_float, 1);
+//  DSP::u::FileOutput FileOut_Puls1("test_w1.out", DSP::e::SampleType::ST_float, 1);
 //  a2.Output("out") >> FileOut_Amp2.Input("in");
 //  w2.Output("out") >> FileOut_Puls2.Input("in");
 
@@ -782,8 +782,8 @@ void Process(long int Fs, const string &WaveName, const string &Dir)
   a3.Output("out") >> Maks.Input("in3");
   w3.Output("out") >> PulsSelect.Input("in3");
 
-//  DSPu_FILEoutput FileOut_Amp3("test_a3.out", DSP::e::SampleType::ST_float, 1);
-//  DSPu_FILEoutput FileOut_Puls3("test_w3.out", DSP::e::SampleType::ST_float, 1);
+//  DSP::u::FileOutput FileOut_Amp3("test_a3.out", DSP::e::SampleType::ST_float, 1);
+//  DSP::u::FileOutput FileOut_Puls3("test_w3.out", DSP::e::SampleType::ST_float, 1);
 //  a3.Output("out") >> FileOut_Amp3.Input("in");
 //  w3.Output("out") >> FileOut_Puls3.Input("in");
 
@@ -798,8 +798,8 @@ void Process(long int Fs, const string &WaveName, const string &Dir)
   a4.Output("out") >> Maks.Input("in4");
   w4.Output("out") >> PulsSelect.Input("in4");
 
-//  DSPu_FILEoutput FileOut_Amp4("test_a4.out", DSP::e::SampleType::ST_float, 1);
-//  DSPu_FILEoutput FileOut_Puls4("test_w4.out", DSP::e::SampleType::ST_float, 1);
+//  DSP::u::FileOutput FileOut_Amp4("test_a4.out", DSP::e::SampleType::ST_float, 1);
+//  DSP::u::FileOutput FileOut_Puls4("test_w4.out", DSP::e::SampleType::ST_float, 1);
 //  a4.Output("out") >> FileOut_Amp4.Input("in");
 //  w4.Output("out") >> FileOut_Puls4.Input("in");
 
@@ -814,8 +814,8 @@ void Process(long int Fs, const string &WaveName, const string &Dir)
   a5.Output("out") >> Maks.Input("in5");
   w5.Output("out") >> PulsSelect.Input("in5");
 
-//  DSPu_FILEoutput FileOut_Amp5("test_a5.out", DSP::e::SampleType::ST_float, 1);
-//  DSPu_FILEoutput FileOut_Puls5("test_w5.out", DSP::e::SampleType::ST_float, 1);
+//  DSP::u::FileOutput FileOut_Amp5("test_a5.out", DSP::e::SampleType::ST_float, 1);
+//  DSP::u::FileOutput FileOut_Puls5("test_w5.out", DSP::e::SampleType::ST_float, 1);
 //  a5.Output("out") >> FileOut_Amp5.Input("in");
 //  w5.Output("out") >> FileOut_Puls5.Input("in");
 
@@ -839,7 +839,7 @@ void Process(long int Fs, const string &WaveName, const string &Dir)
 
   DSP::log << "MAIN"  << DSP::LogMode::second << "(" << czas1-czas0 << " ms"
     << " + " << czas2-czas1 << " ms)" << endl;
-  /*! \todo DSPu_CCPC instead of DSPu_ABS + DSPu_Angle
+  /*! \todo DSP::u::CCPC instead of DSP::u::ABS + DSP::u::Angle
    */
 }
 
@@ -853,22 +853,22 @@ int test_2()
 
   Fs=CheckFs("DSPElib.wav", "examples");
   Fs2=CheckFs("test2.wav", "examples");
-  DSPu_WaveInput FileIn2(MasterClock, "test2.wav", "examples", 1);
-  DSPu_RawDecimator Decym(MasterClock, Fs2/Fs);
-  DSPu_Amplifier GainIn(0.5);
+  DSP::u::WaveInput FileIn2(MasterClock, "test2.wav", "examples", 1);
+  DSP::u::RawDecimator Decym(MasterClock, Fs2/Fs);
+  DSP::u::Amplifier GainIn(0.5);
 
   Zegar1=FileIn2.GetOutputClock();
   Zegar2=DSP::Clock::GetClock(Zegar1, 1, Fs2/Fs);
-  DSPu_WaveInput FileIn(Zegar2, "DSPElib.wav", "examples", 1);
+  DSP::u::WaveInput FileIn(Zegar2, "DSPElib.wav", "examples", 1);
 
 
-//  DSPu_DDScos  FileIn(false, 1.0, (M_PIx2*(440))/Fs, 0.0);
+//  DSP::u::DDScos  FileIn(false, 1.0, (M_PIx2*(440))/Fs, 0.0);
   DSP::u::AudioOutput AudioOut(Fs,2);
 //  DSP::u::AudioOutput AudioOut2(Fs);
 
-  DSPu_Addition Sum(2);
-  DSPu_Amplifier Gain(0.75);
-  DSPu_LoopDelay Delay(Zegar2, 3000);
+  DSP::u::Addition Sum(2);
+  DSP::u::Amplifier Gain(0.75);
+  DSP::u::LoopDelay Delay(Zegar2, 3000);
 
   AudioOut.DefineInput("in1",0);
   FileIn2.Output("out1") >> Decym.Input("in");
@@ -940,29 +940,29 @@ int test_3()
 
   printf("Fs = %li, Fs2 = %li\n", Fs, Fs2);
 
-  DSPu_WaveInput FileIn2(MasterClock, "DSPElib.wav", "examples", 1);
-  DSPu_WaveInput FileIn(MasterClock, "test2.wav", "examples", 1);
-  DSPu_RawDecimator Decym(MasterClock, Fs/Fs2);
+  DSP::u::WaveInput FileIn2(MasterClock, "DSPElib.wav", "examples", 1);
+  DSP::u::WaveInput FileIn(MasterClock, "test2.wav", "examples", 1);
+  DSP::u::RawDecimator Decym(MasterClock, Fs/Fs2);
 
   FileIn2.Output("out") >> Decym.Input("in");
 
-//  DSPu_SampleSelector Select(Decym.GetOutputClock());
+//  DSP::u::SampleSelector Select(Decym.GetOutputClock());
   DSP::Clock_ptr SecondaryMasterClock;
   SecondaryMasterClock=DSP::Clock::CreateMasterClock();
-  DSPu_SampleSelector Select(Decym.GetOutputClock(), SecondaryMasterClock, true);
+  DSP::u::SampleSelector Select(Decym.GetOutputClock(), SecondaryMasterClock, true);
 
   Decym.Output("out") >> Select.Input("in");
   Decym.Output("out") >> Select.Input("act");
 
-  DSPu_Hold Hold(Select.GetOutputClock(), Decym.GetOutputClock(), true, 1);
+  DSP::u::Hold Hold(Select.GetOutputClock(), Decym.GetOutputClock(), true, 1);
   Select.Output("out") >> Hold.Input("in");
 
-  DSPu_FILEoutput FileOut1("test1.out", DSP::e::SampleType::ST_float, 1);
-//  DSPu_FILEoutput FileOut2("test2.out", DSP::e::SampleType::ST_float, 1);
+  DSP::u::FileOutput FileOut1("test1.out", DSP::e::SampleType::ST_float, 1);
+//  DSP::u::FileOutput FileOut2("test2.out", DSP::e::SampleType::ST_float, 1);
 //  Hold.Output("out") >> FileOut1.Input("in");
 //  Decym.Output("out") >> FileOut2.Input("in");
 //
-//  DSPu_FILEoutput FileOut3("test3.out", DSP::e::SampleType::ST_float, 1);
+//  DSP::u::FileOutput FileOut3("test3.out", DSP::e::SampleType::ST_float, 1);
 //  Select.Output("out") >> FileOut3.Input("in");
 
   DSP::u::AudioOutput AudioOut(Fs,2);
@@ -986,10 +986,10 @@ int test_3()
 //  Zegar2=DSP::Clock::GetClock(Zegar1, 1, Fs2/Fs);
 //  DSP::Clock::GetClock(Zegar2, 1, 2);
 //
-//  DSPu_Amplifier GainIn(0.5);
+//  DSP::u::Amplifier GainIn(0.5);
 //
-//  DSPu_Addition Sum(2);
-//  DSPu_Amplifier Gain(0.75);
+//  DSP::u::Addition Sum(2);
+//  DSP::u::Amplifier Gain(0.75);
 //  DSP_LoopDelay Delay(MasterClock, 3000);
 //  DSP::u::AudioOutput AudioOut2(Fs,1);
 //
@@ -1003,24 +1003,24 @@ int test_3()
 //  Delay.Output("out") >> Gain.Input("in");
 //  Gain.Output("out") >> Sum.Input("in2");
 //
-//  DSPu_SampleSelector Select(MasterClock);
+//  DSP::u::SampleSelector Select(MasterClock);
 //  AudioOut2.DefineInput("in2",0);
 //  Sum.Output("out") >> Select.Input("in");
 //  Sum.Output("out") >> Select.Input("act");
 //  Select.Output("out") >> AudioOut2.Input("in2");
 //
-//  DSPu_FILEoutput FileOut("test_.out", DSP::e::SampleType::ST_float, 2);
+//  DSP::u::FileOutput FileOut("test_.out", DSP::e::SampleType::ST_float, 2);
 //  Select.Output("out") >> FileOut.Input("in1");
 //sprintf(log_buffer,">> %i A <<", log_ind++); DSP::Block::LogInnerState(log_buffer);
 //  Sum.Output("out") >> FileOut.Input("in2");
 //sprintf(log_buffer,">> %i B <<", log_ind++); DSP::Block::LogInnerState(log_buffer);
 //
 //  Zegar3=Select.GetOutputClock();
-//  DSPu_Hold Hold1(Zegar3, MasterClock, true, 1);
+//  DSP::u::Hold Hold1(Zegar3, MasterClock, true, 1);
 //
-//  DSPu_FILEoutput FileOutS("test_select.out", DSP::e::SampleType::ST_float, 1);
+//  DSP::u::FileOutput FileOutS("test_select.out", DSP::e::SampleType::ST_float, 1);
 //  Select.Output("out") >> Hold1.Input("in");
-//DSPu_FILEoutput FileOutS2("test_select2.out", DSP::e::SampleType::ST_float, 1);
+//DSP::u::FileOutput FileOutS2("test_select2.out", DSP::e::SampleType::ST_float, 1);
 //Select.Output("out") >> FileOutS2.Input("in");
 //  Hold1.Output("out") >> FileOutS.Input("in1");
 //
@@ -1061,38 +1061,38 @@ int MeduzaSimulation(void)
     h_forming[ind]= 1.0;
 
   MasterClock=DSP::Clock::CreateMasterClock();
-  DSPu_FILEinput BinaryInput(MasterClock, "Tekst.txt", 10, DSP::e::SampleType::ST_bit);
+  DSP::u::FileInput BinaryInput(MasterClock, "Tekst.txt", 10, DSP::e::SampleType::ST_bit);
 
   ZerosOutClock=DSP::Clock::GetClock(MasterClock, (long)(Fs/Fb), 1);
 //  InterpOutClock=DSP::Clock::GetClock(ZerosOutClock, (long)(Fs2/Fs), 1);
 
-  DSPu_PSKencoder *DBPSKencoder[10];
+  DSP::u::PSKencoder *DBPSKencoder[10];
 
-  DSPu_SamplingRateConversion *Interp[10];
-//  DSPu_Zeroinserter *Zeros[10];
-//  DSPu_FIR *Filter[10];
+  DSP::u::SamplingRateConversion *Interp[10];
+//  DSP::u::Zeroinserter *Zeros[10];
+//  DSP::u::FIR *Filter[10];
 
-  DSPu_DDScos *DDScos[10];
-  DSPu_RealMultiplication *Multip[10];
-  DSPu_Addition Sumator(11);
+  DSP::u::DDScos *DDScos[10];
+  DSP::u::RealMultiplication *Multip[10];
+  DSP::u::Addition Sumator(11);
   for (ind=0; ind<10; ind++)
   {
-    DBPSKencoder[ind]= new DSPu_PSKencoder(DSP_DBPSK);
+    DBPSKencoder[ind]= new DSP::u::PSKencoder(DSP_DBPSK);
     sprintf(temp, "out%i", ind+1);
     BinaryInput.Output(temp), DBPSKencoder[ind]->Input("in");
 
 
-//    Zeros[ind]= new DSPu_Zeroinserter(MasterClock, (long)(Fs/Fb), false);
+//    Zeros[ind]= new DSP::u::Zeroinserter(MasterClock, (long)(Fs/Fb), false);
 //    sprintf(temp, "out%i", ind+1);
 //    DBPSKencoder[ind]->Output("out") >> Zeros[ind]->Input("in");
-//    Filter[ind] = new DSPu_FIR((long)(Fs/Fb), h_forming);
+//    Filter[ind] = new DSP::u::FIR((long)(Fs/Fb), h_forming);
 //    Zeros[ind]->Output("out") >> Filter[ind]->Input("in");
-    Interp[ind] = new DSPu_SamplingRateConversion (false, MasterClock, (long)(Fs/Fb), 1, h_forming);
+    Interp[ind] = new DSP::u::SamplingRateConversion (false, MasterClock, (long)(Fs/Fb), 1, h_forming);
     DBPSKencoder[ind]->Output("out") >> Interp[ind]->Input("in");
 
-    DDScos[ind] = new DSPu_DDScos (ZerosOutClock, DSP::Float(1.0),
+    DDScos[ind] = new DSP::u::DDScos (ZerosOutClock, DSP::Float(1.0),
       DSP::Float(M_PIx2*(F1+DSP::Float(ind)*F_channel)/Fs));
-    Multip[ind] = new DSPu_RealMultiplication(2);
+    Multip[ind] = new DSP::u::RealMultiplication(2);
 
 //    Filter[ind]->Output("out") >> Multip[ind]->Input("real_in1");
     Interp[ind]->Output("out") >> Multip[ind]->Input("real_in1");
@@ -1102,15 +1102,15 @@ int MeduzaSimulation(void)
     Multip[ind]->Output("out") >> Sumator.Input(temp);
   }
 
-  DSPu_DDScos DDSpilot(ZerosOutClock, DSP::Float(1.0),
+  DSP::u::DDScos DDSpilot(ZerosOutClock, DSP::Float(1.0),
       DSP::Float(M_PIx2*(F1+11*F_channel)/Fs));
   DDSpilot.Output("out") >> Sumator.Input("real_in11");
 
 
-  DSPu_SamplingRateConversion  InterpOut(false, ZerosOutClock,  (long)(Fs2/Fs), 1, h_forming);
+  DSP::u::SamplingRateConversion  InterpOut(false, ZerosOutClock,  (long)(Fs2/Fs), 1, h_forming);
   Sumator.Output("out") >> InterpOut.Input("in");
 
-  DSPu_FILEoutput SignalOutput("Signal.out");
+  DSP::u::FileOutput SignalOutput("Signal.out");
   InterpOut.Output("out") >> SignalOutput.Input("in");
 
   DSP::u::AudioOutput AudioOut((long)Fs2,1);
@@ -1180,13 +1180,13 @@ int test_4()
 
   /*************************************************************/
   MasterClock=DSP::Clock::CreateMasterClock();
-  DSPu_WaveInput FileIn(MasterClock, filename, dir_name, 1);
+  DSP::u::WaveInput FileIn(MasterClock, filename, dir_name, 1);
 
   /*************************************************************/
   /* Heterodyna wejciowa: wyj?cie sygna? podstawowo-pasmowy na 48kHz */
   wo=DSP_M_PIx2*(Fo-Band/2)/Fp; // dw_channel=2*pi*(df_channel)/fp;
-  DSPu_DDScos  MainHeter(MasterClock, true, 1.0, -wo, 0.0);
-  DSPu_Multiplication Mul1(1,1);
+  DSP::u::DDScos  MainHeter(MasterClock, true, 1.0, -wo, 0.0);
+  DSP::u::Multiplication Mul1(1,1);
 
   FileIn.Output("out") >> Mul1.Input("real_in1");
   MainHeter.Output("out") >> Mul1.Input("cplx_in1");
@@ -1205,10 +1205,10 @@ int test_4()
                             DSP::Complex(-1.50631102255127, 0.08862708027020),
                             DSP::Complex(0.97483857322796, 0.70890299411674),
                             DSP::Complex(0.74203089692178, -0.47500487676950)};
-  DSPu_FIR LPF_Hilbert(true, h_LPF_Hilbert);
+  DSP::u::FIR LPF_Hilbert(true, h_LPF_Hilbert);
   Mul1.Output("out") >> LPF_Hilbert.Input("in");
 
-  DSPu_RawDecimator MainDecimator(MasterClock, M1, 2);
+  DSP::u::RawDecimator MainDecimator(MasterClock, M1, 2);
   LPF_Hilbert.Output("out") >> MainDecimator.Input("in");
 
   FirstStageClock = MainDecimator.GetOutputClock();
@@ -1221,23 +1221,23 @@ int test_4()
 
   int M2=5;
 
-//  DSPu_DCO pilot_DCO(0.0, 00, 0.0); //Open loop
-//  DSPu_DCO pilot_DCO(0.0, -1.0/(100*M2), 0.0); //frequency loop closed
-//  DSPu_DCO pilot_DCO(0.0, -1.0/(100*M2), -1.0/(1000*M2)); //closed loop
-  DSPu_DCO pilot_DCO(-DSP_M_PIx2*(5*dF_channel)/Fp1,
+//  DSP::u::DCO pilot_DCO(0.0, 00, 0.0); //Open loop
+//  DSP::u::DCO pilot_DCO(0.0, -1.0/(100*M2), 0.0); //frequency loop closed
+//  DSP::u::DCO pilot_DCO(0.0, -1.0/(100*M2), -1.0/(1000*M2)); //closed loop
+  DSP::u::DCO pilot_DCO(-DSP_M_PIx2*(5*dF_channel)/Fp1,
                      DSP::Float(+DSP_M_PIx2*(0.1*dF_channel)/Fp1),
                      DSP::Float(-1.0/(200*M2)), DSP::Float(-1.0/(4000*M2))); //closed loop
   pilot_DCO.SetName("pilot_DCO");
 
-  DSPu_Multiplication DCO_Main_Mul(0, 2);
+  DSP::u::Multiplication DCO_Main_Mul(0, 2);
   DCO_Main_Mul.SetName("DCO_Main_Mul");
   pilot_DCO.Output("out") >> DCO_Main_Mul.Input("cplx_in1");
   MainDecimator.Output("out") >> DCO_Main_Mul.Input("cplx_in2");
 
-  DSPu_DDScos  pilot_Heter(FirstStageClock, true, 1.0f, -M_PIx2f*(2*dF_channel)/Fp1, 0.0);
+  DSP::u::DDScos  pilot_Heter(FirstStageClock, true, 1.0f, -M_PIx2f*(2*dF_channel)/Fp1, 0.0);
   pilot_Heter.SetName("pilot_Heter");
 
-  DSPu_Multiplication pilot_heter_Mul(0, 2);
+  DSP::u::Multiplication pilot_heter_Mul(0, 2);
   pilot_heter_Mul.SetName("pilot_heter_Mul");
   DCO_Main_Mul.Output("out") >> pilot_heter_Mul.Input("cplx_in1");
   pilot_Heter.Output("out") >> pilot_heter_Mul.Input("cplx_in2");
@@ -1248,11 +1248,11 @@ int test_4()
   DSP::Float_vector h_PilotLPF(L1);
   for (ind_=0; ind_<L1; ind_++)
     h_PilotLPF[ind_] = 1.0f/(DSP::Float)L1;
-  DSPu_FIR LPF_Pilot(true, h_PilotLPF);
+  DSP::u::FIR LPF_Pilot(true, h_PilotLPF);
   LPF_Pilot.SetName("LPF_Pilot");
   pilot_heter_Mul.Output("out") >> LPF_Pilot.Input("in");
 
-  DSPu_RawDecimator PilotDecimator(FirstStageClock, M2, 2);
+  DSP::u::RawDecimator PilotDecimator(FirstStageClock, M2, 2);
   PilotDecimator.SetName("PilotDecimator");
   SecondStageClock = PilotDecimator.GetOutputClock();
   LPF_Pilot.Output("out") >> PilotDecimator.Input("in");
@@ -1265,7 +1265,7 @@ int test_4()
 
   /*************************************************************/
   // automatic gain control
-  DSPu_AGC PilotAGC(0.01f, 0.0002f);
+  DSP::u::AGC PilotAGC(0.01f, 0.0002f);
   PilotAGC.SetName("PilotAGC");
   PilotDecimator.Output("out") >> PilotAGC.Input("in");
 
@@ -1278,30 +1278,30 @@ int test_4()
 
   //* frequency error = filtered interpolated imaginary part of PilotAGC output multiplied
   //                    by conjugate of previous PilotAGC output
-  DSPu_CMPO freq_CMPO;
+  DSP::u::CMPO freq_CMPO;
   freq_CMPO.SetName("freq_CMPO");
   PilotAGC.Output("out") >> freq_CMPO.Input("in");
-  DSPu_Vacuum freq_CMPO_real;
+  DSP::u::Vacuum freq_CMPO_real;
   freq_CMPO.Output("out.re") >> freq_CMPO_real.Input("in");
 
-  DSPu_Zeroinserter Freq_error_zeroins(SecondStageClock, M2);
+  DSP::u::Zeroinserter Freq_error_zeroins(SecondStageClock, M2);
   Freq_error_zeroins.SetName("Freq_error_zeroins");
 /*
   freq_CMPO.Output("out.im") >> Freq_error_zeroins.Input("in");
   */
   freq_CMPO.Output("out.im") >> Freq_error_zeroins.Input("in");
 
-  DSPu_IIR Freq_error_filter(error_IIR_a, error_IIR_b);
+  DSP::u::IIR Freq_error_filter(error_IIR_a, error_IIR_b);
   Freq_error_filter.SetName("Freq_error_filter");
   Freq_error_zeroins.Output("out") >> Freq_error_filter.Input("in");
 
   //* phase error = filtered imaginary part of interpolated PilotDecimator output
-  DSPu_Zeroinserter phase_error_zeroins(SecondStageClock, M2);
+  DSP::u::Zeroinserter phase_error_zeroins(SecondStageClock, M2);
   phase_error_zeroins.SetName("phase_error_zeroins");
 //  PilotAGC.Output("out.im") >> phase_error_zeroins.Input("in");
   PilotAGC.Output("out.im") >> phase_error_zeroins.Input("in");
 
-  DSPu_IIR Phase_error_filter(error_IIR_a, error_IIR_b);
+  DSP::u::IIR Phase_error_filter(error_IIR_a, error_IIR_b);
   Phase_error_filter.SetName("Phase_error_filter");
   phase_error_zeroins.Output("out") >> Phase_error_filter.Input("in");
 
@@ -1320,31 +1320,31 @@ int test_4()
   for (ind_=0; ind_<N_matched; ind_++)
     h_matched[ind_]=1.0f/DSP::Float(N_matched);
 
-  DSPu_FIR *MatchedFilters[NoOfChannels];
-  DSPu_RawDecimator *MatchedDecimators[NoOfChannels];
-  DSPu_AGC *MatchedAGC[NoOfChannels];
-  DSPu_Multiplication *MatchedDDS_Muls[NoOfChannels-1];
-  DSPu_DDScos  channels_Heter(FirstStageClock, true, 1.0, M_PIx2f*(dF_channel)/Fp1, 0.0);
-//  DSPu_GardnerSampling GardnerSampling(L2, 0.0005, NoOfChannels);
-  DSPu_GardnerSampling GardnerSampling(DSP::Float(L2), 0.01f, 1.0f, NoOfChannels);
-  DSPu_CMPO *OutputDiff[NoOfChannels];
+  DSP::u::FIR *MatchedFilters[NoOfChannels];
+  DSP::u::RawDecimator *MatchedDecimators[NoOfChannels];
+  DSP::u::AGC *MatchedAGC[NoOfChannels];
+  DSP::u::Multiplication *MatchedDDS_Muls[NoOfChannels-1];
+  DSP::u::DDScos  channels_Heter(FirstStageClock, true, 1.0, M_PIx2f*(dF_channel)/Fp1, 0.0);
+//  DSP::u::GardnerSampling GardnerSampling(L2, 0.0005, NoOfChannels);
+  DSP::u::GardnerSampling GardnerSampling(DSP::Float(L2), 0.01f, 1.0f, NoOfChannels);
+  DSP::u::CMPO *OutputDiff[NoOfChannels];
   for (channel_ind=0; channel_ind<NoOfChannels; channel_ind++)
   {
-    MatchedFilters[channel_ind]= new DSPu_FIR(true, h_matched);
+    MatchedFilters[channel_ind]= new DSP::u::FIR(true, h_matched);
     sprintf(tekst, "MatchedFilters[%i]", channel_ind);
     MatchedFilters[channel_ind]->SetName(tekst);
 
-    MatchedDecimators[channel_ind]= new DSPu_RawDecimator(FirstStageClock, M2, 2);
+    MatchedDecimators[channel_ind]= new DSP::u::RawDecimator(FirstStageClock, M2, 2);
     sprintf(tekst, "MatchedDecimators[%i]", channel_ind);
     MatchedDecimators[channel_ind]->SetName(tekst);
 
-    MatchedAGC[channel_ind]= new DSPu_AGC(0.01f, 0.0002f, (DSP::Float)sqrt(2.0));
+    MatchedAGC[channel_ind]= new DSP::u::AGC(0.01f, 0.0002f, (DSP::Float)sqrt(2.0));
     sprintf(tekst, "MatchedAGC[%i]", channel_ind);
     MatchedAGC[channel_ind]->SetName(tekst);
 
     if (channel_ind > 0)
     {
-      MatchedDDS_Muls[channel_ind-1]= new DSPu_Multiplication(0,2);
+      MatchedDDS_Muls[channel_ind-1]= new DSP::u::Multiplication(0,2);
       sprintf(tekst, "MatchedDDS_Muls[%i]", channel_ind-1);
       MatchedDDS_Muls[channel_ind-1]->SetName(tekst);
 
@@ -1380,7 +1380,7 @@ int test_4()
     MatchedAGC[channel_ind]->Output("out"),
       GardnerSampling.Input(tekst);
 
-    OutputDiff[channel_ind]= new DSPu_CMPO;
+    OutputDiff[channel_ind]= new DSP::u::CMPO;
     sprintf(tekst, "out%i", channel_ind+1);
     GardnerSampling.Output(tekst), OutputDiff[channel_ind]->Input("in");
   }
@@ -1390,38 +1390,38 @@ int test_4()
   // saving control signals to files
   /*************************************************************/
   DSP::f::MakeDir("outputs");
-  DSPu_FILEoutput MainHeterOut("outputs/MainHeter.out", DSP::e::SampleType::ST_float, 2);
-  DSPu_FILEoutput FileInOut("outputs/FileIn.out", DSP::e::SampleType::ST_float, 1);
-  DSPu_FILEoutput LPF_HilbertOut("outputs/LPF_Hilbert.out", DSP::e::SampleType::ST_float, 2);
-  DSPu_FILEoutput DCO_Main_MulOut("outputs/DCO_Main_Mul.out", DSP::e::SampleType::ST_float, 2);
-//  DSPu_FILEoutput MainDecimatorOut("MainDecimator.out", DSP::e::SampleType::ST_float, 2);
+  DSP::u::FileOutput MainHeterOut("outputs/MainHeter.out", DSP::e::SampleType::ST_float, 2);
+  DSP::u::FileOutput FileInOut("outputs/FileIn.out", DSP::e::SampleType::ST_float, 1);
+  DSP::u::FileOutput LPF_HilbertOut("outputs/LPF_Hilbert.out", DSP::e::SampleType::ST_float, 2);
+  DSP::u::FileOutput DCO_Main_MulOut("outputs/DCO_Main_Mul.out", DSP::e::SampleType::ST_float, 2);
+//  DSP::u::FileOutput MainDecimatorOut("MainDecimator.out", DSP::e::SampleType::ST_float, 2);
 
-  DSPu_FILEoutput PilotDecimatorOut("outputs/PilotDecimator.out", DSP::e::SampleType::ST_float, 2);
-  DSPu_FILEoutput PilotDCO_Out("outputs/PilotDCO.out", DSP::e::SampleType::ST_float, 2);
-  DSPu_FILEoutput pilot_heter_MulOut("outputs/pilot_heter_Mul.out", DSP::e::SampleType::ST_float, 2);
+  DSP::u::FileOutput PilotDecimatorOut("outputs/PilotDecimator.out", DSP::e::SampleType::ST_float, 2);
+  DSP::u::FileOutput PilotDCO_Out("outputs/PilotDCO.out", DSP::e::SampleType::ST_float, 2);
+  DSP::u::FileOutput pilot_heter_MulOut("outputs/pilot_heter_Mul.out", DSP::e::SampleType::ST_float, 2);
 
-  DSPu_FILEoutput phase_errOut("outputs/phase_err.out", DSP::e::SampleType::ST_float, 1);
-  DSPu_FILEoutput freq_errOut("outputs/freq_err.out", DSP::e::SampleType::ST_float, 1);
-  DSPu_FILEoutput Freq_error_zeroinsOut("outputs/Freq_error_zeroins.out", DSP::e::SampleType::ST_float, 1);
+  DSP::u::FileOutput phase_errOut("outputs/phase_err.out", DSP::e::SampleType::ST_float, 1);
+  DSP::u::FileOutput freq_errOut("outputs/freq_err.out", DSP::e::SampleType::ST_float, 1);
+  DSP::u::FileOutput Freq_error_zeroinsOut("outputs/Freq_error_zeroins.out", DSP::e::SampleType::ST_float, 1);
 
-  DSPu_FILEoutput *SubchannelsOut[NoOfChannels];
-  DSPu_FILEoutput *SubchannelsGardnerOut[NoOfChannels];
-  DSPu_FILEoutput *SubchannelsDifferatorOut[NoOfChannels];
+  DSP::u::FileOutput *SubchannelsOut[NoOfChannels];
+  DSP::u::FileOutput *SubchannelsGardnerOut[NoOfChannels];
+  DSP::u::FileOutput *SubchannelsDifferatorOut[NoOfChannels];
   for (channel_ind=0; channel_ind<NoOfChannels; channel_ind++)
   {
     sprintf(tekst,"outputs/subchannels_%02i.out", channel_ind);
-    SubchannelsOut[channel_ind]= new DSPu_FILEoutput(tekst, DSP::e::SampleType::ST_float, 2);
+    SubchannelsOut[channel_ind]= new DSP::u::FileOutput(tekst, DSP::e::SampleType::ST_float, 2);
 
     MatchedAGC[channel_ind]->Output("out") >> SubchannelsOut[channel_ind]->Input("in");
 
     sprintf(tekst,"outputs/subchannels_gardner_%02i.out", channel_ind);
-    SubchannelsGardnerOut[channel_ind]= new DSPu_FILEoutput(tekst, DSP::e::SampleType::ST_float, 2);
+    SubchannelsGardnerOut[channel_ind]= new DSP::u::FileOutput(tekst, DSP::e::SampleType::ST_float, 2);
 
     sprintf(tekst, "out%i", channel_ind+1);
     GardnerSampling.Output(tekst), SubchannelsGardnerOut[channel_ind]->Input("in");
 
     sprintf(tekst,"outputs/subchannels_diff_%02i.out", channel_ind);
-    SubchannelsDifferatorOut[channel_ind]= new DSPu_FILEoutput(tekst, DSP::e::SampleType::ST_float, 2);
+    SubchannelsDifferatorOut[channel_ind]= new DSP::u::FileOutput(tekst, DSP::e::SampleType::ST_float, 2);
 
     OutputDiff[channel_ind]->Output("out"),
                 SubchannelsDifferatorOut[channel_ind]->Input("in");
@@ -1517,31 +1517,31 @@ int test_5()
   DSP::u::AudioInput AudioIn(MasterClock, Fp);
   AudioIn.SetName("Test");
 
-  DSPu_DDScos AudioIn2(MasterClock);
-  DSPu_DDScos AudioIn3(MasterClock, 0.4f, M_PIx2f*8*400.0/8000);
+  DSP::u::DDScos AudioIn2(MasterClock);
+  DSP::u::DDScos AudioIn3(MasterClock, 0.4f, M_PIx2f*8*400.0/8000);
 
   AudioIn2.SetConstInput("ampl",0.05f); //Amplitude
   AudioIn2.SetConstInput("phase",0.0f); //Initial phase
 
-DSPu_COSpulse AudioIn2_frequ(MasterClock, M_PIx2f*0.5f/DSP::Float(Fp));
+DSP::u::COSpulse AudioIn2_frequ(MasterClock, M_PIx2f*0.5f/DSP::Float(Fp));
 DSP::Float_vector a_in={1.0, -1.0};
-DSPu_IIR Acum(a_in);
+DSP::u::IIR Acum(a_in);
   AudioIn2_frequ.Output("out") >> Acum.Input("in");
   Acum.Output("out") >> AudioIn2.Input("puls");
 
   DSP::u::AudioOutput AudioOut(Fp);
 
-DSPu_Addition Sum;
+DSP::u::Addition Sum;
   AudioIn2.Output("out") >> Sum.Input("in1");
   AudioIn3.Output("out") >> Sum.Input("in2");
 
   Sum.Output("out") >> AudioOut.Input("in");
 
 
-  DSPu_FILEoutput FileOut("outputs/AudioIn.out", DSP::e::SampleType::ST_float, 1);
+  DSP::u::FileOutput FileOut("outputs/AudioIn.out", DSP::e::SampleType::ST_float, 1);
   AudioIn.Output("out") >> FileOut.Input("in");
 
-  DSPu_FILEoutput FileOut2("outputs/AudioIn2.out", DSP::e::SampleType::ST_float, 1);
+  DSP::u::FileOutput FileOut2("outputs/AudioIn2.out", DSP::e::SampleType::ST_float, 1);
   Sum.Output("out") >> FileOut2.Input("in");
 
 
@@ -1561,26 +1561,26 @@ DSPu_Addition Sum;
 int test_6()
 {
   DSP::Clock_ptr MasterClock;
-  //DSPu_Const *const_;
-  DSPu_LFSR *const_;
-  DSPu_LFSR_tester *tester;
-  DSPu_FILEoutput *temp_file;
-  //DSPu_Accumulator *akum;
+  //DSP::u::Const *const_;
+  DSP::u::LFSR *const_;
+  DSP::u::LFSR_tester *tester;
+  DSP::u::FileOutput *temp_file;
+  //DSP::u::Accumulator *akum;
 
   MasterClock = DSP::Clock::CreateMasterClock();
-  //const_ = new DSPu_Const(MasterClock,2.0);
+  //const_ = new DSP::u::Const(MasterClock,2.0);
 
   unsigned int *taps;
   taps = new unsigned int[2];
   taps[0] = 49; taps[1] = 52;
-  const_ = new DSPu_LFSR(MasterClock, 52, 2, taps);
+  const_ = new DSP::u::LFSR(MasterClock, 52, 2, taps);
   taps[0] = 49; taps[1] = 52;
-  tester = new DSPu_LFSR_tester(52, 2, taps);
+  tester = new DSP::u::LFSR_tester(52, 2, taps);
 
-  //akum = new DSPu_Accumulator();
+  //akum = new DSP::u::Accumulator();
   //akum->SetInitialState(1.0);
 
-  temp_file = new DSPu_FILEoutput("temp.flt", DSP::e::SampleType::ST_int, 1, DSP::e::FileType::FT_flt_no_scaling, 100);
+  temp_file = new DSP::u::FileOutput("temp.flt", DSP::e::SampleType::ST_int, 1, DSP::e::FileType::FT_flt_no_scaling, 100);
   //const_->Output("out") >> akum->Input("in");
   //akum->Output("out") >> temp_file->Input("in1");
 
@@ -1614,9 +1614,9 @@ int test_6()
 class DDS_macro : public DSP::Macro
 {
   private:
-    DSPu_PCCC *alpha_state_correction;
-    DSPu_Multiplication *Alpha_state_MUL;
-    DSPu_LoopDelay *Alpha_state;
+    DSP::u::PCCC *alpha_state_correction;
+    DSP::u::Multiplication *Alpha_state_MUL;
+    DSP::u::LoopDelay *Alpha_state;
 
   public:
   DDS_macro(DSP::Clock_ptr Fp2Clock, DSP::Float exp_w_n);
@@ -1634,14 +1634,14 @@ DDS_macro::DDS_macro(DSP::Clock_ptr Fp2Clock, DSP::Float w_n) : DSP::Macro("DDS"
 
   MacroInitStarted();
 
-  alpha_state_correction = new DSPu_PCCC;
+  alpha_state_correction = new DSP::u::PCCC;
   alpha_state_correction->SetConstInput("in.abs", 1.0);
 
-  Alpha_state_MUL = new DSPu_Multiplication(0, 3); Alpha_state_MUL->SetConstInput("in3", factor);
+  Alpha_state_MUL = new DSP::u::Multiplication(0, 3); Alpha_state_MUL->SetConstInput("in3", factor);
   this->MacroInput("in") >> alpha_state_correction->Input("in.arg");
   alpha_state_correction->Output("out") >> Alpha_state_MUL->Input("in2");
 
-  Alpha_state = new DSPu_LoopDelay(Fp2Clock, 1, 2); Alpha_state->SetState("in.re", 1.0);
+  Alpha_state = new DSP::u::LoopDelay(Fp2Clock, 1, 2); Alpha_state->SetState("in.re", 1.0);
 //Alpha_state->Output("out") >> this->OutputInput("in");
   Alpha_state->Output("out") >> Alpha_state_MUL->Input("in1");
   Alpha_state_MUL->Output("out") >> Alpha_state->Input("in");
@@ -1672,17 +1672,17 @@ int test_7()
   MasterClock=DSP::Clock::CreateMasterClock();
 
 
-  DSPu_WaveInput *AudioIn;
-  AudioIn = new DSPu_WaveInput(MasterClock, "DSPElib.wav", ".");
+  DSP::u::WaveInput *AudioIn;
+  AudioIn = new DSP::u::WaveInput(MasterClock, "DSPElib.wav", ".");
   Fp = AudioIn->GetSamplingRate();
   DDS_macro *DDS;
   DDS = new DDS_macro(MasterClock, 0.15f*M_PIx1f);
-  DSPu_Amplifier *gain;
-  gain = new DSPu_Amplifier(1.0/2);
+  DSP::u::Amplifier *gain;
+  gain = new DSP::u::Amplifier(1.0/2);
   DSP::u::AudioOutput *AudioOut;
   AudioOut = new DSP::u::AudioOutput(Fp, 2);
-  DSPu_FILEoutput *FileOut;
-  FileOut = new DSPu_FILEoutput("test_out.wav", DSP::e::SampleType::ST_short, 2, DSP::e::FileType::FT_wav, Fp);
+  DSP::u::FileOutput *FileOut;
+  FileOut = new DSP::u::FileOutput("test_out.wav", DSP::e::SampleType::ST_short, 2, DSP::e::FileType::FT_wav, Fp);
 
   AudioIn->Output("out") >> gain->Input("in");
   gain->Output("out") >> DDS->Input("in");
@@ -1696,7 +1696,7 @@ int test_7()
   DDS->SetDOTmode(DSP_DOT_macro_unwrap);
   DSP::Clock::SchemeToDOTfile(MasterClock, "macro_unwraped.dot");
 
-  //! \todo 2010.03.31 DSP::Clock::ListOfAllComponents should show number of AutoSplitters and DSPu_Copy objects
+  //! \todo 2010.03.31 DSP::Clock::ListOfAllComponents should show number of AutoSplitters and DSP::u::Copy objects
   DSP::Clock::ListOfAllComponents();
   DSP::Component::CheckInputsOfAllComponents();
 
@@ -1733,13 +1733,13 @@ int test_8()
     Clock4 = DSP::Clock::GetClock(MasterClock, 1, 4);
 
 
-    DSPu_WaveInput *AudioIn = NULL;
-    DSPu_RawDecimator *DecM4 = NULL;
-    DSPu_RawDecimator *DecM8 = NULL;
-    DSPu_RawDecimator *DecM11 = NULL;
-    DSPu_FILEoutput *WAVEfile = NULL;
+    DSP::u::WaveInput *AudioIn = NULL;
+    DSP::u::RawDecimator *DecM4 = NULL;
+    DSP::u::RawDecimator *DecM8 = NULL;
+    DSP::u::RawDecimator *DecM11 = NULL;
+    DSP::u::FileOutput *WAVEfile = NULL;
 
-    AudioIn = new DSPu_WaveInput(MasterClock, "test_new.wav", ".");
+    AudioIn = new DSP::u::WaveInput(MasterClock, "test_new.wav", ".");
 
     Fp = AudioIn->GetSamplingRate();
 
@@ -1747,9 +1747,9 @@ int test_8()
 
     /*
     //DSP::u::AudioOutput AudioOut(Fp);
-    DSPu_RawDecimator DecM44(MasterClock, 8);
-    //DSPu_RawDecimator DecM11(MasterClock, 11);
-    DSPu_FILEoutput WAVEfile("out.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp/8);
+    DSP::u::RawDecimator DecM44(MasterClock, 8);
+    //DSP::u::RawDecimator DecM11(MasterClock, 11);
+    DSP::u::FileOutput WAVEfile("out.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp/8);
     AudioIn.Output("out") >> DecM44.Input("in");
     //DecM4.Output("out") >> DecM11.Input("in");
     DecM44.Output("out") >> WAVEfile.Input("in");
@@ -1757,17 +1757,17 @@ int test_8()
 
 
     if(Fp == 44100){
-          DecM4 = new DSPu_RawDecimator(MasterClock, 4);
-          DecM11 = new DSPu_RawDecimator(Clock4, 11);
-          WAVEfile = new DSPu_FILEoutput("out.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp/44);
+          DecM4 = new DSP::u::RawDecimator(MasterClock, 4);
+          DecM11 = new DSP::u::RawDecimator(Clock4, 11);
+          WAVEfile = new DSP::u::FileOutput("out.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp/44);
           AudioIn->Output("out") >> DecM4->Input("in");
           DecM4->Output("out") >> DecM11->Input("in");
           DecM11->Output("out") >> WAVEfile->Input("in");
     }
 
     else if(Fp == 8000){
-          DecM8 = new DSPu_RawDecimator(MasterClock, 8);
-          WAVEfile = new DSPu_FILEoutput("out.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp/8);
+          DecM8 = new DSP::u::RawDecimator(MasterClock, 8);
+          WAVEfile = new DSP::u::FileOutput("out.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp/8);
           AudioIn->Output("out") >> DecM8->Input("in");
           DecM8->Output("out") >> WAVEfile->Input("in");
     }
@@ -1806,9 +1806,9 @@ void FFTout_clbk(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP::Float_v
   UNUSED_ARGUMENT(UserDataPtr);
   UNUSED_ARGUMENT(UserDefinedIdentifier);
 
-  DSPu_OutputBuffer *dsp_buffer;
+  DSP::u::OutputBuffer *dsp_buffer;
   //int counter;
-  dsp_buffer = (DSPu_OutputBuffer *)Caller->Convert2Block();
+  dsp_buffer = (DSP::u::OutputBuffer *)Caller->Convert2Block();
 
   if (NoOfInputs == DSP::c::Callback_Init)
   {
@@ -1884,19 +1884,19 @@ int test_9()
   InputClock=DSP::Clock::CreateMasterClock();
 
 
-  DSPu_FILEinput InputSignal(InputClock, "matlab/delta_44100.wav", 1U, DSP::e::SampleType::ST_short, DSP::e::FileType::FT_wav);
+  DSP::u::FileInput InputSignal(InputClock, "matlab/delta_44100.wav", 1U, DSP::e::SampleType::ST_short, DSP::e::FileType::FT_wav);
   int Fp1 = InputSignal.GetSamplingRate();
   /*if (Fp1_tmp != Fp1)
   {
     DSP::log << DSP::LogMode::Error << "Problem z sygna�em wej�ciowym");
   } */
 
-  DSPu_FIR H_sh(h_sh, 0, 1, L_IFIR);
-  DSPu_FIR H_ir(h_ir);
+  DSP::u::FIR H_sh(h_sh, 0, 1, L_IFIR);
+  DSP::u::FIR H_ir(h_ir);
 
 //  DSP::u::AudioOutput SoundOut(Fp2, 1, 16);
-  DSPu_FILEoutput FileOut_a("matlab/cw3_zad2.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp1);
-  DSPu_FILEoutput FileOut_b("matlab/cw3_zad2.flt", DSP::e::SampleType::ST_float, 1, DSP::e::FileType::FT_flt, Fp1);
+  DSP::u::FileOutput FileOut_a("matlab/cw3_zad2.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp1);
+  DSP::u::FileOutput FileOut_b("matlab/cw3_zad2.flt", DSP::e::SampleType::ST_float, 1, DSP::e::FileType::FT_flt, Fp1);
 
   DSP::log << "Fp1 = " << Fp1 << ", L_IFIR = " << L_IFIR << endl;
 
@@ -1973,10 +1973,10 @@ int test_10()
     F_p = coef_info.Fp;
   }
 
-  DSPu_FILEinput InputSignal(InputClock, "matlab/test_in.flt", 2U, DSP::e::SampleType::ST_float, DSP::e::FileType::FT_flt);
-  DSPu_FILEoutput OutputSignal("matlab/test_out.flt", DSP::e::SampleType::ST_float, 2U, DSP::e::FileType::FT_flt, F_p);
+  DSP::u::FileInput InputSignal(InputClock, "matlab/test_in.flt", 2U, DSP::e::SampleType::ST_float, DSP::e::FileType::FT_flt);
+  DSP::u::FileOutput OutputSignal("matlab/test_out.flt", DSP::e::SampleType::ST_float, 2U, DSP::e::FileType::FT_flt, F_p);
 
-  DSPu_FIR FIR(true, h_C);
+  DSP::u::FIR FIR(true, h_C);
 
   InputSignal.Output("out") >> FIR.Input("in");
   FIR.Output("out") >> OutputSignal.Input("in");
@@ -2049,7 +2049,7 @@ int test_11()
   InputClock=DSP::Clock::CreateMasterClock();
 
 
-  //DSPu_WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
+  //DSP::u::WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
   //F_symb = AudioIn.GetSamplingRate();
 
 
@@ -2064,32 +2064,32 @@ int test_11()
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // Wielokana�owy sygna� wej�ciowy
-  DSPu_FILEinput InputSignal(InputClock, "cw5_zad1.flt", 2U, DSP::e::SampleType::ST_float, DSP::e::FileType::FT_flt);
-  DSPu_Vacuum DumpImag;
+  DSP::u::FileInput InputSignal(InputClock, "cw5_zad1.flt", 2U, DSP::e::SampleType::ST_float, DSP::e::FileType::FT_flt);
+  DSP::u::Vacuum DumpImag;
 
-  DSPu_Delay SymbolTimigDelay(1U);
+  DSP::u::Delay SymbolTimigDelay(1U);
 
   InputSignal.Output("out.re") >> SymbolTimigDelay.Input("in");
   InputSignal.Output("out.im") >> DumpImag.Input("in");
 
-  DSPu_OutputBuffer OutputBuffer(  K, // unsigned int   BufferSize_in,
+  DSP::u::OutputBuffer OutputBuffer(  K, // unsigned int   BufferSize_in,
                                    1, // unsigned int   NoOfInputs_in,
                                    DSP_stop_when_full, //DSPe_buffer_type   cyclic,
                                    InputClock, //DSP::Clock_ptr  ParentClock,
                                    SymbolClock, //DSP::Clock_ptr   NotificationsClock,
                                    K, //unsigned int  NoOfOutputs_in,
-                                   FFTout_clbk //DSPu_buffer_callback_ptr   func_ptr,
+                                   FFTout_clbk //DSP::Buffer_callback_ptr   func_ptr,
                                    //unsigned int   CallbackIdentifier = 0
                                    );
   SymbolTimigDelay.Output("out") >> OutputBuffer.Input("in");
 
-  DSPu_FFT *fft = new DSPu_FFT(K, false);
+  DSP::u::FFT *fft = new DSP::u::FFT(K, false);
   // filtry polifazowe
-  DSPu_FIR *H_g[K];
+  DSP::u::FIR *H_g[K];
 
   for (int ind = 0; ind < K; ind++)
   {
-    H_g[ind] = new DSPu_FIR(h_rc, (K-1)-ind, K);
+    H_g[ind] = new DSP::u::FIR(h_rc, (K-1)-ind, K);
 
     string name, name2;
     name = "out"; name += to_string(ind+1);
@@ -2098,7 +2098,7 @@ int test_11()
     H_g[ind]->Output("out") >> fft->Input(name2);
   }
 
-  DSPu_Vacuum *Discard[K-3];
+  DSP::u::Vacuum *Discard[K-3];
   int channel1, channel2, channel3;
   channel1 = 8; channel2 = 10; channel3 = 13;
 //  channel1 = 1; channel2 = 31; channel3 = 32;
@@ -2107,7 +2107,7 @@ int test_11()
   {
       if ((ind != channel1) && (ind != channel2) && (ind != channel3))
       {
-         Discard[current] = new DSPu_Vacuum(true);
+         Discard[current] = new DSP::u::Vacuum(true);
          sprintf(text, "out%i", ind);
          fft->Output(text), Discard[current++]->Input("in");
       }
@@ -2117,20 +2117,20 @@ int test_11()
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // Pierwszy kana� danych
-  DSPu_PSKdecoder PSKdecoder1(DSP_QPSK_A);
-//  DSPu_FILEoutput BinData1("cw5_zad1.dat", DSP::e::SampleType::ST_bit, 2U, DSP::e::FileType::FT_raw, F_symb);
-  DSPu_FILEoutput SymbData1("cw5_zad2a.flt", DSP::e::SampleType::ST_float, 2U, DSP::e::FileType::FT_flt, F_symb);
-  DSPu_FILEoutput BinData1("cw5_zad2a.dat", DSP::e::SampleType::ST_bit_text, 2U, DSP::e::FileType::FT_raw);
+  DSP::u::PSKdecoder PSKdecoder1(DSP_QPSK_A);
+//  DSP::u::FileOutput BinData1("cw5_zad1.dat", DSP::e::SampleType::ST_bit, 2U, DSP::e::FileType::FT_raw, F_symb);
+  DSP::u::FileOutput SymbData1("cw5_zad2a.flt", DSP::e::SampleType::ST_float, 2U, DSP::e::FileType::FT_flt, F_symb);
+  DSP::u::FileOutput BinData1("cw5_zad2a.dat", DSP::e::SampleType::ST_bit_text, 2U, DSP::e::FileType::FT_raw);
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // drugi kana� danych
-  DSPu_PSKdecoder PSKdecoder2(DSP_QPSK_A);
-  DSPu_FILEoutput BinData2("cw5_zad2b.dat", DSP::e::SampleType::ST_bit, 2U, DSP::e::FileType::FT_raw, F_symb);
+  DSP::u::PSKdecoder PSKdecoder2(DSP_QPSK_A);
+  DSP::u::FileOutput BinData2("cw5_zad2b.dat", DSP::e::SampleType::ST_bit, 2U, DSP::e::FileType::FT_raw, F_symb);
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // trzeci kana� danych
-  DSPu_PSKdecoder PSKdecoder3(DSP_QPSK_A);
-  DSPu_FILEoutput BinData3("cw5_zad2c.dat", DSP::e::SampleType::ST_bit, 2U, DSP::e::FileType::FT_raw, F_symb);
+  DSP::u::PSKdecoder PSKdecoder3(DSP_QPSK_A);
+  DSP::u::FileOutput BinData3("cw5_zad2c.dat", DSP::e::SampleType::ST_bit, 2U, DSP::e::FileType::FT_raw, F_symb);
 
   // pod��cz kana�y w�skopasmowe ST
   // kana� nr 8
@@ -2229,10 +2229,10 @@ void BufferCallback(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP::Floa
     return;
   }
 
-  DSPu_OutputBuffer *dsp_buffer;
+  DSP::u::OutputBuffer *dsp_buffer;
   int ind, counter;
 
-  dsp_buffer = (DSPu_OutputBuffer *)Caller->Convert2Block();
+  dsp_buffer = (DSP::u::OutputBuffer *)Caller->Convert2Block();
   counter = dsp_buffer->ReadBuffer(read_buffer,
                                    buffer_size*sizeof(DSP::Float), // read all samples
                                    -2,  // reset only NotificationsStep slots in buffer block
@@ -2264,13 +2264,13 @@ int test_12(void)
   long int Fp;
   int callback_type;
 
-  DSPu_WaveInput     *AudioIn;
-  DSPu_OutputBuffer  *OutputBuffer;
-  DSPu_Multiplexer   *Multiplexer;
+  DSP::u::WaveInput     *AudioIn;
+  DSP::u::OutputBuffer  *OutputBuffer;
+  DSP::u::Multiplexer   *Multiplexer;
   DSP::u::AudioOutput   *AudioOut;
-  DSPu_Demultiplexer *Demultiplexer;
-  DSPu_Amplifier     *Scale;
-  DSPu_Multiplexer   *Multiplexer2;
+  DSP::u::Demultiplexer *Demultiplexer;
+  DSP::u::Amplifier     *Scale;
+  DSP::u::Multiplexer   *Multiplexer2;
 
   DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file);
   DSP::log.SetLogFileName("log_file.log");
@@ -2280,12 +2280,12 @@ int test_12(void)
   MasterClock=DSP::Clock::CreateMasterClock();
 
 
-  AudioIn = new DSPu_WaveInput(MasterClock, "DSPElib.wav", ".");
+  AudioIn = new DSP::u::WaveInput(MasterClock, "DSPElib.wav", ".");
   Fp = AudioIn->GetSamplingRate();
 
   //callback_type = 0; // just copy samples
   callback_type = 1; // inverse spectrum
-  OutputBuffer = new DSPu_OutputBuffer(buffer_size,
+  OutputBuffer = new DSP::u::OutputBuffer(buffer_size,
                               1,
                               DSP_standard,
                               MasterClock,
@@ -2295,14 +2295,14 @@ int test_12(void)
                               callback_type);
   BufferClock = OutputBuffer->GetOutputClock();
 
-  Multiplexer = new DSPu_Multiplexer (BufferClock, false, buffer_size);
+  Multiplexer = new DSP::u::Multiplexer (BufferClock, false, buffer_size);
   MuxClock = Multiplexer->GetOutputClock();
 
-  Demultiplexer = new DSPu_Demultiplexer(false, 2);
+  Demultiplexer = new DSP::u::Demultiplexer(false, 2);
   DemuxClock = DSP::Clock::GetClock(MuxClock, 1,2);
 
-  Scale = new DSPu_Amplifier(-1.0, 1);
-  Multiplexer2 = new DSPu_Multiplexer(DemuxClock, false, 2);
+  Scale = new DSP::u::Amplifier(-1.0, 1);
+  Multiplexer2 = new DSP::u::Multiplexer(DemuxClock, false, 2);
 
   AudioOut = new DSP::u::AudioOutput(Fp);
 
@@ -2521,35 +2521,35 @@ int test_SymbolMapper() {
   int bits_per_symbol = 3;
 
   BitClock = DSP::Clock::CreateMasterClock();
-  blocks["binary_stream"] = shared_ptr<DSP::Source>(new DSPu_binrand(BitClock));
+  blocks["binary_stream"] = shared_ptr<DSP::Source>(new DSP::u::BinRand(BitClock));
 
-  blocks["file_bin"] = shared_ptr<DSP::Block>(new DSPu_FILEoutput("bin_input.txt", DSP::e::SampleType::ST_bit_text, 1, DSP::e::FileType::FT_raw));
+  blocks["file_bin"] = shared_ptr<DSP::Block>(new DSP::u::FileOutput("bin_input.txt", DSP::e::SampleType::ST_bit_text, 1, DSP::e::FileType::FT_raw));
 //  sources["binary_stream"]->Output("out"),blocks["file_bin"]->Input("in");
   blocks["binary_stream"]->Output("out") >> blocks["file_bin"]->Input("in");
 
-  blocks["SPconv"] = make_shared<DSPu_Serial2Parallel>(BitClock, bits_per_symbol);
-  blocks["mapper"] = make_shared<DSPu_SymbolMapper>(DSP_MT_ASK, bits_per_symbol);
+  blocks["SPconv"] = make_shared<DSP::u::Serial2Parallel>(BitClock, bits_per_symbol);
+  blocks["mapper"] = make_shared<DSP::u::SymbolMapper>(DSP_MT_ASK, bits_per_symbol);
   blocks["binary_stream"]->Output("out") >> blocks["SPconv"]->Input("in");
   blocks["SPconv"]->Output("out") >> blocks["mapper"]->Input("in");
   SymbolClock = blocks["mapper"]->GetOutputClock();
-////  SymbolClock = DSP::Clock::GetClock(BitClock, 1, ((DSPu_SymbolMapper *)blocks["mapper"])->getBitsPerSymbol());
+////  SymbolClock = DSP::Clock::GetClock(BitClock, 1, ((DSP::u::SymbolMapper *)blocks["mapper"])->getBitsPerSymbol());
 //  SymbolClock = DSP::Clock::GetClock(BitClock, 1, bits_per_symbol);
 
   unsigned int noChannels = 1;
-  if (dynamic_cast<DSPu_SymbolMapper *>(blocks["mapper"].get())->isOutputReal() == false)
+  if (dynamic_cast<DSP::u::SymbolMapper *>(blocks["mapper"].get())->isOutputReal() == false)
     noChannels = 2;
 
-  blocks["file_symb"] = shared_ptr<DSP::Block>(new DSPu_FILEoutput("symb_output.flt", DSP::e::SampleType::ST_float, noChannels, DSP::e::FileType::FT_flt));
+  blocks["file_symb"] = shared_ptr<DSP::Block>(new DSP::u::FileOutput("symb_output.flt", DSP::e::SampleType::ST_float, noChannels, DSP::e::FileType::FT_flt));
   blocks["mapper"]->Output("out"),blocks["file_symb"]->Input("in");
 
-  blocks["demapper"] = make_shared<DSPu_SymbolDemapper>(DSP_MT_ASK, bits_per_symbol);
+  blocks["demapper"] = make_shared<DSP::u::SymbolDemapper>(DSP_MT_ASK, bits_per_symbol);
   blocks["mapper"]->Output("out") >> blocks["demapper"]->Input("in");
-  blocks["PSconv"] = make_shared<DSPu_Parallel2Serial>(SymbolClock, bits_per_symbol);
+  blocks["PSconv"] = make_shared<DSP::u::Parallel2Serial>(SymbolClock, bits_per_symbol);
   blocks["demapper"]->Output("out") >> blocks["PSconv"]->Input("in");
 
 
-  blocks["file_bin_recovered"] = shared_ptr<DSP::Block>(new DSPu_FILEoutput("bin_output.flt", DSP::e::SampleType::ST_float, 1, DSP::e::FileType::FT_flt));
-  blocks["file_bin_recovered2"] = shared_ptr<DSP::Block>(new DSPu_FILEoutput("bin_output.txt", DSP::e::SampleType::ST_bit_text, 1, DSP::e::FileType::FT_raw));
+  blocks["file_bin_recovered"] = shared_ptr<DSP::Block>(new DSP::u::FileOutput("bin_output.flt", DSP::e::SampleType::ST_float, 1, DSP::e::FileType::FT_flt));
+  blocks["file_bin_recovered2"] = shared_ptr<DSP::Block>(new DSP::u::FileOutput("bin_output.txt", DSP::e::SampleType::ST_bit_text, 1, DSP::e::FileType::FT_raw));
   blocks["PSconv"]->Output("out"),blocks["file_bin_recovered"]->Input("in");
   blocks["PSconv"]->Output("out"),blocks["file_bin_recovered2"]->Input("in");
 
@@ -2615,12 +2615,12 @@ int test_ZPSTC_cw_3()
   SymbolClock=DSP::Clock::CreateMasterClock();
 
 
-  //DSPu_WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
+  //DSP::u::WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
   //F_symb = AudioIn.GetSamplingRate();
 
-  DSPu_FILEinput BinData(SymbolClock, "/Dev-Cpp/ZPSTC/Cw3/Cw3_zad3.cpp", 2U, DSP::e::SampleType::ST_bit, DSP::e::FileType::FT_raw);
+  DSP::u::FileInput BinData(SymbolClock, "/Dev-Cpp/ZPSTC/Cw3/Cw3_zad3.cpp", 2U, DSP::e::SampleType::ST_bit, DSP::e::FileType::FT_raw);
   F_symb = 2400;
-  DSPu_PSKencoder PSKencoder(DSP_QPSK_A);
+  DSP::u::PSKencoder PSKencoder(DSP_QPSK_A);
 
   L1 = Fp1 / F_symb;
   L2 = Fp2 / Fp1;
@@ -2630,25 +2630,25 @@ int test_ZPSTC_cw_3()
 
   SecondClock=DSP::Clock::GetClock(SymbolClock, L2, 1);
 
-  DSPu_SamplingRateConversion SRC2(true, SecondClock, L1, 1, h_rc);
+  DSP::u::SamplingRateConversion SRC2(true, SecondClock, L1, 1, h_rc);
   SRC2.SetName("SRC1");
 
-  DSPu_SamplingRateConversion SRC1(true, SymbolClock, L2, 1, h2);
+  DSP::u::SamplingRateConversion SRC1(true, SymbolClock, L2, 1, h2);
   SRC1.SetName("SRC2");
-  DSPu_DDScos Heter(SRC2.GetOutputClock(), true, 0.5, DSP::Float(M_PIx2*2500/Fp2));
-  DSPu_Multiplication Mul(0, 2);
-  DSPu_Vacuum V1;
+  DSP::u::DDScos Heter(SRC2.GetOutputClock(), true, 0.5, DSP::Float(M_PIx2*2500/Fp2));
+  DSP::u::Multiplication Mul(0, 2);
+  DSP::u::Vacuum V1;
 
 
   // Output to the soundcard
   DSP::u::AudioOutput SoundOut(Fp2, 1, 16);
-  DSPu_FILEoutput FileOut1("cw3_zad3a.flt", DSP::e::SampleType::ST_float, 2, DSP::e::FileType::FT_flt, Fp1);
+  DSP::u::FileOutput FileOut1("cw3_zad3a.flt", DSP::e::SampleType::ST_float, 2, DSP::e::FileType::FT_flt, Fp1);
   // Output to the mono 16bit *.wav file
-  DSPu_FILEoutput FileOut2a("cw3_zad3b.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp2);
-  DSPu_FILEoutput FileOut2b("cw3_zad3b.flt", DSP::e::SampleType::ST_float, 1, DSP::e::FileType::FT_flt, Fp2);
+  DSP::u::FileOutput FileOut2a("cw3_zad3b.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp2);
+  DSP::u::FileOutput FileOut2b("cw3_zad3b.flt", DSP::e::SampleType::ST_float, 1, DSP::e::FileType::FT_flt, Fp2);
 
 // ???
-  DSPu_FILEoutput FileOut_test("test.flt", DSP::e::SampleType::ST_float, 2, DSP::e::FileType::FT_flt, Fp2);
+  DSP::u::FileOutput FileOut_test("test.flt", DSP::e::SampleType::ST_float, 2, DSP::e::FileType::FT_flt, Fp2);
 
   /*************************************************************/
   // Connections definitions

@@ -21,32 +21,32 @@ int main(void)
 
   MasterClock = DSP::Clock::CreateMasterClock();
 
-//  DSPu_WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
+//  DSP::u::WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
 //  Fp = AudioIn.GetSamplingRate();
   Fp = 8000;
-  DSPu_DDScos AudioIn(MasterClock, false, 1.0, DSP::Float(1000*M_PIx2/Fp));
+  DSP::u::DDScos AudioIn(MasterClock, false, 1.0, DSP::Float(1000*M_PIx2/Fp));
 
   Fp1 = 1000;
   MorseClock = DSP::Clock::GetClock(MasterClock, 1, Fp/Fp1);
-  DSPu_MORSEkey MorseKey(MorseClock, 20, Fp1);
+  DSP::u::MORSEkey MorseKey(MorseClock, 20, Fp1);
   MorseKey.AddString("Digital Signal Processing Engine library");
-  DSPu_Zeroinserter MorseHold(MorseClock, Fp/Fp1, true);
+  DSP::u::Zeroinserter MorseHold(MorseClock, Fp/Fp1, true);
   MorseKey.Output("out") >> MorseHold.Input("in");
 
-  DSPu_RealMultiplication Mul(2);
+  DSP::u::RealMultiplication Mul(2);
 
   AudioIn.Output("out") >> Mul.Input("in1");
   MorseHold.Output("out") >> Mul.Input("in2");
 
   // use server socket
-//  DSP::u::SOCKEToutput out_socket("0.0.0.0", false, 0x00000003);
+//  DSP::u::SocketOutput out_socket("0.0.0.0", false, 0x00000003);
   string bind_address = "0.0.0.0:10000";
-  DSP::u::SOCKEToutput out_socket(bind_address, false, 0x00000003);
+  DSP::u::SocketOutput out_socket(bind_address, false, 0x00000003);
   out_socket.SetName(bind_address);
   Mul.Output("out") >> out_socket.Input("in");
 
-  DSPu_RawDecimator MorseDec(MorseClock, 5);
-  DSPu_FILEoutput WAVEfile("morse_key.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp1/5);
+  DSP::u::RawDecimator MorseDec(MorseClock, 5);
+  DSP::u::FileOutput WAVEfile("morse_key.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp1/5);
   MorseKey.Output("out") >> MorseDec.Input("in");
   MorseDec.Output("out") >> WAVEfile.Input("in");
   //DSP::u::AudioOutput AudioOut(Fp);

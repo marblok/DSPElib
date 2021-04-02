@@ -57,13 +57,14 @@ namespace DSP {
   class Macro;
   typedef Macro * Macro_ptr;
 
+  namespace u {
+    class Copy;
+    typedef Copy * Copy_ptr;
+
+    class Switch;
+    typedef Switch * Switch_ptr;
+  }
 }
-
-class DSPu_Copy;
-typedef DSPu_Copy * DSPu_Copy_ptr;
-
-class DSPu_Switch;
-typedef DSPu_Switch * DSPu_Switch_ptr;
 
 namespace DSP {
   class Clock;
@@ -79,32 +80,6 @@ namespace DSP {
   class T_WAVEchunk;
   typedef T_WAVEchunk * T_WAVEchunk_ptr;
 }
-
-//  16-bit types  -----------------------------------------------------------//
-#if USHRT_MAX == 0xffff
-   typedef unsigned short  WORD;
-#else
-   #error Cannot define WORD
-#endif
-
-//  32-bit types  -----------------------------------------------------------//
-#if ULONG_MAX == 0xffffffff
-  typedef unsigned long   DWORD;
-#elif UINT_MAX == 0xffffffff
-  typedef unsigned int   DWORD;
-#else
-  #error Cannot define DWORD
-#endif
-#ifndef BYTE
-  typedef unsigned char BYTE;
-#endif
-#ifndef MAXDWORD
-  #define MAXDWORD  ((unsigned int)0xffffffff)
-#endif
-#ifndef MAXWORD
-  #define MAXWORD  ((unsigned short)0xffff)
-#endif
-
 
 //! Definition of floating point type used in the DSP module
 #define DSP_USE_float
@@ -163,64 +138,62 @@ namespace DSP {
   typedef std::vector<DSP::Float > Float_vector;
   typedef std::vector<DSP::Prec_Float > Prec_Float_vector;
   typedef std::vector<DSP::Complex > Complex_vector;
-}
 
-//! Pointer to the callback function
-/*! void func(unsigned int NoOfInputs,  DSP::Float_ptr InputSamples,
- *            unsigned int NoOfOutputs, DSP::Float_ptr OutputSamples,
- *            DSP::void_ptr *UserDataPtr, unsigned int UserDefinedIdentifier,
- *            DSP::Component_ptr Caller)
- *
- * UserDataPtr - default value is NULL, in this variable user can store
- *   the pointer to his own data structure
- *
- * This callback function apart from calls when input samples are
- * to be processed is called two additional times:
- *  -# call from block constructor with NoOfInputs = DSP::c::Callback_Init;
- *  this is when the user can initiate UserData structure
- *  and set its pointer to UserDataPtr.
- *  -# call from block destructor with NoOfInputs = DSP::c::Callback_Delete;
- *  this is when the user can free UserData structure.
- *
- */
-typedef void (*DSPu_callback_ptr)(unsigned int, DSP::Float_ptr,
-                                  unsigned int, DSP::Float_ptr,
-                                  DSP::void_ptr *, unsigned int,
-                                  DSP::Component_ptr);
-
-//! Pointer to the buffer callback function
-/*! void func(unsigned int NoOfInputs,
- *            unsigned int NoOfOutputs, DSP::Float_ptr OutputSamples,
- *            DSP::void_ptr *UserDataPtr, unsigned int UserDefinedIdentifier,
- *            DSP::Component_ptr Caller)
- *
- * UserDataPtr - default value is NULL, in this variable user can store
- *   the pointer to his own data structure
- *
- * This callback function apart from calls when input samples are
- * to be processed is called two additional times:
- *  -# call from block constructor with NoOfInputs = DSP::c::Callback_Init;
- *  this is when the user can initiate UserData structure
- *  and set its pointer to UserDataPtr.
- *  -# call from block destructor with NoOfInputs = DSP::c::Callback_Delete;
- *  this is when the user can free UserData structure.
- *
- */
-typedef void (*DSPu_buffer_callback_ptr)(unsigned int,
-                                  unsigned int, DSP::Float_vector &,
-                                  DSP::void_ptr *, unsigned int,
-                                  DSP::Component_ptr);
-
-//! Pointer to the notification callback function
-/*! void func(DSP::Component_ptr Caller, unsigned int UserDefinedIdentifier)
- */
-typedef void (*DSPu_notify_callback_ptr)(DSP::Component_ptr, unsigned int);
-
-namespace DSP {
-  //! Pointer to the external sleep function implementation
-  /*! void func(DWORD time)
+  //! Pointer to the callback function
+  /*! void func(unsigned int NoOfInputs,  DSP::Float_ptr InputSamples,
+  *            unsigned int NoOfOutputs, DSP::Float_ptr OutputSamples,
+  *            DSP::void_ptr *UserDataPtr, unsigned int UserDefinedIdentifier,
+  *            DSP::Component_ptr Caller)
+  *
+  * UserDataPtr - default value is NULL, in this variable user can store
+  *   the pointer to his own data structure
+  *
+  * This callback function apart from calls when input samples are
+  * to be processed is called two additional times:
+  *  -# call from block constructor with NoOfInputs = DSP::c::Callback_Init;
+  *  this is when the user can initiate UserData structure
+  *  and set its pointer to UserDataPtr.
+  *  -# call from block destructor with NoOfInputs = DSP::c::Callback_Delete;
+  *  this is when the user can free UserData structure.
+  *
   */
-  typedef void (*ExternalSleep_ptr)(DWORD);
+  typedef void (*Callback_ptr)(unsigned int, DSP::Float_ptr,
+                               unsigned int, DSP::Float_ptr,
+                               DSP::void_ptr *, unsigned int,
+                               DSP::Component_ptr);
+
+  //! Pointer to the buffer callback function
+  /*! void func(unsigned int NoOfInputs,
+  *            unsigned int NoOfOutputs, DSP::Float_ptr OutputSamples,
+  *            DSP::void_ptr *UserDataPtr, unsigned int UserDefinedIdentifier,
+  *            DSP::Component_ptr Caller)
+  *
+  * UserDataPtr - default value is NULL, in this variable user can store
+  *   the pointer to his own data structure
+  *
+  * This callback function apart from calls when input samples are
+  * to be processed is called two additional times:
+  *  -# call from block constructor with NoOfInputs = DSP::c::Callback_Init;
+  *  this is when the user can initiate UserData structure
+  *  and set its pointer to UserDataPtr.
+  *  -# call from block destructor with NoOfInputs = DSP::c::Callback_Delete;
+  *  this is when the user can free UserData structure.
+  *
+  */
+  typedef void (*Buffer_callback_ptr)(unsigned int,
+                                    unsigned int, DSP::Float_vector &,
+                                    DSP::void_ptr *, unsigned int,
+                                    DSP::Component_ptr);
+
+  //! Pointer to the notification callback function
+  /*! void func(DSP::Component_ptr Caller, unsigned int UserDefinedIdentifier)
+  */
+  typedef void (*Notify_callback_ptr)(DSP::Component_ptr, unsigned int);
+
+  //! Pointer to the external sleep function implementation
+  /*! void func(uint32_t time)
+  */
+  typedef void (*ExternalSleep_ptr)(uint32_t);
 }
 
 #define M_PIx1  3.14159265358979323846264338328
@@ -400,7 +373,7 @@ class DSP::Complex
  *  - DSP::e::SampleType::ST_bit   : 1 bit stream (MSB first)
  *  - DSP::e::SampleType::ST_bit_reversed : reversed 1 bit stream (LSB first)
  *  - DSP::e::SampleType::ST_bit_text : 1 bit stream writen as a text (0 & 1 characters)
- *  - DSP::e::SampleType::ST_tchar : 8-bit char (text) - no scalling of input data (only DSPu_FILEoutput with DSP::e::FileType::FT_raw)
+ *  - DSP::e::SampleType::ST_tchar : 8-bit char (text) - no scalling of input data (only DSP::u::FileOutput with DSP::e::FileType::FT_raw)
  *  .
  *
  * \Fixed <b>2006.06.30</b> Changed name from DSP_FileType to DSP_SampleType
@@ -432,7 +405,7 @@ enum struct DSP::e::FileType {
         FT_wav = 4,
         FT_tape = 5};
 
-//! Enums for DSPu_FILEoutput
+//! Enums for DSP::u::FileOutput
 enum DSPe_offset_mode {
   //! from beginning (after header)
   DSP_OM_standard     = 0,
@@ -456,7 +429,7 @@ enum DSPe_Modulation_type {
                     DSP_MT_QAM=3
                    };
 
-//! Enums for DSPu_OutputBuffer
+//! Enums for DSP::u::OutputBuffer
 enum DSPe_buffer_type {DSP_standard       = 0,
                        DSP_cyclic         = 1,
                        DSP_stop_when_full = 2};

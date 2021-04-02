@@ -10,8 +10,8 @@
 #define DSP_lib_H
 
 #define DSP_VER_MAJOR 0
-#define DSP_VER_MINOR 19
-#define DSP_VER_BUILD 24 // !!! without zeroes before, else this will be treated as octal number
+#define DSP_VER_MINOR 20
+#define DSP_VER_BUILD 0 // !!! without zeroes before, else this will be treated as octal number
 #define DSP_VER_YEAR  2021
 #define DSP_VER       DSP_VER_MAJOR.DSP_VER_MINOR.DSP_VER_BUILD
 
@@ -50,10 +50,10 @@ struct DSP_libver
 /*! <b>Major library updates</b>
  *
  *  \bug <b>2008.03.23</b> Check what will happen if all inputs are constant
- *    for blocks like DSPu_PCCC. Those should work like sources and have clock defined.
+ *    for blocks like DSP::u::PCCC. Those should work like sources and have clock defined.
  *    ConvertConst2Source <== checks whether all inputs are constant,
  *        defines block clock and adds to list of constant input blocks for given clock.
- *  \todo <b>2008.04.06</b> DSPu_RawDecimator, DSPu_SampleRateConverter - zaimplementowa� w wersji bez
+ *  \todo <b>2008.04.06</b> DSP::u::RawDecimator, DSP::u::SampleRateConverter - zaimplementowa� w wersji bez
  *    rejestracji jako źródło (może nawet zaimplementować jako zwykły blok przetwarzania)
  *    - może przyśpieszyć przetwarzanie - mniej źródeł do przeszukiwania
  *  \todo <b>2008.04.06</b> DSP::Component::CheckInputsOfComponents(DSP_clock_ptr) - checking
@@ -68,7 +68,7 @@ struct DSP_libver
  *        kompletno�ci pr�bek wej�ciowych pozostawi� InputExecute i OutputExecute.
  *  \todo <b>2008.04.13</b> When wav file does not exist, something
  *     more then "Unsupported input sampling rate" should be stated
- *    for DSPu_WaveInput
+ *    for DSP::u::WaveInput
  *
  *  \todo Update docs with info about usage of DSP_Clock_trigger
  *
@@ -85,7 +85,7 @@ struct DSP_libver
  *   .
  *
  *  \todo <b>2008.07.05</b> add macro into library documentation
- *  \todo <b>2008.07.09</b> add DSPu_Quantizer into library documentation
+ *  \todo <b>2008.07.09</b> add DSP::u::Quantizer into library documentation
  *
  *  \bug <b>2008.09.29</b> Increase automatically named outputs range (now it is up to 999 output).
  *    In some case when working with buffer outputs it might be to little (see OFDM implementation).
@@ -94,12 +94,12 @@ struct DSP_libver
  *   DSP::Component::GetComponentNodeParams_DOTfile fixed but there are
  *   more similar functions.
  *
- * \todo <b>2008.10.29</b> DSPu_FIR introduce optimized InputExecute procedures instead of one universal
+ * \todo <b>2008.10.29</b> DSP::u::FIR introduce optimized InputExecute procedures instead of one universal
  *
- * \todo <b>2010.04.26</b> Integrate DSPu_RealMultiplication in DSPu_Multiplication as optimized implementation variant
- * \todo <b>2010.04.26</b> Integrate DSPu_LoopDelay in DSPu_Delay as implementation variant
- * \todo <b>2012.03.27</b> Test all variants of DSPu_FIR
- * \todo <b>2012.04.17</b> Check if DSPu_FIR variant for I-FIR shaping filter is implemented on the basis
+ * \todo <b>2010.04.26</b> Integrate DSP::u::RealMultiplication in DSP::u::Multiplication as optimized implementation variant
+ * \todo <b>2010.04.26</b> Integrate DSP::u::LoopDelay in DSP::u::Delay as implementation variant
+ * \todo <b>2012.03.27</b> Test all variants of DSP::u::FIR
+ * \todo <b>2012.04.17</b> Check if DSP::u::FIR variant for I-FIR shaping filter is implemented on the basis
  *                         of cyclic buffer and not based on memcpy
  *
  * \todo Add to the class DSP_clock
@@ -456,12 +456,12 @@ string DSP_lib_version_string();
  *      strictly related to the input clock. In such cases signal activated clocks
  *      must be used. To make use of such a clock several things must be taken care of
  *      -# Two asynchronous parts of the algorithm must be connected with special
- *         asynchronous blocks like: DSPu_Hold, DSPu_Farrow.
+ *         asynchronous blocks like: DSP::u::Hold, DSP::u::Farrow.
  *      -# The both parts must have separate master clocks. The signal activated clock
  *         must be generated using DSP_clock::CreateMasterClock (different from that for
  *         main algorithm part) or be related to this clock.
  *      -# Signal activated clock must be activated by special processing block
- *         DSPu_ClockTrigger.
+ *         DSP::u::ClockTrigger.
  *      .
  *      \n \n
  *    - <b>DSP algorithm execution</b> \n
@@ -523,7 +523,7 @@ string DSP_lib_version_string();
  *  where block output/input is identified by its name (see \ref lib_use_hello_ex).
  *  Inputs and outputs names can be found in each block documentation
  *  (in detailed description).
- *  For example see DSPu_Addition where you can find that quite often
+ *  For example see DSP::u::Addition where you can find that quite often
  *  inputs can be addressed in more than one way. For example instead
  *  addressing complex input with "cplx_in1", you can access its
  *  real and imaginary parts separately using "cplx_in1.re" and
@@ -540,7 +540,7 @@ string DSP_lib_version_string();
  *  often you migth want to discard some of the output lines of
  *  blocks with more then one output line. The way to suppress
  *  error messages is to connect unneeded outputs to
- *  special block DSPu_Vacuum.
+ *  special block DSP::u::Vacuum.
  *
  *
  * \section alg_cr_clearing Verification if all components have been deleted
@@ -567,7 +567,7 @@ string DSP_lib_version_string();
  *   In the following example only frequency of DDS will be changed
  *   during processing with amplitude and initial phase constant.
  *   \code
- *     DSPu_DDScos SinGen(Clock1, true);
+ *     DSP::u::DDScos SinGen(Clock1, true);
  *     SinGen.SetConstInput("ampl",1.0); // Set constant amplitude
  *     SinGen.SetConstInput("phase",0.0); // Initial phase set to zero
  *     DSP::_connect_class::connect(Freq.Output("out"), SinGen.Input("in"));
@@ -582,11 +582,11 @@ string DSP_lib_version_string();
  *  but they have also inputs.
  *
  *  Basic block for separating input form output in feedback loops
- *  is the delay block DSPu_LoopDelay. Note that there is also
- *  DSPu_Delay block but it cannot be used in the feedback loop.
- *  However DSPu_Delay should be used in all other cases
+ *  is the delay block DSP::u::LoopDelay. Note that there is also
+ *  DSP::u::Delay block but it cannot be used in the feedback loop.
+ *  However DSP::u::Delay should be used in all other cases
  *  because it is implemented in more efficient way than
- *  DSPu_LoopDelay.
+ *  DSP::u::LoopDelay.
  *
  *
  * \section alg_cr_adv Advanced
@@ -601,7 +601,7 @@ string DSP_lib_version_string();
  *
  *  This example outputs to audio card first channel from DSPElib.wav file.
  *
- *  \note It is better idea to dynamically create objects DSPu_WaveInput
+ *  \note It is better idea to dynamically create objects DSP::u::WaveInput
  *        and DSP::u::AudioOutput.
  *
  *  \include hello.cpp
@@ -701,81 +701,81 @@ string DSP_lib_version_string();
  *  - \ref specialised_units
  *
  *  \section standard_units Standard processing units (18)
- *   -# DSPu_ABS calculates absolute value of real or complex sample
- *   -# DSPu_Accumulator implements standard accumulator or accumulator with leakage
- *   -# DSPu_Addition addition block (also weighted summation)
- *   -# DSPu_Amplifier multiplies input value by given constant
- *   -# DSPu_Angle calculates the phase of a complex sample
- *   -# DSPu_CCPC CCPC - Cartesian coordinates to polar coordinates converter
- *   -# DSPu_CMPO CMPO - complex mutual power operator
- *   -# DSPu_Conjugation calculates complex conjugation
- *   -# DSPu_CyclicDelay this block is OBSOLETE use DSPu_Delay instead.
- *   -# DSPu_Delay delay element implemented in processing block mode. Inefficient for large buffer (implemented using memcopy). See DSPu_CyclicDelay.
- *   -# DSPu_Differator Differator - first order backward difference operator
- *   -# DSPu_FIR FIR filter implementation
- *   -# DSPu_IIR IIR filter implementation
- *   -# DSPu_LoopDelay delay element implemented in mixed mode (unit-source). Must be used in digital loopbacks.
- *   -# DSPu_Multiplication multiplication block
- *   -# DSPu_PCCC PCCC - polar coordinated to Cartesian coordinates converter
- *   -# DSPu_Power calculates given power of the input signal (real and complex(only integer nonnegative factors))
- *   -# DSPu_RealMultiplication real multiplication block
+ *   -# DSP::u::ABS calculates absolute value of real or complex sample
+ *   -# DSP::u::Accumulator implements standard accumulator or accumulator with leakage
+ *   -# DSP::u::Addition addition block (also weighted summation)
+ *   -# DSP::u::Amplifier multiplies input value by given constant
+ *   -# DSP::u::Angle calculates the phase of a complex sample
+ *   -# DSP::u::CCPC CCPC - Cartesian coordinates to polar coordinates converter
+ *   -# DSP::u::CMPO CMPO - complex mutual power operator
+ *   -# DSP::u::Conjugation calculates complex conjugation
+ *   -# DSP::u::CyclicDelay this block is OBSOLETE use DSP::u::Delay instead.
+ *   -# DSP::u::Delay delay element implemented in processing block mode. Inefficient for large buffer (implemented using memcopy). See DSP::u::CyclicDelay.
+ *   -# DSP::u::Differator Differator - first order backward difference operator
+ *   -# DSP::u::FIR FIR filter implementation
+ *   -# DSP::u::IIR IIR filter implementation
+ *   -# DSP::u::LoopDelay delay element implemented in mixed mode (unit-source). Must be used in digital loopbacks.
+ *   -# DSP::u::Multiplication multiplication block
+ *   -# DSP::u::PCCC PCCC - polar coordinated to Cartesian coordinates converter
+ *   -# DSP::u::Power calculates given power of the input signal (real and complex(only integer nonnegative factors))
+ *   -# DSP::u::RealMultiplication real multiplication block
  *   .
  *
  *  \section standard_src_units Standard sources (7)
- *   -# DSPu_binrand Generates random binary streams
- *   -# DSPu_Const Generates constant signal
- *   -# DSPu_COSpulse Generates pulse train
- *   -# DSPu_DCO DCO - digitaly controled oscilator
- *   -# DSPu_DDScos Generates real/complex cosinusoid on the basis of DDS
- *   -# DSPu_rand Generates uniform noise
- *   -# DSPu_LFSR Generates binary sequence with linear feedback shift register
+ *   -# DSP::u::BinRand Generates random binary streams
+ *   -# DSP::u::Const Generates constant signal
+ *   -# DSP::u::COSpulse Generates pulse train
+ *   -# DSP::u::DCO DCO - digitaly controled oscilator
+ *   -# DSP::u::DDScos Generates real/complex cosinusoid on the basis of DDS
+ *   -# DSP::u::Rand Generates uniform noise
+ *   -# DSP::u::LFSR Generates binary sequence with linear feedback shift register
  *   .
  *
  *  \section inout_units Input/Output units (8)
  *   -# DSP::u::AudioInput Creates object for recording audio
  *   -# DSP::u::AudioOutput Creates object for playing audio
- *   -# DSPu_FILEinput Multichannel file input block - sample format can be specified
- *   -# DSPu_FILEoutput Multichannel file output block - sample format can be specified
- *   -# DSPu_InputBuffer Source block providing input from the memory buffer
- *   -# DSPu_OutputBuffer Block providing output to the memory buffer
- *   -# DSPu_Vacuum Block for connecting loose outputs
- *   -# DSPu_WaveInput Creates object for *.wav files reading
+ *   -# DSP::u::FileInput Multichannel file input block - sample format can be specified
+ *   -# DSP::u::FileOutput Multichannel file output block - sample format can be specified
+ *   -# DSP::u::InputBuffer Source block providing input from the memory buffer
+ *   -# DSP::u::OutputBuffer Block providing output to the memory buffer
+ *   -# DSP::u::Vacuum Block for connecting loose outputs
+ *   -# DSP::u::WaveInput Creates object for *.wav files reading
  *   .
  *
  *  \section multirate_units Multirate units (6)
- *   -# DSPu_Demultiplexer Demultiplexer block (y1[n]=x[L*n], y2[n]=x[L*n+1], yL[n]=x[L*n+L-1])
- *   -# DSPu_Multiplexer Multiplexer block (y[L*n]=x1[n], y[L*n+1]=x2[n], y[L*n+L-1]=xL[n])
- *   -# DSPu_RawDecimator Decimator without antialias filter
- *   -# DSPu_SampleSelector Outputs some inputs samples on the basis of activation signal
- *   -# DSPu_SamplingRateConversion Sampling rate conversion block
- *   -# DSPu_Zeroinserter Time expansion block: zeroinserter (+ hold)
+ *   -# DSP::u::Demultiplexer Demultiplexer block (y1[n]=x[L*n], y2[n]=x[L*n+1], yL[n]=x[L*n+L-1])
+ *   -# DSP::u::Multiplexer Multiplexer block (y[L*n]=x1[n], y[L*n+1]=x2[n], y[L*n+L-1]=xL[n])
+ *   -# DSP::u::RawDecimator Decimator without antialias filter
+ *   -# DSP::u::SampleSelector Outputs some inputs samples on the basis of activation signal
+ *   -# DSP::u::SamplingRateConversion Sampling rate conversion block
+ *   -# DSP::u::Zeroinserter Time expansion block: zeroinserter (+ hold)
  *   .
  *
  *  \section async_units Asynchronous units (5)
- *   -# DSPu_ClockTrigger Clock activation based on input activation signal
- *   -# DSPu_GardnerSampling GardnerSampling - sample selection based on Gadner sampling time recovery algorithm
- *   -# DSPu_Hold Reads samples from signal activated clocks (asynchronous) and outputs in synchro with standard clock (synchronous)
- *   -# DSPu_SampleSelector Outputs samples based on input activation signal, can also activate output clock like DSPu_ClockTrigger
- *   -# DSPu_Farrow Implements Farrow structure based FSD filter. Outputs samples delayed by given fractional delay based
+ *   -# DSP::u::ClockTrigger Clock activation based on input activation signal
+ *   -# DSP::u::GardnerSampling GardnerSampling - sample selection based on Gadner sampling time recovery algorithm
+ *   -# DSP::u::Hold Reads samples from signal activated clocks (asynchronous) and outputs in synchro with standard clock (synchronous)
+ *   -# DSP::u::SampleSelector Outputs samples based on input activation signal, can also activate output clock like DSP::u::ClockTrigger
+ *   -# DSP::u::Farrow Implements Farrow structure based FSD filter. Outputs samples delayed by given fractional delay based
  *     asynchronously (based on signal activated clock)
  *   .
  *
  *  \section misc_units Misc units (6)
- *   -# DSPu_CrossSwitch CrossSwitch - sends input signals stright or crossed to outputs
- *   -# DSPu_Maximum Maximum selector. Outputs: (1) maximum value (2) number of input where maximum is observed
- *   -# DSPu_MyFunction User defined function block
- *   -# DSPu_Selector Outputs selected input (given by the number)
- *   -# DSPu_Splitter Outputs input value to multiple outputs
- *   -# DSPu_Switch Gets value from selected input and sends it to the selected output
+ *   -# DSP::u::CrossSwitch CrossSwitch - sends input signals stright or crossed to outputs
+ *   -# DSP::u::Maximum Maximum selector. Outputs: (1) maximum value (2) number of input where maximum is observed
+ *   -# DSP::u::MyFunction User defined function block
+ *   -# DSP::u::Selector Outputs selected input (given by the number)
+ *   -# DSP::u::Splitter Outputs input value to multiple outputs
+ *   -# DSP::u::Switch Gets value from selected input and sends it to the selected output
  *   .
  *
  *  \section specialised_units Specialised units (6)
- *   -# DSPu_AGC AGC - automatic gain control
- *   -# DSPu_BPSK_SNR_estimator Signal to noise ratio estimation for BPSK modulation
- *   -# DSPu_DynamicCompressor Dynamic compressor/decompressor
- *   -# DSPu_PSKdecoder PSK encoder - prepares symbols for PSK modulations
- *   -# DSPu_PSKencoder PSK encoder - decodes symbols for PSK modulations
- *   -# DSPu_TimingErrorDetector Garder timing error detector
+ *   -# DSP::u::AGC AGC - automatic gain control
+ *   -# DSP::u::BPSK_SNR_estimator Signal to noise ratio estimation for BPSK modulation
+ *   -# DSP::u::DynamicCompressor Dynamic compressor/decompressor
+ *   -# DSP::u::PSKdecoder PSK encoder - prepares symbols for PSK modulations
+ *   -# DSP::u::PSKencoder PSK encoder - decodes symbols for PSK modulations
+ *   -# DSP::u::TimingErrorDetector Garder timing error detector
  *   .
  *
  * \page DSP_fnc_list_page List of DSP functions available in DSP Engine

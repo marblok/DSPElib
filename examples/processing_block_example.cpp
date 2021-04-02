@@ -16,23 +16,23 @@
  *   -# "in.re" - real component\n
  *      "in.im" - imag component
  */
-class DSPu_CCPC : public DSP::Block
+class DSP::u::CCPC : public DSP::Block
 {
   private:
     DSP::Complex in_value;
     
     static void InputExecute(DSP::Block *block, int InputNo, DSP::Float value, DSP::Component *Caller);
   public:
-    DSPu_CCPC(void); 
-    ~DSPu_CCPC(void);
+    CCPC(void); 
+    ~CCPC(void);
 };
 
 
 
-#define  THIS  ((DSPu_CCPC *)block)
+#define  THIS  ((DSP::u::CCPC *)block)
 /**************************************************/
 // CCPC - cartesian coordinated to polar coordinates converter
-DSPu_CCPC::DSPu_CCPC()
+DSP::u::CCPC::CCPC()
   : DSP::Block()
 {
   SetName("CCPC", false);
@@ -54,11 +54,11 @@ DSPu_CCPC::DSPu_CCPC()
   Execute_ptr = &InputExecute;
 }
 
-DSPu_CCPC::~DSPu_CCPC()
+DSP::u::CCPC::~CCPC()
 {
 }
 
-void DSPu_CCPC::InputExecute(DSP::Block *block, int InputNo, DSP::Float value, DSP::Component *Caller)
+void DSP::u::CCPC::InputExecute(DSP::Block *block, int InputNo, DSP::Float value, DSP::Component *Caller)
 {
   if (InputNo==0)
     THIS->in_value.re = value;

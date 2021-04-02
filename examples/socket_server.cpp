@@ -21,25 +21,25 @@ int main(void)
 
   MasterClock=DSP::Clock::CreateMasterClock();
 
-//  DSPu_WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
+//  DSP::u::WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
 //  Fp = AudioIn.GetSamplingRate();
   Fp = 22050;
-  DSPu_DDScos AudioIn(MasterClock, false, 1.0, DSP::Float(1000*M_PIx2/Fp));
-  DSPu_MORSEkey MorseKey(MasterClock, 20, Fp);
+  DSP::u::DDScos AudioIn(MasterClock, false, 1.0, DSP::Float(1000*M_PIx2/Fp));
+  DSP::u::MORSEkey MorseKey(MasterClock, 20, Fp);
   MorseKey.AddString("Digital Signal Processing Engine library");
-  DSPu_RealMultiplication Mul(2);
+  DSP::u::RealMultiplication Mul(2);
 
   AudioIn.Output("out") >> Mul.Input("in1");
   MorseKey.Output("out") >> Mul.Input("in2");
 
-  DSP::u::SOCKETinput in_socket(MasterClock, "0.0.0.0", false, 0x00000001);
+  DSP::u::SocketInput in_socket(MasterClock, "0.0.0.0", false, 0x00000001);
   DSP::u::AudioOutput AudioOut(Fp);
   in_socket.Output("out") >> AudioOut.Input("in");
 
   // use server socket
-  DSP::u::SOCKEToutput out_socket("0.0.0.0", false, 0x00000002);
+  DSP::u::SocketOutput out_socket("0.0.0.0", false, 0x00000002);
   Mul.Output("out") >> out_socket.Input("in");
-//  DSPu_FILEoutput FileOut("server.flt", DSP::e::SampleType::ST_float, 1, DSP::e::FileType::FT_flt, Fp);
+//  DSP::u::FileOutput FileOut("server.flt", DSP::e::SampleType::ST_float, 1, DSP::e::FileType::FT_flt, Fp);
 //  AudioIn.Output("out") >> FileOut.Input("in");
 
   DSP::Component::CheckInputsOfAllComponents();

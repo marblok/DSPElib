@@ -8,9 +8,9 @@
 class DDS_macro : public DSP::Macro
 {
   private:
-    std::shared_ptr<DSPu_PCCC> alpha_state_correction;
-    std::shared_ptr<DSPu_Multiplication> Alpha_state_MUL;
-    std::shared_ptr<DSPu_LoopDelay> Alpha_state;
+    std::shared_ptr<DSP::u::PCCC> alpha_state_correction;
+    std::shared_ptr<DSP::u::Multiplication> Alpha_state_MUL;
+    std::shared_ptr<DSP::u::LoopDelay> Alpha_state;
 
   public:
     DDS_macro(DSP::Clock_ptr Fp2Clock, DSP::Float exp_w_n);
@@ -28,14 +28,14 @@ DDS_macro::DDS_macro(DSP::Clock_ptr Fp2Clock, DSP::Float w_n) : DSP::Macro("DDS"
 
   MacroInitStarted();
 
-  alpha_state_correction = std::make_shared<DSPu_PCCC>();
+  alpha_state_correction = std::make_shared<DSP::u::PCCC>();
   alpha_state_correction->SetConstInput("in.abs", 1.0);
 
-  Alpha_state_MUL = std::make_shared<DSPu_Multiplication>(0, 3); Alpha_state_MUL->SetConstInput("in3", factor);
+  Alpha_state_MUL = std::make_shared<DSP::u::Multiplication>(0, 3); Alpha_state_MUL->SetConstInput("in3", factor);
   this->MacroInput("in") >> alpha_state_correction->Input("in.arg");
   alpha_state_correction->Output("out") >> Alpha_state_MUL->Input("in2");
 
-  Alpha_state = std::make_shared<DSPu_LoopDelay>(Fp2Clock, 1, 2); Alpha_state->SetState("in.re", 1.0);
+  Alpha_state = std::make_shared<DSP::u::LoopDelay>(Fp2Clock, 1, 2); Alpha_state->SetState("in.re", 1.0);
   Alpha_state->Output("out") >> Alpha_state_MUL->Input("in1");
   Alpha_state_MUL->Output("out") >> Alpha_state->Input("in");
 
@@ -66,12 +66,12 @@ int main(void)
   MasterClock=DSP::Clock::CreateMasterClock();
 
 
-  DSPu_WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
+  DSP::u::WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
   Fp = AudioIn.GetSamplingRate();
   DDS_macro DDS(MasterClock, 0.15*DSP_M_PIx1);
-  DSPu_Amplifier gain(1.0/2);
+  DSP::u::Amplifier gain(1.0/2);
   DSP::u::AudioOutput AudioOut(Fp, 2);
-  DSPu_FILEoutput FileOut("test_out.wav", DSP::e::SampleType::ST_short, 2, DSP::e::FileType::FT_wav, Fp);
+  DSP::u::FileOutput FileOut("test_out.wav", DSP::e::SampleType::ST_short, 2, DSP::e::FileType::FT_wav, Fp);
 
   AudioIn.Output("out") >> gain.Input("in");
   gain.Output("out") >> DDS.Input("in");

@@ -20,15 +20,15 @@ int main(void)
 
   MasterClock=DSP::Clock::CreateMasterClock();
 
-  DSPu_WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
+  DSP::u::WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
   //Fp = AudioIn.GetSamplingRate();
 
   // use client socket
-  //DSP::u::SOCKETinput in_socket(MasterClock, "153.19.48.213", true);
-  DSP::u::SOCKETinput in_socket(MasterClock, "127.0.0.1", true, 0x00000002);
+  //DSP::u::SocketInput in_socket(MasterClock, "153.19.48.213", true);
+  DSP::u::SocketInput in_socket(MasterClock, "127.0.0.1", true, 0x00000002);
   Fp = 22050;
 
-  DSP::u::SOCKEToutput out_socket("127.0.0.1", true, 0x00000001);
+  DSP::u::SocketOutput out_socket("127.0.0.1", true, 0x00000001);
   DSP::u::AudioOutput AudioOut(Fp);
 
   in_socket.Output("out") >> AudioOut.Input("in");

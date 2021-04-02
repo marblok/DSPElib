@@ -51,8 +51,8 @@ namespace DSP {
 
   class Socket;
   namespace u {
-    class SOCKETinput;
-    class SOCKEToutput;
+    class SocketInput;
+    class SocketOutput;
   }
 }
 
@@ -122,7 +122,7 @@ class DSP::Socket
      *  object to which the given incoming connection
      *  is addressed.
      */
-    DWORD ServerObjectID;
+    uint32_t ServerObjectID;
     //! true if server or client socket is ready
 
     bool works_as_server;
@@ -141,7 +141,7 @@ class DSP::Socket
 
     bool InitClient(const string &address_with_port);
     bool InitServer_ListenSocket(const string &address_with_port);
-    bool InitServer(void); //DWORD ServerObjectID_in);
+    bool InitServer(void); //uint32_t ServerObjectID_in);
 
     //! Attempts to accepts single connections if there is any in the listen queue
     /*! Returns true on success.
@@ -157,7 +157,7 @@ class DSP::Socket
      *   .
      *  \warning works only for client objects
      */
-    bool TryConnect(DWORD ServerObjectID);
+    bool TryConnect(uint32_t ServerObjectID);
   public:
     //! \note port should be includes in address
     /*!
@@ -167,7 +167,7 @@ class DSP::Socket
      *
      * \note ServerObjectID_in == 0x00000000 means : accept all IDs
      */
-    Socket(const string &address_with_port, bool run_as_client, DWORD ServerObjectID_in);
+    Socket(const string &address_with_port, bool run_as_client, uint32_t ServerObjectID_in);
     ~Socket(void);
 
     //! Waits until connection with current object is made
@@ -185,7 +185,7 @@ class DSP::Socket
  *    -# "out1", "out2", ... - i-th channel input
  *   - Input: none
  */
-class DSP::u::SOCKETinput : public DSP::File, public DSP::Socket, public DSP::Source
+class DSP::u::SocketInput : public DSP::File, public DSP::Socket, public DSP::Source
 {
   private:
     DSP::e::SampleType SampleType;
@@ -224,7 +224,7 @@ class DSP::u::SOCKETinput : public DSP::File, public DSP::Socket, public DSP::So
     long Fp;
     //! number of cycles to skip before first data - received from peer
     long Offset;
-    //! reads connection data sent from the DSP::u::SOCKEToutput
+    //! reads connection data sent from the DSP::u::SocketOutput
     /*! \note this must be done right after the connection is established
      *   and before any data are received.
      */
@@ -234,12 +234,12 @@ class DSP::u::SOCKETinput : public DSP::File, public DSP::Socket, public DSP::So
 
   public:
     //! \note address may include port number after colon
-    SOCKETinput(DSP::Clock_ptr ParentClock,
+    SocketInput(DSP::Clock_ptr ParentClock,
                   const string &address_with_port, bool run_as_client,
-                  DWORD ServerObjectID,
+                  uint32_t ServerObjectID,
                   unsigned int NoOfChannels=1,
                   DSP::e::SampleType sample_type=DSP::e::SampleType::ST_float);
-    ~SOCKETinput(void);
+    ~SocketInput(void);
 
     //! returns number of bytes read during last socket access
     /*!\note return zero if connections has been closed 
@@ -252,7 +252,7 @@ class DSP::u::SOCKETinput : public DSP::File, public DSP::Socket, public DSP::So
 
     //! Returns raw sample size in bytes corresponding to given SampleType
     /*! \note For SampleType = DSP::e::SampleType::ST_none returns internal raw sample size
-     *   used in DSPu_FILEinput.
+     *   used in DSP::u::FileInput.
      *
      *  \warning Sample size is given in bits and encloses all channels
      */
@@ -278,7 +278,7 @@ class DSP::u::SOCKETinput : public DSP::File, public DSP::Socket, public DSP::So
       //  //! Raw buffer which will be used internally by the function
       //  /*! \note raw_buffer_size == buffer_size * sample_size / 8.
       //   *  \note Raw sample size can be determined with
-      //   *  DSPu_FILEinput::GetSampleSize function
+      //   *  DSP::u::FileInput::GetSampleSize function
       //   *
       //   * \warning this buffer must be allocated and deleted by the user.
       //   */
@@ -303,7 +303,7 @@ class DSP::u::SOCKETinput : public DSP::File, public DSP::Socket, public DSP::So
  *       "in.im" - second channel (imag component if exists)
  *    -# "in1", "in2" - i-th channel input
  */
-class DSP::u::SOCKEToutput : public DSP::Socket, public DSP::Block
+class DSP::u::SocketOutput : public DSP::Socket, public DSP::Block
 {
   private:
     unsigned int BufferSize;
@@ -315,7 +315,7 @@ class DSP::u::SOCKEToutput : public DSP::Socket, public DSP::Block
     //! output sample size in bits (all channels)
     unsigned int OutputSampleSize;
     //! size of the buffers used for socket
-    DWORD outbuffer_size;
+    uint32_t outbuffer_size;
     std::vector<uint8_t> RawBuffer;
 
 
@@ -332,7 +332,7 @@ class DSP::u::SOCKEToutput : public DSP::Socket, public DSP::Block
 
     //! true if socket info data has been sent
     bool SocketInfoData_sent;
-    //! Sends connection data to the DSP::u::SOCKETinput
+    //! Sends connection data to the DSP::u::SocketInput
     /*! \note this must be done right after the connection is established
      *   and before any data are sent.
      */
@@ -347,12 +347,12 @@ class DSP::u::SOCKEToutput : public DSP::Socket, public DSP::Block
      * @param NoOfChannels
      * @param sample_type
      */
-    SOCKEToutput(
+    SocketOutput(
         const string & address_with_port, bool run_as_client,
-        DWORD ServerObjectID,
+        uint32_t ServerObjectID,
         unsigned int NoOfChannels=1,
         DSP::e::SampleType sample_type=DSP::e::SampleType::ST_float);
-    ~SOCKEToutput(void);
+    ~SocketOutput(void);
 };
 
 #endif // DSP_socket_H

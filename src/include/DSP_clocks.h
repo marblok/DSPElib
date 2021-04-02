@@ -20,8 +20,8 @@ namespace DSP {
   class Clock;
 
   namespace u {
-    class AudioInput; // required for friend class ::DSP::u::SOCKETinput
-    class SOCKETinput; // required for friend class ::DSP::u::SOCKETinput
+    class AudioInput; // required for friend class ::SocketInput
+    class SocketInput; // required for friend class ::SocketInput
   }
 
   const unsigned long MAX_timeout_counter = 1000;
@@ -238,7 +238,7 @@ class DSP::Clock
      */
     volatile static bool *InputNeedsMoreTime;
     friend class DSP::u::AudioInput;
-    friend class ::DSP::u::SOCKETinput;
+    friend class DSP::u::SocketInput;
 
     //! Processes all sources related to given clock: SourcesTable
     /*! (returns false when not all sources could be processed)
@@ -253,7 +253,7 @@ class DSP::Clock
     /*! Number of clock cycles from the beginning.
      * Should be updated in DSP::Clock::Execute.
      */
-    DWORD n;
+    uint32_t n;
 
 
   private:

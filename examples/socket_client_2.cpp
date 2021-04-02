@@ -35,19 +35,19 @@ int main(void)
   MasterClock=DSP::Clock::CreateMasterClock();
 
   // use client socket
-//  DSP::u::SOCKETinput in_socket(MasterClock, "127.0.0.1", true, 0x00000003);
+//  DSP::u::SocketInput in_socket(MasterClock, "127.0.0.1", true, 0x00000003);
   string server_address = "127.0.0.1:10000";
-  DSP::u::SOCKETinput in_socket(MasterClock, server_address, true, 0x00000003);
+  DSP::u::SocketInput in_socket(MasterClock, server_address, true, 0x00000003);
   in_socket.SetName(server_address);
   Fp1 = 8000;  Fp2 = 11025;
   M = 320; L = 441;
-  DSPu_SamplingRateConversion SRC(false,MasterClock, L, M, h_SRC);
+  DSP::u::SamplingRateConversion SRC(false,MasterClock, L, M, h_SRC);
   DSP::u::AudioOutput AudioOut(Fp2);
 
   in_socket.Output("out") >> SRC.Input("in");
   SRC.Output("out") >> AudioOut.Input("in");
 
-  DSPu_FILEoutput WAVEfile("morse.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp2);
+  DSP::u::FileOutput WAVEfile("morse.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp2);
   SRC.Output("out") >> WAVEfile.Input("in");
 
   DSP::Component::CheckInputsOfAllComponents();

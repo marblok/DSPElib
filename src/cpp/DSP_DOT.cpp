@@ -19,16 +19,16 @@ const vector<string> DOT_colors =
 
 
 #ifdef __DEBUG__
-  string DSPu_Splitter::GetComponentNodeParams_DOTfile()
+  string DSP::u::Splitter::GetComponentNodeParams_DOTfile()
   {
     return "[shape=point]";
   }
 
   // Returns true if ports should be used for edges
-  bool DSPu_Splitter::UsePorts_DOTfile(void)
+  bool DSP::u::Splitter::UsePorts_DOTfile(void)
   { return false; }
 
-  string DSPu_Splitter::GetComponentEdgeParams_DOTfile(const unsigned int &output_index)
+  string DSP::u::Splitter::GetComponentEdgeParams_DOTfile(const unsigned int &output_index)
   {
     unsigned int ind2;
     stringstream text_buffer;

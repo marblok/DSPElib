@@ -123,7 +123,7 @@ namespace DSP {
     DSP::Float BER4BPSK(DSP::Float SNR_lin);
 
     //! implemented in DSP_IO.cpp
-    void Sleep(DWORD time);
+    void Sleep(uint32_t time);
     //! implemented in DSP_IO.cpp
     void SetSleepFunction(DSP::ExternalSleep_ptr new_function);
 

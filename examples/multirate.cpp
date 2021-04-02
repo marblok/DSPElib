@@ -35,16 +35,16 @@ int main(int argn, char *args[])
   /*************************************************************/
   std::map<std::string,std::shared_ptr<DSP::Component> > blocks;
   // DSP::Component *SoundIn = NULL;
-  // DSPu_Amplifier *SoundInFactor = NULL;
-  // DSPu_Const *Chirp_frequ = NULL;
-  // DSPu_Accumulator *Chirp_Acum = NULL;
-  // DSPu_Addition *Adder = NULL;
-  // DSPu_SamplingRateConversion *Resampler_InOut = NULL;
-  // DSPu_SamplingRateConversion *Resampler_OutIn = NULL;
-  // DSPu_Amplifier *Factor = NULL;
-  // DSPu_LoopDelay *Delay = NULL;
+  // DSP::u::Amplifier *SoundInFactor = NULL;
+  // DSP::u::Const *Chirp_frequ = NULL;
+  // DSP::u::Accumulator *Chirp_Acum = NULL;
+  // DSP::u::Addition *Adder = NULL;
+  // DSP::u::SamplingRateConversion *Resampler_InOut = NULL;
+  // DSP::u::SamplingRateConversion *Resampler_OutIn = NULL;
+  // DSP::u::Amplifier *Factor = NULL;
+  // DSP::u::LoopDelay *Delay = NULL;
   // DSP::u::AudioOutput *SoundOut = NULL;
-  // DSPu_FILEoutput *FileOut = NULL;
+  // DSP::u::FileOutput *FileOut = NULL;
 
   /*************************************************************/
   // Log file setup  
@@ -61,13 +61,13 @@ int main(int argn, char *args[])
   switch (input_mode)
   {
     case 2: // Chirp signal
-      blocks["SoundIn"] = std::make_shared<DSPu_DDScos>(MasterClock);
+      blocks["SoundIn"] = std::make_shared<DSP::u::DDScos>(MasterClock);
     
       blocks["SoundIn"]->Convert2Block()->SetConstInput("ampl",1.0);  //Amplitude
       blocks["SoundIn"]->Convert2Block()->SetConstInput("phase",0.0); //Initial phase
         
-      blocks["Chirp_frequ"] = std::make_shared<DSPu_Const>(MasterClock, DSP_M_PIx2*0.5/Fp1/2);
-      blocks["Chirp_Acum"]  = std::make_shared<DSPu_Accumulator>();
+      blocks["Chirp_frequ"] = std::make_shared<DSP::u::Const>(MasterClock, DSP_M_PIx2*0.5/Fp1/2);
+      blocks["Chirp_Acum"]  = std::make_shared<DSP::u::Accumulator>();
       
       blocks["Chirp_frequ"]->Output("out") >> blocks["Chirp_Acum"]->Input("in");
       blocks["Chirp_Acum"]->Output("out")  >> blocks["SoundIn"]->Convert2Block()->Input("puls");
@@ -81,8 +81,8 @@ int main(int argn, char *args[])
     default:
       input_mode = 0;
       
-      blocks["SoundIn"] = std::make_shared<DSPu_WaveInput>(MasterClock, "DSPElib.wav", ".", 1);
-      Fp1 = ((DSPu_WaveInput *)blocks["SoundIn"]->Convert2Source())->GetSamplingRate();
+      blocks["SoundIn"] = std::make_shared<DSP::u::WaveInput>(MasterClock, "DSPElib.wav", ".", 1);
+      Fp1 = ((DSP::u::WaveInput *)blocks["SoundIn"]->Convert2Source())->GetSamplingRate();
       
       if (Fp1 != 22050)
       {
@@ -94,7 +94,7 @@ int main(int argn, char *args[])
       break;
   }
   
-  blocks["SoundInFactor"] = std::make_shared<DSPu_Amplifier>(sound_factor);
+  blocks["SoundInFactor"] = std::make_shared<DSP::u::Amplifier>(sound_factor);
   
   /* ***************************************** */
   // Conversion from 22050 Sa/s to 8000 Sa/s
@@ -124,7 +124,7 @@ int main(int argn, char *args[])
     coef_info.Load(h_LPF_resample);
   }
    
-  blocks["Resampler_InOut"] = std::make_shared<DSPu_SamplingRateConversion>(false, MasterClock, L, M, h_LPF_resample);
+  blocks["Resampler_InOut"] = std::make_shared<DSP::u::SamplingRateConversion>(false, MasterClock, L, M, h_LPF_resample);
   OutputClock = blocks["Resampler_InOut"]->GetOutputClock();
   
   /* ***************************************** */
@@ -136,18 +136,18 @@ int main(int argn, char *args[])
       h_LPF_resample[n] /= M; 
       h_LPF_resample[n] *= L; 
   }
-  blocks["Resampler_OutIn"] = std::make_shared<DSPu_SamplingRateConversion>(false, OutputClock, L, M, h_LPF_resample);
+  blocks["Resampler_OutIn"] = std::make_shared<DSP::u::SamplingRateConversion>(false, OutputClock, L, M, h_LPF_resample);
   
   /*************************************************************/
   // Output to the soundcard 
   blocks["SoundOut"] = std::make_shared<DSP::u::AudioOutput>(Fp2, 1, 16);
   // Output to the mono 16bit *.wav file 
-  blocks["FileOut"]  = std::make_shared<DSPu_FILEoutput>("multirate.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp2);
+  blocks["FileOut"]  = std::make_shared<DSP::u::FileOutput>("multirate.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp2);
 
   /*************************************************************/
-  blocks["Adder"] = std::make_shared<DSPu_Addition>(2);
-  blocks["Factor"] = std::make_shared<DSPu_Amplifier>(factor);
-  blocks["Delay"] = std::make_shared<DSPu_LoopDelay>(OutputClock, (int)(delay * Fp2));
+  blocks["Adder"] = std::make_shared<DSP::u::Addition>(2);
+  blocks["Factor"] = std::make_shared<DSP::u::Amplifier>(factor);
+  blocks["Delay"] = std::make_shared<DSP::u::LoopDelay>(OutputClock, (int)(delay * Fp2));
   
   /*************************************************************/
   // Connections definitions
@@ -183,7 +183,7 @@ int main(int argn, char *args[])
     
     if (input_mode == 0)
     {
-      if (((DSPu_WaveInput *)blocks["SoundIn"]->Convert2Source())->GetBytesRead() > 0)
+      if (((DSP::u::WaveInput *)blocks["SoundIn"]->Convert2Source())->GetBytesRead() > 0)
       {
         NoOfSamplesProcessed = 0; // Play the whole file
       } 
