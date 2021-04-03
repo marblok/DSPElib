@@ -30,6 +30,12 @@ namespace DSP {
     class SymbolMapper;
     class SymbolDemapper;
   }
+
+  namespace e {
+    enum struct GardnerSamplingOptions : unsigned int;
+    inline DSP::e::GardnerSamplingOptions operator|(DSP::e::GardnerSamplingOptions __a, DSP::e::GardnerSamplingOptions __b);
+    inline DSP::e::GardnerSamplingOptions operator&(DSP::e::GardnerSamplingOptions __a, DSP::e::GardnerSamplingOptions __b);
+  }
 }
 
 /**************************************************/
@@ -291,21 +297,24 @@ class DSP::u::Farrow  : public DSP::Block, public DSP::Source
 };
 /**************************************************/
 
-enum DSPe_GardnerSamplingOptions {
+enum struct DSP::e::GardnerSamplingOptions : unsigned int {
     //! all additional options off
-    DSP_GS_none = 0,
+    none = 0,
     //! block must activate output clock each time output sample is generated
-    DSP_GS_activate_output_clock = 1,
+    activate_output_clock = 1,
     //! block must output clock activation signal (signal working with input clock)
-    DSP_GS_use_activation_signal = 2,
+    use_activation_signal = 2,
     //! block must output input samples delay offsets (signal working with input clock)
-    DSP_GS_use_delay_output = 4,
+    use_delay_output = 4,
     //! OQPSK signal mode: signal is sampled according to N_symb (which should be half of OQPSK symbol period) but error signal is calculated for 2*N_symb
-    DSP_GS_OQPSK = 8,
+    OQPSK = 8,
     };
-inline DSPe_GardnerSamplingOptions operator|(DSPe_GardnerSamplingOptions __a,
-                                             DSPe_GardnerSamplingOptions __b)
-  { return DSPe_GardnerSamplingOptions(static_cast<int>(__a) | static_cast<int>(__b)); }
+inline DSP::e::GardnerSamplingOptions DSP::e::operator|(DSP::e::GardnerSamplingOptions __a,
+                                             DSP::e::GardnerSamplingOptions __b)
+  { return DSP::e::GardnerSamplingOptions(static_cast<int>(__a) | static_cast<int>(__b)); }
+inline DSP::e::GardnerSamplingOptions DSP::e::operator&(DSP::e::GardnerSamplingOptions __a,
+                                             DSP::e::GardnerSamplingOptions __b)
+  { return DSP::e::GardnerSamplingOptions(static_cast<int>(__a) & static_cast<int>(__b)); }
 
 /**************************************************/
 //! GardnerSampling - sample selection based on Gadner sampling time recovery algorithm
@@ -359,7 +368,7 @@ class DSP::u::GardnerSampling : public DSP::Block, public DSP::Source, public DS
     DSP::Complex_vector y0, y1, y2;
 
     //! construction options
-    DSPe_GardnerSamplingOptions options;
+    DSP::e::GardnerSamplingOptions options;
     //! true if in last execution of InputExecute output samples have been generated
     bool output_generated;
     //! true if block should work as source
@@ -376,7 +385,7 @@ class DSP::u::GardnerSampling : public DSP::Block, public DSP::Source, public DS
             DSP::Float max_korekta_in,
             //! number of simultaneously processed subchannels
             unsigned int NoOfChannels_in,
-            DSPe_GardnerSamplingOptions options_in);
+            DSP::e::GardnerSamplingOptions options_in);
 
     static void InputExecute_with_options(INPUT_EXECUTE_ARGS);
     // static void InputExecute(DSP::Block *block, int InputNo, DSP::Float value, DSP::Component *Caller);
@@ -399,10 +408,10 @@ class DSP::u::GardnerSampling : public DSP::Block, public DSP::Source, public DS
           );
     //! Gardner sampling block constructor
     /*! Options (can be combination):
-     *  - DSP_GS_none - all additional options off
-     *  - DSP_GS_activate_output_clock - activates output clock each time output sample is generated
-     *  - DSP_GS_use_activation_signal - outputs clock activation signal for each cycle of the input clock if OutputClock == NULL otherwise output clock is used
-     *  - DSP_GS_use_delay_output - outputs input samples delay offsets for each cycle of the input clock if OutputClock == NULL otherwise output clock is used
+     *  - DSP::e::GardnerSamplingOptions::none - all additional options off
+     *  - DSP::e::GardnerSamplingOptions::activate_output_clock - activates output clock each time output sample is generated
+     *  - DSP::e::GardnerSamplingOptions::use_activation_signal - outputs clock activation signal for each cycle of the input clock if OutputClock == NULL otherwise output clock is used
+     *  - DSP::e::GardnerSamplingOptions::use_delay_output - outputs input samples delay offsets for each cycle of the input clock if OutputClock == NULL otherwise output clock is used
      *  .
      */
     GardnerSampling(
@@ -416,7 +425,7 @@ class DSP::u::GardnerSampling : public DSP::Block, public DSP::Source, public DS
             DSP::Float max_korekta_in,
             //! number of simultaneously processed subchannels
             unsigned int NoOfChannels_in=1.0,
-            DSPe_GardnerSamplingOptions options = DSP_GS_none
+            DSP::e::GardnerSamplingOptions options = DSP::e::GardnerSamplingOptions::none
           );
     ~GardnerSampling(void);
 
@@ -450,7 +459,7 @@ class DSP::u::GardnerSampling : public DSP::Block, public DSP::Source, public DS
 class DSP::u::PSKencoder : public DSP::Block
 {
   private:
-    DSPe_PSK_type Type;
+    DSP::e::PSK_type Type;
     int State_re, State_im;
     int tmp_re, tmp_im;
     //! used in InputExecute_XXXX for current symbol index evaluation
@@ -461,7 +470,7 @@ class DSP::u::PSKencoder : public DSP::Block
     static void InputExecute_QPSK_A(INPUT_EXECUTE_ARGS);
     static void InputExecute_QPSK_B(INPUT_EXECUTE_ARGS);
   public:
-    PSKencoder(DSPe_PSK_type type=DSP_BPSK);
+    PSKencoder(DSP::e::PSK_type type = DSP::e::PSK_type::BPSK);
     ~PSKencoder(void);
 };
 
@@ -469,7 +478,7 @@ class DSP::u::PSKencoder : public DSP::Block
 /*!
  *  constellation_phase_offset - phase offset of constellation symbols [rad] (ignored in case of ASK)
  */
-unsigned int getConstellation(DSP::Complex_vector &constellation, DSPe_Modulation_type type, const DSP::Float &constellation_phase_offset, const unsigned int &bits_per_symbol_in, bool &is_real);
+unsigned int getConstellation(DSP::Complex_vector &constellation, DSP::e::ModulationType type, const DSP::Float &constellation_phase_offset, const unsigned int &bits_per_symbol_in, bool &is_real);
 
 //! Serial to parallel converter
 /*! Collects NoOfParallelOutputs samples from each input and outputs them in parallel (at the same clock cycle).
@@ -565,7 +574,7 @@ class DSP::u::Parallel2Serial : public DSP::Block, public DSP::Source
 
 //! DSP::u::SymbolMapper - prepares symbols for digital modulations based on binary input vector
 /*!
- * Supports DSPe_Modulation_type types:
+ * Supports DSP::e::ModulationType types:
  *  - DSP_MT_PSK,
  *  - DSP_MT_APSK,
  *  - \TODO DSP_MT_DPSK,
@@ -583,7 +592,7 @@ class DSP::u::Parallel2Serial : public DSP::Block, public DSP::Source
  * bits_per_symbol - number of bits per symbol.
  *  - bits_per_symbol = -1 (default) - default number of bits per symbol (based on modulation type type).
  * constellation_phase_offset - phase rotation of constellation symbols [rad]
- *  - constellation_phase_offset = DSP_M_PIx1/4 for pi/4-QPSK
+ *  - constellation_phase_offset = DSP::M_PIx1/4 for pi/4-QPSK
  *
  * Inputs and Outputs names:
  *   - Output:
@@ -597,13 +606,13 @@ class DSP::u::Parallel2Serial : public DSP::Block, public DSP::Source
 class DSP::u::SymbolMapper : public DSP::Block
 {
   private:
-    DSPe_Modulation_type Type;
+    DSP::e::ModulationType Type;
 
     bool is_output_real;
     unsigned int bits_per_symbol;
     DSP::Complex_vector current_constellation;
 
-    friend unsigned int getConstellation(DSP::Complex_vector &constellation, DSPe_Modulation_type type, const DSP::Float &constellation_phase_offset, const unsigned int &bits_per_symbol_in, bool &is_real);
+    friend unsigned int getConstellation(DSP::Complex_vector &constellation, DSP::e::ModulationType type, const DSP::Float &constellation_phase_offset, const unsigned int &bits_per_symbol_in, bool &is_real);
     vector <unsigned char> input_bits;
 
     static void InputExecute_bits(INPUT_EXECUTE_ARGS);
@@ -615,7 +624,7 @@ class DSP::u::SymbolMapper : public DSP::Block
     unsigned int getBitsPerSymbol(void);
 
     //! Mapper selection based on modulation type and number of bits_per_symbol
-    SymbolMapper(DSPe_Modulation_type type=DSP_MT_PSK,
+    SymbolMapper(DSP::e::ModulationType type = DSP::e::ModulationType::PSK,
                       const unsigned int &bits_per_symbol=-1,  //! bits_per_symbol based on given constellation
                       const DSP::Float &constellation_phase_offset=0.0);
     /*! Assuming
@@ -633,7 +642,7 @@ class DSP::u::SymbolMapper : public DSP::Block
 //! DSP::u::SymbolDemapper - based on closest constellation point to current input symbol outputs corresponding bit stream
 /*! \note This is counterpart of DSP::u::SymbolMapper.
  *
- * Supports DSPe_Modulation_type types:
+ * Supports DSP::e::ModulationType types:
  *  - PSK,
  *  - APSK,
  *  .
@@ -655,7 +664,7 @@ class DSP::u::SymbolMapper : public DSP::Block
 class DSP::u::SymbolDemapper : public DSP::Block
 {
   private:
-    DSPe_Modulation_type Type;
+    DSP::e::ModulationType Type;
     //! used for current symbol index evaluation
     DSP::Complex input; // input sample
 
@@ -663,7 +672,7 @@ class DSP::u::SymbolDemapper : public DSP::Block
     unsigned int bits_per_symbol;
     DSP::Complex_vector current_constellation;
 
-    friend unsigned int getConstellation(DSP::Complex_vector &constellation, DSPe_Modulation_type type, const DSP::Float &constellation_phase_offset, const unsigned int &bits_per_symbol_in, bool &is_real);
+    friend unsigned int getConstellation(DSP::Complex_vector &constellation, DSP::e::ModulationType type, const DSP::Float &constellation_phase_offset, const unsigned int &bits_per_symbol_in, bool &is_real);
 
     static void InputExecute_constellation(INPUT_EXECUTE_ARGS);
 
@@ -674,7 +683,7 @@ class DSP::u::SymbolDemapper : public DSP::Block
     unsigned int getBitsPerSymbol(void);
 
     //! Demapper selection based on modulation type and number of bits_per_symbol
-    SymbolDemapper(DSPe_Modulation_type type=DSP_MT_PSK,
+    SymbolDemapper(DSP::e::ModulationType type = DSP::e::ModulationType::PSK,
                         const unsigned int &bits_per_symbol=-1,  //! bits_per_symbol based on given constellation
                         const DSP::Float &constellation_phase_offset=0.0);
 
@@ -715,7 +724,7 @@ class DSP::u::SymbolDemapper : public DSP::Block
 class DSP::u::PSKdecoder : public DSP::Block
 {
   private:
-    DSPe_PSK_type Type;
+    DSP::e::PSK_type Type;
     int State_re, State_im;
     DSP::Float f_State_re, f_State_im;
 
@@ -728,7 +737,7 @@ class DSP::u::PSKdecoder : public DSP::Block
     static void InputExecute_QPSK_A(INPUT_EXECUTE_ARGS);
     static void InputExecute_QPSK_B(INPUT_EXECUTE_ARGS);
   public:
-    PSKdecoder(DSPe_PSK_type type=DSP_BPSK);
+    PSKdecoder(DSP::e::PSK_type type = DSP::e::PSK_type::BPSK);
     ~PSKdecoder(void);
 };
 

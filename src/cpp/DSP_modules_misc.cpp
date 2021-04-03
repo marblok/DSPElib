@@ -4,7 +4,7 @@
  *
  * \author Marek Blok
  */
-//#include <math.h>
+//#include <cmath>
 
 #include <DSP_modules.h>
 #include <DSP_clocks.h>

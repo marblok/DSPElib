@@ -18,7 +18,7 @@ int main(void)
   DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file);
   DSP::log.SetLogFileName("log_file_client.log");
 
-  DSP::log << DSP_lib_version_string() << endl << endl;
+  DSP::log << DSP::lib_version_string() << endl << endl;
 
   coef_info.Open("LPF_8000_11025.coef", "matlab");
   N_SRC = coef_info.GetSize(0);

@@ -3,7 +3,7 @@
  *
  * \author Marek Blok
  */
-#include <math.h>
+//#include <cmath>
 #include <stdlib.h>
 #include <time.h>
 #include <sstream>
@@ -181,7 +181,7 @@ DSP::Clock_trigger_ptr DSP::Clock_trigger::GetPointer2ClockTrigger(void)
 //**************************************//
 DSP::Component::Component(void)
 {
-  Type=DSP_CT_none;
+  Type=DSP::e::ComponentType::none;
 //  NoOfInputs=0;
 
   IsMultiClock=false;
@@ -219,7 +219,7 @@ DSP::Component::~Component(void)
         /*! \bug 2010.03.31 Auto blocks probably should also be deleted
          *   if Type == DSP_CP_Copy when nothing is connected to the output auto block
          */
-        if (Type != DSP_CT_copy)
+        if (Type != DSP::e::ComponentType::copy)
         {
           // create list of blocks for automatic deletion - deleting blocks here can lead to cascade of deletion procedure calls without prior call to UnregisterComponent();
           //  ??? check repetitions
@@ -1347,7 +1347,7 @@ DSP::Block DSP::Component::DummyBlock;
 
 DSP::Block::Block(void) : DSP::Component()
 {
-  Type = DSP::Component::Component_type(Type | DSP_CT_block); //might be mixed
+  Type = DSP::e::ComponentType(Type | DSP::e::ComponentType::block); //might be mixed
 
 //  RegisterComponent();
 
@@ -1391,7 +1391,7 @@ DSP::Block::Block(void) : DSP::Component()
 
 DSP::Source::Source(void) : DSP::Component()
 {
-  Type = DSP::Component::Component_type(Type | DSP_CT_source); //might be mixed
+  Type = DSP::e::ComponentType(Type | DSP::e::ComponentType::source); //might be mixed
 
 //  RegisterComponent();
 
@@ -2012,7 +2012,7 @@ bool DSP::Component::SetOutput(unsigned int OutputNo, DSP::Component_ptr compone
 
   if (OutputBlocks[OutputNo] != &DSP::Block::DummyBlock)
   {
-    if (OutputBlocks[OutputNo]->Type == DSP_CT_copy)
+    if (OutputBlocks[OutputNo]->Type == DSP::e::ComponentType::copy)
     {
       tempCopy = OutputBlocks[OutputNo]->Convert2Copy();
       if (tempCopy->GetCopyOutput(InputNo, output_block, output_block_input_no) == true)
@@ -2069,7 +2069,7 @@ bool DSP::Component::SetOutput(unsigned int OutputNo, DSP::Component_ptr compone
   input_block = this;
   input_block_output_no = OutputNo;
 
-  if (Type == DSP_CT_copy)
+  if (Type == DSP::e::ComponentType::copy)
   { // DSP::u::Copy output info update
     tempCopy = this->Convert2Copy();
     if (tempCopy->SetCopyOutput(OutputNo, tempBlock, InputNo) == true)
@@ -2089,7 +2089,7 @@ bool DSP::Component::SetOutput(unsigned int OutputNo, DSP::Component_ptr compone
   output_block = tempBlock;
   output_block_input_no = InputNo;
 
-  if (tempBlock->Type == DSP_CT_copy)
+  if (tempBlock->Type == DSP::e::ComponentType::copy)
   { // DSP::u::Copy input info update
     tempCopy = tempBlock->Convert2Copy();
     if (tempCopy->SetCopyInput(InputNo, this, OutputNo) == true)
@@ -7311,8 +7311,8 @@ void DSP::u::DDScos::Init(DSP::Float A_in,
                       DSP::Clock_ptr ParentClock)
 {
   A=A_in;
-  frequency= frequency_in/DSP_M_PIx2;
-  phase= phase_in/DSP_M_PIx2;
+  frequency= frequency_in/DSP::M_PIx2;
+  phase= phase_in/DSP::M_PIx2;
 
   CurrentPhase=0.0;
 
@@ -7452,9 +7452,9 @@ void DSP::u::DDScos::RecalculateInitials(void)
     if (IsConstantInput[0] == true)
       A = ConstantInputValues[0];
     if (IsConstantInput[1] == true)
-      frequency = ConstantInputValues[1]/DSP_M_PIx2;
+      frequency = ConstantInputValues[1]/DSP::M_PIx2;
     if (IsConstantInput[2] == true)
-      phase = ConstantInputValues[2]/DSP_M_PIx2;
+      phase = ConstantInputValues[2]/DSP::M_PIx2;
   }
 }
 
@@ -7478,16 +7478,16 @@ bool DSP::u::DDScos::OutputExecute(DSP::Source_ptr source, DSP::Clock_ptr clock)
 
   // Generate output sample
 //  OutputBlocks[0]->Execute(OutputBlocks_InputNo[0],
-//                           A*cos(M_PIx2*(CurrentPhase+phase)), this);
+//                           A*cos(DSP::M_PIx2*(CurrentPhase+phase)), this);
   THIS->OutputBlocks[0]->Execute_ptr(
       THIS->OutputBlocks[0], THIS->OutputBlocks_InputNo[0],
-      THIS->A * cos(M_PIx2 * (THIS->CurrentPhase + THIS->phase)), source);
+      THIS->A * cos(DSP::M_PIx2 * (THIS->CurrentPhase + THIS->phase)), source);
   if (THIS->NoOfOutputs == 2) // complex valued output case
 //    OutputBlocks[1]->Execute(OutputBlocks_InputNo[1],
-//                           A*sin(M_PIx2*(CurrentPhase+phase)), this);
+//                           A*sin(DSP::M_PIx2*(CurrentPhase+phase)), this);
     THIS->OutputBlocks[1]->Execute_ptr(
         THIS->OutputBlocks[1], THIS->OutputBlocks_InputNo[1],
-        THIS->A * sin(M_PIx2 * (THIS->CurrentPhase + THIS->phase)), source);
+        THIS->A * sin(DSP::M_PIx2 * (THIS->CurrentPhase + THIS->phase)), source);
 
   //Update phase for next sample
   THIS->CurrentPhase += THIS->frequency;
@@ -7537,10 +7537,10 @@ bool DSP::u::DDScos::OutputExecute_complex(OUTPUT_EXECUTE_ARGS)
   // complex valued output case
   THIS->OutputBlocks[0]->EXECUTE_PTR(
       THIS->OutputBlocks[0], THIS->OutputBlocks_InputNo[0],
-      THIS->A * COS(DSP_M_PIx2 * (THIS->CurrentPhase + THIS->phase)), source);
+      THIS->A * COS(DSP::M_PIx2 * (THIS->CurrentPhase + THIS->phase)), source);
   THIS->OutputBlocks[1]->EXECUTE_PTR(
       THIS->OutputBlocks[1], THIS->OutputBlocks_InputNo[1],
-      THIS->A * SIN(DSP_M_PIx2 * (THIS->CurrentPhase + THIS->phase)), source);
+      THIS->A * SIN(DSP::M_PIx2 * (THIS->CurrentPhase + THIS->phase)), source);
 
   //Update phase for next sample
   THIS->CurrentPhase += THIS->frequency;
@@ -7581,7 +7581,7 @@ bool DSP::u::DDScos::OutputExecute_real(OUTPUT_EXECUTE_ARGS)
   // Generate output sample
   THIS->OutputBlocks[0]->EXECUTE_PTR(
       THIS->OutputBlocks[0], THIS->OutputBlocks_InputNo[0],
-      THIS->A * COS(DSP_M_PIx2 * (THIS->CurrentPhase + THIS->phase)), source);
+      THIS->A * COS(DSP::M_PIx2 * (THIS->CurrentPhase + THIS->phase)), source);
 
   //Update phase for next sample
   THIS->CurrentPhase += THIS->frequency;
@@ -7611,10 +7611,10 @@ bool DSP::u::DDScos::OutputExecute_complex_no_inputs(OUTPUT_EXECUTE_ARGS)
   // complex valued output case
   THIS->OutputBlocks[0]->EXECUTE_PTR(
       THIS->OutputBlocks[0], THIS->OutputBlocks_InputNo[0],
-      THIS->A * COS(DSP_M_PIx2 * (THIS->CurrentPhase + THIS->phase)), source);
+      THIS->A * COS(DSP::M_PIx2 * (THIS->CurrentPhase + THIS->phase)), source);
   THIS->OutputBlocks[1]->EXECUTE_PTR(
       THIS->OutputBlocks[1], THIS->OutputBlocks_InputNo[1],
-      THIS->A * SIN(DSP_M_PIx2 * (THIS->CurrentPhase + THIS->phase)), source);
+      THIS->A * SIN(DSP::M_PIx2 * (THIS->CurrentPhase + THIS->phase)), source);
 
   //Update phase for next sample
   THIS->CurrentPhase += THIS->frequency;
@@ -7643,7 +7643,7 @@ bool DSP::u::DDScos::OutputExecute_real_no_inputs(OUTPUT_EXECUTE_ARGS)
   // Generate output sample
   THIS->OutputBlocks[0]->EXECUTE_PTR(
       THIS->OutputBlocks[0], THIS->OutputBlocks_InputNo[0],
-      THIS->A * COS(DSP_M_PIx2 * (THIS->CurrentPhase + THIS->phase)), source);
+      THIS->A * COS(DSP::M_PIx2 * (THIS->CurrentPhase + THIS->phase)), source);
 
   //Update phase for next sample
   THIS->CurrentPhase += THIS->frequency;
@@ -7671,7 +7671,7 @@ void DSP::u::DDScos::SetAngularFrequency(DSP::Float omega)
 {
   if (NoOfInputs == 0)
   {
-    frequency= omega/DSP_M_PIx2;
+    frequency= omega/DSP::M_PIx2;
   }
 #ifdef __DEBUG__
   else
@@ -7703,10 +7703,10 @@ void DSP::u::DDScos::InputExecute(INPUT_EXECUTE_ARGS)
       ((DSP::u::DDScos *)block)->A=value;
       break;
     case 1: //angular frequency
-      ((DSP::u::DDScos *)block)->frequency= value/DSP_M_PIx2;
+      ((DSP::u::DDScos *)block)->frequency= value/DSP::M_PIx2;
       break;
     case 2: //initial phase
-      ((DSP::u::DDScos *)block)->phase= value/DSP_M_PIx2;
+      ((DSP::u::DDScos *)block)->phase= value/DSP::M_PIx2;
       break;
     default:
       break;
@@ -9631,15 +9631,15 @@ DSP::u::DCO::DCO(DSP::Float wo, DSP::Float d_wo, DSP::Float freq_alfa, DSP::Floa
   // modulo pi accumulation can be implemented as:  x-floor(x) or even better as
   // x-ceil(x)
 
-  fo= wo/DSP_M_PIx2;
-  freq_factor= freq_alfa/DSP_M_PIx2;
-  phase_factor= phase_alfa/DSP_M_PIx2;
+  fo= wo/DSP::M_PIx2;
+  freq_factor= freq_alfa/DSP::M_PIx2;
+  phase_factor= phase_alfa/DSP::M_PIx2;
 
-  //max_freq_deviation=d_wo/M_PIx2;
+  //max_freq_deviation=d_wo/DSP::M_PIx2;
   if (d_wo >= 0)
   {
-    freq_dev_max =  d_wo/DSP_M_PIx2;
-    freq_dev_min = -d_wo/DSP_M_PIx2;
+    freq_dev_max =  d_wo/DSP::M_PIx2;
+    freq_dev_min = -d_wo/DSP::M_PIx2;
   }
   else
   {
@@ -9702,16 +9702,16 @@ void DSP::u::DCO::InputExecute(INPUT_EXECUTE_ARGS)
   THIS->phase_memo -= CEIL(THIS->phase_memo);
 
 
-//  OutputBlocks[0]->Execute(OutputBlocks_InputNo[0], cos(phase_memo*M_PIx2), this);
+//  OutputBlocks[0]->Execute(OutputBlocks_InputNo[0], cos(phase_memo*DSP::M_PIx2), this);
   THIS->OutputBlocks[0]->EXECUTE_PTR(
       THIS->OutputBlocks[0],
       THIS->OutputBlocks_InputNo[0],
-      COS(THIS->phase_memo * DSP_M_PIx2), block);
-//  OutputBlocks[1]->Execute(OutputBlocks_InputNo[1], sin(phase_memo*M_PIx2), this);
+      COS(THIS->phase_memo * DSP::M_PIx2), block);
+//  OutputBlocks[1]->Execute(OutputBlocks_InputNo[1], sin(phase_memo*DSP::M_PIx2), this);
   THIS->OutputBlocks[1]->EXECUTE_PTR(
       THIS->OutputBlocks[1],
       THIS->OutputBlocks_InputNo[1],
-      SIN(THIS->phase_memo * DSP_M_PIx2), block);
+      SIN(THIS->phase_memo * DSP::M_PIx2), block);
 };
 
 void DSP::u::DCO::InputExecute_with_Freq(INPUT_EXECUTE_ARGS)
@@ -9753,16 +9753,16 @@ void DSP::u::DCO::InputExecute_with_Freq(INPUT_EXECUTE_ARGS)
   THIS->phase_memo -= CEIL(THIS->phase_memo);
 
 
-//  OutputBlocks[0]->Execute(OutputBlocks_InputNo[0], cos(phase_memo*M_PIx2), this);
+//  OutputBlocks[0]->Execute(OutputBlocks_InputNo[0], cos(phase_memo*DSP::M_PIx2), this);
   THIS->OutputBlocks[0]->EXECUTE_PTR(
       THIS->OutputBlocks[0],
       THIS->OutputBlocks_InputNo[0],
-      COS(THIS->phase_memo * DSP_M_PIx2), block);
-//  OutputBlocks[1]->Execute(OutputBlocks_InputNo[1], sin(phase_memo*M_PIx2), this);
+      COS(THIS->phase_memo * DSP::M_PIx2), block);
+//  OutputBlocks[1]->Execute(OutputBlocks_InputNo[1], sin(phase_memo*DSP::M_PIx2), this);
   THIS->OutputBlocks[1]->EXECUTE_PTR(
       THIS->OutputBlocks[1],
       THIS->OutputBlocks_InputNo[1],
-      SIN(THIS->phase_memo * DSP_M_PIx2), block);
+      SIN(THIS->phase_memo * DSP::M_PIx2), block);
 
   THIS->current_frequ = THIS->freq_memo + THIS->fo;
   if (THIS->current_frequ < -0.5)
@@ -10709,7 +10709,7 @@ DSP::u::Copy::Copy(unsigned int NoOfInputs_in)
   unsigned int ind;
 
   SetName("Copy", false);
-  Type = DSP_CT_copy; // overide default type
+  Type = DSP::e::ComponentType::copy; // overide default type
 
   SetNoOfOutputs(NoOfInputs_in);
   SetNoOfInputs(NoOfInputs_in, false);
@@ -11403,7 +11403,7 @@ DSP::Macro::Macro(const string &macro_name,
   : DSP::name(macro_name)
 {
 #ifdef __DEBUG__
-  DOTmode = DSP_DOT_macro_wrap;
+  DOTmode = DSP::e::DOTmode::DOT_macro_wrap;
 #endif
   SetName(macro_name, false);
 

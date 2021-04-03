@@ -1,17 +1,17 @@
 TODO::
-  
   ? DSP::Clock_ptr => migrate to std::shared_ptr
-  move all enums into DSP::e::
-
   update Linux makefile
   !!! Add TELEsound and PiAPS_sound projects to GitLab and start addaptation to new library version
-
 
 LAST DONE:
 
 
-
 CHANGES:
+- ver. 0.20.001 - <b>2021.04.03</b> Changed: 
+  - DSP_libver, DSP_lib_version and DSP_lib_version_string moved int o DSP:: namespace: DSP::libver, DSP::lib_version and DSP::lib_version_string
+  - moved enums into DSP::e:: namespace: DSPe_* => DSP::e::*
+  - slight modifications in enum types names: DSPe_offset_mode => DSP::e::OffsetMode, DSPe_Modulation_type => DSP::e::ModulationType, DSPe_buffer_type => DSP::e::BufferType
+
 - ver. 0.20.000 - <b>2021.04.02</b> Changed: 
   - all DSPu_ moved into DSP::u:: namespace with some capitalization changes in blocks names
   - DSP_modules.cpp - removed some of the uses of new and delete

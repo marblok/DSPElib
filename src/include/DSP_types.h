@@ -6,8 +6,11 @@
 #ifndef DSP_types_H
 #define DSP_types_H
 
+#ifndef _USE_MATH_DEFINES
+  #define  _USE_MATH_DEFINES
+#endif
+#include <cmath>
 #include <limits.h>
-#include <math.h>
 #include <vector>
 #include <string>
 
@@ -73,8 +76,16 @@ namespace DSP {
 
 namespace DSP {
   namespace e {
+    enum struct ComponentType : unsigned int;
+    ComponentType operator|(ComponentType __a, ComponentType __b);
+    ComponentType operator&(ComponentType __a, ComponentType __b);
+
     enum struct SampleType;
     enum struct FileType;
+    enum struct OffsetMode;
+    enum struct PSK_type;
+    enum struct ModulationType;
+    enum struct BufferType;
   }
 
   class T_WAVEchunk;
@@ -101,9 +112,6 @@ namespace DSP {
   #define POW powf
   #define ATAN2 atan2f
 
-  #define DSP_M_PIx2 M_PIx2f
-  #define DSP_M_PIx1 M_PIx1f
-
 #else
   namespace DSP {
     typedef double DSP::Float;
@@ -119,12 +127,30 @@ namespace DSP {
   #define FABS fabs
   #define POW pow
   #define ATAN2 atan2
-
-  #define DSP_M_PIx2 M_PIx2
-  #define DSP_M_PIx1 M_PIx1
-
 #endif
+
 namespace DSP {
+  const long double M_PIx1_prec = 3.14159265358979323846264338328;
+  const long double M_PIx2_prec = 6.28318530718058647692528676656;
+
+  // and DSP::Float precision
+  const DSP::Float M_Ef         = DSP::Float(M_E);
+  const DSP::Float M_LOG2Ef     = DSP::Float(M_LOG2E);
+  const DSP::Float M_LOG10Ef    = DSP::Float(M_LOG10E);
+  const DSP::Float M_LN2f       = DSP::Float(M_LN2);
+  const DSP::Float M_LN10f      = DSP::Float(M_LN10);
+  const DSP::Float M_PIf        = DSP::Float(M_PI);
+  const DSP::Float M_PI_2f      = DSP::Float(M_PI_2);
+  const DSP::Float M_PI_4f      = DSP::Float(M_PI_4);
+  const DSP::Float M_1_PIf      = DSP::Float(M_1_PI);
+  const DSP::Float M_2_PIf      = DSP::Float(M_2_PI);
+  const DSP::Float M_2_SQRTPIf  = DSP::Float(M_2_SQRTPI);
+  const DSP::Float M_SQRT2f     = DSP::Float(M_SQRT2);
+  const DSP::Float M_SQRT1_2f   = DSP::Float(M_SQRT1_2);
+
+  const DSP::Float M_PIx2 = DSP::Float(M_PIx2_prec);
+  const DSP::Float M_PIx1 = DSP::Float(M_PIx1_prec);
+
   typedef DSP::Float * Float_ptr;
   typedef long double Prec_Float; //high precition float type
   class Complex;
@@ -196,25 +222,6 @@ namespace DSP {
   typedef void (*ExternalSleep_ptr)(uint32_t);
 }
 
-#define M_PIx1  3.14159265358979323846264338328
-#define M_PIx2  6.28318530718058647692528676656
-#define M_PIx1f      DSP::Float(M_PIx1)
-#define M_PIx2f      DSP::Float(M_PIx2)
-
-// and DSP::Float precision
-#define M_Ef         DSP::Float(M_E)
-#define M_LOG2Ef     DSP::Float(M_LOG2E)
-#define M_LOG10Ef    DSP::Float(M_LOG10E)
-#define M_LN2f       DSP::Float(M_LN2)
-#define M_LN10f      DSP::Float(M_LN10)
-#define M_PIf        DSP::Float(M_PI)
-#define M_PI_2f      DSP::Float(M_PI_2)
-#define M_PI_4f      DSP::Float(M_PI_4)
-#define M_1_PIf      DSP::Float(M_1_PI)
-#define M_2_PIf      DSP::Float(M_2_PI)
-#define M_2_SQRTPIf  DSP::Float(M_2_SQRTPI)
-#define M_SQRT2f     DSP::Float(M_SQRT2)
-#define M_SQRT1_2f   DSP::Float(M_SQRT1_2)
 class DSP::Complex
 {
   public:
@@ -363,6 +370,25 @@ class DSP::Complex
    }
 };
 
+//! component type
+enum struct DSP::e::ComponentType : unsigned int {
+            none=0, 
+            block=1,
+            source=2, 
+            mixed=3,
+            copy=4
+};
+inline DSP::e::ComponentType DSP::e::operator|(DSP::e::ComponentType __a, DSP::e::ComponentType __b)
+{ 
+  return static_cast<DSP::e::ComponentType>(static_cast<std::underlying_type<DSP::e::ComponentType>::type>(__a) 
+                                          | static_cast<std::underlying_type<DSP::e::ComponentType>::type>(__b));
+}
+inline DSP::e::ComponentType DSP::e::operator&(DSP::e::ComponentType __a, DSP::e::ComponentType __b)
+{ 
+  return static_cast<DSP::e::ComponentType>(static_cast<std::underlying_type<DSP::e::ComponentType>::type>(__a) 
+                                          & static_cast<std::underlying_type<DSP::e::ComponentType>::type>(__b));
+}
+
 //! Enums for different Sample Types for file IO operations
 /*! - DSP::e::SampleType::ST_float    : C++ float  (32bit floating point)
  *  - DSP::e::SampleType::ST_scaled_float : C++ float * 0x8000 (32bit floating point scalled by 0x8000 for 32bit PCM wav file)
@@ -406,33 +432,37 @@ enum struct DSP::e::FileType {
         FT_tape = 5};
 
 //! Enums for DSP::u::FileOutput
-enum DSPe_offset_mode {
+enum struct DSP::e::OffsetMode {
   //! from beginning (after header)
-  DSP_OM_standard     = 0,
+  standard     = 0,
   //! from current position
-  DSP_OM_skip         = 1};
+  skip         = 1};
 
 //! Enums for PSK type
-enum DSPe_PSK_type {DSP_BPSK=0,
-                    DSP_DEBPSK=1,
-                    DSP_DBPSK=2,
-                    DSP_QPSK_A=3,
-                    DSP_QPSK_B=4,
-                    DSP_DQPSK=5,
-                    DSP_pi4_QPSK=6};
+enum struct DSP::e::PSK_type {
+        BPSK=0,
+        DEBPSK=1,
+        DBPSK=2,
+        QPSK_A=3,
+        QPSK_B=4,
+        DQPSK=5,
+        pi4_QPSK=6
+      };
 
 //! Enums for Modulation types
-enum DSPe_Modulation_type {
-                    DSP_MT_PSK=0,
-                    DSP_MT_ASK=1,
-                    DSP_MT_DPSK=2, // differential variant of the PSKodulation
-                    DSP_MT_QAM=3
-                   };
+enum struct DSP::e::ModulationType {
+        PSK=0,
+        ASK=1,
+        DPSK=2, // differential variant of the PSKodulation
+        QAM=3
+      };
 
 //! Enums for DSP::u::OutputBuffer
-enum DSPe_buffer_type {DSP_standard       = 0,
-                       DSP_cyclic         = 1,
-                       DSP_stop_when_full = 2};
+enum struct DSP::e::BufferType {
+        standard       = 0,
+        cyclic         = 1,
+        stop_when_full = 2
+        };
 
 namespace DSP {
   namespace c {

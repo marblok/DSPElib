@@ -4,7 +4,7 @@
  *
  * \author Marek Blok
  */
-#include <math.h>
+//#include <cmath>
 #include <stdio.h>
 #include <string.h>
 #include <functional>
@@ -120,7 +120,7 @@ void DSP::Fourier::resize(const unsigned long &K_in)
 
     for (i=0; i<K; i++)
     { //exp{j*2*pi/K*i}
-      cSin[i].set(cos(2*M_PIx1f*DSP::Float(i)/DSP::Float(K)),-sin(2*M_PIx1f*DSP::Float(i)/DSP::Float(K)));
+      cSin[i].set(cos(2*DSP::M_PIx1*DSP::Float(i)/DSP::Float(K)),-sin(2*DSP::M_PIx1*DSP::Float(i)/DSP::Float(K)));
 //      if ((i%2)==0)
 //        cSinFFT[i>>1]=cSin[i];
       RevBitTable[i]=BitRev(i, Kbit+1);

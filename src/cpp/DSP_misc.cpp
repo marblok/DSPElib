@@ -10,12 +10,8 @@
 #include <ctype.h>
 #include <iomanip>
 
-#ifndef _GNU_SOURCE
-  #define  _GNU_SOURCE
-#endif
-#include <math.h>
-#include <algorithm>
 //#include <cmath>
+#include <algorithm>
 //using std::signbit;
 
 #ifdef _MSC_VER
@@ -31,14 +27,14 @@
  * @{
  */
 
-DSP_libver VersionData={DSP_VER_MAJOR, DSP_VER_MINOR, DSP_VER_BUILD};
+DSP::libver VersionData={DSP_VER_MAJOR, DSP_VER_MINOR, DSP_VER_BUILD};
 
-DSP_libver DSP_lib_version(void)
+DSP::libver DSP::lib_version(void)
 {
   return VersionData;
 }
 
-string DSP_lib_version_string()
+string DSP::lib_version_string()
 {
   stringstream tekst;
 #ifdef __ANONYMOUS__
@@ -716,8 +712,8 @@ void DSP::f::Blackman(int size, DSP::Float_ptr buffer, bool normalize)
   for (n=0; n<size; n++)
   {
     buffer[n] = DSP::Float(0.42)
-        - DSP::Float(0.5)*COS(DSP::Float(n)*DSP_M_PIx2/DSP::Float(size-1))
-        + DSP::Float(0.08)*COS(DSP::Float(2*n)*DSP_M_PIx2/DSP::Float(size-1));
+        - DSP::Float(0.5)*COS(DSP::Float(n)*DSP::M_PIx2/DSP::Float(size-1))
+        + DSP::Float(0.08)*COS(DSP::Float(2*n)*DSP::M_PIx2/DSP::Float(size-1));
   }
 
   if (normalize == true)
@@ -732,7 +728,7 @@ void DSP::f::Hamming(int size, DSP::Float_ptr buffer, bool normalize)
   for (n=0; n<size; n++)
   {
     buffer[n] = DSP::Float(0.53836)
-        - DSP::Float(0.46164)*COS(DSP::Float(n)*DSP_M_PIx2/DSP::Float(size-1));
+        - DSP::Float(0.46164)*COS(DSP::Float(n)*DSP::M_PIx2/DSP::Float(size-1));
   }
 
   if (normalize == true)
@@ -747,7 +743,7 @@ void DSP::f::Hann(int size, DSP::Float_ptr buffer, bool normalize)
   for (n=0; n<size; n++)
   {
     buffer[n] = DSP::Float(0.5)
-        - DSP::Float(0.5)*COS(DSP::Float(n)*DSP_M_PIx2/DSP::Float(size-1));
+        - DSP::Float(0.5)*COS(DSP::Float(n)*DSP::M_PIx2/DSP::Float(size-1));
   }
 
   if (normalize == true)
@@ -807,7 +803,7 @@ void DSP::f::Bartlett_Hann(int size, DSP::Float_ptr buffer, bool normalize)
   {
     buffer[n] = DSP::Float(0.62) +
          - DSP::Float(0.48) * FABS( DSP::Float(n)/ DSP::Float(size-1) - DSP::Float(0.5) )
-         - DSP::Float(0.38) * COS(DSP::Float(n)*DSP_M_PIx2/DSP::Float(size-1));
+         - DSP::Float(0.38) * COS(DSP::Float(n)*DSP::M_PIx2/DSP::Float(size-1));
   }
 
   if (normalize == true)
@@ -844,9 +840,9 @@ void DSP::f::Nuttall(int size, DSP::Float_ptr buffer, bool normalize)
   for (n=0; n<size; n++)
   {
     buffer[n] = DSP::Float(0.355768)
-        - DSP::Float(0.487396)*COS(DSP::Float(n)*DSP_M_PIx2/DSP::Float(size-1))
-        + DSP::Float(0.144232)*COS(DSP::Float(2*n)*DSP_M_PIx2/DSP::Float(size-1))
-        - DSP::Float(0.012604)*COS(DSP::Float(3*n)*DSP_M_PIx2/DSP::Float(size-1));
+        - DSP::Float(0.487396)*COS(DSP::Float(n)*DSP::M_PIx2/DSP::Float(size-1))
+        + DSP::Float(0.144232)*COS(DSP::Float(2*n)*DSP::M_PIx2/DSP::Float(size-1))
+        - DSP::Float(0.012604)*COS(DSP::Float(3*n)*DSP::M_PIx2/DSP::Float(size-1));
   }
 
   if (normalize == true)
@@ -861,9 +857,9 @@ void DSP::f::Blackman_Harris(int size, DSP::Float_ptr buffer, bool normalize)
   for (n=0; n<size; n++)
   {
     buffer[n] = DSP::Float(0.35875)
-        - DSP::Float(0.48829)*COS(DSP::Float(n)*DSP_M_PIx2/DSP::Float(size-1))
-        + DSP::Float(0.14128)*COS(DSP::Float(2*n)*DSP_M_PIx2/DSP::Float(size-1))
-        - DSP::Float(0.01168)*COS(DSP::Float(3*n)*DSP_M_PIx2/DSP::Float(size-1));
+        - DSP::Float(0.48829)*COS(DSP::Float(n)*DSP::M_PIx2/DSP::Float(size-1))
+        + DSP::Float(0.14128)*COS(DSP::Float(2*n)*DSP::M_PIx2/DSP::Float(size-1))
+        - DSP::Float(0.01168)*COS(DSP::Float(3*n)*DSP::M_PIx2/DSP::Float(size-1));
   }
 
   if (normalize == true)
@@ -878,9 +874,9 @@ void DSP::f::Blackman_Nuttall(int size, DSP::Float_ptr buffer, bool normalize)
   for (n=0; n<size; n++)
   {
     buffer[n] = DSP::Float(0.3635819)
-        - DSP::Float(0.4891775)*COS(DSP::Float(n)*DSP_M_PIx2/DSP::Float(size-1))
-        + DSP::Float(0.1365995)*COS(DSP::Float(2*n)*DSP_M_PIx2/DSP::Float(size-1))
-        - DSP::Float(0.0106411)*COS(DSP::Float(3*n)*DSP_M_PIx2/DSP::Float(size-1));
+        - DSP::Float(0.4891775)*COS(DSP::Float(n)*DSP::M_PIx2/DSP::Float(size-1))
+        + DSP::Float(0.1365995)*COS(DSP::Float(2*n)*DSP::M_PIx2/DSP::Float(size-1))
+        - DSP::Float(0.0106411)*COS(DSP::Float(3*n)*DSP::M_PIx2/DSP::Float(size-1));
   }
 
   if (normalize == true)
@@ -895,10 +891,10 @@ void DSP::f::Flat_top(int size, DSP::Float_ptr buffer, bool normalize)
   for (n=0; n<size; n++)
   {
     buffer[n] = DSP::Float(1.0)
-        - DSP::Float(1.93)*COS(DSP::Float(n)*DSP_M_PIx2/DSP::Float(size-1))
-        + DSP::Float(1.29)*COS(DSP::Float(2*n)*DSP_M_PIx2/DSP::Float(size-1))
-        - DSP::Float(0.388)*COS(DSP::Float(3*n)*DSP_M_PIx2/DSP::Float(size-1))
-        + DSP::Float(0.032)*COS(DSP::Float(4*n)*DSP_M_PIx2/DSP::Float(size-1));
+        - DSP::Float(1.93)*COS(DSP::Float(n)*DSP::M_PIx2/DSP::Float(size-1))
+        + DSP::Float(1.29)*COS(DSP::Float(2*n)*DSP::M_PIx2/DSP::Float(size-1))
+        - DSP::Float(0.388)*COS(DSP::Float(3*n)*DSP::M_PIx2/DSP::Float(size-1))
+        + DSP::Float(0.032)*COS(DSP::Float(4*n)*DSP::M_PIx2/DSP::Float(size-1));
   }
 
   if (normalize == true)
@@ -920,12 +916,12 @@ void DSP::f::sinc(int size, DSP::Float_ptr buffer)
   {
     if (FABS(buffer[n]) > 0.000001)
     {
-      buffer[n] *= DSP_M_PIx1;
+      buffer[n] *= DSP::M_PIx1;
       buffer[n] = SIN(buffer[n])/buffer[n];
     }
     else
     { // Prudnikov et al. 1986, p. 757
-      buffer[n] = DSP_M_PIx1 * buffer[n] / 3;
+      buffer[n] = DSP::M_PIx1 * buffer[n] / 3;
 
       tmp = SIN(buffer[n]);
       x = 1 - DSP::Float(0.75) * tmp * tmp;
@@ -953,14 +949,14 @@ void DSP::f::sinc(const DSP::Float_vector& arguments, vector<T>& output_buffer) 
     x = arguments[n];
     if (FABS(x) > 0.000001)
     {
-      x *= DSP_M_PIx1;
+      x *= DSP::M_PIx1;
       output_buffer[n] = SIN(x) / x;
     }
     else
     { // Prudnikov et al. 1986, p. 757
       DSP::Float tmp, y;
 
-      x = DSP_M_PIx1 * x / 3;
+      x = DSP::M_PIx1 * x / 3;
 
       tmp = SIN(x);
       y = 1 - DSP::Float(0.75) * tmp * tmp;
@@ -990,12 +986,12 @@ DSP::Float DSP::f::sinc(DSP::Float x)
 
   if (FABS(x) > 0.000001)
   {
-    x *= DSP_M_PIx1;
+    x *= DSP::M_PIx1;
     return SIN(x)/x;
   }
   else
   { // Prudnikov et al. 1986, p. 757
-    x = DSP_M_PIx1 * x / 3;
+    x = DSP::M_PIx1 * x / 3;
 
     tmp = SIN(x);
     y = 1 - DSP::Float(0.75) * tmp * tmp;

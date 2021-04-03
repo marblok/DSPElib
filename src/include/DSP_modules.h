@@ -7,7 +7,7 @@
 #define DSPmodulesH
 
 //#include <string.h>
-//#include <math.h>
+//#include <cmath>
 //#include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -234,11 +234,11 @@ class DSP::name
  *  <b>1.</b> Names of all DSP units classes should start from <b>DSP::u::</b> (e.g. DSP::u::ABS),
  *  where 'u' stands for unit.
  *  \note
- *  <b>2.</b> Names of enumeration types should begin with <b>DSPe_</b>.
+ *  <b>2.</b> Names of enumeration types should begin with <b>DSP::e::</b>.
  *  \note
  *  <b>3.</b> Names of auxiliary functions should begin with <b>DSP::f::</b>.
  *  \note
- *  <b>4.</b> Names of auxiliary objects should begin with <b>DSPo_</b>.
+ *  <b>4.</b> Names of auxiliary objects should begin with <b>DSP::o::</b>.
  *
  *
  *  Three types of DSP units can be implemented:
@@ -601,10 +601,10 @@ class DSP::name
 				THIS->A=value;
 				break;
 			case 1: //angular frequency
-				THIS->frequency=value/M_PIx2;
+				THIS->frequency=value/DSP::M_PIx2;
 				break;
 			case 2: //initial phase
-				THIS->phase=value/M_PIx2;
+				THIS->phase=value/DSP::M_PIx2;
 				break;
 			default:
 				break;
@@ -624,7 +624,7 @@ class DSP::name
 		// Generate output sample
 		THIS->OutputBlocks[0]->Execute_ptr(
 				THIS->OutputBlocks[0], THIS->OutputBlocks_InputNo[0],
-				THIS->A * cos(M_PIx2 * (THIS->CurrentPhase + THIS->phase)), source);
+				THIS->A * cos(DSP::M_PIx2 * (THIS->CurrentPhase + THIS->phase)), source);
 
 		//Update phase for next sample
 		THIS->CurrentPhase += THIS->frequency;
@@ -726,7 +726,9 @@ class DSP::name
 
 #ifdef __DEBUG__
   //! DOT colors table
-  extern const vector<string> DOT_colors;
+  namespace DSP {
+    extern const vector<string> DOT_colors;
+  }
 #endif
 
 // ***************************************************** //
@@ -754,11 +756,7 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
   friend class DSP::_connect_class;
 
   protected:
-  	//! component type
-  	enum Component_type {DSP_CT_none=0, DSP_CT_block=1,
-  							 DSP_CT_source=2, DSP_CT_mixed=3,
-  							 DSP_CT_copy=4};
-  	Component_type Type;
+  	DSP::e::ComponentType Type;
 
   public:
     //! converts current object's pointer to DSP::Block if possible
@@ -1157,7 +1155,7 @@ class DSP::File
      * \note use only: ftello64, fseeko64. fgetpos, fsetpos
      *   (safe for files larger than 2GB)
      */
-    bool SetOffset(long long Offset, DSPe_offset_mode mode = DSP_OM_standard);
+    bool SetOffset(long long Offset, DSP::e::OffsetMode mode = DSP::e::OffsetMode::standard);
     //! Set skip counter
     /*!
      * @param Offset number of samples to skip in file processing
@@ -1773,9 +1771,9 @@ class DSP::Macro : public virtual DSP::name
   #ifdef __DEBUG__
     private:
       //! determines how macro will be represented on DOT graph
-      /*! Default value == DSP_DOT_macro_wrap.
+      /*! Default value == DSP::e::DOTmode::DOT_macro_wrap.
        */
-      DSPe_DOTmode DOTmode;
+      DSP::e::DOTmode DOTmode;
     public:
       //! true if macro must be drawn instead of macro components
       bool DOT_DrawMacro(void);
@@ -1874,7 +1872,7 @@ class DSP::Macro : public virtual DSP::name
     virtual ~Macro(void);
 
     public:
-      void SetDOTmode(DSPe_DOTmode mode = DSP_DOT_macro_wrap)
+      void SetDOTmode(DSP::e::DOTmode mode = DSP::e::DOTmode::DOT_macro_wrap)
       {
         UNUSED_RELEASE_ARGUMENT(mode);
 
@@ -1882,12 +1880,12 @@ class DSP::Macro : public virtual DSP::name
           DOTmode = mode;
         #endif
       }
-      DSPe_DOTmode GetDOTmode(void)
+      DSP::e::DOTmode GetDOTmode(void)
       {
         #ifdef __DEBUG__
           return DOTmode;
         #else
-          return DSP_DOT_macro_inactive;
+          return DSP::e::DOTmode::DOT_macro_inactive;
         #endif
       }
 
@@ -2735,9 +2733,9 @@ class DSP::u::DDScos : public DSP::Block, public DSP::Source
   private:
     //! cosinusoid amplitude
     DSP::Float A;
-    //! initial phase divided by M_PIx2
+    //! initial phase divided by DSP::M_PIx2
     DSP::Float phase;
-    //! cosinusoid normalized frequency (angular frequency divided by M_PIx2)
+    //! cosinusoid normalized frequency (angular frequency divided by DSP::M_PIx2)
     DSP::Float frequency;
 
     //! True if DDS generator parameters are ready (constant or read from inputs in current cycle)
@@ -2745,7 +2743,7 @@ class DSP::u::DDScos : public DSP::Block, public DSP::Source
 //    //! Number of inputs read in current cycle
 //    int NoOfInputsRead;
 
-    //! Cosinusoid instantaneous phase divided by M_PIx2
+    //! Cosinusoid instantaneous phase divided by DSP::M_PIx2
     /*! Strictly speaking it's just cumulated instantaneous frequency
      * so it doesn't include initial phase (which in fact might be
      * changing in time too)

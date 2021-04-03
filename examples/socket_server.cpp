@@ -17,14 +17,14 @@ int main(void)
   DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file);
   DSP::log.SetLogFileName("log_file.log");
 
-  DSP::log << DSP_lib_version_string() << endl << endl;
+  DSP::log << DSP::lib_version_string() << endl << endl;
 
   MasterClock=DSP::Clock::CreateMasterClock();
 
 //  DSP::u::WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
 //  Fp = AudioIn.GetSamplingRate();
   Fp = 22050;
-  DSP::u::DDScos AudioIn(MasterClock, false, 1.0, DSP::Float(1000*M_PIx2/Fp));
+  DSP::u::DDScos AudioIn(MasterClock, false, 1.0, DSP::Float(1000*DSP::M_PIx2/Fp));
   DSP::u::MORSEkey MorseKey(MasterClock, 20, Fp);
   MorseKey.AddString("Digital Signal Processing Engine library");
   DSP::u::RealMultiplication Mul(2);

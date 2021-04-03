@@ -905,7 +905,7 @@ DSP::u::GardnerSampling::GardnerSampling(
             DSP::Float max_korekta_in,
             //! number of simultaneously processed subchannels
             unsigned int NoOfChannels_in,
-            DSPe_GardnerSamplingOptions options_in)
+            DSP::e::GardnerSamplingOptions options_in)
   : DSP::Block()
 {
   Init(InputClock, OutputClock, SamplingPeriod_in, beta_in, max_korekta_in, NoOfChannels_in, options_in);
@@ -917,7 +917,7 @@ DSP::u::GardnerSampling::GardnerSampling(DSP::Float SamplingPeriod_in,
                                          unsigned int NoOfChannels_in)
   : DSP::Block()
 {
-  Init(NULL, NULL, SamplingPeriod_in, beta_in, max_korekta_in, NoOfChannels_in, DSP_GS_none);
+  Init(NULL, NULL, SamplingPeriod_in, beta_in, max_korekta_in, NoOfChannels_in, DSP::e::GardnerSamplingOptions::none);
 }
 
 void DSP::u::GardnerSampling::Init(
@@ -927,7 +927,7 @@ void DSP::u::GardnerSampling::Init(
             DSP::Float beta_in,
             DSP::Float max_korekta_in, // maximum allowed delay correction
             unsigned int NoOfChannels_in,
-            DSPe_GardnerSamplingOptions options_in)
+            DSP::e::GardnerSamplingOptions options_in)
 {
   unsigned int ind;
   string tekst;
@@ -941,12 +941,12 @@ void DSP::u::GardnerSampling::Init(
   int no_of_outputs = 2*NoOfChannels;
   int activation_signal_index = -1;
   int delay_signal_index = -1;
-  if (options & DSP_GS_use_activation_signal)
+  if ((options & DSP::e::GardnerSamplingOptions::use_activation_signal) == DSP::e::GardnerSamplingOptions::use_activation_signal)
   {
     activation_signal_index = no_of_outputs;
     no_of_outputs++;
   }
-  if (options & DSP_GS_use_delay_output)
+  if ((options & DSP::e::GardnerSamplingOptions::use_delay_output) == DSP::e::GardnerSamplingOptions::use_delay_output)
   {
     delay_signal_index = no_of_outputs;
     no_of_outputs++;
@@ -1011,7 +1011,7 @@ void DSP::u::GardnerSampling::Init(
   }
   */
 
-  if(options_in & DSP_GS_OQPSK)
+  if ((options_in & DSP::e::GardnerSamplingOptions::OQPSK) == DSP::e::GardnerSamplingOptions::OQPSK)
   {
     half_SamplingPeriod=SamplingPeriod_in;
     estimated_SamplingPeriod=2*SamplingPeriod_in;
@@ -1042,7 +1042,7 @@ void DSP::u::GardnerSampling::Init(
     OutputExecute_ptr = &OutputExecute;
   }
 
-  if (options & DSP_GS_activate_output_clock)
+  if ((options & DSP::e::GardnerSamplingOptions::activate_output_clock) == DSP::e::GardnerSamplingOptions::activate_output_clock)
   { //activate output clock
     if ((InputClock == NULL) || (OutputClock == NULL))
     {
@@ -1060,7 +1060,7 @@ void DSP::u::GardnerSampling::Init(
     //L_factor = -1; M_factor = -1; // asynchronous block -> interpolation factor cannot be specified
     Execute_ptr = &InputExecute_with_options;
   }
-  if (options & DSP_GS_use_activation_signal)
+  if ((options & DSP::e::GardnerSamplingOptions::use_activation_signal) == DSP::e::GardnerSamplingOptions::use_activation_signal)
   { // additional output: activation signal
 //    SignalActivatedClock = OutputClock;
 //    for (ind = 0; ind < 2*NoOfChannels; ind++)
@@ -1080,7 +1080,7 @@ void DSP::u::GardnerSampling::Init(
 
     Execute_ptr = &InputExecute_with_options;
   }
-  if (options & DSP_GS_use_delay_output)
+  if ((options & DSP::e::GardnerSamplingOptions::use_delay_output) == DSP::e::GardnerSamplingOptions::use_delay_output)
   { // additional delay signal
 //    SignalActivatedClock = OutputClock;
 //    for (ind = 0; ind < 2*NoOfChannels; ind++)
@@ -1128,7 +1128,7 @@ void DSP::u::GardnerSampling::InputExecute_with_options(INPUT_EXECUTE_ARGS)
   // optional processing
   if (THIS->NoOfInputsProcessed == 0)
   { // Process once per InputClock cycle before any input processing is done
-    if (THIS->options & DSP_GS_use_delay_output)
+    if ((THIS->options & DSP::e::GardnerSamplingOptions::use_delay_output) == DSP::e::GardnerSamplingOptions::use_delay_output)
     {
 
       THIS->delay = THIS->delay_1;
@@ -1167,7 +1167,7 @@ void DSP::u::GardnerSampling::InputExecute_with_options(INPUT_EXECUTE_ARGS)
 
   // optional processing (cont.)
   if (THIS->output_generated)
-    if (THIS->options & DSP_GS_activate_output_clock)
+    if ((THIS->options & DSP::e::GardnerSamplingOptions::activate_output_clock) == DSP::e::GardnerSamplingOptions::activate_output_clock)
     {
       DSP::Clock::AddSignalActivatedClock(
           THIS->MasterClockIndex,
@@ -1178,9 +1178,9 @@ void DSP::u::GardnerSampling::InputExecute_with_options(INPUT_EXECUTE_ARGS)
   {
     if (THIS->NoOfInputsProcessed == 0)
     { // Process once per InputClock cycle after all inputs have been processed
-      if (THIS->options & DSP_GS_use_activation_signal)
+      if ((THIS->options & DSP::e::GardnerSamplingOptions::use_activation_signal) == DSP::e::GardnerSamplingOptions::use_activation_signal)
       {
-        if (THIS->options & DSP_GS_use_delay_output)
+        if ((THIS->options & DSP::e::GardnerSamplingOptions::use_delay_output) == DSP::e::GardnerSamplingOptions::use_delay_output)
         {
           THIS->OutputBlocks[THIS->NoOfOutputs - 2]->EXECUTE_PTR(
               THIS->OutputBlocks[THIS->NoOfOutputs - 2],
@@ -1455,7 +1455,7 @@ bool DSP::u::GardnerSampling::OutputExecute(OUTPUT_EXECUTE_ARGS)
 
   if (THIS->output_generated== true)
   {
-    if (THIS->options & DSP_GS_use_delay_output)
+    if ((THIS->options & DSP::e::GardnerSamplingOptions::use_delay_output) == DSP::e::GardnerSamplingOptions::use_delay_output)
     {
       THIS->OutputBlocks[THIS->NoOfOutputs - 1]->EXECUTE_PTR(
           THIS->OutputBlocks[THIS->NoOfOutputs - 1],
@@ -1464,9 +1464,9 @@ bool DSP::u::GardnerSampling::OutputExecute(OUTPUT_EXECUTE_ARGS)
     }
 
     // Process once per InputClock cycle after all inputs have been processed
-    if (THIS->options & DSP_GS_use_activation_signal)
+    if ((THIS->options & DSP::e::GardnerSamplingOptions::use_activation_signal) == DSP::e::GardnerSamplingOptions::use_activation_signal)
     {
-      if (THIS->options & DSP_GS_use_delay_output)
+      if ((THIS->options & DSP::e::GardnerSamplingOptions::use_delay_output) == DSP::e::GardnerSamplingOptions::use_delay_output)
       {
         THIS->OutputBlocks[THIS->NoOfOutputs - 2]->EXECUTE_PTR(
             THIS->OutputBlocks[THIS->NoOfOutputs - 2],
@@ -1521,7 +1521,7 @@ bool DSP::u::GardnerSampling::OutputExecute(OUTPUT_EXECUTE_ARGS)
  *    -# "in1" - first input bit
  *    -# "in2" - second input bit
  */
-DSP::u::PSKencoder::PSKencoder(DSPe_PSK_type type) : DSP::Block()
+DSP::u::PSKencoder::PSKencoder(DSP::e::PSK_type type) : DSP::Block()
 {
   SetName("PSK encoder", false);
   tmp_re = 0.0;
@@ -1530,25 +1530,25 @@ DSP::u::PSKencoder::PSKencoder(DSPe_PSK_type type) : DSP::Block()
   Type = type;
   switch (Type)
   {
-    case DSP_QPSK_A:
+    case DSP::e::PSK_type::QPSK_A:
       Execute_ptr = &InputExecute_QPSK_A;
       break;
-    case DSP_QPSK_B:
+    case DSP::e::PSK_type::QPSK_B:
       Execute_ptr = &InputExecute_QPSK_B;
       break;
 
-    case DSP_DEBPSK:
-    case DSP_DBPSK:
+    case DSP::e::PSK_type::DEBPSK:
+    case DSP::e::PSK_type::DBPSK:
       Execute_ptr = &InputExecute_DBPSK;
       break;
 
-    case DSP_BPSK:
+    case DSP::e::PSK_type::BPSK:
       Execute_ptr = &InputExecute_BPSK;
       break;
 
     default:
       DSP::log << DSP::LogMode::Error << "DSP::u::PSKencoder::PSKencoder" << DSP::LogMode::second << "Unsupported modulation type, falling back to BPSK" << endl;
-      Type = DSP_BPSK;
+      Type = DSP::e::PSK_type::BPSK;
       Execute_ptr = &InputExecute_BPSK;
       break;
   }
@@ -1560,19 +1560,19 @@ DSP::u::PSKencoder::PSKencoder(DSPe_PSK_type type) : DSP::Block()
 
   switch (Type)
   {
-    case DSP_pi4_QPSK:
-    case DSP_DQPSK:
-    case DSP_QPSK_A:
-    case DSP_QPSK_B:
+    case DSP::e::PSK_type::pi4_QPSK:
+    case DSP::e::PSK_type::DQPSK:
+    case DSP::e::PSK_type::QPSK_A:
+    case DSP::e::PSK_type::QPSK_B:
       SetNoOfInputs(2,false);
       DefineInput("in", 0, 1);
       DefineInput("in1", 0);
       DefineInput("in2", 1);
       break;
 
-    case DSP_BPSK:
-    case DSP_DBPSK:
-    case DSP_DEBPSK:
+    case DSP::e::PSK_type::BPSK:
+    case DSP::e::PSK_type::DBPSK:
+    case DSP::e::PSK_type::DEBPSK:
     default:
       SetNoOfInputs(1,false);
       DefineInput("in", 0);
@@ -1582,16 +1582,16 @@ DSP::u::PSKencoder::PSKencoder(DSPe_PSK_type type) : DSP::Block()
 
   switch (Type)
   {
-    case DSP_pi4_QPSK:
+    case DSP::e::PSK_type::pi4_QPSK:
       State_re=1;
       State_im=1;
       break;
-    case DSP_DQPSK:
-    case DSP_QPSK_A:
-    case DSP_QPSK_B:
-    case DSP_BPSK:
-    case DSP_DBPSK:
-    case DSP_DEBPSK:
+    case DSP::e::PSK_type::DQPSK:
+    case DSP::e::PSK_type::QPSK_A:
+    case DSP::e::PSK_type::QPSK_B:
+    case DSP::e::PSK_type::BPSK:
+    case DSP::e::PSK_type::DBPSK:
+    case DSP::e::PSK_type::DEBPSK:
     default:
       State_re=1;
       State_im=0;
@@ -1727,7 +1727,7 @@ void DSP::u::PSKencoder::InputExecute_QPSK_A(INPUT_EXECUTE_ARGS)
 
 // ********************************************************************** //
 DSP::u::SymbolMapper::SymbolMapper(
-    DSPe_Modulation_type type,
+    DSP::e::ModulationType type,
     const unsigned int &bits_per_symbol_in,
     const DSP::Float &constellation_phase_offset) : DSP::Block()
 {
@@ -1774,7 +1774,7 @@ DSP::u::SymbolMapper::SymbolMapper(
 
 unsigned int getConstellation(
                 DSP::Complex_vector &constellation,
-                DSPe_Modulation_type type,
+                DSP::e::ModulationType type,
                 const DSP::Float &constellation_phase_offset,
                 const unsigned int &bits_per_symbol,
                 bool &is_real) {
@@ -1782,18 +1782,18 @@ unsigned int getConstellation(
   unsigned int M = static_cast<unsigned int>(round(pow(2,bits_per_symbol)));
 
   switch (type) {
-    case DSP_MT_PSK: {
+    case DSP::e::ModulationType::PSK: {
         constellation.resize(M);
 //        for (unsigned int n=0; n < M; n++) {
-//          constellation[n].re = static_cast<DSP::Float>(cos(constellation_phase_offset+(DSP_M_PIx2*n)/M));
-//          constellation[n].im = static_cast<DSP::Float>(sin(constellation_phase_offset+(DSP_M_PIx2*n)/M));
+//          constellation[n].re = static_cast<DSP::Float>(cos(constellation_phase_offset+(DSP::M_PIx2*n)/M));
+//          constellation[n].im = static_cast<DSP::Float>(sin(constellation_phase_offset+(DSP::M_PIx2*n)/M));
 //        }
         // Gray codding (start from LSB)
         uint16_t mask = 0x0001;
         uint16_t n = 0;
         for (unsigned int ind=0; ind < M; ind++) {
-          constellation[ind].re = static_cast<DSP::Float>(cos(constellation_phase_offset+(DSP_M_PIx2*n)/DSP::Float(M)));
-          constellation[ind].im = static_cast<DSP::Float>(sin(constellation_phase_offset+(DSP_M_PIx2*n)/DSP::Float(M)));
+          constellation[ind].re = static_cast<DSP::Float>(cos(constellation_phase_offset+(DSP::M_PIx2*n)/DSP::Float(M)));
+          constellation[ind].im = static_cast<DSP::Float>(sin(constellation_phase_offset+(DSP::M_PIx2*n)/DSP::Float(M)));
 
 //          stringstream ss;
 //          ss << "constellation[" << ind << "]={" << setprecision(2) << constellation[ind].re << "," << constellation[ind].im << "}; n=" << n;
@@ -1816,7 +1816,7 @@ unsigned int getConstellation(
       }
       break;
 
-    case DSP_MT_ASK: {
+    case DSP::e::ModulationType::ASK: {
       constellation.resize(M);
         for (unsigned int n=0; n < M; n++) {
           constellation[n].re = static_cast<DSP::Float>(n)/static_cast<DSP::Float>(M-1);
@@ -2195,7 +2195,7 @@ bool DSP::u::Parallel2Serial::OutputExecute(OUTPUT_EXECUTE_ARGS)
 
 
 // ********************************************************************** //
-DSP::u::SymbolDemapper::SymbolDemapper( DSPe_Modulation_type type,
+DSP::u::SymbolDemapper::SymbolDemapper( DSP::e::ModulationType type,
                                           const unsigned int &bits_per_symbol_in,
                                           const DSP::Float &constellation_phase_offset) : DSP::Block()
 {
@@ -2329,26 +2329,26 @@ void DSP::u::SymbolDemapper::InputExecute_constellation(INPUT_EXECUTE_ARGS)
  *    -# "in.re" - real part
  *    -# "in.im" - imag part
  */
-DSP::u::PSKdecoder::PSKdecoder(DSPe_PSK_type type) : DSP::Block()
+DSP::u::PSKdecoder::PSKdecoder(DSP::e::PSK_type type) : DSP::Block()
 {
   SetName("PSK decoder", false);
   Type = type;
 
   switch (Type)
   {
-    case DSP_pi4_QPSK:
-    case DSP_DQPSK:
-    case DSP_QPSK_A:
-    case DSP_QPSK_B:
+    case DSP::e::PSK_type::pi4_QPSK:
+    case DSP::e::PSK_type::DQPSK:
+    case DSP::e::PSK_type::QPSK_A:
+    case DSP::e::PSK_type::QPSK_B:
       SetNoOfOutputs(2);
       DefineOutput("out", 0, 1);
       DefineOutput("out0", 0);
       DefineOutput("out1", 1);
       break;
 
-    case DSP_BPSK:
-    case DSP_DBPSK:
-    case DSP_DEBPSK:
+    case DSP::e::PSK_type::BPSK:
+    case DSP::e::PSK_type::DBPSK:
+    case DSP::e::PSK_type::DEBPSK:
     default:
       SetNoOfOutputs(1);
       DefineOutput("out", 0);
@@ -2366,16 +2366,16 @@ DSP::u::PSKdecoder::PSKdecoder(DSPe_PSK_type type) : DSP::Block()
 
   switch (Type)
   {
-    case DSP_pi4_QPSK:
+    case DSP::e::PSK_type::pi4_QPSK:
       State_re=1; State_im=1;
       f_State_re=1.0; f_State_im=1.0;
       break;
-    case DSP_DQPSK:
-    case DSP_QPSK_A:
-    case DSP_QPSK_B:
-    case DSP_BPSK:
-    case DSP_DBPSK:
-    case DSP_DEBPSK:
+    case DSP::e::PSK_type::DQPSK:
+    case DSP::e::PSK_type::QPSK_A:
+    case DSP::e::PSK_type::QPSK_B:
+    case DSP::e::PSK_type::BPSK:
+    case DSP::e::PSK_type::DBPSK:
+    case DSP::e::PSK_type::DEBPSK:
     default:
       State_re=1; State_im=0;
       f_State_re=1.0; f_State_im=0.0;
@@ -2384,21 +2384,21 @@ DSP::u::PSKdecoder::PSKdecoder(DSPe_PSK_type type) : DSP::Block()
 
   switch (Type)
   {
-    case DSP_QPSK_A:
+    case DSP::e::PSK_type::QPSK_A:
       Execute_ptr = &InputExecute_QPSK_A;
       break;
-    case DSP_QPSK_B:
+    case DSP::e::PSK_type::QPSK_B:
       Execute_ptr = &InputExecute_QPSK_B;
       break;
 
-    case DSP_DEBPSK:
+    case DSP::e::PSK_type::DEBPSK:
       Execute_ptr = &InputExecute_DEBPSK;
       break;
-    case DSP_DBPSK:
+    case DSP::e::PSK_type::DBPSK:
       Execute_ptr = &InputExecute_DBPSK;
       break;
 
-    case DSP_BPSK:
+    case DSP::e::PSK_type::BPSK:
       Execute_ptr = &InputExecute_BPSK;
       break;
 

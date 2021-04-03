@@ -13,7 +13,7 @@
 #define DSP_IO_H
 
 #include <string.h>
-//#include <math.h>
+//#include <cmath>
 #include <stdio.h>
 
 //#if !defined(__WIN32__) && (defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__))
@@ -963,15 +963,15 @@ class DSP::u::InputBuffer : public DSP::Source
      *
      *
      *  Cyclic:
-     *   - DSP_standard - fill with zeros when full
-     *   - DSP_cyclic - do not reset buffer content (will output the same content again)
+     *   - DSP::e::BufferType::standard - fill with zeros when full
+     *   - DSP::e::BufferType::cyclic - do not reset buffer content (will output the same content again)
      *   .
      *  \note buffer content might be overwritten in notification callback
      *
      *  \warning CallbackIdentifier cannot be larger than CallbackID_mask.
      */
     InputBuffer(DSP::Clock_ptr ParentClock, int BufferSize_in,
-                     unsigned int NoOfChannels=1, DSPe_buffer_type cyclic=DSP_standard,
+                     unsigned int NoOfChannels=1, DSP::e::BufferType cyclic=DSP::e::BufferType::standard,
                      int NotificationsStep_in = -1, DSP::Notify_callback_ptr func_ptr = NULL,
                      unsigned int CallbackIdentifier=0);
     ~InputBuffer(void);
@@ -1053,7 +1053,7 @@ class DSP::u::OutputBuffer : public DSP::Block, public DSP::Source
     static void InputExecute_with_output(INPUT_EXECUTE_ARGS);
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
 
-    void Init(unsigned int BufferSize_in, unsigned int NoOfChannels, DSPe_buffer_type cyclic, int NotificationsStep_in);
+    void Init(unsigned int BufferSize_in, unsigned int NoOfChannels, DSP::e::BufferType cyclic, int NotificationsStep_in);
   public:
     /*! If cyclic is true buffer is written continually
      *  after the last sample slot is filled, the first buffer slot will be
@@ -1084,7 +1084,7 @@ class DSP::u::OutputBuffer : public DSP::Block, public DSP::Source
      *
      *
      */
-    OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in=1, DSPe_buffer_type cyclic=DSP_stop_when_full,
+    OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in=1, DSP::e::BufferType cyclic=DSP::e::BufferType::stop_when_full,
                  DSP::Clock_ptr ParentClock = NULL, int NotificationsStep_in = -1,
                  DSP::Notify_callback_ptr func_ptr = NULL, unsigned int CallbackIdentifier=0);
     /*! Version with output lines.
@@ -1097,7 +1097,7 @@ class DSP::u::OutputBuffer : public DSP::Block, public DSP::Source
      *    InputSamples will always be NULL.
      *  \note Buffer MUST be read in callback function with reset set to <b>true</b>.
      */
-    OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in, DSPe_buffer_type cyclic,
+    OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in, DSP::e::BufferType cyclic,
                  DSP::Clock_ptr ParentClock, int NotificationsStep_in, unsigned int NoOfOutputs_in,
                  DSP::Buffer_callback_ptr func_ptr, unsigned int CallbackIdentifier=0);
     //! Mixed block version with notifications controlled by given notifications clock
@@ -1110,7 +1110,7 @@ class DSP::u::OutputBuffer : public DSP::Block, public DSP::Source
      *
      * \note If NoOfOutputs_in > 0  NotificationsClock has also the meaning of OutputClock.
      */
-    OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in, DSPe_buffer_type cyclic,
+    OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in, DSP::e::BufferType cyclic,
                  DSP::Clock_ptr ParentClock, DSP::Clock_ptr NotificationsClock,
                  unsigned int NoOfOutputs_in, DSP::Buffer_callback_ptr func_ptr, unsigned int CallbackIdentifier=0);
     ~OutputBuffer(void);
@@ -1118,12 +1118,12 @@ class DSP::u::OutputBuffer : public DSP::Block, public DSP::Source
     //! Copies dest_size bytes to the dest buffer from block's internal buffer
     /*!
      * If reset is non zero buffer state is reset after its content is copied.
-     * -# buffer type: DSP_standard, DSP_stop_when_full
+     * -# buffer type: DSP::e::BufferType::standard, DSP::e::BufferType::stop_when_full
      *  - reset == 0; - no buffer reseting
      *  - reset == -1; - full buffer reset
      *  - reset > 0;  - free only reset slots in buffer
      *  - reset == -2; - free just NotificationsStep slots in buffer
-     * -# buffer type: DSP_cyclic
+     * -# buffer type: DSP::e::BufferType::cyclic
      *  - reset == 0; - no buffer reseting
      *  - reset != 0; - buffer index reset. Buffer is filled from the beginning
      *   but buffer slots are not set to zero.

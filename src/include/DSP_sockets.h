@@ -7,8 +7,8 @@
  *
  * \author Marek Blok
  */
-#ifndef DSP_socket_H
-#define DSP_socket_H
+#ifndef DSP_SOCKET_H
+#define DSP_SOCKET_H
 
 //#ifdef WIN32
 #if defined(WIN32) || defined(WIN64)
@@ -54,33 +54,51 @@ namespace DSP {
     class SocketInput;
     class SocketOutput;
   }
+
+  namespace e {
+    enum struct SocketInfoDataType : unsigned int;
+    inline unsigned int get_value(const DSP::e::SocketInfoDataType& option);
+
+    enum struct SocketStatus : unsigned int;
+    DSP::e::SocketStatus& operator|= (DSP::e::SocketStatus& left,
+                                  const DSP::e::SocketStatus& right);
+    DSP::e::SocketStatus& operator&= (DSP::e::SocketStatus& left,
+                                  const DSP::e::SocketStatus& right);
+    inline unsigned int get_value(const DSP::e::SocketStatus& option);
+  }
 }
 
-enum DSPe_SocketInfoDataType{
-  DSP_SID_none = 0x0000,
-  DSP_SID_Fp = 0x0001,
-  DSP_SID_Offset = 0x0002,
-  DSP_SID_UserData = 0x0003,
-  DSP_SID_end = 0xffff // no more info data will be send
+enum struct DSP::e::SocketInfoDataType : unsigned int {
+  none = 0x0000,
+  Fp = 0x0001,
+  Offset = 0x0002,
+  UserData = 0x0003,
+  end = 0xffff // no more info data will be send
 };
+inline unsigned int DSP::e::get_value(const DSP::e::SocketInfoDataType& option) {
+  return static_cast<std::underlying_type<DSP::e::SocketInfoDataType>::type>(option);
+}
 
-enum DSPe_SocketStatus{
-  DSP_socket_none = 0,
-  DSP_socket_connected = 1,
-  DSP_socket_unconnected_mask = (0xffffff ^ DSP_socket_connected), //xor
-  DSP_socket_timeout = 2,
-  DSP_socket_timeout_mask = (0xffffff ^ DSP_socket_timeout), //xor
-  DSP_socket_server = 4,
-  DSP_socket_client_mask = (0xffffff ^ DSP_socket_server), //xor
-  DSP_socket_listen_active = 8, // listen socket active
-  DSP_socket_listen_active_mask = (0xffffff ^ DSP_socket_listen_active), //xor
-  DSP_socket_error = 16,
-  DSP_socket_closed = 32
+enum struct DSP::e::SocketStatus : unsigned int {
+  none = 0,
+  connected = 1,
+  unconnected_mask = (0xffffff ^ connected), //xor
+  timeout = 2,
+  timeout_mask = (0xffffff ^ timeout), //xor
+  server = 4,
+  client_mask = (0xffffff ^ server), //xor
+  listen_active = 8, // listen socket active
+  listen_active_mask = (0xffffff ^ listen_active), //xor
+  error = 16,
+  closed = 32
 };
-DSPe_SocketStatus& operator|= (DSPe_SocketStatus& left,
-                               const DSPe_SocketStatus& right);
-DSPe_SocketStatus& operator&= (DSPe_SocketStatus& left,
-                               const DSPe_SocketStatus& right);
+DSP::e::SocketStatus& DSP::e::operator|= (DSP::e::SocketStatus& left,
+                                          const DSP::e::SocketStatus& right);
+DSP::e::SocketStatus& DSP::e::operator&= (DSP::e::SocketStatus& left,
+                                          const DSP::e::SocketStatus& right);
+inline unsigned int DSP::e::get_value(const DSP::e::SocketStatus& option) {
+  return static_cast<std::underlying_type<DSP::e::SocketStatus>::type>(option);
+}
 
 // ***************************************************** //
 // ***************************************************** //
@@ -135,7 +153,7 @@ class DSP::Socket
     //! stores current socket state
     /*! \note derived class should update this state variable
      */
-    DSPe_SocketStatus current_socket_state;
+    DSP::e::SocketStatus current_socket_state;
 
     bool Init_socket(void);
 
@@ -173,7 +191,7 @@ class DSP::Socket
     //! Waits until connection with current object is made
     bool WaitForConnection(bool stop_on_fail = false);
 
-    DSPe_SocketStatus GetSocketStatus(void);
+    DSP::e::SocketStatus GetSocketStatus(void);
 };
 
 //! Socket multichannel data input block
@@ -355,5 +373,5 @@ class DSP::u::SocketOutput : public DSP::Socket, public DSP::Block
     ~SocketOutput(void);
 };
 
-#endif // DSP_socket_H
+#endif // DSP_SOCKET_H
 

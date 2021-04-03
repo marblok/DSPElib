@@ -17,8 +17,8 @@ class DSP::u::Const : public DSP::Source
     DSP::Float const_val;
     DSP::Float_vector const_state;
     
-    static bool OutputExecute_one(DSP_source_ptr source, DSP::Clock_ptr clock=NULL);
-    static bool OutputExecute_many(DSP_source_ptr source, DSP::Clock_ptr clock=NULL);
+    static bool OutputExecute_one(DSP::Source_ptr source, DSP::Clock_ptr clock=NULL);
+    static bool OutputExecute_many(DSP::Source_ptr source, DSP::Clock_ptr clock=NULL);
 
   public:
     onst(DSP::Clock_ptr ParentClock, DSP::Float value);
@@ -188,7 +188,7 @@ DSP::u::Const::~Const(void)
 }
 
 #define THIS_ ((DSP::u::Const *)source)
-bool DSP::u::Const::OutputExecute_one(DSP_source_ptr source, DSP::Clock_ptr clock)
+bool DSP::u::Const::OutputExecute_one(DSP::Source_ptr source, DSP::Clock_ptr clock)
 {
   THIS_->OutputBlocks[0]->Execute_ptr(
       THIS_->OutputBlocks[0], THIS_->OutputBlocks_InputNo[0], 
@@ -197,7 +197,7 @@ bool DSP::u::Const::OutputExecute_one(DSP_source_ptr source, DSP::Clock_ptr cloc
   return true;
 };
 
-bool DSP::u::Const::OutputExecute_many(DSP_source_ptr source, DSP::Clock_ptr clock)
+bool DSP::u::Const::OutputExecute_many(DSP::Source_ptr source, DSP::Clock_ptr clock)
 {
   int ind;
   

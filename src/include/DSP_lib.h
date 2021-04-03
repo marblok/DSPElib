@@ -11,7 +11,7 @@
 
 #define DSP_VER_MAJOR 0
 #define DSP_VER_MINOR 20
-#define DSP_VER_BUILD 0 // !!! without zeroes before, else this will be treated as octal number
+#define DSP_VER_BUILD 1 // !!! without zeroes before, else this will be treated as octal number
 #define DSP_VER_YEAR  2021
 #define DSP_VER       DSP_VER_MAJOR.DSP_VER_MINOR.DSP_VER_BUILD
 
@@ -34,12 +34,17 @@
 //#include <DSP_Fourier.h>
 #include <DSP_AudioMixer.h>
 
+namespace DSP {
+  struct libver;
+  DSP::libver lib_version(void);
+  string lib_version_string();
+}
 
 /*!
  *  \addtogroup ver_data
  */
 //! Structure containing DSP version information. SEE details for changes info...
-struct DSP_libver
+struct DSP::libver
 {
   unsigned char  major;
   unsigned char  minor;
@@ -130,9 +135,9 @@ struct DSP_libver
  *
  * \todo consider omitting InputClocks memory reservation in release mode
  */
-DSP_libver DSP_lib_version(void);
+DSP::libver DSP::lib_version(void);
 //! Return DSP Engine library version information string.
-string DSP_lib_version_string();
+string DSP::lib_version_string();
 
 /* @} ver_data */
 
@@ -296,8 +301,8 @@ string DSP_lib_version_string();
  *  \endcode
  *
  *  Library version can be checked using
- *   - ::DSP_lib_version function which returns DSP_libver structure
- *   - ::DSP_lib_version_string function which returns string with version and copyright
+ *   - ::DSP::lib_version function which returns DSP::libver structure
+ *   - ::DSP::lib_version_string function which returns string with version and copyright
  *     information
  *   .
  *

@@ -51,7 +51,7 @@ int main(int argn, char *args[])
   DSP::log.SetLogFileName("log_file.log");
   DSP::log.SetLogState(DSP::E_LS_Mode::LS_file | DSP::E_LS_Mode::LS_console);
 
-  DSP::log << DSP_lib_version_string() << endl << endl;
+  DSP::log << DSP::lib_version_string() << endl << endl;
   /*************************************************************/
   DSP::Clock_ptr MasterClock, OutputClock; 
   MasterClock=DSP::Clock::CreateMasterClock();
@@ -66,7 +66,7 @@ int main(int argn, char *args[])
       blocks["SoundIn"]->Convert2Block()->SetConstInput("ampl",1.0);  //Amplitude
       blocks["SoundIn"]->Convert2Block()->SetConstInput("phase",0.0); //Initial phase
         
-      blocks["Chirp_frequ"] = std::make_shared<DSP::u::Const>(MasterClock, DSP_M_PIx2*0.5/Fp1/2);
+      blocks["Chirp_frequ"] = std::make_shared<DSP::u::Const>(MasterClock, DSP::M_PIx2*0.5/Fp1/2);
       blocks["Chirp_Acum"]  = std::make_shared<DSP::u::Accumulator>();
       
       blocks["Chirp_frequ"]->Output("out") >> blocks["Chirp_Acum"]->Input("in");
@@ -112,7 +112,7 @@ int main(int argn, char *args[])
     DSP::f::Hann(N_LPF_resample, h_LPF_resample.data(), true);
     for (int n = 0; n < N_LPF_resample; n++)
     {
-      h_LPF_resample[n] *= DSP::f::sinc((DSP_M_PIx1*3000)/(L*Fp1)*(n-N_LPF_resample/2)); 
+      h_LPF_resample[n] *= DSP::f::sinc((DSP::M_PIx1*3000)/(L*Fp1)*(n-N_LPF_resample/2)); 
       h_LPF_resample[n] *= 4.48; 
       h_LPF_resample[n] *= L; 
     }

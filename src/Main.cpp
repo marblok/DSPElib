@@ -63,7 +63,7 @@ int main1(int argc, char*argv)
   //Demodulacja pilota z czstotliwoci 15800 do czstotliwosci 1500
   // //cao? czyli kanay i pilot symetrycznie : (12*200+200+100=2700)/2
   // tylko kana?y symetrycznie (12*200=2400)/2+300=1500
-  DSP::u::DDScos  Heter1(MasterClock, true, 1.0, (M_PIx2*(1500-15800))/Fs, 0.0);
+  DSP::u::DDScos  Heter1(MasterClock, true, 1.0, (DSP::M_PIx2*(1500-15800))/Fs, 0.0);
   Heter1.DefineOutput("x",0);
   Heter1.DefineOutput("y",1);
 
@@ -167,7 +167,7 @@ DSP::u::FileOutput PilotErrorLoopOut("Pilot_loop_error.out", DSP::e::SampleType:
 
 
 //  / *   \todo heterodynowanie pilota do zerowej pulsacji * /
-    DSP::u::DDScos  Heter2(Clock1, true, 1.0, (M_PIx2*(-1500))/Fs1, 0.0);
+    DSP::u::DDScos  Heter2(Clock1, true, 1.0, (DSP::M_PIx2*(-1500))/Fs1, 0.0);
     Heter2.DefineOutput("re", 0);
     Heter2.DefineOutput("im", 1);
 
@@ -327,7 +327,7 @@ int test_1(int argc, char*argv[])
   getchar();
   for (int ind=0; ind<20; ind++)
   {
-    test.set(cos(M_PIx2/20*ind), sin(M_PIx2/20*ind));
+    test.set(cos(DSP::M_PIx2/20*ind), sin(DSP::M_PIx2/20*ind));
     printf("%i: %f+i%f -> %f\n", ind, test.re, test.im, test.angle());
     getchar();
   }
@@ -862,7 +862,7 @@ int test_2()
   DSP::u::WaveInput FileIn(Zegar2, "DSPElib.wav", "examples", 1);
 
 
-//  DSP::u::DDScos  FileIn(false, 1.0, (M_PIx2*(440))/Fs, 0.0);
+//  DSP::u::DDScos  FileIn(false, 1.0, (DSP::M_PIx2*(440))/Fs, 0.0);
   DSP::u::AudioOutput AudioOut(Fs,2);
 //  DSP::u::AudioOutput AudioOut2(Fs);
 
@@ -1077,7 +1077,7 @@ int MeduzaSimulation(void)
   DSP::u::Addition Sumator(11);
   for (ind=0; ind<10; ind++)
   {
-    DBPSKencoder[ind]= new DSP::u::PSKencoder(DSP_DBPSK);
+    DBPSKencoder[ind]= new DSP::u::PSKencoder(DSP::e::PSK_type::DBPSK);
     sprintf(temp, "out%i", ind+1);
     BinaryInput.Output(temp), DBPSKencoder[ind]->Input("in");
 
@@ -1091,7 +1091,7 @@ int MeduzaSimulation(void)
     DBPSKencoder[ind]->Output("out") >> Interp[ind]->Input("in");
 
     DDScos[ind] = new DSP::u::DDScos (ZerosOutClock, DSP::Float(1.0),
-      DSP::Float(M_PIx2*(F1+DSP::Float(ind)*F_channel)/Fs));
+      DSP::Float(DSP::M_PIx2*(F1+DSP::Float(ind)*F_channel)/Fs));
     Multip[ind] = new DSP::u::RealMultiplication(2);
 
 //    Filter[ind]->Output("out") >> Multip[ind]->Input("real_in1");
@@ -1103,7 +1103,7 @@ int MeduzaSimulation(void)
   }
 
   DSP::u::DDScos DDSpilot(ZerosOutClock, DSP::Float(1.0),
-      DSP::Float(M_PIx2*(F1+11*F_channel)/Fs));
+      DSP::Float(DSP::M_PIx2*(F1+11*F_channel)/Fs));
   DDSpilot.Output("out") >> Sumator.Input("real_in11");
 
 
@@ -1184,7 +1184,7 @@ int test_4()
 
   /*************************************************************/
   /* Heterodyna wejciowa: wyj?cie sygna? podstawowo-pasmowy na 48kHz */
-  wo=DSP_M_PIx2*(Fo-Band/2)/Fp; // dw_channel=2*pi*(df_channel)/fp;
+  wo=DSP::M_PIx2*(Fo-Band/2)/Fp; // dw_channel=2*pi*(df_channel)/fp;
   DSP::u::DDScos  MainHeter(MasterClock, true, 1.0, -wo, 0.0);
   DSP::u::Multiplication Mul1(1,1);
 
@@ -1224,8 +1224,8 @@ int test_4()
 //  DSP::u::DCO pilot_DCO(0.0, 00, 0.0); //Open loop
 //  DSP::u::DCO pilot_DCO(0.0, -1.0/(100*M2), 0.0); //frequency loop closed
 //  DSP::u::DCO pilot_DCO(0.0, -1.0/(100*M2), -1.0/(1000*M2)); //closed loop
-  DSP::u::DCO pilot_DCO(-DSP_M_PIx2*(5*dF_channel)/Fp1,
-                     DSP::Float(+DSP_M_PIx2*(0.1*dF_channel)/Fp1),
+  DSP::u::DCO pilot_DCO(-DSP::M_PIx2*(5*dF_channel)/Fp1,
+                     DSP::Float(+DSP::M_PIx2*(0.1*dF_channel)/Fp1),
                      DSP::Float(-1.0/(200*M2)), DSP::Float(-1.0/(4000*M2))); //closed loop
   pilot_DCO.SetName("pilot_DCO");
 
@@ -1234,7 +1234,7 @@ int test_4()
   pilot_DCO.Output("out") >> DCO_Main_Mul.Input("cplx_in1");
   MainDecimator.Output("out") >> DCO_Main_Mul.Input("cplx_in2");
 
-  DSP::u::DDScos  pilot_Heter(FirstStageClock, true, 1.0f, -M_PIx2f*(2*dF_channel)/Fp1, 0.0);
+  DSP::u::DDScos  pilot_Heter(FirstStageClock, true, 1.0f, -DSP::M_PIx2*(2*dF_channel)/Fp1, 0.0);
   pilot_Heter.SetName("pilot_Heter");
 
   DSP::u::Multiplication pilot_heter_Mul(0, 2);
@@ -1324,7 +1324,7 @@ int test_4()
   DSP::u::RawDecimator *MatchedDecimators[NoOfChannels];
   DSP::u::AGC *MatchedAGC[NoOfChannels];
   DSP::u::Multiplication *MatchedDDS_Muls[NoOfChannels-1];
-  DSP::u::DDScos  channels_Heter(FirstStageClock, true, 1.0, M_PIx2f*(dF_channel)/Fp1, 0.0);
+  DSP::u::DDScos  channels_Heter(FirstStageClock, true, 1.0, DSP::M_PIx2*(dF_channel)/Fp1, 0.0);
 //  DSP::u::GardnerSampling GardnerSampling(L2, 0.0005, NoOfChannels);
   DSP::u::GardnerSampling GardnerSampling(DSP::Float(L2), 0.01f, 1.0f, NoOfChannels);
   DSP::u::CMPO *OutputDiff[NoOfChannels];
@@ -1518,12 +1518,12 @@ int test_5()
   AudioIn.SetName("Test");
 
   DSP::u::DDScos AudioIn2(MasterClock);
-  DSP::u::DDScos AudioIn3(MasterClock, 0.4f, M_PIx2f*8*400.0/8000);
+  DSP::u::DDScos AudioIn3(MasterClock, 0.4f, DSP::M_PIx2*8*400.0/8000);
 
   AudioIn2.SetConstInput("ampl",0.05f); //Amplitude
   AudioIn2.SetConstInput("phase",0.0f); //Initial phase
 
-DSP::u::COSpulse AudioIn2_frequ(MasterClock, M_PIx2f*0.5f/DSP::Float(Fp));
+DSP::u::COSpulse AudioIn2_frequ(MasterClock, DSP::M_PIx2*0.5f/DSP::Float(Fp));
 DSP::Float_vector a_in={1.0, -1.0};
 DSP::u::IIR Acum(a_in);
   AudioIn2_frequ.Output("out") >> Acum.Input("in");
@@ -1667,7 +1667,7 @@ int test_7()
   DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file);
   DSP::log.SetLogFileName("log_file.log");
 
-  DSP::log << DSP_lib_version_string() << endl << endl;
+  DSP::log << DSP::lib_version_string() << endl << endl;
 
   MasterClock=DSP::Clock::CreateMasterClock();
 
@@ -1676,7 +1676,7 @@ int test_7()
   AudioIn = new DSP::u::WaveInput(MasterClock, "DSPElib.wav", ".");
   Fp = AudioIn->GetSamplingRate();
   DDS_macro *DDS;
-  DDS = new DDS_macro(MasterClock, 0.15f*M_PIx1f);
+  DDS = new DDS_macro(MasterClock, 0.15f*DSP::M_PIx1);
   DSP::u::Amplifier *gain;
   gain = new DSP::u::Amplifier(1.0/2);
   DSP::u::AudioOutput *AudioOut;
@@ -1693,7 +1693,7 @@ int test_7()
   DSP::Clock::SchemeToDOTfile(MasterClock, "macro_wraped.dot");
   DSP::Clock::SchemeToDOTfile(MasterClock, "macro_DDS.dot", DDS);
 
-  DDS->SetDOTmode(DSP_DOT_macro_unwrap);
+  DDS->SetDOTmode(DSP::e::DOTmode::DOT_macro_unwrap);
   DSP::Clock::SchemeToDOTfile(MasterClock, "macro_unwraped.dot");
 
   //! \todo 2010.03.31 DSP::Clock::ListOfAllComponents should show number of AutoSplitters and DSP::u::Copy objects
@@ -1844,7 +1844,7 @@ int test_9()
   DSP::log.SetLogFileName("log_file.txt");
   DSP::log.SetLogState(DSP::E_LS_Mode::LS_file | DSP::E_LS_Mode::LS_console);
 
-  DSP::log << DSP_lib_version_string() << endl << endl;
+  DSP::log << DSP::lib_version_string() << endl << endl;
   /*************************************************************/
 
 /*
@@ -2020,7 +2020,7 @@ int test_11()
   //DSP::f::SetLogState(DSP_LS_file | DSP_LS_console);
   DSP::log.SetLogState(DSP::E_LS_Mode::LS_file);
 
-  DSP::log << DSP_lib_version_string() << endl << endl;
+  DSP::log << DSP::lib_version_string() << endl << endl;
   /*************************************************************/
 
   long int Fp2, F_symb;
@@ -2074,7 +2074,7 @@ int test_11()
 
   DSP::u::OutputBuffer OutputBuffer(  K, // unsigned int   BufferSize_in,
                                    1, // unsigned int   NoOfInputs_in,
-                                   DSP_stop_when_full, //DSPe_buffer_type   cyclic,
+                                   DSP::e::BufferType::stop_when_full, //DSP::e::BufferType   cyclic,
                                    InputClock, //DSP::Clock_ptr  ParentClock,
                                    SymbolClock, //DSP::Clock_ptr   NotificationsClock,
                                    K, //unsigned int  NoOfOutputs_in,
@@ -2117,19 +2117,19 @@ int test_11()
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // Pierwszy kana� danych
-  DSP::u::PSKdecoder PSKdecoder1(DSP_QPSK_A);
+  DSP::u::PSKdecoder PSKdecoder1(DSP::e::PSK_type::QPSK_A);
 //  DSP::u::FileOutput BinData1("cw5_zad1.dat", DSP::e::SampleType::ST_bit, 2U, DSP::e::FileType::FT_raw, F_symb);
   DSP::u::FileOutput SymbData1("cw5_zad2a.flt", DSP::e::SampleType::ST_float, 2U, DSP::e::FileType::FT_flt, F_symb);
   DSP::u::FileOutput BinData1("cw5_zad2a.dat", DSP::e::SampleType::ST_bit_text, 2U, DSP::e::FileType::FT_raw);
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // drugi kana� danych
-  DSP::u::PSKdecoder PSKdecoder2(DSP_QPSK_A);
+  DSP::u::PSKdecoder PSKdecoder2(DSP::e::PSK_type::QPSK_A);
   DSP::u::FileOutput BinData2("cw5_zad2b.dat", DSP::e::SampleType::ST_bit, 2U, DSP::e::FileType::FT_raw, F_symb);
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // trzeci kana� danych
-  DSP::u::PSKdecoder PSKdecoder3(DSP_QPSK_A);
+  DSP::u::PSKdecoder PSKdecoder3(DSP::e::PSK_type::QPSK_A);
   DSP::u::FileOutput BinData3("cw5_zad2c.dat", DSP::e::SampleType::ST_bit, 2U, DSP::e::FileType::FT_raw, F_symb);
 
   // pod��cz kana�y w�skopasmowe ST
@@ -2275,7 +2275,7 @@ int test_12(void)
   DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file);
   DSP::log.SetLogFileName("log_file.log");
 
-  DSP::log << DSP_lib_version_string() << endl;
+  DSP::log << DSP::lib_version_string() << endl;
 
   MasterClock=DSP::Clock::CreateMasterClock();
 
@@ -2287,7 +2287,7 @@ int test_12(void)
   callback_type = 1; // inverse spectrum
   OutputBuffer = new DSP::u::OutputBuffer(buffer_size,
                               1,
-                              DSP_standard,
+                              DSP::e::BufferType::standard,
                               MasterClock,
                               -1,
                               buffer_size,
@@ -2528,7 +2528,7 @@ int test_SymbolMapper() {
   blocks["binary_stream"]->Output("out") >> blocks["file_bin"]->Input("in");
 
   blocks["SPconv"] = make_shared<DSP::u::Serial2Parallel>(BitClock, bits_per_symbol);
-  blocks["mapper"] = make_shared<DSP::u::SymbolMapper>(DSP_MT_ASK, bits_per_symbol);
+  blocks["mapper"] = make_shared<DSP::u::SymbolMapper>(DSP::e::ModulationType::ASK, bits_per_symbol);
   blocks["binary_stream"]->Output("out") >> blocks["SPconv"]->Input("in");
   blocks["SPconv"]->Output("out") >> blocks["mapper"]->Input("in");
   SymbolClock = blocks["mapper"]->GetOutputClock();
@@ -2542,7 +2542,7 @@ int test_SymbolMapper() {
   blocks["file_symb"] = shared_ptr<DSP::Block>(new DSP::u::FileOutput("symb_output.flt", DSP::e::SampleType::ST_float, noChannels, DSP::e::FileType::FT_flt));
   blocks["mapper"]->Output("out"),blocks["file_symb"]->Input("in");
 
-  blocks["demapper"] = make_shared<DSP::u::SymbolDemapper>(DSP_MT_ASK, bits_per_symbol);
+  blocks["demapper"] = make_shared<DSP::u::SymbolDemapper>(DSP::e::ModulationType::ASK, bits_per_symbol);
   blocks["mapper"]->Output("out") >> blocks["demapper"]->Input("in");
   blocks["PSconv"] = make_shared<DSP::u::Parallel2Serial>(SymbolClock, bits_per_symbol);
   blocks["demapper"]->Output("out") >> blocks["PSconv"]->Input("in");
@@ -2620,7 +2620,7 @@ int test_ZPSTC_cw_3()
 
   DSP::u::FileInput BinData(SymbolClock, "/Dev-Cpp/ZPSTC/Cw3/Cw3_zad3.cpp", 2U, DSP::e::SampleType::ST_bit, DSP::e::FileType::FT_raw);
   F_symb = 2400;
-  DSP::u::PSKencoder PSKencoder(DSP_QPSK_A);
+  DSP::u::PSKencoder PSKencoder(DSP::e::PSK_type::QPSK_A);
 
   L1 = Fp1 / F_symb;
   L2 = Fp2 / Fp1;
@@ -2635,7 +2635,7 @@ int test_ZPSTC_cw_3()
 
   DSP::u::SamplingRateConversion SRC1(true, SymbolClock, L2, 1, h2);
   SRC1.SetName("SRC2");
-  DSP::u::DDScos Heter(SRC2.GetOutputClock(), true, 0.5, DSP::Float(M_PIx2*2500/Fp2));
+  DSP::u::DDScos Heter(SRC2.GetOutputClock(), true, 0.5, DSP::Float((DSP::M_PIx2*2500)/DSP::Float(Fp2)));
   DSP::u::Multiplication Mul(0, 2);
   DSP::u::Vacuum V1;
 

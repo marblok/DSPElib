@@ -1305,7 +1305,7 @@ bool DSP::u::FileOutput::Open(const string &FileName, DSP::e::SampleType sample_
   return true;
 }
 
-bool DSP::File::SetOffset(long long Offset, DSPe_offset_mode mode)
+bool DSP::File::SetOffset(long long Offset, DSP::e::OffsetMode mode)
 {
   bool result;
   result = false;
@@ -1315,7 +1315,7 @@ bool DSP::File::SetOffset(long long Offset, DSPe_offset_mode mode)
 
   switch (mode)
   {
-    case DSP_OM_skip:
+    case DSP::e::OffsetMode::skip:
       if (FileHandle != NULL)
       {
 //        fseeko64(FileHandle, Offset, SEEK_SET);
@@ -1324,7 +1324,7 @@ bool DSP::File::SetOffset(long long Offset, DSPe_offset_mode mode)
       }
       break;
 
-    case DSP_OM_standard:
+    case DSP::e::OffsetMode::standard:
     default:
       #ifdef __DEBUG__
         DSP::log << DSP::LogMode::Error << "DSP::u::FileOutput:: SetOffset" << DSP::LogMode::second << "The mode is unsuported" << endl;
@@ -4742,7 +4742,7 @@ bool DSP::u::AudioInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
  *    -# "out" - all outputs together
  */
 DSP::u::InputBuffer::InputBuffer(DSP::Clock_ptr ParentClock, int BufferSize_in,
-                                   unsigned int NoOfChannels, DSPe_buffer_type cyclic,
+                                   unsigned int NoOfChannels, DSP::e::BufferType cyclic,
                                    int NotificationsStep_in, DSP::Notify_callback_ptr func_ptr,
                                    unsigned int CallbackIdentifier)
   : DSP::Source()
@@ -4813,7 +4813,7 @@ DSP::u::InputBuffer::InputBuffer(DSP::Clock_ptr ParentClock, int BufferSize_in,
   Buffer.clear(); Buffer.resize(BufferSize*NoOfOutputs, 0.0);
   BufferIndex=0;
 
-  if (cyclic == DSP_cyclic)
+  if (cyclic == DSP::e::BufferType::cyclic)
   {
     if (NoOfOutputs == 1)
       OutputExecute_ptr = &OutputExecute_cyclic_single_channel;
@@ -5008,7 +5008,7 @@ bool DSP::u::InputBuffer::OutputExecute_cyclic_single_channel(OUTPUT_EXECUTE_ARG
  *    -# "in" - all inputs together
  *   - Output: none
  */
-DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in, DSPe_buffer_type cyclic,
+DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in, DSP::e::BufferType cyclic,
                                      DSP::Clock_ptr ParentClock, int NotificationsStep_in,
                                      DSP::Notify_callback_ptr func_ptr, unsigned int CallbackIdentifier)
   : DSP::Block(), DSP::Source()
@@ -5039,7 +5039,7 @@ DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOf
 }
 
 DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in,
-                                     DSPe_buffer_type cyclic, DSP::Clock_ptr ParentClock,
+                                     DSP::e::BufferType cyclic, DSP::Clock_ptr ParentClock,
                                      int NotificationsStep_in, unsigned int NoOfOutputs_in,
                                      DSP::Buffer_callback_ptr func_ptr, unsigned int CallbackIdentifier)
   : DSP::Block(), DSP::Source()
@@ -5107,7 +5107,7 @@ DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOf
   }
 }
 
-DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in, DSPe_buffer_type cyclic,
+DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in, DSP::e::BufferType cyclic,
                                      DSP::Clock_ptr ParentClock, DSP::Clock_ptr NotificationsClock,
                                      unsigned int NoOfOutputs_in, DSP::Buffer_callback_ptr func_ptr, unsigned int CallbackIdentifier)
   : DSP::Block(), DSP::Source()
@@ -5180,7 +5180,7 @@ DSP::u::OutputBuffer::~OutputBuffer(void)
 }
 
 void DSP::u::OutputBuffer::Init(unsigned int BufferSize_in, unsigned int NoOfChannels,
-                             DSPe_buffer_type cyclic, int NotificationsStep_in)
+                             DSP::e::BufferType cyclic, int NotificationsStep_in)
 {
   string temp;
 
@@ -5236,15 +5236,15 @@ void DSP::u::OutputBuffer::Init(unsigned int BufferSize_in, unsigned int NoOfCha
 
   switch (cyclic)
   {
-    case DSP_cyclic:
+    case DSP::e::BufferType::cyclic:
       IsCyclic=true;
       StopWhenFull=false;
       break;
-    case DSP_stop_when_full:
+    case DSP::e::BufferType::stop_when_full:
       IsCyclic=false;
       StopWhenFull=true;
       break;
-    case DSP_standard:
+    case DSP::e::BufferType::standard:
     default:
       IsCyclic=false;
       StopWhenFull=false;

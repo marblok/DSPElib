@@ -61,14 +61,14 @@ int main(void)
   DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file);
   DSP::log.SetLogFileName("log_file.log");
 
-  DSP::log << DSP_lib_version_string() << endl << endl;
+  DSP::log << DSP::lib_version_string() << endl << endl;
 
   MasterClock=DSP::Clock::CreateMasterClock();
 
 
   DSP::u::WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
   Fp = AudioIn.GetSamplingRate();
-  DDS_macro DDS(MasterClock, 0.15*DSP_M_PIx1);
+  DDS_macro DDS(MasterClock, 0.15*DSP::M_PIx1);
   DSP::u::Amplifier gain(1.0/2);
   DSP::u::AudioOutput AudioOut(Fp, 2);
   DSP::u::FileOutput FileOut("test_out.wav", DSP::e::SampleType::ST_short, 2, DSP::e::FileType::FT_wav, Fp);
@@ -83,7 +83,7 @@ int main(void)
   DSP::Clock::SchemeToDOTfile(MasterClock, "macro_wraped.dot");
   DSP::Clock::SchemeToDOTfile(MasterClock, "macro_DDS.dot", &DDS);
 
-  DDS.SetDOTmode(DSP_DOT_macro_unwrap);
+  DDS.SetDOTmode(DSP::e::DOTmode::DOT_macro_unwrap);
   DSP::Clock::SchemeToDOTfile(MasterClock, "macro_unwraped.dot");
 
   temp=1;

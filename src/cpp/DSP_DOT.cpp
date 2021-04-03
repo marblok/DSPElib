@@ -11,7 +11,9 @@
 //#include <DSP_clocks.h>
 #include <DSP_lib.h>
 
-const vector<string> DOT_colors =
+using namespace std;
+
+const vector<string> DSP::DOT_colors =
 {
     "red", "royalblue2", "green3", "turquoise2", "yellow3",
     "chocolate4", "blueviolet", "deeppink1", "goldenrod1"
@@ -191,22 +193,22 @@ string DSP::Component::GetComponentName_DOTfile()
   // Bloczki(1).type = 's'; % 's' - source, 'b' - processing block, 'm' - mixed: processing & source block, % 'o' - output (generally == processing block with no outputs)
   switch (Type)
   {
-    case DSP_CT_source:
+    case DSP::e::ComponentType::source:
       type_name = "source";
       break;
-    case DSP_CT_mixed:
+    case DSP::e::ComponentType::mixed:
       type_name = "mixed";
       break;
-    case DSP_CT_block:
+    case DSP::e::ComponentType::block:
       if (IsAutoSplit == false)
         type_name = "block";
       else
         type_name = "auto";
       break;
-    case DSP_CT_copy:
+    case DSP::e::ComponentType::copy:
       type_name = "copy";
       break;
-    case DSP_CT_none:
+    case DSP::e::ComponentType::none:
     default:
       type_name = "unknown";
       break;
@@ -554,10 +556,10 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
      *    which are not source or registered for notification
      *    should have the parent clock indicated
      *
-     *  !!! chyba nie wszystkie powinny by� tak traktowane ??
-     *    a mo�e
+     *  !!! probably not all should be treated like this ??
+     *    or should they?
      */
-    if ((Type & DSP_CT_source) == 0)
+    if ((Type & DSP::e::ComponentType::source) == DSP::e::ComponentType::none)
     {
       if (Convert2Block()->IsMultirate == true)
       {
@@ -596,11 +598,11 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
     temp_OUT = OutputBlocks[ind];
 
     bool call_next = false;
-    if (temp_OUT->Type == DSP_CT_block) {
+    if (temp_OUT->Type == DSP::e::ComponentType::block) {
       call_next = true;
     }
     else {
-      if ((temp_OUT->Type & DSP_CT_source) == DSP_CT_source) {
+      if ((temp_OUT->Type & DSP::e::ComponentType::source) == DSP::e::ComponentType::source) {
         DSP::Source_ptr tmp_source = temp_OUT->Convert2Source();
         if (tmp_source->OutputExecute_ptr == &DSP::Source::DummyExecute) {
           call_next = true; // block nie jest pod��czony pod �r�d�o
@@ -636,12 +638,12 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
     result = false;
     switch (DOTmode)
     {
-      case DSP_DOT_macro_wrap:
-      case DSP_DOT_macro_as_component:
+      case DSP::e::DOTmode::DOT_macro_wrap:
+      case DSP::e::DOTmode::DOT_macro_as_component:
         result = true;
         break;
-      case DSP_DOT_macro_subgraph:
-      case DSP_DOT_macro_unwrap:
+      case DSP::e::DOTmode::DOT_macro_subgraph:
+      case DSP::e::DOTmode::DOT_macro_unwrap:
       default:
         result = false;
         break;
@@ -1342,7 +1344,7 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
 
     // ********************************** //
     dot_plik << "/* This is output of DSP::Clock::SchemeToDOTfile */" << std::endl;
-    tekst = DSP_lib_version_string();
+    tekst = DSP::lib_version_string();
     for (unsigned int ind = 0; ind < tekst.length(); ind++)
       if (tekst[ind] == '\n')
         tekst[ind] = ' ';
