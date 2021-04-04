@@ -169,7 +169,7 @@ string DSP::lib_version_string();
  *
  *  <b>Digital Signal Processing Engine</b> 2005-2021
  *
- *  This project is licensed under GNU General Public License v3.0. 
+ *  This project is licensed under GNU Lesser General Public License v2.1. 
  *  \ref lib_license
  *
  * \section lib_lic_author Engine author
@@ -238,7 +238,7 @@ string DSP::lib_version_string();
  *  .
  *
  * \section lib_license Library lincensing information
- *  This project is licensed under GNU General Public License v3.0. 
+ *  This project is licensed under GNU Lesser General Public License v2.1. 
  *  \ref lib_license_text
  * 
  * \section main_lib_users For library users
@@ -274,7 +274,7 @@ string DSP::lib_version_string();
  *  .
  *
  * \page lib_license_text DSPE library license
- *   This project is licensed under GNU General Public License v3.0. 
+ *   This project is licensed under GNU Lesser General Public License v2.1. 
  * 
  *   \include{doc} "../LICENSE"
  *
