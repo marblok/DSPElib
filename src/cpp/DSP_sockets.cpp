@@ -698,7 +698,7 @@ unsigned long DSP::u::SocketInput::GetBytesRead(void)
   return LastBytesRead_counter;
 }
 //! \bug not implemented
-long int DSP::u::SocketInput::GetSamplingRate(void)
+unsigned long DSP::u::SocketInput::GetSamplingRate(void)
 {
   return 0;
 }
