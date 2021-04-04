@@ -807,8 +807,8 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
 
     //Memorized_ControlWAVEIN_BOOLEAN=NULL;
     //Memorized_ControlWAVEIN_UNSIGNED=NULL;
-    Memorized_OUT_LinesStates  = NULL;
-    Memorized_OUT_LinesVolumes = NULL;
+    Memorized_OUT_LinesStates.clear();
+    Memorized_OUT_LinesVolumes.clear();
 
     #ifdef __DEBUG__
       DSP::log << DSP::LogMode::Error << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << "Not supported on this platform" << endl;

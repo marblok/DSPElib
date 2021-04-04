@@ -1133,14 +1133,14 @@ class DSP::File
   protected:
     FILE *FileHandle;
     //! in bits (all channels together)
-    unsigned int SampleSize;
+    unsigned long SampleSize;
     long long skip_counter;
 
   public:
     //! returns number of bytes read during last file access
-    virtual unsigned int GetBytesRead(void) = 0;
+    virtual unsigned long GetBytesRead(void) = 0;
     //! returns sampling rate of audio sample
-    virtual long int GetSamplingRate(void) = 0;
+    virtual unsigned long GetSamplingRate(void) = 0;
 
     DSP::File_ptr GetPointer2File(void)
     { return DSP::File_ptr(this); };

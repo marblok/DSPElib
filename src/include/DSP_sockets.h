@@ -209,23 +209,23 @@ class DSP::u::SocketInput : public DSP::File, public DSP::Socket, public DSP::So
     DSP::e::SampleType SampleType;
 
     //! size of the output buffer in DSP::Float * NoOfOutputs
-    unsigned int BufferSize;
+    unsigned long BufferSize;
     DSP::Float_vector Buffer;
-    unsigned int BufferIndex;
+    unsigned long BufferIndex;
 
-    unsigned int BytesRead;
-    unsigned int SamplingRate;
+    unsigned long BytesRead;
+    unsigned long SamplingRate;
 
     //! in bits (all channels together)
     unsigned int InputSampleSize;
     //! in bytes size of the buffer (RawBuffer) used in socket access
-    unsigned int inbuffer_size;
+    unsigned long inbuffer_size;
     std::vector<uint8_t> RawBuffer;
 
     //! number of bytes read in previous socket access
     /*! \warning is initialized with DSP_FILE_READING_NOT_STARTED
      */
-    unsigned int LastBytesRead_counter;
+    unsigned long LastBytesRead_counter;
 
     //! stores parent clock in case we must stall it for some time
     DSP::Clock *my_clock;
@@ -264,9 +264,9 @@ class DSP::u::SocketInput : public DSP::File, public DSP::Socket, public DSP::So
      * \warning returns DSP_FILE_READING_NOT_STARTED if reading
      *   not started already
      */
-    unsigned int GetBytesRead(void);
+    unsigned long GetBytesRead(void);
     //! returns sampling rate of audio sample
-    long int GetSamplingRate(void);
+    unsigned long GetSamplingRate(void);
 
     //! Returns raw sample size in bytes corresponding to given SampleType
     /*! \note For SampleType = DSP::e::SampleType::ST_none returns internal raw sample size
@@ -279,7 +279,7 @@ class DSP::u::SocketInput : public DSP::File, public DSP::Socket, public DSP::So
     //! Returns raw buffer size in bytes needed for NoOfSamples samples.
     /*! If NoOfSamples == 0 return allocated internal raw buffer size.
      */
-    unsigned int GetRawBufferSize(unsigned int NoOfSamples = 0);
+    unsigned long GetRawBufferSize(unsigned long NoOfSamples = 0);
     //! Returns DSP::Float buffer size needed for SizeInSamples samples.
     /*! If SizeInSamples == 0 return allocated internal DSP::Float buffer size.
      *

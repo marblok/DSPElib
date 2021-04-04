@@ -2261,7 +2261,7 @@ int test_12(void)
 {
   DSP::Clock_ptr MasterClock, BufferClock, MuxClock, DemuxClock;
   int temp;
-  long int Fp;
+  unsigned long Fp;
   int callback_type;
 
   DSP::u::WaveInput     *AudioIn;

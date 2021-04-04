@@ -7016,7 +7016,7 @@ void DSP::u::IIR::InputExecute_cplx_coefs_cplx_input(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
   DSP::Complex out_value;
-  int ind;
+  long ind;
 
   if (InputNo==0)
     THIS->in_value.re = value;
@@ -7093,7 +7093,7 @@ void DSP::u::IIR::InputExecute_cplx_coefs_real_input(INPUT_EXECUTE_ARGS)
   UNUSED_ARGUMENT(InputNo);
   UNUSED_DEBUG_ARGUMENT(Caller);
   DSP::Complex out_value;
-  int ind;
+  long ind;
 
   THIS->in_value.re = value;
   //THIS->NoOfInputsProcessed++;

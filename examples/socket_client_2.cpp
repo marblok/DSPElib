@@ -11,7 +11,7 @@ int main(void)
 {
   DSP::Clock_ptr MasterClock;
   int temp;
-  long int Fp1, Fp2, M, L;
+  unsigned long Fp1, Fp2, M, L;
   DSP::LoadCoef coef_info;
   int N_SRC;  DSP::Float_vector h_SRC;
 

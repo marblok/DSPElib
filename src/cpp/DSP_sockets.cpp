@@ -693,7 +693,7 @@ bool DSP::u::SocketInput::SetSkip(long long Offset_in)
   return false;
 }
 
-unsigned int DSP::u::SocketInput::GetBytesRead(void)
+unsigned long DSP::u::SocketInput::GetBytesRead(void)
 {
   return LastBytesRead_counter;
 }

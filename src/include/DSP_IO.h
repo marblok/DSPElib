@@ -380,10 +380,10 @@ class DSP::u::WaveInput : public DSP::File, public DSP::Source//: public CAudioI
     { return GetPointer2File(); };
 
     //! returns number of bytes read during last file access
-    virtual unsigned int GetBytesRead(void);
+    virtual unsigned long GetBytesRead(void);
 
     //! returns sampling rate of audio sample
-    virtual long int GetSamplingRate(void);
+    virtual unsigned long GetSamplingRate(void);
 
 //    void SourceDescription(TStringList *);
 };
@@ -417,10 +417,10 @@ class DSP::u::FileInput : public DSP::File, public DSP::Source
     unsigned int NoOfFileChannels;
 
     DSP::Float_vector Buffer;
-    unsigned int BufferIndex;
+    unsigned long BufferIndex;
 
-    unsigned int BytesRead;
-    unsigned int SamplingRate;
+    unsigned long BytesRead;
+    unsigned long SamplingRate;
 
     // in bits (all channels together)
     //unsigned int InputSampleSize; ==> moved to DSP::File
@@ -479,37 +479,37 @@ class DSP::u::FileInput : public DSP::File, public DSP::Source
     DSP::File_ptr Convert2File(void)
     { return GetPointer2File(); };
     //! returns number of bytes read during last file access
-    unsigned int GetBytesRead(void);
+    unsigned long GetBytesRead(void);
     //! returns number of bytes read during last file access
-    long int GetSamplingRate(void);
+    unsigned long GetSamplingRate(void);
     //! Returns raw sample size in bytes corresponding to given SampleType
     /*! \note For SampleType = DSP::e::SampleType::ST_none returns internal raw sample size
      *   used in DSP::u::FileInput.
      *
      *  \warning Sample size is given in bits and encloses all channels
      */
-    unsigned int GetSampleSize(DSP::e::SampleType SampleType = DSP::e::SampleType::ST_none);
+    unsigned long GetSampleSize(DSP::e::SampleType SampleType = DSP::e::SampleType::ST_none);
 
     //! Returns raw buffer size in bytes needed for NoOfSamples samples.
     /*! If NoOfSamples == 0 return allocated internal raw buffer size.
      */
-    unsigned int GetRawBufferSize(unsigned int NoOfSamples = 0);
+    unsigned long GetRawBufferSize(const unsigned long &NoOfSamples = 0);
     //! Returns DSP::Float buffer size needed for SizeInSamples samples.
     /*! If SizeInSamples == 0 return allocated internal DSP::Float buffer size.
      *
      *  \note Returned value is NoOfSamples * NoOfChannels.
      */
-    unsigned int GetFltBufferSize(unsigned int NoOfSamples = 0);
+    unsigned long GetFltBufferSize(const unsigned long &NoOfSamples = 0);
 
     //! moves file pointer no_to_skip samples forward
-    long long SkipSamples(long long no_to_skip);
+    long long SkipSamples(const long long &no_to_skip);
 
     //! Reads segment for file and stores it in the buffer
     /*! \note Size of the segment read depends on the flt_buffer size.
      *
      * Returns number of read bytes.
      */
-    unsigned int ReadSegmentToBuffer(
+    unsigned long ReadSegmentToBuffer(
        //! Buffer where read data will be stored in DSP::Float format
        /*! \note size == buffer_size * no_of_channels
         */
@@ -574,7 +574,7 @@ class DSP::u::FileOutput  : public DSP::File, public DSP::Block
     DSP::T_WAVEchunk WAV_header;
 
     //DSP::Float *Buffer;
-    unsigned int BufferIndex;
+    unsigned long BufferIndex;
 
     // in bits (all channel together)
     //unsigned int OutputSampleSize; ==> moved to DSP::File
@@ -597,7 +597,7 @@ class DSP::u::FileOutput  : public DSP::File, public DSP::Block
     string         ReOpen_FileName;
     DSP::e::SampleType ReOpen_SampleType;
     DSP::e::FileType  ReOpen_FileType;
-    long int       ReOpen_sampling_rate;
+    unsigned long     ReOpen_sampling_rate;
     void PerformReOpen();
 
     //! Just ignore inputs and process block and reopen signals
@@ -643,21 +643,21 @@ class DSP::u::FileOutput  : public DSP::File, public DSP::Block
     bool SetSkip(long long Offset);
 
     //! returns number of bytes read during last file access
-    unsigned int GetBytesRead(void);
+    unsigned long GetBytesRead(void);
     //! returns sampling rate of audio sample
-    long int GetSamplingRate(void);
+    unsigned long GetSamplingRate(void);
 
     //! Returns raw buffer size in bytes needed for NoOfSamples samples.
     /*! If NoOfSamples == 0 return allocated internal raw buffer size.
      */
-    unsigned int GetRawBufferSize(unsigned int NoOfSamples = 0);
+    unsigned long GetRawBufferSize(const unsigned long &NoOfSamples = 0);
     //! Returns raw sample size in bytes corresponding to given SampleType
     /*! \note For SampleType = DSP::e::SampleType::ST_none returns internal raw sample size
      *   used in DSP::u::FileOutput.
      *
      *  \warning Sample size is given in bits and encloses all channels
      */
-    unsigned int GetSampleSize(DSP::e::SampleType SampleType = DSP::e::SampleType::ST_none);
+    unsigned long GetSampleSize(DSP::e::SampleType SampleType = DSP::e::SampleType::ST_none);
 
     //! Writes segment stores in buffer to file
     /*! Returns number of written bytes.
@@ -666,7 +666,7 @@ class DSP::u::FileOutput  : public DSP::File, public DSP::Block
      *
      * \warning This function ignores file blocking state.
      */
-    unsigned int WriteSegmentFromBuffer(
+    unsigned long WriteSegmentFromBuffer(
        //! Buffer where data which must be written is stored in DSP::Float format
        /*! \note size == buffer_size * no_of_channels
         */
@@ -1134,7 +1134,7 @@ class DSP::u::OutputBuffer : public DSP::Block, public DSP::Source
      * If buffer is cyclic this depends on dest_size or BufferSize.
      * If buffer is NOT cyclic this depends on number of samples in Buffer.
      */
-    long int ReadBuffer(void *dest, long int dest_size,
+    unsigned long ReadBuffer(void *dest, long int dest_size,
                         long int reset=-1, DSP::e::SampleType dest_DataType=DSP::e::SampleType::ST_float);
     //! low level access to the buffer
     const DSP::Float_vector &AccessBuffer(void);
@@ -1143,7 +1143,7 @@ class DSP::u::OutputBuffer : public DSP::Block, public DSP::Source
     /*! \note Actual number of entries equals returned value
      *   times number of inputs
      */
-    long int NoOfSamples(void);
+    unsigned long NoOfSamples(void);
 
     //! returns size of the buffer
     /*! Returned value depends on mode

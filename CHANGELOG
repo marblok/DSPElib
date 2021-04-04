@@ -3,8 +3,9 @@ TODO::
   update Linux makefile
   !!! Add TELEsound and PiAPS_sound projects to GitLab and start addaptation to new library version
 
+  unsigned long SamplingRate // -1 => 0
 LAST DONE:
-
+  - corrections in linux compilation
 
 CHANGES:
 - ver. 0.20.001 - <b>2021.04.03</b> Changed: 

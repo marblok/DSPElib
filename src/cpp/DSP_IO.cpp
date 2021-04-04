@@ -690,9 +690,9 @@ template DSP::T_WAVEchunk *DSP::u::FileInput::GetHeader<DSP::T_WAVEchunk>(const 
 
 
 
-unsigned int DSP::u::FileInput::GetSampleSize(DSP::e::SampleType SampleType_in)
+unsigned long DSP::u::FileInput::GetSampleSize(DSP::e::SampleType SampleType_in)
 {
-  unsigned int sample_size;
+  unsigned long sample_size;
 
   switch (SampleType_in)
   {
@@ -740,12 +740,12 @@ DSP::u::FileInput::~FileInput(void)
 }
 
 // returns number of bytes read during last file access
-unsigned int DSP::u::FileInput::GetBytesRead(void)
+unsigned long DSP::u::FileInput::GetBytesRead(void)
 {
   return BytesRead;
 }
 // returns sampling rate of audio sample
-long int DSP::u::FileInput::GetSamplingRate(void)
+unsigned long DSP::u::FileInput::GetSamplingRate(void)
 {
   return SamplingRate;
 }
@@ -754,7 +754,7 @@ long int DSP::u::FileInput::GetSamplingRate(void)
 /* If NoOfSamples == 0 return allocated internal raw buffer size.
  * \note FlushBuffer requires one additional byte bot bit modes
  */
-unsigned int DSP::u::FileInput::GetRawBufferSize(unsigned int NoOfSamples)
+unsigned long DSP::u::FileInput::GetRawBufferSize(const unsigned long &NoOfSamples)
 {
   if (NoOfSamples == 0)
     return (SampleSize * DSP::File_buffer_size + 7)/8;
@@ -767,7 +767,7 @@ unsigned int DSP::u::FileInput::GetRawBufferSize(unsigned int NoOfSamples)
  *
  *  \note Returned value is NoOfSamples * NoOfChannels.
  */
-unsigned int DSP::u::FileInput::GetFltBufferSize(unsigned int NoOfSamples)
+unsigned long DSP::u::FileInput::GetFltBufferSize(const unsigned long &NoOfSamples)
 {
   if (NoOfSamples == 0)
     return (NoOfOutputs * DSP::File_buffer_size);
@@ -776,7 +776,7 @@ unsigned int DSP::u::FileInput::GetFltBufferSize(unsigned int NoOfSamples)
 }
 
 //! moves file pointer no_to_skip samples forward
-long long DSP::u::FileInput::SkipSamples(long long no_to_skip)
+long long DSP::u::FileInput::SkipSamples(const long long &no_to_skip)
 {
   long long no_of_bytes_to_skip;
 
@@ -792,7 +792,7 @@ long long DSP::u::FileInput::SkipSamples(long long no_to_skip)
   return 0;
 }
 
-unsigned int DSP::u::FileInput::ReadSegmentToBuffer(
+unsigned long DSP::u::FileInput::ReadSegmentToBuffer(
     DSP::Float_vector    &flt_buffer,
     int pad_size)
 {
@@ -1117,12 +1117,12 @@ DSP::u::FileOutput::FileOutput(const string &FileName,
 }
 
 //! returns number of bytes read during last file access
-unsigned int DSP::u::FileOutput::GetBytesRead(void)
+unsigned long DSP::u::FileOutput::GetBytesRead(void)
 {
   return 0;
 }
 //! returns sampling rate of audio sample
-long int DSP::u::FileOutput::GetSamplingRate(void)
+unsigned long DSP::u::FileOutput::GetSamplingRate(void)
 {
   return ReOpen_sampling_rate;
 }
@@ -1340,9 +1340,9 @@ bool DSP::u::FileOutput::SetSkip(long long Offset)
   return true;
 }
 
-unsigned int DSP::u::FileOutput::GetSampleSize(DSP::e::SampleType SampleType_in)
+unsigned long DSP::u::FileOutput::GetSampleSize(DSP::e::SampleType SampleType_in)
 {
-  unsigned int sample_size;
+  unsigned long sample_size;
 
   switch (SampleType_in)
   {
@@ -1511,7 +1511,7 @@ void DSP::u::FileOutput::PerformBlock(bool block)
 // Returns raw buffer size in bytes needed for NoOfSamples samples.
 /* If NoOfSamples == 0 return allocated internal raw buffer size.
  */
-unsigned int DSP::u::FileOutput::GetRawBufferSize(unsigned int NoOfSamples)
+unsigned long DSP::u::FileOutput::GetRawBufferSize(const unsigned long &NoOfSamples)
 {
   if (NoOfSamples == 0)
     return (SampleSize * DSP::File_buffer_size + 7)/8;
@@ -1519,12 +1519,12 @@ unsigned int DSP::u::FileOutput::GetRawBufferSize(unsigned int NoOfSamples)
     return (SampleSize * NoOfSamples + 7)/8;
 }
 
-unsigned int DSP::u::FileOutput::WriteSegmentFromBuffer(
+unsigned long DSP::u::FileOutput::WriteSegmentFromBuffer(
                                     const DSP::Float_vector &flt_buffer,
                                     int skip)
 {
   unsigned int ind, ind_raw;
-  unsigned int BytesWritten;
+  unsigned long BytesWritten;
   short temp_short;
   int temp_int;
 
@@ -2832,13 +2832,13 @@ uint32_t DSP::u::WaveInput::ReadAudioSegment(void)
 }
 
 // returns number of bytes read during last file access
-unsigned int DSP::u::WaveInput::GetBytesRead(void)
+unsigned long DSP::u::WaveInput::GetBytesRead(void)
 {
   return BytesRead;
 }
 
 // returns sampling rate of audio sample
-long int DSP::u::WaveInput::GetSamplingRate(void)
+unsigned long DSP::u::WaveInput::GetSamplingRate(void)
 {
   return SamplingRate;
 }
@@ -3960,11 +3960,12 @@ void DSP::u::AudioOutput::Init(unsigned long SamplingFreq,
     //Rezerwacja pamięci dla formatu WAVE
     //  WAVEFORMATEX wfx; //to wymaga korekty
     PCMWAVEFORMAT wfx;
+
+    unsigned long ind;
   #else
     UNUSED_ARGUMENT(WaveOutDevNo);
   #endif
 
-  unsigned long ind;
   string temp;
 
 
@@ -4086,8 +4087,8 @@ void DSP::u::AudioOutput::Init(unsigned long SamplingFreq,
   #else
 
     WaveOutBufferLen = 0;
-    WaveOutBuffers = NULL;
-    OutBuffer = NULL; OutBufferLen = 0;
+    WaveOutBuffers.clear();
+    OutBuffer.clear(); OutBufferLen = 0;
     BufferIndex=0;
 
   #endif  // WINMMAPI
@@ -4137,6 +4138,7 @@ void DSP::u::AudioInput::Init(DSP::Clock_ptr ParentClock,
   //  WAVEFORMATEX wfx; //to wymaga korekty
     PCMWAVEFORMAT wfx;
   #elif defined(ALSA_support_H)
+    UNUSED_ARGUMENT(WaveInDevNo);
     ALSA_object_t ALSA_object;
 
   #else
@@ -4281,7 +4283,7 @@ void DSP::u::AudioInput::Init(DSP::Clock_ptr ParentClock,
     InBufferLen=0;
     for (ind = 0; ind < DSP::NoOfAudioInputBuffers; ind++)
     {
-      InBuffers[ind] = NULL;
+      InBuffers[ind].clear();
     }
     EmptyBufferIndex=0; CurrentBufferIndex=0;
     BufferIndex=0;
@@ -4298,8 +4300,8 @@ DSP::u::AudioOutput::~AudioOutput()
 {
   #ifdef WINMMAPI
     MMRESULT result;
+    unsigned long ind;
   #endif
-  unsigned long ind;
 
   if (OutBufferLen != 0)
   { // if device was opened successfully
@@ -5259,7 +5261,7 @@ void DSP::u::OutputBuffer::Init(unsigned int BufferSize_in, unsigned int NoOfCha
 
 // copies dest_size bytes to the dest buffer
 // from block's internal buffer (the rest is set to zero)
-long int DSP::u::OutputBuffer::ReadBuffer(void *dest, long int dest_size,
+unsigned long DSP::u::OutputBuffer::ReadBuffer(void *dest, long int dest_size,
                                        long int reset, DSP::e::SampleType dest_DataType)
 {
   int OutputSampleSize;
@@ -5395,7 +5397,7 @@ const DSP::Float_vector &DSP::u::OutputBuffer::AccessBuffer(void)
 }
 
 
-long int DSP::u::OutputBuffer::NoOfSamples(void)
+unsigned long DSP::u::OutputBuffer::NoOfSamples(void)
 {
   return  BufferIndex; // BufferIndex/NoOfInputs;
 }
