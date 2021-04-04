@@ -176,10 +176,10 @@ namespace DSP {
   *
   * This callback function apart from calls when input samples are
   * to be processed is called two additional times:
-  *  -# call from block constructor with NoOfInputs = DSP::c::Callback_Init;
+  *  -# call from block constructor with NoOfInputs = DSP::Callback_Init;
   *  this is when the user can initiate UserData structure
   *  and set its pointer to UserDataPtr.
-  *  -# call from block destructor with NoOfInputs = DSP::c::Callback_Delete;
+  *  -# call from block destructor with NoOfInputs = DSP::Callback_Delete;
   *  this is when the user can free UserData structure.
   *
   */
@@ -199,10 +199,10 @@ namespace DSP {
   *
   * This callback function apart from calls when input samples are
   * to be processed is called two additional times:
-  *  -# call from block constructor with NoOfInputs = DSP::c::Callback_Init;
+  *  -# call from block constructor with NoOfInputs = DSP::Callback_Init;
   *  this is when the user can initiate UserData structure
   *  and set its pointer to UserDataPtr.
-  *  -# call from block destructor with NoOfInputs = DSP::c::Callback_Delete;
+  *  -# call from block destructor with NoOfInputs = DSP::Callback_Delete;
   *  this is when the user can free UserData structure.
   *
   */
@@ -402,7 +402,7 @@ inline DSP::e::ComponentType DSP::e::operator&(DSP::e::ComponentType __a, DSP::e
  *  - DSP::e::SampleType::ST_tchar : 8-bit char (text) - no scalling of input data (only DSP::u::FileOutput with DSP::e::FileType::FT_raw)
  *  .
  *
- * \Fixed <b>2006.06.30</b> Changed name from DSP_FileType to DSP_SampleType
+ * Fixed <b>2006.06.30</b> Changed name from DSP_FileType to DSP_SampleType
  *   and prefix from DSP::e::FileType::FT_ to DSP_ST_:
  */
 enum struct DSP::e::SampleType {
@@ -465,22 +465,20 @@ enum struct DSP::e::BufferType {
         };
 
 namespace DSP {
-  namespace c {
-    const uint32_t CallbackID_mask = 0x00ffffff;
-    const uint32_t CallbackID_signal_mask = 0xff000000;
-    const uint32_t CallbackID_signal_start = 0x01ffffff;
-    const uint32_t CallbackID_signal_stop  = 0x02ffffff;
+  const uint32_t CallbackID_mask = 0x00ffffff;
+  const uint32_t CallbackID_signal_mask = 0xff000000;
+  const uint32_t CallbackID_signal_start = 0x01ffffff;
+  const uint32_t CallbackID_signal_stop  = 0x02ffffff;
 
 //#define UINT_MAX 0xffffffff
-    const uint32_t MaxOutputIndex = (UINT_MAX-2);
-    const uint32_t MaxInputIndex  = (UINT_MAX-2);
+  const uint32_t MaxOutputIndex = (UINT_MAX-2);
+  const uint32_t MaxInputIndex  = (UINT_MAX-2);
 //! DSP::Block::FindOutputIndex_by_InputIndex constants
-    const uint32_t Callback_Init = (UINT_MAX);
-    const uint32_t Callback_Delete = (UINT_MAX-1);
-    const uint32_t FO_TheOnlyOutput = (UINT_MAX-1);
-    const uint32_t FO_NoOutput      = (UINT_MAX);
-    const uint32_t FO_NoInput       = (UINT_MAX);
-  }
+  const uint32_t Callback_Init = (UINT_MAX);
+  const uint32_t Callback_Delete = (UINT_MAX-1);
+  const uint32_t FO_TheOnlyOutput = (UINT_MAX-1);
+  const uint32_t FO_NoOutput      = (UINT_MAX);
+  const uint32_t FO_NoInput       = (UINT_MAX);
 }
 
 namespace DSP {

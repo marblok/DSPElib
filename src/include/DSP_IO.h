@@ -68,7 +68,8 @@ namespace DSP {
   */
   const unsigned long NoOfAudioOutputBuffers = 3;
 
-  namespace f { //! Special functions namespace
+  //! DSPElib  sub-namespace for special functions 
+  namespace f { 
     unsigned long ReadCoefficientsFromFile(DSP::Float_vector &Buffer, unsigned long N, const string &FileName, const string &FileDir, DSP::e::SampleType type, unsigned long offset);
     unsigned long ReadCoefficientsFromFile(DSP::Complex_vector &Buffer, unsigned long N, const string &FileName, const string &FileDir, DSP::e::SampleType type, unsigned long offset);
     bool GetWAVEfileParams(const string &FileName, const string &FileDir, T_WAVEchunk_ptr WAVEparams);
@@ -91,7 +92,7 @@ namespace DSP {
     #endif
   }
 
-  //! Namespace for units' classes (componenst: blocks and sources)
+  //! Namespace for units' classes (components: blocks and sources)
   namespace u {
     class Vacuum;
 
@@ -287,8 +288,6 @@ namespace DSP {
  *    -# "in" == "in1"
  *    -# "in.re" == "in1.re"\n
  *       "in.im" == "in1.im"\n
- *
- * \test Test DSP::u::Vacuum block for multiple inputs
  *
  * \bug <b>2006.09.04</b> This block should not require any parameters.
  *   It should accept any number of output lines connected to its inputs.
@@ -712,7 +711,7 @@ class DSP::u::FileOutput  : public DSP::File, public DSP::Block
  *
  *  \todo_later Implement this for Win32 case / Linux ???
  *
- *  \Fixed <b>2005.07.23</b> No longer tries to process audio when audio object creation failed
+ *  Fixed <b>2005.07.23</b> No longer tries to process audio when audio object creation failed
  */
 class DSP::u::AudioInput : public DSP::Source
 {
@@ -757,7 +756,7 @@ class DSP::u::AudioInput : public DSP::Source
     //! To be used in constructor
     /*! \bug <b>2006.08.13</b> when 8bit audio stream is created initial values should be 0x80 or 0x79 not 0x00
      *
-     *  \Fixed <b>2007.10.31</b> WaveIn device can now be selected,
+     *  Fixed <b>2007.10.31</b> WaveIn device can now be selected,
      *     if WaveInDevNo is out of range WAVE_MAPPER is used.
      */
     void Init(DSP::Clock_ptr ParentClock,
@@ -793,7 +792,7 @@ class DSP::u::AudioInput : public DSP::Source
 
   public:
 //    DSP::u::AudioInput(DSP::Clock_ptr ParentClock); //SamplingFrequency=8000;
-    /*!  \Fixed <b>2007.10.31</b> WaveIn device can now be selected,
+    /*!  Fixed <b>2007.10.31</b> WaveIn device can now be selected,
      *     if WaveInDevNo is out of range WAVE_MAPPER is used.
      */
     AudioInput(DSP::Clock_ptr ParentClock,
@@ -824,11 +823,11 @@ class DSP::u::AudioInput : public DSP::Source
  *
  *  \todo_later Implement this for Win32 case / Linux ???
  *
- * \Fixed <b>2005.07.01</b> problem when recording and playing audio
+ * Fixed <b>2005.07.01</b> problem when recording and playing audio
  * simultaneously: output stream is interrupted until it synchronizes
  * with input. The flaw of the current solution is increased output delay.
  *
- * \Fixed <b>2005.07.23</b> No longer tries to process audio when audio object creation failed
+ * Fixed <b>2005.07.23</b> No longer tries to process audio when audio object creation failed
  */
 class DSP::u::AudioOutput : public DSP::Block
 {
@@ -889,15 +888,15 @@ class DSP::u::AudioOutput : public DSP::Block
               unsigned int WaveOutDevNo=UINT_MAX);
 
     /*! \test Test with constant inputs
-     * \Fixed <b>2007.10.31</b> WaveOut device can now be selected,
+     * Fixed <b>2007.10.31</b> WaveOut device can now be selected,
      *     if WaveOutDevNo is out of range WAVE_MAPPER is used.
      */
     static void InputExecute(INPUT_EXECUTE_ARGS);
   public:
     AudioOutput(void); //SamplingFrequency=8000;
     //! DSP::u::AudioOutput constructor
-    /*! \Fixed <b>2005.04.14</b> Cannot be initialized after previous object destruction
-     *  \Fixed <b>2007.10.31</b> WaveOut device can now be selected,
+    /*! Fixed <b>2005.04.14</b> Cannot be initialized after previous object destruction
+     *  Fixed <b>2007.10.31</b> WaveOut device can now be selected,
      *     if WaveOutDevNo is out of range WAVE_MAPPER is used.
      */
     AudioOutput(unsigned long SamplingFreq, //=8000,
@@ -977,7 +976,7 @@ class DSP::u::InputBuffer : public DSP::Source
     ~InputBuffer(void);
 
     //! copies source_size bytes from the source buffer to block's internal buffer
-    /*! \Fixed <b>2005.03.17</b> Error in buffer size checking for multiple channels
+    /*! Fixed <b>2005.03.17</b> Error in buffer size checking for multiple channels
      */
     void WriteBuffer(void *source, long int source_size, DSP::e::SampleType source_DataType=DSP::e::SampleType::ST_float);
 };

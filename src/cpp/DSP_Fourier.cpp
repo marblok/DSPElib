@@ -21,7 +21,7 @@
 //* to minimalize computation   *//
 //* time                        *//
 //*******************************//
-/*! \Fixed <b>2005.10.29</b> removed >>cSinFFT<< which seemed unused
+/*! Fixed <b>2005.10.29</b> removed >>cSinFFT<< which seemed unused
  */
 DSP::Fourier::Fourier(void)
 { //empty cSin and cSinConj
@@ -221,7 +221,7 @@ void DSP::Fourier::FFT(const unsigned long &N, DSP::Complex_vector &probki)
     resize(N);
 
   if (isFFTshiftON == false)
-    //! \todo test FFTshift in FFT
+    //! \test Test FFTshift in FFT
     tmp_rev_bit_table = std::ref(FFTshift_RevBitTable);
 
   M = K/2; seg_no=1;

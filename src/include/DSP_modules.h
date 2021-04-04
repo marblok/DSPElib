@@ -194,7 +194,7 @@ class DSP::input
 };
 
 //! Object containing information about name of specific object
-/*! \Fixed <b>2005.10.30</b> This class is empty in release mode.
+/*! Fixed <b>2005.10.30</b> This class is empty in release mode.
  *    And in such a case returns NULL as name.
  *
  *  \warning debug libraries must be created with -I../src/include/dbg
@@ -820,7 +820,7 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
      *
      * \warning This function works only in DEBUG mode
      *
-     * \Fixed <b>2006.07.05</b> Added function listing to log all
+     * Fixed <b>2006.07.05</b> Added function listing to log all
      * blocks still on the list of the given master clock
      */
     static void ListComponents(void);
@@ -983,7 +983,7 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
     */
 
   public:
-    //! \NewFeature Resets the block to the initial state but leaves outputs and clocks untouched
+    //! Resets the block to the initial state but leaves outputs and clocks untouched
     virtual bool Reset(void)
     { return true; };
 
@@ -1294,7 +1294,7 @@ public:
  * \todo_later No NULL clock pointers should be allowed at construction time.
  * User clock should explicitly be defined by the user.
  *
- * \Fixed <b>2005.02.13</b> while creating error messages dynamicaly
+ * Fixed <b>2005.02.13</b> while creating error messages dynamicaly
  * allocated strings (tekst) should be used instead of static ones
  *
  *
@@ -1641,9 +1641,6 @@ class DSP::Source : public virtual DSP::Component
     //  * If ParentClockOfTheControler != NULL this source activation is controlled
     //  * by DSP::u::BranchSelector descendant and given state is valid only
     //  * for duration of the ParentClockOfTheControler fundamental cycle.
-    //  *
-    //  * \test Test this function when it is used together with
-    //  *  IsControlled and IsStateReady
     //  */
     // void SetState(bool TurnOn=true, DSP::Clock_ptr ParentClockOfTheControler=NULL);
 
@@ -2374,7 +2371,7 @@ class DSP::u::RealMultiplication : public DSP::Block
  *  - Input:
  *   -# "in1", "in2", ... (real valued)
  *
- * \todo_under It seems that decimation blocks do not need to
+ * \note It seems that decimation blocks do not need to
  * be registered to the output clock, they just should know
  * the output clock for error detection purpose. THIS MUST BE SORTED OUT.
  */

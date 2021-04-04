@@ -29,13 +29,12 @@ namespace DSP
      *  but in case of GUI application this must be changed.
      *
      *
-     * \NewFeature Add relaying messages to user defined function,
+     * Add relaying messages to user defined function,
      * for example to be used in wxWidgets for displaying messages
      * in dialog window
      *
      *
      * \todo_later LOG file should be opened in share read mode
-     * \todo_later LOG file should be flushed as soon as something is written to it
      */
     class LogStatus
     {
@@ -58,7 +57,7 @@ namespace DSP
         //! User defined Message processing function
         Message_callback_ptr function_ptr;
 
-        /*! \todo_under File is created when first LOG message is issued
+        /*! File is created when first LOG message is issued
          *  with ErrorMessage, InfoMessage or Message
          *
          *  Must take care of
@@ -207,7 +206,6 @@ namespace DSP
 
         if (c == '\n')
         {
-          //~ \TODO Process the message
           // send First_string and Second_string using ErrorMessage or InfoMessage
           switch (mode) {
             case LogMode::Error:
@@ -268,13 +266,11 @@ namespace DSP
       mode = LogMode::Info;
       pause_after_message = false;
       msg_part = LogMode::first;
-
-      //! \TODO Error / Info mode
     }
 
     logbuf::~logbuf(void)
     {
-      //! \TODO zweryfikować to rozwiązanie
+      //! \test verify this solution
       mtx.get()->lock(); // ? wait for unloging current lock and block other lock
       mtx.get()->unlock();
       //assert(mtx);

@@ -93,7 +93,7 @@ string TAudioMixer::GetWaveOutDevName(UINT DevNo)
 //===============================================================//
 //===============================================================//
 //===============================================================//
-/*! \Fixed <b>2006.01.23</b> Added support for soundcards without global MIXER or MULTIPLEXER for input lines
+/*! Fixed <b>2006.01.23</b> Added support for soundcards without global MIXER or MULTIPLEXER for input lines
  */
 TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
 {
@@ -533,7 +533,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
               #endif
               //break;
             }
-      /*! \Fixed 2006_01_23 Add support for MixerControlsWAVEIN_MUTE
+      /*! Fixed 2006_01_23 Add support for MixerControlsWAVEIN_MUTE
        *  Fixed: 1) GetNumberOfSourceLines
        *  Fixed: 2) GetSourceLineName,
        *  Fixed: 3) GetSourceLineType,
@@ -896,7 +896,7 @@ string TAudioMixer::GetMixerName(void)
   return Input_Output_MixerName;
 };
 
-/*! \Fixed <b>2006.01.23</b> Added support for soundcards without global MIXER or MULTIPLEXER for input lines
+/*! Fixed <b>2006.01.23</b> Added support for soundcards without global MIXER or MULTIPLEXER for input lines
  */
 void TAudioMixer::MemorizeMixerSettings_WAVEIN(void)
 {
@@ -997,9 +997,9 @@ void TAudioMixer::ForgetMixerSettings_WAVEIN(void)
   #endif
 }
 
-/*! \Fixed <b>2006.01.23</b> MixerControlDetailsWAVEIN_LISTTEXT was allocated (overriding previous allocation without freeing it) but it should not
+/*! Fixed <b>2006.01.23</b> MixerControlDetailsWAVEIN_LISTTEXT was allocated (overriding previous allocation without freeing it) but it should not
  *
- * \Fixed <b>2006.01.23</b> Added support for soundcards without global MIXER or MULTIPLEXER for input lines
+ * Fixed <b>2006.01.23</b> Added support for soundcards without global MIXER or MULTIPLEXER for input lines
  */
 void TAudioMixer::RestoreMixerSettings_WAVEIN(void)
 {
@@ -1291,8 +1291,8 @@ int TAudioMixer::GetNumberOfDestLines(void)
   #endif
 }
 
-/*! \Fixed <b>2006.01.23</b> Added support for soundcards without global MIXER or MULTIPLEXER for input lines
- * \Fixed <b>2006.01.23</b> reversed status in input lines controls mode: converting mute into line activity
+/*! Fixed <b>2006.01.23</b> Added support for soundcards without global MIXER or MULTIPLEXER for input lines
+ * Fixed <b>2006.01.23</b> reversed status in input lines controls mode: converting mute into line activity
  */
 int TAudioMixer::GetActiveSourceLine(void)
 {
@@ -1360,9 +1360,9 @@ int TAudioMixer::GetActiveSourceLine(void)
   #endif
 }
 
-/*! \Fixed <b>2006.01.23</b> Added support for soundcards without global MIXER or MULTIPLEXER for input lines
+/*! Fixed <b>2006.01.23</b> Added support for soundcards without global MIXER or MULTIPLEXER for input lines
  *
- * \Fixed <b>2006.01.23</b> reversing status in input lines controls mode: converting mute into line activity
+ * Fixed <b>2006.01.23</b> reversing status in input lines controls mode: converting mute into line activity
  * \bug <b>2007.10.25</b> It is not necessary to read all line states in input lines controls mode
  */
 bool TAudioMixer::GetSourceLineState(int LineNo)
@@ -1734,8 +1734,8 @@ void TAudioMixer::SetSourceLineState(int LineNo, bool IsActive)
   return;
 }
 
-/*! \Fixed <b>2006.01.23</b> Added support for soundcards without global MIXER or MULTIPLEXER for input lines
-  * \Fixed <b>2006.01.23</b> reversed status in input lines controls mode: converting mute into line activity
+/*! Fixed <b>2006.01.23</b> Added support for soundcards without global MIXER or MULTIPLEXER for input lines
+  * Fixed <b>2006.01.23</b> reversed status in input lines controls mode: converting mute into line activity
  */
 void TAudioMixer::SetActiveSourceLine(int ActiveNo)
 {
@@ -1830,7 +1830,7 @@ void TAudioMixer::SetActiveSourceLine(int ActiveNo)
   return;
 }
 
-/*! \Fixed <b>2006.01.23</b> Added support for soundcards without global MIXER or MULTIPLEXER for input lines
+/*! Fixed <b>2006.01.23</b> Added support for soundcards without global MIXER or MULTIPLEXER for input lines
  */
 void TAudioMixer::SetActiveSourceLine(string ActiveName)
 {
@@ -1972,7 +1972,7 @@ bool TAudioMixer::SetSourceLineVolume(int LineNo, double Vol)
   #endif
 }
 
-/*! \Fixed <b>2006.01.23</b> returns false if no volume control is supported
+/*! Fixed <b>2006.01.23</b> returns false if no volume control is supported
  */
 bool TAudioMixer::SetDestLineVolume(int LineNo, double Vol_Left, double Vol_Right)
 {
@@ -2317,7 +2317,7 @@ double TAudioMixer::GetSourceLineVolume(int LineNo)
   #endif
 }
 
-/*! \Fixed <b>2006.01.23</b> returns -2.0 if no volume control is supported
+/*! Fixed <b>2006.01.23</b> returns -2.0 if no volume control is supported
  */
 double TAudioMixer::GetDestLineVolume(int LineNo, int Channel)
 {

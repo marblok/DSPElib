@@ -34,11 +34,6 @@ namespace DSP {
 /*! The main purpose of this class is to manage
  *  multifrequency DSP algorithms.
  *
- * \todo_later Before Starting Execution (?? but once - maybe it would be
- * beter to add just function) check whether all outputs and intputs
- * are connected
- *
- *
   * Class supports independent and signal activated clocks, this allows for
   *  -# implementation of indepentend algorithms
   *  -# implementation of algorithms part working asynchronously, with clocks
@@ -281,9 +276,6 @@ class DSP::Clock
 
 //?? Maybe clock's offset should also be used
     //! Creates new independent MasterClock
-    /*! \test Test if it is now possible to create several indepenent
-     * algorithms
-     */
     static DSP::Clock_ptr CreateMasterClock(void);
 
   private:

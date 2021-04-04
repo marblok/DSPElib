@@ -87,13 +87,11 @@ namespace DSP {
                         const DSP::Prec_Float_vector &B_in, //!right-hand side quantities vector
                         int use_pivoting); //! pivoting mode: 0-none; 1-rows; 2-rows&cols
 
-    //! \NewFeature minimax filter design based on real Remez exchange algorithm
+    //! Minimax filter design based on real Remez exchange algorithm
     /*! - N - filter impulse response length (order N-1)
     *  - h_buffer - buffer for impulse response
     * also needed: filter prototype in frequency domain,
     * weighting function, approximation bandwidths, ...
-    * 
-    * \TODO DSP_RealRemez => DSP::f::RealRemez implementation
     */
     void RealRemez(int N, DSP::Float_vector &h_buffer);
 

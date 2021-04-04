@@ -17,7 +17,7 @@
   {
     //! Pointer to the Message callback function
     /*! bool func(const string &source, const string &message, const bool IsError)
-     *  used in DSP::Message, DSP::ErrorMessage, DSP::InfoMessage
+     *  used in DSP::logstream::Message, DSP::logstream::ErrorMessage, DSP::logstream::InfoMessage
      *
      *  If function returns true all other message logging
      *  actions will be abandoned. Message will be treated

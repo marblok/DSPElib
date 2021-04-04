@@ -10,12 +10,12 @@
 #include <string>
 #include <vector>
 
-//extern const int DOT_colors_len;
-//! DOT colors table
 
+//! Main DSPElib namespace
 namespace DSP {
-       extern const std::vector<std::string> DOT_colors;
+       extern const std::vector<std::string> DOT_colors; //! DOT colors table
 
+       //! DSPElib sub-namespace for enums definitions
        namespace e {
          enum struct DOTmode {
               DOT_macro_unwrap = 0, //! draw separate macro component (ignore macro structure)

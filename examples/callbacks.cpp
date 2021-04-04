@@ -12,12 +12,12 @@ DSP::Float_vector read_buffer;
 
 void BufferCallback(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP::Float_vector &OutputSamples, DSP::void_ptr *UserDataPtr, unsigned int UserDefinedIdentifier, DSP::Component_ptr Caller)
 {
-  if (NoOfInputs == DSP::c::Callback_Init)
+  if (NoOfInputs == DSP::Callback_Init)
   {
     read_buffer.resize(buffer_size);
     return;
   }
-  if (NoOfInputs == DSP::c::Callback_Delete)
+  if (NoOfInputs == DSP::Callback_Delete)
   {
     read_buffer.clear();
     return;

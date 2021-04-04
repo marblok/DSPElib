@@ -41,8 +41,6 @@ namespace DSP {
       bool CheckIsFFT(const unsigned long &K);
       void FFTshiftON(const bool &val);
 
-      //! \TODO use private temporary vector so, the content pointed by the probki variable would not be destroyed
-
       //! \warning probki table is used to store internal values so it will be overwritten
       void FFT(const unsigned long &N, DSP::Complex_vector &probki);
       //! \warning probki table is used to store internal values so it will be overwritten

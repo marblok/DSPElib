@@ -37,7 +37,7 @@ DSP::TMorseTable::TMorseTable(void)
 
   //Init Fonts   TMenuItem
   FontName[0] = "Courier New";
-//! \TODO opracowanie wariantu dla linux'a
+//! \TODO Prepare variant for Linux
 #ifdef WIN32
   FontCharset[0]=ANSI_CHARSET; //RUSSIAN_CHARSET;
 #else
@@ -254,7 +254,7 @@ int DSP::TMorseTable::FontCharset2Ind(uint32_t charset)
   SYMBOL_CHARSET
   */
 
-  //! \TODO opracowanie wariantu dla linux'a
+  //! \TODO Prepare variant for Linux
   #ifdef WIN32
     case SHIFTJIS_CHARSET:
       return 9;
@@ -286,7 +286,7 @@ uint32_t DSP::TMorseTable::Ind2FontCharset(int ind)
 {
   switch (ind)
   {
-  //! \TODO opracowanie wariantu dla linux'a
+  //! \TODO Prepare variant for Linux
   #ifdef WIN32
     case 9:
       return SHIFTJIS_CHARSET;
@@ -319,7 +319,7 @@ const string DSP::TMorseTable::Ind2AnsiString(int ind)
 {
   switch (Ind2FontCharset(ind))
   {
-  //! \TODO opracowanie wariantu dla linux'a
+  //! \TODO Prepare variant for Linux
   #ifdef WIN32
     case SHIFTJIS_CHARSET:
       return "SHIFTJIS_CHARSET";

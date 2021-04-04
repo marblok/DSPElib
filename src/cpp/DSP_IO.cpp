@@ -2855,9 +2855,8 @@ bool DSP::u::WaveInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
     DSP_THIS->ReadAudioSegment();
   }
 
-  /* \todo_later Teh below is done on the pointer stored in the object 
-   * so it wouldn't need continous recalculation
-   * and just after the ReadAudioSegment above
+  /* \todo_later The below calculation is done on the pointer stored in the object 
+   * so it wouldn't need continous recalculation and just after the ReadAudioSegment above
    * sets the pointer to AudioBuffer and after each read increases just like temp.
    *
    * Check the above also in case of DSP::u::FileInput
@@ -4585,7 +4584,7 @@ int DSP::u::AudioInput::GetNoOfBuffers(void)
 }
 
 #define DSP_THIS ((DSP::u::AudioInput *)source)
-/*! \Fixed <b>2005.10.21</b> cleared up start-up and congestion code
+/*! Fixed <b>2005.10.21</b> cleared up start-up and congestion code
  */
 bool DSP::u::AudioInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
 {
@@ -4796,7 +4795,7 @@ DSP::u::InputBuffer::InputBuffer(DSP::Clock_ptr ParentClock, int BufferSize_in,
 
   NotificationsStep = NotificationsStep_in;
   NotificationFunction_ptr = func_ptr;
-  UserCallbackID = (CallbackIdentifier & DSP::c::CallbackID_mask);
+  UserCallbackID = (CallbackIdentifier & DSP::CallbackID_mask);
 
   if ((ParentClock != NULL) && (func_ptr != NULL))
   {
@@ -4831,13 +4830,13 @@ DSP::u::InputBuffer::InputBuffer(DSP::Clock_ptr ParentClock, int BufferSize_in,
   }
 
   if (NotificationFunction_ptr != NULL)
-  	(*NotificationFunction_ptr)(this, DSP::c::CallbackID_signal_start | UserCallbackID);
+  	(*NotificationFunction_ptr)(this, DSP::CallbackID_signal_start | UserCallbackID);
 }
 
 DSP::u::InputBuffer::~InputBuffer(void)
 {
   if (NotificationFunction_ptr != NULL)
-  	(*NotificationFunction_ptr)(this, DSP::c::CallbackID_signal_stop | UserCallbackID);
+  	(*NotificationFunction_ptr)(this, DSP::CallbackID_signal_stop | UserCallbackID);
 
   Buffer.clear();
 }
@@ -5022,7 +5021,7 @@ DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOf
   NotificationFunction_ptr = func_ptr;
   CallbackFunction_ptr = NULL;
   UserData_ptr = NULL;
-  UserCallbackID = (CallbackIdentifier & DSP::c::CallbackID_mask);
+  UserCallbackID = (CallbackIdentifier & DSP::CallbackID_mask);
 
   if ((ParentClock != NULL) && (func_ptr != NULL))
   {
@@ -5037,7 +5036,7 @@ DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOf
   Execute_ptr = &InputExecute;
 
   if (NotificationFunction_ptr != NULL)
-  	(*NotificationFunction_ptr)(this, DSP::c::CallbackID_signal_start | UserCallbackID);
+  	(*NotificationFunction_ptr)(this, DSP::CallbackID_signal_start | UserCallbackID);
 }
 
 DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOfInputs_in,
@@ -5105,7 +5104,7 @@ DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOf
 
   if (CallbackFunction_ptr != NULL)
   {
-    (*CallbackFunction_ptr)(DSP::c::Callback_Init, NoOfOutputs, OutputsValues, &UserData_ptr, UserCallbackID, this);
+    (*CallbackFunction_ptr)(DSP::Callback_Init, NoOfOutputs, OutputsValues, &UserData_ptr, UserCallbackID, this);
   }
 }
 
@@ -5158,23 +5157,23 @@ DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOf
   NotificationFunction_ptr = NULL;
   CallbackFunction_ptr = func_ptr;
   UserData_ptr = NULL;
-  UserCallbackID = (DSP::c::CallbackID_mask & CallbackIdentifier);
+  UserCallbackID = (DSP::CallbackID_mask & CallbackIdentifier);
 
   Execute_ptr = &InputExecute;
   OutputExecute_ptr = &OutputExecute;
 
   if (CallbackFunction_ptr != NULL)
   {
-    (*CallbackFunction_ptr)(DSP::c::Callback_Init, NoOfOutputs, OutputsValues, &UserData_ptr, UserCallbackID, this);
+    (*CallbackFunction_ptr)(DSP::Callback_Init, NoOfOutputs, OutputsValues, &UserData_ptr, UserCallbackID, this);
   }
 }
 
 DSP::u::OutputBuffer::~OutputBuffer(void)
 {
   if (NotificationFunction_ptr != NULL)
-  	(*NotificationFunction_ptr)(this, DSP::c::CallbackID_signal_stop | UserCallbackID);
+  	(*NotificationFunction_ptr)(this, DSP::CallbackID_signal_stop | UserCallbackID);
   if (CallbackFunction_ptr != NULL) {
-    (*CallbackFunction_ptr)(DSP::c::Callback_Delete, NoOfOutputs, OutputsValues, &UserData_ptr, UserCallbackID, this);
+    (*CallbackFunction_ptr)(DSP::Callback_Delete, NoOfOutputs, OutputsValues, &UserData_ptr, UserCallbackID, this);
   }
 
   Buffer.clear();
@@ -5594,7 +5593,7 @@ class DSPi_ExternalSleep
           }
           else
           {
-          	/*! \Fixed <b>2005.10.05</b> function called itself instead ::Sleep()
+          	/*! Fixed <b>2005.10.05</b> function called itself instead ::Sleep()
           	 */
             ::Sleep(time);
           }

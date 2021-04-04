@@ -72,7 +72,7 @@ int main1(int argc, char*argv)
   Mul1.DefineOutput("y",1);
 
   // / * decymacja z filtacj dolnopasmow * /
-  // / * \todo implement this using: DSP::u::SamplingRateConversion * /
+  // / * implement this using: DSP::u::SamplingRateConversion * /
   DSP::Float h_FIR[]={-0.00469737357514, -0.02189844354959,  -0.01863144426339,
                       0.08394044867363,  0.27332881783852,   0.37579179117021,
                       0.27332881783852,  0.08394044867363,  -0.01863144426339,
@@ -138,7 +138,7 @@ int main1(int argc, char*argv)
 DSP::u::FileOutput PilotErrorLoopOut("Pilot_loop_error.out", DSP::e::SampleType::ST_float, 1);
 
 
-  // / * \todo heterodynowanie korekcyjne pilota do czstotliwoci 1500Hz * /
+  // / * heterodynowanie korekcyjne pilota do czstotliwoci 1500Hz * /
   DSP::u::DDScos CorrHeter(Clock1, true);
   CorrHeter.SetConstInput("ampl",1.0); //Amplitude
 //CorrHeter.SetConstInput(1,0.0); //Angular frequency
@@ -166,7 +166,7 @@ DSP::u::FileOutput PilotErrorLoopOut("Pilot_loop_error.out", DSP::e::SampleType:
   DSP::_connect_class::connect_to_block(Splitter1.Output("y2"),&CorrMul,3);
 
 
-//  / *   \todo heterodynowanie pilota do zerowej pulsacji * /
+//  / *   heterodynowanie pilota do zerowej pulsacji * /
     DSP::u::DDScos  Heter2(Clock1, true, 1.0, (DSP::M_PIx2*(-1500))/Fs1, 0.0);
     Heter2.DefineOutput("re", 0);
     Heter2.DefineOutput("im", 1);
@@ -175,7 +175,7 @@ DSP::u::FileOutput PilotErrorLoopOut("Pilot_loop_error.out", DSP::e::SampleType:
     Mul2.DefineOutput("re",0);
     Mul2.DefineOutput("im",1);
 
-//  / *   \todo filtracja i decymacja np. 16-krotna * /
+//  / *   filtracja i decymacja np. 16-krotna * /
     DSP::Float h_FIR2[]={-0.00469737357514, -0.02189844354959,  -0.01863144426339,
                         0.08394044867363,  0.27332881783852,   0.37579179117021,
                         0.27332881783852,  0.08394044867363,  -0.01863144426339,
@@ -203,7 +203,7 @@ DSP::u::FileOutput PilotErrorLoopOut("Pilot_loop_error.out", DSP::e::SampleType:
     DSP::_connect_class::connect_to_block(filter2.Output("re"), &Decymator2, 0);
     DSP::_connect_class::connect_to_block(filter2.Output("im"), &Decymator2, 1);
 
-// / * \todo implement SetOutput version that puts a new block
+// / * implement SetOutput version that puts a new block
 // * between the block to which output we connect and
 // * the block witch is connected to this output.
 // *
@@ -211,10 +211,10 @@ DSP::u::FileOutput PilotErrorLoopOut("Pilot_loop_error.out", DSP::e::SampleType:
 // * interfering into the current algorithm structure
 // * /
 
-  // / *   \todo wyznaczenie b?du heterodyny korekcyjnej * /
+  // / * wyznaczenie b?du heterodyny korekcyjnej * /
     //y=imag(y1).*real(y2)-real(y1).*imag(y2);
 
-  // * \todo potrzebny modu ARW poniewa? dalszy modu jest
+  // * potrzebny modu ARW poniewa? dalszy modu jest
   // * wraliwy na amplitud sygnau i najlepiej pracuje dla amplitudy =1
   // * - istotne jednak, ?eby niezalenie od amplitudy sygnau
   // * zawsze ka samo dziaao
@@ -839,8 +839,7 @@ void Process(long int Fs, const string &WaveName, const string &Dir)
 
   DSP::log << "MAIN"  << DSP::LogMode::second << "(" << czas1-czas0 << " ms"
     << " + " << czas2-czas1 << " ms)" << endl;
-  /*! \todo DSP::u::CCPC instead of DSP::u::ABS + DSP::u::Angle
-   */
+  // todo: DSP::u::CCPC instead of DSP::u::ABS + DSP::u::Angle
 }
 
 
@@ -978,9 +977,6 @@ int test_3()
 //int log_ind=1; char log_buffer[1024];
 //
 //  DSP::u::AudioOutput AudioOut1(Fs,1);
-//  /* \class DSP::u::AudioOutput \todo zrobi moliwo?c wypuszczenia tylko lewego lub prawego kanau
-//   * z zerowym drugim
-//   */
 //
 //  Zegar1=FileIn2.GetOutputClock();
 //  Zegar2=DSP::Clock::GetClock(Zegar1, 1, Fs2/Fs);
@@ -1145,7 +1141,7 @@ int test_4()
   int ind_;
 
 //  MeduzaSimulation();
-/*! \todo test version without IIR filter
+/* TODO: test version without IIR filter
  */
   char tekst[1024];
 
@@ -1194,7 +1190,7 @@ int test_4()
   /*************************************************************/
   /* pierwszy stopie decymacji z 48kHz na 4800Hz */
   /* filtracja usuwajca sk?adowe antyhilbertowskie */
-  /*! \todo filtracj po?czy z decymacj w implementacji polifazowej */
+  /* todo filtracj po?czy z decymacj w implementacji polifazowej */
   DSP::Complex_vector h_LPF_Hilbert= {DSP::Complex(0.74203089692178, 0.47500487676950),
                             DSP::Complex(0.97483857322795, -0.70890299411674),
                             DSP::Complex(-1.50631102255127, -0.08862708027019),
@@ -1244,7 +1240,7 @@ int test_4()
 
   /*************************************************************/
   /* drugi stopie decymacji z 4800Hz ma 960Hz dla pilota*/
-  /*! \todo filtracj po?czy z decymacj w implementacji polifazowej */
+  /* todo filtracj po?czy z decymacj w implementacji polifazowej */
   DSP::Float_vector h_PilotLPF(L1);
   for (ind_=0; ind_<L1; ind_++)
     h_PilotLPF[ind_] = 1.0f/(DSP::Float)L1;
@@ -1314,7 +1310,7 @@ int test_4()
   /*************************************************************/
   /*************************************************************/
   // matched filtering and decimation in all subchannels
-  /*! \todo filtracj po?czy z decymacj w implementacji polifazowej */
+  /* todo filtracj po?czy z decymacj w implementacji polifazowej */
   int N_matched=(int)(0.6*L1+0.5);
   DSP::Float_vector h_matched(N_matched);
   for (ind_=0; ind_<N_matched; ind_++)
@@ -1810,13 +1806,13 @@ void FFTout_clbk(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP::Float_v
   //int counter;
   dsp_buffer = (DSP::u::OutputBuffer *)Caller->Convert2Block();
 
-  if (NoOfInputs == DSP::c::Callback_Init)
+  if (NoOfInputs == DSP::Callback_Init)
   {
     buffer_size = dsp_buffer->GetBufferSize(2);
     read_buffer = new DSP::Float[buffer_size];
     return;
   }
-  if (NoOfInputs == DSP::c::Callback_Delete)
+  if (NoOfInputs == DSP::Callback_Delete)
   {
     delete [] read_buffer;
     read_buffer = NULL;
@@ -2217,12 +2213,12 @@ void BufferCallback(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP::Floa
   UNUSED_ARGUMENT(NoOfOutputs);
   UNUSED_ARGUMENT(UserDataPtr);
 
-  if (NoOfInputs == DSP::c::Callback_Init)
+  if (NoOfInputs == DSP::Callback_Init)
   {
     read_buffer = new DSP::Float[buffer_size];
     return;
   }
-  if (NoOfInputs == DSP::c::Callback_Delete)
+  if (NoOfInputs == DSP::Callback_Delete)
   {
     delete [] read_buffer;
     read_buffer = NULL;
@@ -2415,7 +2411,7 @@ int test_SolveMatrix(int mode) {
     DSP::log << ss.str() << endl;
   }
 
-//  \TODO test also DSP::f::LPF_LS();
+//  \test Test also DSP::f::LPF_LS();
 
 //  DSP::Float A_in[]= {3.0, 1.0, 1.0,
 //                     0.5, 1.0, 1.5,
@@ -2731,7 +2727,7 @@ int main(int argc, char*argv[])
   for (auto i=0; i<4; i++) {
     test_SolveMatrix_prec(i);
   }
-  //! \TODO test DSP::f::LPF_LS
+  //! \TODO test also DSP::f::LPF_LS
   DSP::log << DSP::LogMode::pause << "Finished SolveMatrix test" << endl;
 
   DSP::log << "Starting SymbolMapper test" << endl;

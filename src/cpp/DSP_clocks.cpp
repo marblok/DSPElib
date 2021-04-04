@@ -242,11 +242,9 @@ void DSP::Clock::SetAsNewMasterClock(DSP::Clock_ptr new_master)
   UpdateCycleLengths(new_master);
 }
 
-/*! \Fixed <b>2005.10.30</b> Added DSP::Clock::ReleaseMasterClock function which frees memory reserved for master clock.
+/*! Fixed <b>2005.10.30</b> Added DSP::Clock::ReleaseMasterClock function which frees memory reserved for master clock.
  *    If removed clock was last also global tables storing MasterClocks parameters are freed
  *    and NoOfMasterClocks is reset to zero.
- *
- * \todo_later check whether all alocated memory is freed
  */
 void DSP::Clock::ReleaseMasterClock(unsigned int MasterClockIndex)
 {
@@ -393,10 +391,8 @@ void DSP::Clock::ReleaseMasterClock(unsigned int MasterClockIndex)
   * returns cycles_to_process variable value
   * \note can be reused if Terminated[ReferenceClock->MasterClockIndex] == false
   *
-  * \todo FindNextActiveClocks -> zmodyfikowa� tak �eby korzysta� z wcze�niej
-  *   przygotowanych list. Przy tworzeniu nowego zegara, dla danego zegara
-  *   macierzystego aktualizowa� list� list zegar�w oraz
-  *   global_discrete_times_to_next_step.
+  * \todo FindNextActiveClocks -> modify so that the list prepared beforehand is used.
+  *   When new clock is created, for given master clock update the list of clocks and global_discrete_times_to_next_step.
   *
   */
 unsigned long DSP::Clock::Execute(DSP::Clock_ptr ReferenceClock,
@@ -612,7 +608,7 @@ unsigned long DSP::Clock::Execute(DSP::Clock_ptr ReferenceClock,
       //detecting loop end
       if (NoOfCyclesToProcess != 0)
       {
-        if (cycles_to_process > global_discrete_times_to_next_step[ReferenceClock->MasterClockIndex]) //! \Fixed <b>2008.03.25</b>
+        if (cycles_to_process > global_discrete_times_to_next_step[ReferenceClock->MasterClockIndex]) //! Fixed <b>2008.03.25</b>
         { // still something to do
           cycles_to_process -= global_discrete_times_to_next_step[ReferenceClock->MasterClockIndex];
           //global_discrete_times_to_next_step[ReferenceClock->MasterClockIndex] = 0;
@@ -632,7 +628,7 @@ unsigned long DSP::Clock::Execute(DSP::Clock_ptr ReferenceClock,
         else
         { // OK: everything has been processed
           //global_discrete_times_to_next_step[ReferenceClock->MasterClockIndex] -= cycles_to_process;
-          cycles_to_process = 0; //! \Fixed <b>2008.03.25</b>
+          cycles_to_process = 0; //! Fixed <b>2008.03.25</b>
           Terminated[ReferenceClock->MasterClockIndex]=true;
         }
       }
@@ -914,7 +910,7 @@ DSP::Clock::~Clock()
   }
 }
 
-/*! \Fixed <b>2005.10.30</b> Here clocks are just deleted.
+/*! Fixed <b>2005.10.30</b> Here clocks are just deleted.
  *  All clocks' data structures are deleted in  their destructors.
  */
 void DSP::Clock::FreeClocks(void)

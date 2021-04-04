@@ -26,7 +26,7 @@ ALSA_object_t::~ALSA_object_t()
 
 void ALSA_object_t::log_alsa_data() {
   int val;
-  //! \TODO create DSP_lib logging object with << 
+
   DSP::log << "ALSA library version: " << SND_LIB_VERSION_STR << endl;
 
   DSP::log << endl;

@@ -51,7 +51,7 @@ const vector<string> DSP::DOT_colors =
     //?? the input corresponding the current output (InputBlocks)
     //ind2 = FindOutputIndex_by_InputIndex(ind2);
 
-    if (ind2 <= DSP::c::MaxOutputIndex)
+    if (ind2 <= DSP::MaxOutputIndex)
       text_buffer << "[color=" << DOT_colors[ind2 % DOT_colors.size()] << "]";
     else
       text_buffer << "[color=black]";
@@ -359,7 +359,7 @@ void DSP::Component::ComponentEdgesToDOTfile(std::ofstream &dot_plik, const stri
 
           macro_input_no = current_macro->GetMacroInputNo(output_block, output_block_input_no);
 
-          if (macro_input_no != DSP::c::FO_NoInput)
+          if (macro_input_no != DSP::FO_NoInput)
           {
             for (ind2 = 0; ind2 < MacrosList.size(); ind2++)
             {

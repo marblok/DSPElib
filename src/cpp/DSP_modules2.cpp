@@ -1807,7 +1807,7 @@ unsigned int getConstellation(
           }
         }
       }
-      //! \TODO is_real ustala� zbiorczo na podstawie gwiazdek konstelacji
+      //! \TODO is_real should be set based on analysis of all constellation points
       if ((M == 2) && (constellation_phase_offset == 0.0)) {
         is_real = true;
       }

@@ -24,7 +24,7 @@ const unsigned long DSP::Component::ComponentsTableSegmentSize = 1024;
 
 
 //**************************************//
-/*! \Fixed <b>2006.04.30</b> In release mode do not store component name (to free more memory)
+/*! Fixed <b>2006.04.30</b> In release mode do not store component name (to free more memory)
  *    It would be best not to create objects storing names.
  *
  *  Saving algorithms structure requires Names, so they are inactive
@@ -818,7 +818,7 @@ DSP::input &DSP::Block::Input(const string &Name)
 /*! returns true if succeeds
  *  Makes use of DSP::Block::SetOutput function
  *
- * \Fixed 2007.06.02 Added DSP::_connect_class::splitconnect behavior.
+ * Fixed 2007.06.02 Added DSP::_connect_class::splitconnect behavior.
  *    - Changed default behavior to DSP::_connect_class::splitconnect if output is used.
  *    - AllowSplit == false returns old behavior where error is issued is output is already used.
  *    .
@@ -939,7 +939,7 @@ bool DSP::_connect_class::splitconnect(const DSP::output &output, const DSP::inp
     // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
     source_block = output.component;    source_block_output_no = output.Outputs[ind];
     sourceCopy = source_block->Convert2Copy();
-    source_output_block = NULL; source_output_block_input_no = DSP::c::FO_NoOutput;
+    source_output_block = NULL; source_output_block_input_no = DSP::FO_NoOutput;
     is_source_output_clear = true;
 
     if (sourceCopy != NULL)
@@ -1479,7 +1479,7 @@ DSP::Source::~Source(void)
   UnregisterOutputClocks();
 }
 
-/* \test Test this function when it is used together with
+/* Test this function when it is used together with
  *  IsControlled and IsStateReady
  * /
 void DSP::Source::SetState(bool TurnOn, DSP::Clock_ptr ParentClockOfTheControler)
@@ -1605,7 +1605,7 @@ void DSP::Block::SetNoOfInputs(unsigned int No_real, bool AllowForConstantInputs
 {
   SetNoOfInputs(No_real, 0, AllowForConstantInputs);
 }
-/*! \Fixed <b>2005.11.02</b> InputClocks reserved only if NoOfInputs != 0
+/*! Fixed <b>2005.11.02</b> InputClocks reserved only if NoOfInputs != 0
  */
 void DSP::Block::SetNoOfInputs(unsigned int No_real, unsigned int No_complex, bool AllowForConstantInputs)
 {
@@ -3021,7 +3021,7 @@ bool DSP::Block::GetMultirateFactorsFromClocks(
     L /= gcd; M /= gcd;
     */
 
-    //! \Fixed <b>2012.04.27</b> This must be computed based on ->cycle_length
+    //! Fixed <b>2012.04.27</b> This must be computed based on ->cycle_length
     unsigned long cycle_length_in, cycle_length_out;
     unsigned long int gcd;
     cycle_length_in = InputClock->cycle_length;
@@ -4793,8 +4793,8 @@ void DSP::u::Switch::Init(bool IsInputComplex,
   State = new DSP::Float[InputsNo*ValuesPerOutput];
 
   LastInputInd=ValuesPerOutput*InputsNo-1; //index starts from 0
-  InputSelectionInd = DSP::c::FO_NoInput;
-  OutputSelectionInd = DSP::c::FO_NoOutput;
+  InputSelectionInd = DSP::FO_NoInput;
+  OutputSelectionInd = DSP::FO_NoOutput;
   /*
   if (UseSelectorInputs == true)
   {
@@ -4826,8 +4826,8 @@ void DSP::u::Switch::Init(bool IsInputComplex,
 */
     SetNoOfInputs(ValuesPerOutput*InputsNo,false);
 /*  } */
-  SelectedInputNo  = DSP::c::FO_NoInput;
-  SelectedOutputNo = DSP::c::FO_NoOutput;
+  SelectedInputNo  = DSP::FO_NoInput;
+  SelectedOutputNo = DSP::FO_NoOutput;
   MaxSelectedInputNo=InputsNo-1;
   MaxSelectedOutputNo=OutputsNo-1;
 
@@ -4880,9 +4880,9 @@ void DSP::u::Switch::Select(unsigned int InputIndex, unsigned int OutputIndex)
   SelectedOutputNo = OutputIndex;
 
   if (SelectedInputNo > MaxSelectedInputNo)
-    SelectedInputNo = DSP::c::FO_NoInput;
+    SelectedInputNo = DSP::FO_NoInput;
   if (SelectedOutputNo > MaxSelectedOutputNo)
-    SelectedOutputNo = DSP::c::FO_NoOutput;
+    SelectedOutputNo = DSP::FO_NoOutput;
   /*
   if (SelectedInputNo < MinSelectedIndexNo)
     SelectedInputNo = MinSelectedIndexNo;
@@ -4896,7 +4896,7 @@ void DSP::u::Switch::InputExecute(INPUT_EXECUTE_ARGS)
   UNUSED_DEBUG_ARGUMENT(Caller);
 
   /* \todo_later Consider processing Output as soon as SelectedInputs are avaiable
-   * \todo_later Consider storing only SelectedInputs the rest could be ignored
+   * \todo_later Consider storing only SelectedInputs, the rest could be ignored
    *
    */
   unsigned int index;
@@ -4929,7 +4929,7 @@ void DSP::u::Switch::InputExecute(INPUT_EXECUTE_ARGS)
    if (SelectedOutputNo < MinSelectedIndexNo)
      SelectedOutputNo = MinSelectedIndexNo;
 */
-    if ((((DSP::u::Switch *)block)->SelectedInputNo != DSP::c::FO_NoInput) && (((DSP::u::Switch *)block)->SelectedOutputNo != DSP::c::FO_NoOutput))
+    if ((((DSP::u::Switch *)block)->SelectedInputNo != DSP::FO_NoInput) && (((DSP::u::Switch *)block)->SelectedOutputNo != DSP::FO_NoOutput))
     {
       if (((DSP::u::Switch *)block)->ValuesPerOutput == 1)
       {
@@ -5880,7 +5880,6 @@ bool DSP::u::LFSR::OutputExecute(OUTPUT_EXECUTE_ARGS)
   sum = 0;
   for (ind = 0; ind < THIS->taps_no; ind++)
   {
-	//! \TODO Zweryfikowa� t� p�tl� i ew. poprawi�  (THIS->ULL_MSB <==> THIS->ULL_size ?)
     ind_1 = THIS->buffer_size-1 - (unsigned int)(THIS->taps[ind] / THIS->ULL_MSB);
     mask_shift = (unsigned int)(THIS->taps[ind] % THIS->ULL_MSB);
 
@@ -5973,7 +5972,7 @@ void DSP::u::LFSR_tester::InputExecute(INPUT_EXECUTE_ARGS)
   // get taps modulo 2 sum
   sum = 0;
   for (ind = 0; ind < THIS->taps_no; ind++)
-  { //! \TODO Zweryfikowa� t� p�tl� i ew. poprawi�  (THIS->ULL_MSB <==> THIS->ULL_size ?)
+  { 
     ind_1 = THIS->buffer_size-1 - (unsigned int)(THIS->taps[ind] / THIS->ULL_MSB);
     mask_shift = (unsigned int)(THIS->taps[ind] % THIS->ULL_MSB);
 
@@ -6030,7 +6029,7 @@ DSP::u::FIR::FIR(bool IsInputComplex, const DSP::Complex_vector &h_in, int n0, i
   Init(IsInputComplex, true, (unsigned long)(h_in.size()), h_in.data(), n0, M, L);
 }
 
-/*! \Fixed <b>2006.06.28</b> Problem with State allocation when N_in = 1
+/*! Fixed <b>2006.06.28</b> Problem with State allocation when N_in = 1
  *  \Added  <b>2012.02.28</b> Added option for extraction of impulse response of
  *   polyphase filter from prototype filter (step parameter)
  */
@@ -6226,7 +6225,7 @@ DSP::u::FIR::~FIR(void)
 }
 
 #define  THIS  ((DSP::u::FIR *)block)
-/* ! \Fixed <b>2006.06.28</b> When N == 1 State was used although it was NULL
+/* ! Fixed <b>2006.06.28</b> When N == 1 State was used although it was NULL
 void DSP::u::FIR::InputExecute(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
@@ -8773,7 +8772,7 @@ DSP::u::MyFunction::MyFunction(unsigned int NumberOfInputs, unsigned int NumberO
 
   // -# call from block constructor with NoOfInputs = -1;
   //  this is when the user can initiate UserData structure
-  (*UserFunction_ptr)(DSP::c::Callback_Init, NULL, 0, NULL, &UserData, UserCallbackID, this);
+  (*UserFunction_ptr)(DSP::Callback_Init, NULL, 0, NULL, &UserData, UserCallbackID, this);
 
   Execute_ptr = &InputExecute;
 }
@@ -8782,7 +8781,7 @@ DSP::u::MyFunction::~MyFunction(void)
 {
   //  -# call from block destructor with NoOfInputs = -2;
   //  this is when the user can free UserData structure
-  (*UserFunction_ptr)(DSP::c::Callback_Delete, NULL, 0, NULL, &UserData, UserCallbackID, this);
+  (*UserFunction_ptr)(DSP::Callback_Delete, NULL, 0, NULL, &UserData, UserCallbackID, this);
 
   if (InputData != NULL)
     delete [] InputData;
@@ -10427,12 +10426,12 @@ unsigned int DSP::Block::FindOutputIndex_by_InputIndex(unsigned int InputIndex)
       	if (InputIndex == temp->OutputBlocks_InputNo[ind2])
       	{
       		if (temp->NoOfOutputs == 1)
-      			return DSP::c::FO_TheOnlyOutput;
+      			return DSP::FO_TheOnlyOutput;
       		return ind2;
       	}
     }
   }
-  return DSP::c::FO_NoOutput;
+  return DSP::FO_NoOutput;
 }
 
 /* ************************************************ */
@@ -10719,7 +10718,7 @@ DSP::u::Copy::Copy(unsigned int NoOfInputs_in)
   for (ind = 0; ind < NoOfInputs; ind++)
   {
     InputBlocks[ind] = NULL;
-    InputBlocks_OutputNo[ind] = DSP::c::FO_NoInput;
+    InputBlocks_OutputNo[ind] = DSP::FO_NoInput;
   }
 
   indexes.resize(NoOfInputs);
@@ -10825,7 +10824,7 @@ bool DSP::u::Copy::SetCopyOutput(unsigned int OutputNo, DSP::Block_ptr block, un
 bool DSP::u::Copy::GetOutput(unsigned int OutputNo, DSP::Component_ptr &output_block, unsigned int &output_block_InputNo)
 {
   output_block = NULL;
-  output_block_InputNo = DSP::c::FO_NoInput;
+  output_block_InputNo = DSP::FO_NoInput;
 
   if (OutputNo < NoOfOutputs)
   {
@@ -10848,7 +10847,7 @@ bool DSP::u::Copy::GetOutput(unsigned int OutputNo, DSP::Component_ptr &output_b
 bool DSP::u::Copy::GetCopyOutput(unsigned int OutputNo, DSP::Block_ptr &output_block, unsigned int &output_block_InputNo)
 {
   output_block = NULL;
-  output_block_InputNo = DSP::c::FO_NoInput;
+  output_block_InputNo = DSP::FO_NoInput;
 
   if (OutputNo < NoOfOutputs)
   {
@@ -10957,7 +10956,7 @@ bool DSP::u::Copy::SetCopyInput(unsigned int InputNo, DSP::Component_ptr block, 
 bool DSP::u::Copy::GetCopyInput(unsigned int InputNo, DSP::Component_ptr &input_block, unsigned int &input_block_OutputNo)
 {
   input_block = NULL;
-  input_block_OutputNo = DSP::c::FO_NoOutput;
+  input_block_OutputNo = DSP::FO_NoOutput;
 
   if (InputNo < NoOfInputs)
   {
@@ -11068,7 +11067,7 @@ unsigned int DSP::MacroStack::GetCurrentMacroStack(DSP::Macro_ptr *&MacrosStack)
 unsigned int DSP::MacroStack::GetCurrentMacroList(vector<DSP::Macro_ptr> &MacrosList)
 {
   MacrosList.resize(ListLength);
-  // \TODO convert List into vector and copy vectors instead of using memcpy
+  //! \TODO convert DSP::MacroStack::List into vector and copy vectors instead of using memcpy
   memcpy(MacrosList.data(), List, ListLength*sizeof(DSP::Macro_ptr));
 
   return ListLength;
@@ -11319,7 +11318,7 @@ unsigned int DSP::Macro::GetMacroInputNo(DSP::Component_ptr output_block, unsign
   }
 
 
-  return DSP::c::FO_NoInput;
+  return DSP::FO_NoInput;
 }
 
 //! Returns clock assigned to macro external output number OutputNo

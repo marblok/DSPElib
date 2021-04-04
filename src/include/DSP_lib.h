@@ -11,7 +11,7 @@
 
 #define DSP_VER_MAJOR 0
 #define DSP_VER_MINOR 20
-#define DSP_VER_BUILD 1 // !!! without zeroes before, else this will be treated as octal number
+#define DSP_VER_BUILD 2 // !!! without zeroes before, else this will be treated as octal number
 #define DSP_VER_YEAR  2021
 #define DSP_VER       DSP_VER_MAJOR.DSP_VER_MINOR.DSP_VER_BUILD
 
@@ -663,14 +663,14 @@ string DSP::lib_version_string();
  *
  * \page lib_use_LOG LOG functions and DEBUG info
  *   \section lib_LOG_setup Setting up LOG
- *     - DSP::f::SetLogState(DSPe_LS_Mode Mode)
- *     - DSP::f::GetLogState()
- *     - ::DSPe_LS_Mode
- *     - DSP::f::NoOfErrors(bool reset)
- *     - DSP::f::SetLogState(DSPe_LS_Mode mode)
- *     - DSP::f::SetLogFileName(char *LOG_filename);
- *     - DSP::f::SetLogFunctionPtr(DSP_Message_callback_ptr function_ptr)
- *     - ::DSP_Message_callback_ptr
+ *     - DSP::log - default logstream object  
+ *     - DSP::logstream::SetLogState
+ *     - DSP::logstream::GetLogState
+ *     - DSP::E_LS_Mode
+ *     - DSP::logstream::NoOfErrors
+ *     - DSP::logstream::SetLogFileName
+ *     - DSP::logstream::SetLogFunctionPtr
+ *     - DSP::Message_callback_ptr
  *     .
  *   \section lib_LOG_dbg DEBUG info
  *     In DEBUG mode wide range of information about problems encountered
@@ -682,9 +682,13 @@ string DSP::lib_version_string();
  *      - can list all existing blocks (for example to check if there are some not deleted blocks after clean up process)
  *      .
  *   \section lib_LOG_usr User LOG messages
- *     - DSP::f::InfoMessage(char *source, char *message)
- *     - DSP::f::ErrorMessage(char *source, char *message)
- *     - DSP::f::Message(int IsError, char *source, char *message)
+ *     - DSP::LogMode::Info, DSP::LogMode::Error, DSP::LogMode::first, DSP::LogMode::second
+ *       - DSP::log << "Hello" << DSP::LogMode::second << "This is echo !!!" << endl;
+ *       - DSP::log << DSP::LogMode::Error << "MAIN" << DSP::LogMode::second << "end" << endl;
+ *       .
+ *     - DSP::LogMode::pause, DSP::LogMode::pause_off
+ *       - DSP::log << DSP::LogMode::pause << "Finished SolveMatrix test" << endl;
+ *       .
  *     .
  *   \section lib_LOG_wx Working with wxWidgets
  *   .
