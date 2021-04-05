@@ -13,19 +13,27 @@
 #include <DSP_modules.h>
 #include <DSP_types.h>
 
-//Version of the morse code table file (*.mct)
-#define morse_table_VER 1
+namespace DSP {
+  //Version of the morse code table file (*.mct)
+  const unsigned long Morse_Table_VER = 1;
 
-#define FontsEditEntriesNo 1
-#define MorseCodeEditEntriesNo 12
-#define MaxMorseCodeEntriesNumber 1024
+  const unsigned long FontsEditEntriesNo = 1;
+  const unsigned long MorseCodeEditEntriesNo = 12;
+  const unsigned long MaxMorseCodeEntriesNumber = 1024;
 
-class TMorseTable
+  class TMorseTable;
+  namespace u {
+    class MORSEkey;
+  }
+}
+
+
+class DSP::TMorseTable
 {
   private:
     static int TablesNo;
     static TMorseTable *FirstTable;
-    static const char *BaseDirectory;
+    static const string &BaseDirectory;
 
     TMorseTable *NextTable;
 
@@ -40,30 +48,30 @@ class TMorseTable
     bool LoadFromFile(const string &Name);
 
     string FontName[FontsEditEntriesNo];
-    WORD  FontCharset[FontsEditEntriesNo];
+    uint16_t  FontCharset[FontsEditEntriesNo];
     string TestText[FontsEditEntriesNo];
 
-    WORD  MorseCodeEntriesNo;
-    DWORD MorseCode[MaxMorseCodeEntriesNumber]; //Converter to number
+    uint16_t  MorseCodeEntriesNo;
+    uint32_t MorseCode[MaxMorseCodeEntriesNumber]; //Converter to number
 //    char  CharCode[MaxMorseCodeEntriesNumber];
     char CharCode[MaxMorseCodeEntriesNumber];
     char CharBCode[MaxMorseCodeEntriesNumber];
     unsigned char FontNo[MaxMorseCodeEntriesNumber];
 
-    static int FontCharset2Ind(DWORD charset);
-    static DWORD Ind2FontCharset(int ind);
-    static const char *Ind2AnsiString(int ind);
+    static int FontCharset2Ind(uint32_t charset);
+    static uint32_t Ind2FontCharset(int ind);
+    static const string Ind2AnsiString(int ind);
 
-    static DWORD MorseCodeText2Number(const string &dot_dash_text);
+    static uint32_t MorseCodeText2Number(const string &dot_dash_text);
     /*!
      * @param Number        - numerical representation of MORSE code
      * @return output text
      */
-    static string Number2MorseCodeText(DWORD Number);
+    static string Number2MorseCodeText(uint32_t Number);
     //! Converts character into Morse code number
     /*! \warning  works only for single character codes
      */
-    DWORD Char2Number(char znak);
+    uint32_t Char2Number(char znak);
 
     int MorseCodeText2LetterInd(const string &dot_dash_text);
 
@@ -93,9 +101,9 @@ class TMorseTable
  *   -# "out", "out.re" - real valued keying signal
  *  - Input: none
  *
- *  \todo include DSP::Rand class if random dot/dash length will be used
+ *  \todo include DSP::Randomization class if random dot/dash length will be used
  */
-class DSPu_MORSEkey : public DSP::Source // , public DSP::Rand
+class DSP::u::MORSEkey : public DSP::Source // , public DSP::Randomization
 {
   private:
     void Init(DSP::Clock_ptr ParentClock);
@@ -105,7 +113,7 @@ class DSPu_MORSEkey : public DSP::Source // , public DSP::Rand
     //int current_char; // always first char is the current char
 
     //! current key state (1.0/0.0 == ON/OFF)
-    DSP_float value;
+    DSP::Float value;
     int state, morse_state;
 
     string morse_text;
@@ -145,7 +153,7 @@ class DSPu_MORSEkey : public DSP::Source // , public DSP::Rand
     static float GetDotLength(float WPM_in, long sampling_rate_in,
         float dash2dot_ratio = 3.0, float space2dot_ratio = 7.0);
 
-    bool LoadCodeTable(char *filename);
+    bool LoadCodeTable(const string &filename);
 
     //! Changes manually current key state
     /*!
@@ -158,8 +166,8 @@ class DSPu_MORSEkey : public DSP::Source // , public DSP::Rand
     //! Append char to the characters to transmit
     void AddChar(char znak);
 
-    DSPu_MORSEkey(DSP::Clock_ptr ParentClock, float WPM_in = 20.0, long sampling_rate_in = 8000);
-    ~DSPu_MORSEkey(void);
+    MORSEkey(DSP::Clock_ptr ParentClock, float WPM_in = 20.0, long sampling_rate_in = 8000);
+    ~MORSEkey(void);
 };
 
 #endif

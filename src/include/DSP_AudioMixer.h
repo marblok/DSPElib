@@ -51,9 +51,9 @@ class TAudioMixer
   private:
 #ifdef WIN32
     static UINT WaveInCaps_size;
-    static WAVEINCAPS  *WaveInCaps;
+    static std::vector<WAVEINCAPS> WaveInCaps;
     static UINT WaveOutCaps_size;
-    static WAVEOUTCAPS *WaveOutCaps;
+    static std::vector<WAVEOUTCAPS> WaveOutCaps;
 #endif // WIN32
 
   public:
@@ -96,14 +96,14 @@ class TAudioMixer
       bool MixerControlWAVEIN_MUTE_supported;
 
       //Number of items: MixerControlWAVEIN.cMultipleItems
-      MIXERCONTROLDETAILS_LISTTEXT *MixerControlDetailsWAVEIN_LISTTEXT;
+      std::vector<MIXERCONTROLDETAILS_LISTTEXT> MixerControlDetailsWAVEIN_LISTTEXT;
       //Details for WAVEIN mixer control attached lines (sources) names and IDs (dwParam1)
-      MIXERLINE *MixerLinesWAVEIN; //pointer for lines of WAVEIN sources
+      std::vector<MIXERLINE> MixerLinesWAVEIN; //pointer for lines of WAVEIN sources
       DWORD MixerLinesWAVEIN_MAXcChannels;
-      MIXERCONTROL *MixerControlsWAVEIN_VOLUME; //pointer for controls for WAVEIN sources
-      bool         *MixerControlsWAVEIN_VOLUME_supported; //pointer table with entries indicating if volume control is supported
-      MIXERCONTROL *MixerControlsWAVEIN_MUTE; //pointer for controls for WAVEIN sources
-      bool         *MixerControlsWAVEIN_MUTE_supported;
+      std::vector<MIXERCONTROL> MixerControlsWAVEIN_VOLUME; //pointer for controls for WAVEIN sources
+      std::vector<bool>         MixerControlsWAVEIN_VOLUME_supported; //pointer table with entries indicating if volume control is supported
+      std::vector<MIXERCONTROL> MixerControlsWAVEIN_MUTE; //pointer for controls for WAVEIN sources
+      std::vector<bool>         MixerControlsWAVEIN_MUTE_supported;
 
 
 
@@ -116,26 +116,26 @@ class TAudioMixer
       //Number of items: MixerLineOUT.cConnections
   //    MIXERCONTROLDETAILS_LISTTEXT *MixerControlDetailsOUT_LISTTEXT;
       //Details for output mixer control attached lines (destinations) names and IDs (dwParam1)
-      MIXERLINE *MixerLinesOUT; //pointer for lines of outputs
+      std::vector<MIXERLINE> MixerLinesOUT; //pointer for lines of outputs
       DWORD MixerLinesOUT_MAXcChannels;
-      MIXERCONTROL *MixerControlsOUT_VOL; //pointer for controls for outputs volume
-      bool         *MixerControlsOUT_VOL_supported;
-      MIXERCONTROL *MixerControlsOUT_MUTE; //pointer for controls for outputs MUTE
-      bool         *MixerControlsOUT_MUTE_supported;
+      std::vector<MIXERCONTROL> MixerControlsOUT_VOL; //pointer for controls for outputs volume
+      std::vector<bool>         MixerControlsOUT_VOL_supported;
+      std::vector<MIXERCONTROL> MixerControlsOUT_MUTE; //pointer for controls for outputs MUTE
+      std::vector<bool>         MixerControlsOUT_MUTE_supported;
 
 
       //Memorized
       bool                Memorized_WAVEIN_MasterState[1];
       double              Memorized_WAVEIN_MasterVolume[1];
-      MIXERCONTROLDETAILS_BOOLEAN *Memorized_ControlWAVEIN_BOOLEAN; //Memorized ControlWAVEIN state
-      MIXERCONTROLDETAILS_UNSIGNED *Memorized_ControlWAVEIN_UNSIGNED; //Memorized source lines volume values
+      std::vector<MIXERCONTROLDETAILS_BOOLEAN>  Memorized_ControlWAVEIN_BOOLEAN; //Memorized ControlWAVEIN state
+      std::vector<MIXERCONTROLDETAILS_UNSIGNED> Memorized_ControlWAVEIN_UNSIGNED; //Memorized source lines volume values
 
     #endif
 
     DSP::e::AM_MutedState    Memorized_OUT_MasterState[2];
     double                   Memorized_OUT_MasterVolume[2];
-    DSP::e::AM_MutedState    *Memorized_OUT_LinesStates;
-    double                   *Memorized_OUT_LinesVolumes;
+    std::vector<DSP::e::AM_MutedState> Memorized_OUT_LinesStates;
+    std::vector<double>                Memorized_OUT_LinesVolumes;
 
     bool MixerSettingsMemorized_WAVEIN;
     bool MixerSettingsMemorized_OUT;

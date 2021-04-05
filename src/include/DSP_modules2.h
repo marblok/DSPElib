@@ -14,6 +14,29 @@
 #include <DSP_Fourier.h>
 #include <DSP_modules.h>
 
+namespace DSP {
+  namespace u {
+    class AGC;
+    class BPSK_SNR_estimator;
+    class Farrow;
+    class FFT;
+    class DynamicCompressor;
+    class GardnerSampling;
+    class TimingErrorDetector;
+    class PSKencoder;
+    class PSKdecoder;
+    class Serial2Parallel;
+    class Parallel2Serial;
+    class SymbolMapper;
+    class SymbolDemapper;
+  }
+
+  namespace e {
+    enum struct GardnerSamplingOptions : unsigned int;
+    inline DSP::e::GardnerSamplingOptions operator|(DSP::e::GardnerSamplingOptions __a, DSP::e::GardnerSamplingOptions __b);
+    inline DSP::e::GardnerSamplingOptions operator&(DSP::e::GardnerSamplingOptions __a, DSP::e::GardnerSamplingOptions __b);
+  }
+}
 
 /**************************************************/
 //! AGC - automatic gain control
@@ -29,25 +52,25 @@
  *   -# "in.re" - real component\n
  *      "in.im" - imag component
  */
-class DSPu_AGC : public DSP::Block
+class DSP::u::AGC : public DSP::Block
 {
   private:
-    DSP_float alfa;
-    DSP_float signal_power;
-    DSP_float out_power;
+    DSP::Float alfa;
+    DSP::Float signal_power;
+    DSP::Float out_power;
 
-    DSP_complex input;
+    DSP::Complex input;
 
     static void InputExecute(INPUT_EXECUTE_ARGS);
   public:
-    DSPu_AGC(DSP_float alfa_in,  //! forgeting factor
-            DSP_float init_signal_power=1.0,  //! initial value of the signal power
-            DSP_float output_signal_power=1.0  //! output signal power
+    AGC(DSP::Float alfa_in,  //! forgeting factor
+            DSP::Float init_signal_power=1.0,  //! initial value of the signal power
+            DSP::Float output_signal_power=1.0  //! output signal power
           );
-    ~DSPu_AGC(void);
+    ~AGC(void);
 
     //! returns current estimated signal power
-    DSP_float GetPower(void);
+    DSP::Float GetPower(void);
 };
 
 
@@ -62,22 +85,22 @@ class DSPu_AGC : public DSP::Block
  *    -# "in.re" - real component
  *    -# "in.im" - imag component
  */
-class DSPu_BPSK_SNR_estimator : public DSP::Block
+class DSP::u::BPSK_SNR_estimator : public DSP::Block
 {
   private:
     //! number of symbols used for current value estimation
     int SegmentSize;
 
     //! buffer for real input values of the size SegmentSize
-    DSP_float_ptr RealBuffer;
+    DSP::Float_vector RealBuffer;
     //! current free slot RealBuffer index
     int current_ind;
 
     //! Current values of real and imag symbol components
-    DSP_float Input_Real, Input_Imag;
+    DSP::Float Input_Real, Input_Imag;
 
     //! Current value of the estimated SNR
-    DSP_float EstimatedSNR;
+    DSP::Float EstimatedSNR;
 
     //! Processing block execution function
     /*! This function provides input parameters
@@ -85,33 +108,26 @@ class DSPu_BPSK_SNR_estimator : public DSP::Block
      */
     static void InputExecute(INPUT_EXECUTE_ARGS);
   public:
-    //! DSPu_BPSK_SNR_estimator constructor
+    //! DSP::u::BPSK_SNR_estimator constructor
     /*! segment_size - number of symbols used for current value estimation,
      */
-    DSPu_BPSK_SNR_estimator(int segment_size);
+    BPSK_SNR_estimator(int segment_size);
 
-    ~DSPu_BPSK_SNR_estimator(void);
+    ~BPSK_SNR_estimator(void);
 };
 
-//! SNR estimation for PSK modulation (BPSK & QPSK) based on complex symbol samples
-/*! 1) buffer_size is in symbols
- *  2) buffer contains 2*buffer_size floating point values (real & imag)
- *
- * \warning in this version Buffer is overwrited
- *
- */
-void DSPf_PSK_SNR_estimator(int buffer_size, DSP_float_ptr buffer,
-                            DSP_float &BPSK_SNR, DSP_float &QPSK_SNR);
-//! SNR estimation for PSK modulation (BPSK & QPSK) based on complex symbol samples
-/*! 1) buffer_size is in symbols
- *  2) buffer contains 2*buffer_size floating point values (real & imag)
- *
- * \warning in this version preserves input buffer
- *
- */
-void DSPf_PSK_SNR_estimator2(int buffer_size, DSP_float_ptr buffer,
-                             DSP_float &BPSK_SNR, DSP_float &QPSK_SNR);
-
+namespace DSP {
+  namespace f {
+    //! SNR estimation for PSK modulation (BPSK & QPSK) based on complex symbol samples
+    /*! 1) buffer_size is in symbols
+    *  2) buffer contains 2*buffer_size floating point values (real & imag)
+    *
+    * \note Buffer content is preserved.
+    */
+    void PSK_SNR_estimator(const int &buffer_size, const DSP::Float_vector &buffer,
+                           DSP::Float &BPSK_SNR, DSP::Float &QPSK_SNR);
+  }
+}
 
 /**************************************************/
 //! DynamicCompressor - changes input signal dynamic
@@ -126,11 +142,11 @@ void DSPf_PSK_SNR_estimator2(int buffer_size, DSP_float_ptr buffer,
  *   -# "in.re" - real part of input signal
  *   -# "in.im" - imaginary part of input signal (if it exists)
  */
-class DSPu_DynamicCompressor : public DSP::Block
+class DSP::u::DynamicCompressor : public DSP::Block
 {
   private:
-    DSP_float_ptr SamplesBuffer;
-    DSP_float_ptr PowerBuffer; //! Sample Energy per PowerBufferSize
+    DSP::Float_vector SamplesBuffer;
+    DSP::Float_vector PowerBuffer; //! Sample Energy per PowerBufferSize
     unsigned int index; //! index of the current free entry in SamplesBuffer
     unsigned int power_index; //! index of the current free entry in PowerBuffer
     //output_index == index because the SampleBuffer is shorter then PowerBuffer
@@ -142,9 +158,9 @@ class DSPu_DynamicCompressor : public DSP::Block
     unsigned int SamplesBufferSize;
     unsigned int PowerBufferSize; //! BufferSize_in
 
-    DSP_complex temp_value;
-    DSP_float factor_0, alfa;
-    DSP_float CurrentPower; //! Current input signal power evaluated based on values in PowerBuffer
+    DSP::Complex temp_value;
+    DSP::Float factor_0, alfa;
+    DSP::Float CurrentPower; //! Current input signal power evaluated based on values in PowerBuffer
 
     static void InputExecute_no_delay_real(INPUT_EXECUTE_ARGS);
     static void InputExecute_no_delay_complex(INPUT_EXECUTE_ARGS);
@@ -161,9 +177,9 @@ class DSPu_DynamicCompressor : public DSP::Block
      *   Default delay (OutputDelay = -1) is floor((BufferSize_in-1)/2).
      *   Any value in range from 0 to BufferSize_in-1 can be set.
      */
-    DSPu_DynamicCompressor(int BufferSize_in, DSP_float a0, DSP_float Po_dB = 0.0,
+    DynamicCompressor(int BufferSize_in, DSP::Float a0, DSP::Float Po_dB = 0.0,
                            bool IsInputComplex = false, int OutputDelay_in = -1);
-    ~DSPu_DynamicCompressor(void);
+    ~DynamicCompressor(void);
 };
 
 
@@ -189,18 +205,18 @@ class DSPu_DynamicCompressor : public DSP::Block
  *
  * \note For current implementation "eps" must have the same clock as "out" which can be the same as the clock for "in"
  */
-class DSPu_Farrow  : public DSP::Block, public DSP::Source
+class DSP::u::Farrow  : public DSP::Block, public DSP::Source
 {
   private:
     //! length of implemented FSD filter
     unsigned long N_FSD;
     //! input signal buffer
-    /*! for real input table od DSP_float /n
-     *  for complex input table od DSP_complex
+    /*! for real input table od DSP::Float /n
+     *  for complex input table od DSP::Complex
      *
      * \note that most recent sample is the last sample in buffer
      */
-    uint8_t *Buffer;
+    std::vector<uint8_t> Buffer;
 
     //! Order of the Farrow structure + 1 (length of Farrow polynomials)
     unsigned long Farrow_len;
@@ -210,12 +226,12 @@ class DSPu_Farrow  : public DSP::Block, public DSP::Source
      *
      *  This is transposition of the constructor input table Farrow_coefs_in.
      */
-    DSP_float_ptr *Farrow_coefs;
+    std::vector<DSP::Float_vector> Farrow_coefs;
 
     //! variable storing currently evaluated output sample
-    DSP_complex currentOutput;
+    DSP::Complex currentOutput;
     //! current net delay value
-    DSP_float epsilon;
+    DSP::Float epsilon;
 
 
     //! Function calculates output sample and stores it in currentOutput
@@ -256,7 +272,7 @@ class DSPu_Farrow  : public DSP::Block, public DSP::Source
     // * \param InputClock clock for input signal
     // * \param OutputClock clock for output signal
     // */
-    //DSPu_Farrow(bool IsComplex, unsigned int N_FSD_in, unsigned int order_in, DSP_float_ptr *Farrow_coefs_in,
+    //DSP::u::Farrow(bool IsComplex, unsigned int N_FSD_in, unsigned int order_in, DSP::Float_ptr *Farrow_coefs_in,
     //            DSP::Clock_ptr InputClock, DSP::Clock_ptr OutputClock);
 
     //! InputClock == NULL <- auto detection at connection time
@@ -274,28 +290,31 @@ class DSPu_Farrow  : public DSP::Block, public DSP::Source
      * \param InputClock clock for input signal
      * \param OutputClock clock for output signal
      */
-    DSPu_Farrow(const bool &IsComplex, const vector<DSP_float_vector> &Farrow_coefs_in,
+    Farrow(const bool &IsComplex, const vector<DSP::Float_vector> &Farrow_coefs_in,
       const DSP::Clock_ptr &InputClock, const DSP::Clock_ptr &OutputClock);
     
-    ~DSPu_Farrow(void);
+    ~Farrow(void);
 };
 /**************************************************/
 
-enum DSPe_GardnerSamplingOptions {
+enum struct DSP::e::GardnerSamplingOptions : unsigned int {
     //! all additional options off
-    DSP_GS_none = 0,
+    none = 0,
     //! block must activate output clock each time output sample is generated
-    DSP_GS_activate_output_clock = 1,
+    activate_output_clock = 1,
     //! block must output clock activation signal (signal working with input clock)
-    DSP_GS_use_activation_signal = 2,
+    use_activation_signal = 2,
     //! block must output input samples delay offsets (signal working with input clock)
-    DSP_GS_use_delay_output = 4,
+    use_delay_output = 4,
     //! OQPSK signal mode: signal is sampled according to N_symb (which should be half of OQPSK symbol period) but error signal is calculated for 2*N_symb
-    DSP_GS_OQPSK = 8,
+    OQPSK = 8,
     };
-inline DSPe_GardnerSamplingOptions operator|(DSPe_GardnerSamplingOptions __a,
-                                             DSPe_GardnerSamplingOptions __b)
-  { return DSPe_GardnerSamplingOptions(static_cast<int>(__a) | static_cast<int>(__b)); }
+inline DSP::e::GardnerSamplingOptions DSP::e::operator|(DSP::e::GardnerSamplingOptions __a,
+                                             DSP::e::GardnerSamplingOptions __b)
+  { return DSP::e::GardnerSamplingOptions(static_cast<int>(__a) | static_cast<int>(__b)); }
+inline DSP::e::GardnerSamplingOptions DSP::e::operator&(DSP::e::GardnerSamplingOptions __a,
+                                             DSP::e::GardnerSamplingOptions __b)
+  { return DSP::e::GardnerSamplingOptions(static_cast<int>(__a) & static_cast<int>(__b)); }
 
 /**************************************************/
 //! GardnerSampling - sample selection based on Gadner sampling time recovery algorithm
@@ -320,7 +339,7 @@ inline DSPe_GardnerSamplingOptions operator|(DSPe_GardnerSamplingOptions __a,
  *      "in.im" == "in1.im" - imag component
  *
  *
- * \todo_later use DSP_float_ptr y0, y1, y2 instead of DSP_complex_ptr y0, y1, y2
+ * \todo_later use DSP::Float_ptr y0, y1, y2 instead of DSP::Complex_ptr y0, y1, y2
  * to increase performance
  *
  * \todo_later output can be generated earlier when the interpolated values of y1 are available
@@ -329,27 +348,27 @@ inline DSPe_GardnerSamplingOptions operator|(DSPe_GardnerSamplingOptions __a,
  *   -# separate processing function for single input signal
  *   .
  */
-class DSPu_GardnerSampling : public DSP::Block, public DSP::Source, public DSP::Clock_trigger
+class DSP::u::GardnerSampling : public DSP::Block, public DSP::Source, public DSP::Clock_trigger
 {
   private:
-    DSP_float delay;
-    DSP_float delay_1; //(all channels simultaneously)
-//    DSP_float_ptr delay;
+    DSP::Float delay;
+    DSP::Float delay_1; //(all channels simultaneously)
+//    DSP::Float_ptr delay;
     //! half of the sampling period
-    DSP_float half_SamplingPeriod;
-    DSP_float estimated_SamplingPeriod;
-    DSP_float beta, korekta; //, tmp_korekta;
+    DSP::Float half_SamplingPeriod;
+    DSP::Float estimated_SamplingPeriod;
+    DSP::Float beta, korekta; //, tmp_korekta;
     //! maximum allowed delay correction
-    DSP_float max_korekta;
+    DSP::Float max_korekta;
     //! inner state (all channels simultaneously)
     int state_1;
 //    int *state; //! inner state
 
     unsigned int NoOfChannels;
-    DSP_complex_ptr y0, y1, y2;
+    DSP::Complex_vector y0, y1, y2;
 
     //! construction options
-    DSPe_GardnerSamplingOptions options;
+    DSP::e::GardnerSamplingOptions options;
     //! true if in last execution of InputExecute output samples have been generated
     bool output_generated;
     //! true if block should work as source
@@ -359,17 +378,17 @@ class DSPu_GardnerSampling : public DSP::Block, public DSP::Source, public DSP::
             DSP::Clock_ptr InputClock,
             DSP::Clock_ptr OutputClock,
             //! initial value of the sampling period
-            DSP_float SamplingPeriod_in,
+            DSP::Float SamplingPeriod_in,
             //! sampling period correction factor
-            DSP_float beta_in,
+            DSP::Float beta_in,
             //! maximum allowed delay correction
-            DSP_float max_korekta_in,
+            DSP::Float max_korekta_in,
             //! number of simultaneously processed subchannels
             unsigned int NoOfChannels_in,
-            DSPe_GardnerSamplingOptions options_in);
+            DSP::e::GardnerSamplingOptions options_in);
 
     static void InputExecute_with_options(INPUT_EXECUTE_ARGS);
-    // static void InputExecute(DSP::Block *block, int InputNo, DSP_float value, DSP::Component *Caller);
+    // static void InputExecute(DSP::Block *block, int InputNo, DSP::Float value, DSP::Component *Caller);
     static void InputExecute_new(INPUT_EXECUTE_ARGS);
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
 
@@ -382,43 +401,43 @@ class DSPu_GardnerSampling : public DSP::Block, public DSP::Source, public DSP::
      *  - OutputClock = NULL
      *  - options = DSP_GS_none
      */
-    DSPu_GardnerSampling(DSP_float SamplingPeriod_in,  //! initial value of the sampling period
-            DSP_float beta_in, //! sampling period correction factor
-            DSP_float max_korekta_in, //! maximum allowed delay correction
+    GardnerSampling(DSP::Float SamplingPeriod_in,  //! initial value of the sampling period
+            DSP::Float beta_in, //! sampling period correction factor
+            DSP::Float max_korekta_in, //! maximum allowed delay correction
             unsigned int NoOfChannels_in=1.0  //! number of simultaneously processed subchannels
           );
     //! Gardner sampling block constructor
     /*! Options (can be combination):
-     *  - DSP_GS_none - all additional options off
-     *  - DSP_GS_activate_output_clock - activates output clock each time output sample is generated
-     *  - DSP_GS_use_activation_signal - outputs clock activation signal for each cycle of the input clock if OutputClock == NULL otherwise output clock is used
-     *  - DSP_GS_use_delay_output - outputs input samples delay offsets for each cycle of the input clock if OutputClock == NULL otherwise output clock is used
+     *  - DSP::e::GardnerSamplingOptions::none - all additional options off
+     *  - DSP::e::GardnerSamplingOptions::activate_output_clock - activates output clock each time output sample is generated
+     *  - DSP::e::GardnerSamplingOptions::use_activation_signal - outputs clock activation signal for each cycle of the input clock if OutputClock == NULL otherwise output clock is used
+     *  - DSP::e::GardnerSamplingOptions::use_delay_output - outputs input samples delay offsets for each cycle of the input clock if OutputClock == NULL otherwise output clock is used
      *  .
      */
-    DSPu_GardnerSampling(
+    GardnerSampling(
             DSP::Clock_ptr InputClock,
             DSP::Clock_ptr OutputClock,
             //! initial value of the sampling period
-            DSP_float SamplingPeriod_in,
+            DSP::Float SamplingPeriod_in,
             //! sampling period correction factor
-            DSP_float beta_in,
+            DSP::Float beta_in,
             //! maximum allowed delay correction
-            DSP_float max_korekta_in,
+            DSP::Float max_korekta_in,
             //! number of simultaneously processed subchannels
             unsigned int NoOfChannels_in=1.0,
-            DSPe_GardnerSamplingOptions options = DSP_GS_none
+            DSP::e::GardnerSamplingOptions options = DSP::e::GardnerSamplingOptions::none
           );
-    ~DSPu_GardnerSampling(void);
+    ~GardnerSampling(void);
 
     //! returns current estimated sampling period
-    DSP_float GetSamplingPeriod(void);
+    DSP::Float GetSamplingPeriod(void);
 };
 
 
 
 //! PSK encoder - prepares symbols for PSK modulations
 /*!
- *  \note Will become obsolete block, use DSPu_SymbolMapper instead if possible.
+ *  \note Will become obsolete block, use DSP::u::SymbolMapper instead if possible.
  *
  * Supports DSP_PSK_type types:
  *  - BPSK,
@@ -437,10 +456,10 @@ class DSPu_GardnerSampling : public DSP::Block, public DSP::Source, public DSP::
  *    -# "in0" - first input bit
  *    -# "in1" - second input bit
  */
-class DSPu_PSKencoder : public DSP::Block
+class DSP::u::PSKencoder : public DSP::Block
 {
   private:
-    DSPe_PSK_type Type;
+    DSP::e::PSK_type Type;
     int State_re, State_im;
     int tmp_re, tmp_im;
     //! used in InputExecute_XXXX for current symbol index evaluation
@@ -451,15 +470,15 @@ class DSPu_PSKencoder : public DSP::Block
     static void InputExecute_QPSK_A(INPUT_EXECUTE_ARGS);
     static void InputExecute_QPSK_B(INPUT_EXECUTE_ARGS);
   public:
-    DSPu_PSKencoder(DSPe_PSK_type type=DSP_BPSK);
-    ~DSPu_PSKencoder(void);
+    PSKencoder(DSP::e::PSK_type type = DSP::e::PSK_type::BPSK);
+    ~PSKencoder(void);
 };
 
-//! Calculates constellations used in DSPu_SymbolMapper and DSPu_SymbolDemapper
+//! Calculates constellations used in DSP::u::SymbolMapper and DSP::u::SymbolDemapper
 /*!
  *  constellation_phase_offset - phase offset of constellation symbols [rad] (ignored in case of ASK)
  */
-unsigned int getConstellation(DSP_complex_vector &constellation, DSPe_Modulation_type type, const DSP_float &constellation_phase_offset, const unsigned int &bits_per_symbol_in, bool &is_real);
+unsigned int getConstellation(DSP::Complex_vector &constellation, DSP::e::ModulationType type, const DSP::Float &constellation_phase_offset, const unsigned int &bits_per_symbol_in, bool &is_real);
 
 //! Serial to parallel converter
 /*! Collects NoOfParallelOutputs samples from each input and outputs them in parallel (at the same clock cycle).
@@ -490,24 +509,24 @@ unsigned int getConstellation(DSP_complex_vector &constellation, DSPe_Modulation
  *   - at first output clock cycle not all inputs are ready, thus vector of zeros needs to be output,
  *   - at next clock cycles first input clock cycle starts and input values can be overwritten (a copy of previous state is needed)
  */
-class DSPu_Serial2Parallel : public DSP::Block, public DSP::Source
+class DSP::u::Serial2Parallel : public DSP::Block, public DSP::Source
 {
   private:
     static void InputExecute(INPUT_EXECUTE_ARGS);
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
 
     int no_of_parallel_outputs; //! number of inputs cycles before the output is generated
-    vector<DSP_float> inputs;  //! vector for input samples
-    vector<DSP_float> outputs;  //! vector for input samples
+    vector<DSP::Float> inputs;  //! vector for input samples
+    vector<DSP::Float> outputs;  //! vector for input samples
     bool output_ready; //! set true when all inputs are collected in inputs vector
     int current_cycle_no; // 0, 1, ..., no_of_inputs_per_output-1
   public:
 
-    DSPu_Serial2Parallel(const DSP::Clock_ptr &InputClock,
+    Serial2Parallel(const DSP::Clock_ptr &InputClock,
         const unsigned int &NoOfParallelOutputs,
         const unsigned int &NoOfLinesPerInput=1,
-        const vector<DSP_float> &first_output_vector={});
-    ~DSPu_Serial2Parallel(void);
+        const vector<DSP::Float> &first_output_vector={});
+    ~Serial2Parallel(void);
 };
 
 //! Parallel to serial converter
@@ -533,29 +552,29 @@ class DSPu_Serial2Parallel : public DSP::Block, public DSP::Source
  *
  * \note First output clock cycle is equivalent to input clock cycle.
  */
-class DSPu_Parallel2Serial : public DSP::Block, public DSP::Source
+class DSP::u::Parallel2Serial : public DSP::Block, public DSP::Source
 {
   private:
     static void InputExecute(INPUT_EXECUTE_ARGS);
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
 
     int no_of_parallel_inputs; //! number of output cycles per input cycle
-    vector<DSP_float> inputs;  //! vector for input samples for current clock cycle
+    vector<DSP::Float> inputs;  //! vector for input samples for current clock cycle
     bool ready; //! set true when all lines of the first input are collected in inputs vector and output can be generated for the first output clock cycle
     unsigned int no_of_first_output_sample_lines_ready; // allows for detection when the first output sample can be generated
     int current_out; //! index of currently generated output
   public:
 
-    DSPu_Parallel2Serial(const DSP::Clock_ptr &InputClock,
+    Parallel2Serial(const DSP::Clock_ptr &InputClock,
         const unsigned int &NoOfParallelInputs,
         const unsigned int &NoOfLinesPerInput=1,
         const bool &reversed_order = false);
-    ~DSPu_Parallel2Serial(void);
+    ~Parallel2Serial(void);
 };
 
-//! DSPu_SymbolMapper - prepares symbols for digital modulations based on binary input vector
+//! DSP::u::SymbolMapper - prepares symbols for digital modulations based on binary input vector
 /*!
- * Supports DSPe_Modulation_type types:
+ * Supports DSP::e::ModulationType types:
  *  - DSP_MT_PSK,
  *  - DSP_MT_APSK,
  *  - \TODO DSP_MT_DPSK,
@@ -573,7 +592,7 @@ class DSPu_Parallel2Serial : public DSP::Block, public DSP::Source
  * bits_per_symbol - number of bits per symbol.
  *  - bits_per_symbol = -1 (default) - default number of bits per symbol (based on modulation type type).
  * constellation_phase_offset - phase rotation of constellation symbols [rad]
- *  - constellation_phase_offset = DSP_M_PIx1/4 for pi/4-QPSK
+ *  - constellation_phase_offset = DSP::M_PIx1/4 for pi/4-QPSK
  *
  * Inputs and Outputs names:
  *   - Output:
@@ -584,16 +603,16 @@ class DSPu_Parallel2Serial : public DSP::Block, public DSP::Source
  *    -# "in" - vector of binary inputs: ("0" - in < 0.5, "1" - in >= 0.5)
  *    -# "in1","in2", ... - separate binary inputs; "in1" is the LSB of the symbol index in the constellation.
  */
-class DSPu_SymbolMapper : public DSP::Block
+class DSP::u::SymbolMapper : public DSP::Block
 {
   private:
-    DSPe_Modulation_type Type;
+    DSP::e::ModulationType Type;
 
     bool is_output_real;
     unsigned int bits_per_symbol;
-    DSP_complex_vector current_constellation;
+    DSP::Complex_vector current_constellation;
 
-    friend unsigned int getConstellation(DSP_complex_vector &constellation, DSPe_Modulation_type type, const DSP_float &constellation_phase_offset, const unsigned int &bits_per_symbol_in, bool &is_real);
+    friend unsigned int getConstellation(DSP::Complex_vector &constellation, DSP::e::ModulationType type, const DSP::Float &constellation_phase_offset, const unsigned int &bits_per_symbol_in, bool &is_real);
     vector <unsigned char> input_bits;
 
     static void InputExecute_bits(INPUT_EXECUTE_ARGS);
@@ -605,9 +624,9 @@ class DSPu_SymbolMapper : public DSP::Block
     unsigned int getBitsPerSymbol(void);
 
     //! Mapper selection based on modulation type and number of bits_per_symbol
-    DSPu_SymbolMapper(DSPe_Modulation_type type=DSP_MT_PSK,
+    SymbolMapper(DSP::e::ModulationType type = DSP::e::ModulationType::PSK,
                       const unsigned int &bits_per_symbol=-1,  //! bits_per_symbol based on given constellation
-                      const DSP_float &constellation_phase_offset=0.0);
+                      const DSP::Float &constellation_phase_offset=0.0);
     /*! Assuming
      * bits_per_symbol = ceil(log2(constellation.size());
      * M = 2^bits_per_symbol;
@@ -616,14 +635,14 @@ class DSPu_SymbolMapper : public DSP::Block
      *
      * \TODO implement this variant
      */
-    DSPu_SymbolMapper(const DSP_complex_vector&constellation);
-    ~DSPu_SymbolMapper(void);
+    SymbolMapper(const DSP::Complex_vector&constellation);
+    ~SymbolMapper(void);
 };
 
-//! DSPu_SymbolDemapper - based on closest constellation point to current input symbol outputs corresponding bit stream
-/*! \note This is counterpart of DSPu_SymbolMapper.
+//! DSP::u::SymbolDemapper - based on closest constellation point to current input symbol outputs corresponding bit stream
+/*! \note This is counterpart of DSP::u::SymbolMapper.
  *
- * Supports DSPe_Modulation_type types:
+ * Supports DSP::e::ModulationType types:
  *  - PSK,
  *  - APSK,
  *  .
@@ -642,18 +661,18 @@ class DSPu_SymbolMapper : public DSP::Block
  *    -# "in.re" - real part
  *    -# "in.im" - imag part (only for complex valued modulations)
 */
-class DSPu_SymbolDemapper : public DSP::Block
+class DSP::u::SymbolDemapper : public DSP::Block
 {
   private:
-    DSPe_Modulation_type Type;
+    DSP::e::ModulationType Type;
     //! used for current symbol index evaluation
-    DSP_complex input; // input sample
+    DSP::Complex input; // input sample
 
     bool is_input_real;
     unsigned int bits_per_symbol;
-    DSP_complex_vector current_constellation;
+    DSP::Complex_vector current_constellation;
 
-    friend unsigned int getConstellation(DSP_complex_vector &constellation, DSPe_Modulation_type type, const DSP_float &constellation_phase_offset, const unsigned int &bits_per_symbol_in, bool &is_real);
+    friend unsigned int getConstellation(DSP::Complex_vector &constellation, DSP::e::ModulationType type, const DSP::Float &constellation_phase_offset, const unsigned int &bits_per_symbol_in, bool &is_real);
 
     static void InputExecute_constellation(INPUT_EXECUTE_ARGS);
 
@@ -664,9 +683,9 @@ class DSPu_SymbolDemapper : public DSP::Block
     unsigned int getBitsPerSymbol(void);
 
     //! Demapper selection based on modulation type and number of bits_per_symbol
-    DSPu_SymbolDemapper(DSPe_Modulation_type type=DSP_MT_PSK,
+    SymbolDemapper(DSP::e::ModulationType type = DSP::e::ModulationType::PSK,
                         const unsigned int &bits_per_symbol=-1,  //! bits_per_symbol based on given constellation
-                        const DSP_float &constellation_phase_offset=0.0);
+                        const DSP::Float &constellation_phase_offset=0.0);
 
     //! Demapper based on given constellation
     /*! Assuming
@@ -675,15 +694,15 @@ class DSPu_SymbolDemapper : public DSP::Block
      *
      * Each bits_per_symbol input bits (first as LSB) index symbol from constellation vector
      */
-    DSPu_SymbolDemapper(const DSP_complex_vector &constellation);
-    ~DSPu_SymbolDemapper(void);
+    SymbolDemapper(const DSP::Complex_vector &constellation);
+    ~SymbolDemapper(void);
 };
 
 
 
 //! PSK decoder - decodes PSK modulations symbols
 /*!
- *  \note Will become obsolete block, use DSPu_SymbolDemapper instead if possible.
+ *  \note Will become obsolete block, use DSP::u::SymbolDemapper instead if possible.
  *
  * Supports DSP_PSK_type types:
  *  - BPSK,
@@ -702,14 +721,14 @@ class DSPu_SymbolDemapper : public DSP::Block
  *    -# "in.re" - real part
  *    -# "in.im" - imag part
  */
-class DSPu_PSKdecoder : public DSP::Block
+class DSP::u::PSKdecoder : public DSP::Block
 {
   private:
-    DSPe_PSK_type Type;
+    DSP::e::PSK_type Type;
     int State_re, State_im;
-    DSP_float f_State_re, f_State_im;
+    DSP::Float f_State_re, f_State_im;
 
-    DSP_float f_tmp_re, f_tmp_im;
+    DSP::Float f_tmp_re, f_tmp_im;
     int i_tmp_re, i_tmp_im;
 
     static void InputExecute_BPSK(INPUT_EXECUTE_ARGS);
@@ -718,8 +737,8 @@ class DSPu_PSKdecoder : public DSP::Block
     static void InputExecute_QPSK_A(INPUT_EXECUTE_ARGS);
     static void InputExecute_QPSK_B(INPUT_EXECUTE_ARGS);
   public:
-    DSPu_PSKdecoder(DSPe_PSK_type type=DSP_BPSK);
-    ~DSPu_PSKdecoder(void);
+    PSKdecoder(DSP::e::PSK_type type = DSP::e::PSK_type::BPSK);
+    ~PSKdecoder(void);
 };
 
 
@@ -743,13 +762,13 @@ class DSPu_PSKdecoder : public DSP::Block
  *   -# "in1.re", "in2.re", .../n
  *      "in1.im", "in2.im", ...
  */
-class DSPu_FFT : public DSP::Block
+class DSP::u::FFT : public DSP::Block
 {
   private:
     unsigned int K;
-    DSP_Fourier dft;
-    //DSP_complex *input_buffer, *output_buffer;
-    DSP_complex_vector input_buffer, output_buffer;
+    DSP::Fourier dft;
+    //DSP::Complex *input_buffer, *output_buffer;
+    DSP::Complex_vector input_buffer, output_buffer;
 
     static void InputExecute_cplx(INPUT_EXECUTE_ARGS);
     static void InputExecute_real(INPUT_EXECUTE_ARGS);
@@ -760,8 +779,8 @@ class DSPu_FFT : public DSP::Block
     //! FFT block
         /*! K - FFT length,
          */
-    DSPu_FFT(unsigned int K_in, bool AreInputsComplex = true);
-    ~DSPu_FFT(void);
+    FFT(unsigned int K_in, bool AreInputsComplex = true);
+    ~FFT(void);
 };
 
 /**************************************************/
@@ -777,22 +796,22 @@ class DSPu_FFT : public DSP::Block
  *   .
  *  .
  */
-class DSPu_TimingErrorDetector : public DSP::Block
+class DSP::u::TimingErrorDetector : public DSP::Block
 {
   private:
     // index to symbols: previous, current and between
     int n0, n1; // n2;
-    //DSP_float_ptr   Real_Buffer;
-    DSP_float_vector   Real_Buffer;
-    //DSP_complex_ptr Cplx_Buffer;
-    DSP_complex_vector Cplx_Buffer;
+    //DSP::Float_ptr   Real_Buffer;
+    DSP::Float_vector   Real_Buffer;
+    //DSP::Complex_ptr Cplx_Buffer;
+    DSP::Complex_vector Cplx_Buffer;
     int N_symb;
 
-    DSP_float output_real;
-    DSP_float output_real_n1;
+    DSP::Float output_real;
+    DSP::Float output_real_n1;
 
-    DSP_complex output_cplx;
-    DSP_complex output_cplx_n1;
+    DSP::Complex output_cplx;
+    DSP::Complex output_cplx_n1;
 
     static void InputExecute_real_even(INPUT_EXECUTE_ARGS);
     static void InputExecute_cplx_even(INPUT_EXECUTE_ARGS);
@@ -804,8 +823,8 @@ class DSPu_TimingErrorDetector : public DSP::Block
     /*! \param N - symbol length in [Sa],
      *  \param InputIsComplex - true if input signal is complex
      */
-    DSPu_TimingErrorDetector(int N, bool InputIsComplex = false);
-    ~DSPu_TimingErrorDetector(void);
+    TimingErrorDetector(int N, bool InputIsComplex = false);
+    ~TimingErrorDetector(void);
 };
 
 

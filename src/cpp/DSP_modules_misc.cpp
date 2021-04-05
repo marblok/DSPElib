@@ -4,7 +4,7 @@
  *
  * \author Marek Blok
  */
-//#include <math.h>
+//#include <cmath>
 
 #include <DSP_modules.h>
 #include <DSP_clocks.h>
@@ -19,14 +19,14 @@
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
 
-int TMorseTable::TablesNo=0;
-TMorseTable *TMorseTable::FirstTable=NULL;
-TMorseTable *TMorseTable::Current=NULL;
-const char *TMorseTable::BaseDirectory="./";
+int DSP::TMorseTable::TablesNo=0;
+DSP::TMorseTable *DSP::TMorseTable::FirstTable=NULL;
+DSP::TMorseTable *DSP::TMorseTable::Current=NULL;
+const string &DSP::TMorseTable::BaseDirectory="./";
 
-TMorseTable::TMorseTable(void)
+DSP::TMorseTable::TMorseTable(void)
 {
-  int ind;
+  unsigned long ind;
 
   TablesNo++;
 
@@ -37,18 +37,18 @@ TMorseTable::TMorseTable(void)
 
   //Init Fonts   TMenuItem
   FontName[0] = "Courier New";
-//! \TODO opracowanie wariantu dla linux'a
+//! \TODO Prepare variant for Linux
 #ifdef WIN32
   FontCharset[0]=ANSI_CHARSET; //RUSSIAN_CHARSET;
 #else
   FontCharset[0]=0; 
 #endif // WIN32
 
-  TestText[0] = "ABCD ���";
+  TestText[0] = "ABCD ĄĆĘ";
   for (ind=1; ind<FontsEditEntriesNo; ind++)
   {
     FontName[ind] = "";
-    FontCharset[ind]=MAXWORD;
+    FontCharset[ind]=UINT16_MAX;
     TestText[ind] = "";
   }
 
@@ -242,7 +242,7 @@ TMorseTable::TMorseTable(void)
   FontNo[MorseCodeEntriesNo++]=0;
 }
 
-int TMorseTable::FontCharset2Ind(DWORD charset)
+int DSP::TMorseTable::FontCharset2Ind(uint32_t charset)
 {
   switch (charset)
   {
@@ -254,7 +254,7 @@ int TMorseTable::FontCharset2Ind(DWORD charset)
   SYMBOL_CHARSET
   */
 
-  //! \TODO opracowanie wariantu dla linux'a
+  //! \TODO Prepare variant for Linux
   #ifdef WIN32
     case SHIFTJIS_CHARSET:
       return 9;
@@ -282,11 +282,11 @@ int TMorseTable::FontCharset2Ind(DWORD charset)
   }
 }
 
-DWORD TMorseTable::Ind2FontCharset(int ind)
+uint32_t DSP::TMorseTable::Ind2FontCharset(int ind)
 {
   switch (ind)
   {
-  //! \TODO opracowanie wariantu dla linux'a
+  //! \TODO Prepare variant for Linux
   #ifdef WIN32
     case 9:
       return SHIFTJIS_CHARSET;
@@ -310,16 +310,16 @@ DWORD TMorseTable::Ind2FontCharset(int ind)
       return DEFAULT_CHARSET;
   #endif // WIN32
     default:
-      return MAXDWORD;
+      return UINT32_MAX;
   }
 }
 
 
-const char *TMorseTable::Ind2AnsiString(int ind)
+const string DSP::TMorseTable::Ind2AnsiString(int ind)
 {
   switch (Ind2FontCharset(ind))
   {
-  //! \TODO opracowanie wariantu dla linux'a
+  //! \TODO Prepare variant for Linux
   #ifdef WIN32
     case SHIFTJIS_CHARSET:
       return "SHIFTJIS_CHARSET";
@@ -347,10 +347,10 @@ const char *TMorseTable::Ind2AnsiString(int ind)
   }
 }
 
-DWORD TMorseTable::MorseCodeText2Number(const string &dot_dash_text)
+uint32_t DSP::TMorseTable::MorseCodeText2Number(const string &dot_dash_text)
 {
-  DWORD weigth;
-  DWORD Number;
+  uint32_t weigth;
+  uint32_t Number;
 
   weigth=1;
   Number=0;
@@ -365,14 +365,14 @@ DWORD TMorseTable::MorseCodeText2Number(const string &dot_dash_text)
         Number+=(2*weigth);
         break;
       default:
-        return MAXDWORD;
+        return UINT32_MAX;
     }
     weigth*=3;
   }
   return Number;
 }
 
-string TMorseTable::Number2MorseCodeText(DWORD Number)
+string DSP::TMorseTable::Number2MorseCodeText(uint32_t Number)
 {
   string dash_dot_text = "";
 
@@ -393,9 +393,9 @@ string TMorseTable::Number2MorseCodeText(DWORD Number)
   return dash_dot_text;
 }
 
-int TMorseTable::MorseCodeText2LetterInd(const string &dot_dash_text)
+int DSP::TMorseTable::MorseCodeText2LetterInd(const string &dot_dash_text)
 {
-  DWORD number;
+  uint32_t number;
   int ind;
 
   number=MorseCodeText2Number(dot_dash_text);
@@ -412,7 +412,7 @@ int TMorseTable::MorseCodeText2LetterInd(const string &dot_dash_text)
 }
 
 // works only for codes of single charakters
-DWORD TMorseTable::Char2Number(char znak)
+uint32_t DSP::TMorseTable::Char2Number(char znak)
 {
   int ind;
 
@@ -428,13 +428,13 @@ DWORD TMorseTable::Char2Number(char znak)
   return 0;
 }
 
-void TMorseTable::Save2File(const string &Name)
+void DSP::TMorseTable::Save2File(const string &Name)
 {
   #if _DEMO_ == 0
     string Dir_FileName;
     unsigned char pomB;
-    WORD pom;
-    int ind;
+    uint16_t pom;
+    unsigned long ind;
     FILE *plik;
 
     FileName = Name;
@@ -447,26 +447,26 @@ void TMorseTable::Save2File(const string &Name)
 
     pomB=FontsEditEntriesNo;
     fwrite(&pomB, sizeof(unsigned char), 1, plik);
-    pomB=morse_table_VER;
+    pomB=Morse_Table_VER;
     fwrite(&pomB, sizeof(unsigned char), 1, plik);
     for (ind=0; ind<FontsEditEntriesNo; ind++)
     {
-      pom=(WORD) FontName[ind].length();
-      fwrite(&pom, sizeof(WORD), 1, plik);
+      pom=(uint16_t) FontName[ind].length();
+      fwrite(&pom, sizeof(uint16_t), 1, plik);
       fwrite(FontName[ind].c_str(), 1, pom, plik);
 
-      fwrite(FontCharset+ind, sizeof(WORD), 1, plik);
+      fwrite(FontCharset+ind, sizeof(uint16_t), 1, plik);
 
-      pom=(WORD) TestText[ind].length();
-      fwrite(&pom, sizeof(WORD), 1, plik);
+      pom=(uint16_t) TestText[ind].length();
+      fwrite(&pom, sizeof(uint16_t), 1, plik);
       fwrite(TestText[ind].c_str(), 1, pom, plik);
     }
 
     pom=MorseCodeEntriesNo;
-    fwrite(&pom, sizeof(WORD), 1, plik);
+    fwrite(&pom, sizeof(uint16_t), 1, plik);
     for (ind=0; ind<MorseCodeEntriesNo; ind++)
     {
-      fwrite(MorseCode+ind, sizeof(WORD), 1, plik);
+      fwrite(MorseCode+ind, sizeof(uint16_t), 1, plik);
 
       fwrite(CharCode+ind, sizeof(char), 1, plik);
       fwrite(CharBCode+ind, sizeof(char), 1, plik);
@@ -482,15 +482,15 @@ void TMorseTable::Save2File(const string &Name)
 
 //---------------------------------------------------------------------------
 
-bool TMorseTable::LoadFromFile(const string &Name)
+bool DSP::TMorseTable::LoadFromFile(const string &Name)
 {
   string Dir_FileName;
-  BYTE IleFONT;
-  BYTE ver;
+  uint8_t IleFONT;
+  uint8_t ver;
   FILE *plik;
-  WORD Ile, pom;
-  char *Fake;
-  int ind;
+  uint16_t Ile, pom;
+  std::vector<char> Fake;
+  unsigned long ind;
 
   FileName = Name;
 
@@ -508,12 +508,12 @@ bool TMorseTable::LoadFromFile(const string &Name)
     return false;
 
   //Read number of fonts //in general should be one
-  if (fread(&IleFONT, sizeof(BYTE), 1, plik) < 1)
+  if (fread(&IleFONT, sizeof(uint8_t), 1, plik) < 1)
     return false; //File's empty
 
   //Read file version number
-  fread(&ver, sizeof(BYTE), 1, plik);
-  if (ver>morse_table_VER)
+  fread(&ver, sizeof(uint8_t), 1, plik);
+  if (ver>Morse_Table_VER)
     return false; //Unknown file version
 
   //Read font data
@@ -522,7 +522,7 @@ bool TMorseTable::LoadFromFile(const string &Name)
     if (ind<FontsEditEntriesNo)
     {
       FontName[ind] = "";
-      fread(&pom, sizeof(WORD), 1, plik);
+      fread(&pom, sizeof(uint16_t), 1, plik);
       if (pom!=0)
       {
         vector<char> buffer(pom+1);
@@ -531,10 +531,10 @@ bool TMorseTable::LoadFromFile(const string &Name)
         FontName[ind] = buffer.data();
       }
 
-      fread(FontCharset+ind, sizeof(WORD), 1, plik);
+      fread(FontCharset+ind, sizeof(uint16_t), 1, plik);
 
       TestText[ind] = "";
-      fread(&pom, sizeof(WORD), 1, plik);
+      fread(&pom, sizeof(uint16_t), 1, plik);
       if (pom!=0)
       {
         vector<char> buffer(pom+1);
@@ -545,34 +545,32 @@ bool TMorseTable::LoadFromFile(const string &Name)
     }
     else
     {
-      fread(&pom, sizeof(WORD), 1, plik);
+      fread(&pom, sizeof(uint16_t), 1, plik);
       if (pom!=0)
       {
-        Fake=new char[pom];
-        fread(Fake, pom, 1, plik);
-        delete [] Fake;
+        Fake=std::vector<char>(pom);
+        fread(Fake.data(), pom, 1, plik);
       }
 
-      fread(&pom, sizeof(WORD), 1, plik);
+      fread(&pom, sizeof(uint16_t), 1, plik);
 
-      fread(&pom, sizeof(WORD), 1, plik);
+      fread(&pom, sizeof(uint16_t), 1, plik);
       if (pom!=0)
       {
-        Fake=new char[pom];
-        fread(Fake, pom, 1, plik);
-        delete [] Fake;
+        Fake=std::vector<char>(pom);
+        fread(Fake.data(), pom, 1, plik);
       }
     }
   }
 
   //Read morse codes
-  fread(&Ile, sizeof(WORD), 1, plik);
+  fread(&Ile, sizeof(uint16_t), 1, plik);
   MorseCodeEntriesNo=0;
   for (ind=0; ind<Ile; ind++)
   {
     if (ind<MaxMorseCodeEntriesNumber)
     {
-      fread(MorseCode+ind, sizeof(DWORD), 1, plik);
+      fread(MorseCode+ind, sizeof(uint16_t), 1, plik);
 
       fread(CharCode+ind, sizeof(char), 1, plik);
       switch(ver)
@@ -597,7 +595,7 @@ bool TMorseTable::LoadFromFile(const string &Name)
   return true;
 }
 
-void TMorseTable::FreeTables(void)
+void DSP::TMorseTable::FreeTables(void)
 {
   TMorseTable *Pom;
 
@@ -612,7 +610,7 @@ void TMorseTable::FreeTables(void)
 }
 
 //! \warning Not yet implemented
-void TMorseTable::LoadTables(const string &BaseDir)
+void DSP::TMorseTable::LoadTables(const string &BaseDir)
 {
   UNUSED_ARGUMENT(BaseDir);
   //! \todo convert to gcc
@@ -678,7 +676,7 @@ void TMorseTable::LoadTables(const string &BaseDir)
 }
 
 //! \todo full conversion to gcc
-void TMorseTable::NewTable(void)
+void DSP::TMorseTable::NewTable(void)
 {
   //TSearchRec F;
   TMorseTable *pom;
@@ -750,7 +748,7 @@ void TMorseTable::NewTable(void)
   Dir_FileName = "";
 }
 
-void TMorseTable::SaveCurrent(void)
+void DSP::TMorseTable::SaveCurrent(void)
 {
   if (Current!=NULL)
   {
@@ -759,7 +757,7 @@ void TMorseTable::SaveCurrent(void)
 }
 
 //! \todo convert to gcc
-bool TMorseTable::RenameCurrentTable(const string &NewName)
+bool DSP::TMorseTable::RenameCurrentTable(const string &NewName)
 {
   UNUSED_ARGUMENT(NewName);
 /*
@@ -796,17 +794,17 @@ bool TMorseTable::RenameCurrentTable(const string &NewName)
   return true;
 }
 
-const string TMorseTable::Description(void)
+const string DSP::TMorseTable::Description(void)
 {
   return TableDescription;
 }
 
-TMorseTable *TMorseTable::GetCurrent(void)
+DSP::TMorseTable *DSP::TMorseTable::GetCurrent(void)
 {
   return Current;
 }
 
-TMorseTable *TMorseTable::GetTable(int ind)
+DSP::TMorseTable *DSP::TMorseTable::GetTable(int ind)
 {
   int ind_temp=0;
   TMorseTable *pom=FirstTable;
@@ -821,7 +819,7 @@ TMorseTable *TMorseTable::GetTable(int ind)
   return pom;
 }
 
-int  TMorseTable::GetTableNo(TMorseTable *Table)
+int  DSP::TMorseTable::GetTableNo(DSP::TMorseTable *Table)
 {
   int ind_temp=0;
   TMorseTable *pom=FirstTable;
@@ -839,7 +837,7 @@ int  TMorseTable::GetTableNo(TMorseTable *Table)
     return ind_temp;
 }
 
-void TMorseTable::SelectCurrent(int ind)
+void DSP::TMorseTable::SelectCurrent(int ind)
 {
   int ind_temp=0;
   TMorseTable *pom=FirstTable;
@@ -858,19 +856,19 @@ void TMorseTable::SelectCurrent(int ind)
 }
 
 //returns number of tables
-int TMorseTable::Count(void)
+int DSP::TMorseTable::Count(void)
 {
   return TablesNo;
 }
 
-TMorseTable::~TMorseTable(void)
+DSP::TMorseTable::~TMorseTable(void)
 {
-  int ind;
+  unsigned long ind;
 
   for (ind=0; ind<FontsEditEntriesNo; ind++)
   {
     FontName[ind] = "";
-    FontCharset[ind]=MAXWORD;
+    FontCharset[ind]=UINT16_MAX;
     TestText[ind] = "";
   }
 
@@ -879,7 +877,7 @@ TMorseTable::~TMorseTable(void)
   TablesNo--;
 }
 
-void TMorseTable::ReloadCurrentTable(void)
+void DSP::TMorseTable::ReloadCurrentTable(void)
 {
   if (Current!=NULL)
     Current->LoadFromFile(Current->FileName);
@@ -892,7 +890,7 @@ void TMorseTable::ReloadCurrentTable(void)
 
 // ***************************************************** //
 // generates MORSE code keying signal
-DSPu_MORSEkey::DSPu_MORSEkey(DSP::Clock_ptr ParentClock,
+DSP::u::MORSEkey::MORSEkey(DSP::Clock_ptr ParentClock,
     float WPM_in, long sampling_rate_in)
   : DSP::Source()
 {
@@ -926,21 +924,21 @@ DSPu_MORSEkey::DSPu_MORSEkey(DSP::Clock_ptr ParentClock,
   OutputExecute_ptr = &OutputExecute;
 }
 
-void DSPu_MORSEkey::Init(DSP::Clock_ptr ParentClock)
+void DSP::u::MORSEkey::Init(DSP::Clock_ptr ParentClock)
 {
   RegisterOutputClock(ParentClock);
 };
 
-bool DSPu_MORSEkey::LoadCodeTable(char *filename)
+bool DSP::u::MORSEkey::LoadCodeTable(const string &filename)
 {
   return MorseTable.LoadFromFile(filename);
 }
 
-DSPu_MORSEkey::~DSPu_MORSEkey(void)
+DSP::u::MORSEkey::~MORSEkey(void)
 {
 }
 
-float DSPu_MORSEkey::GetDotLength(float WPM_in, long sampling_rate_in,
+float DSP::u::MORSEkey::GetDotLength(float WPM_in, long sampling_rate_in,
     float dash2dot_ratio, float space2dot_ratio)
 {
   float dots_per_minute;
@@ -967,7 +965,7 @@ float DSPu_MORSEkey::GetDotLength(float WPM_in, long sampling_rate_in,
   return dot_len_float;
 }
 
-void DSPu_MORSEkey::SetKeyingSpeed(float WPM_in, long sampling_rate_in,
+void DSP::u::MORSEkey::SetKeyingSpeed(float WPM_in, long sampling_rate_in,
     float dash2dot_ratio_in, float space2dot_ratio_in)
 {
   float dot_len_float;
@@ -985,19 +983,19 @@ void DSPu_MORSEkey::SetKeyingSpeed(float WPM_in, long sampling_rate_in,
   space_len = (int)(space2dot_ratio * dot_len_float+0.5);
 }
 
-void DSPu_MORSEkey::AddString(string AsciiText_in)
+void DSP::u::MORSEkey::AddString(string AsciiText_in)
 {
   //! TODO mutex
   AsciiText += AsciiText_in;
 }
 
-void DSPu_MORSEkey::AddChar(char znak)
+void DSP::u::MORSEkey::AddChar(char znak)
 {
   //! TODO mutex
   AsciiText += znak;
 }
 
-void DSPu_MORSEkey::SetKeyState(bool set_to_ON)
+void DSP::u::MORSEkey::SetKeyState(bool set_to_ON)
 {
   if (set_to_ON == true)
     value = 1.0;
@@ -1005,7 +1003,7 @@ void DSPu_MORSEkey::SetKeyState(bool set_to_ON)
     value = 0.0;
 }
 
-#define THIS ((DSPu_MORSEkey *)source)
+#define THIS ((DSP::u::MORSEkey *)source)
 /* state == 0
  *  - start transmit new char
  *    - get char
@@ -1032,10 +1030,10 @@ void DSPu_MORSEkey::SetKeyState(bool set_to_ON)
  * morse_state == 3
  *  - 0.0 (OFF) - transmission end
  */
-bool DSPu_MORSEkey::OutputExecute(OUTPUT_EXECUTE_ARGS)
+bool DSP::u::MORSEkey::OutputExecute(OUTPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(clock);
-  DWORD code_number;
+  uint32_t code_number;
   char znak;
   //int ind;
 

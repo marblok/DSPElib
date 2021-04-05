@@ -18,22 +18,21 @@
 
 namespace DSP {
   class Clock;
-}
-class DSPu_SOCKETinput; // required for friend class ::DSPu_SOCKETinput
-class DSPu_AudioInput; // required for friend class ::DSPu_SOCKETinput
 
-#define MAX_timeout_counter 1000
+  namespace u {
+    class AudioInput; // required for friend class ::SocketInput
+    class SocketInput; // required for friend class ::SocketInput
+  }
+
+  const unsigned long MAX_timeout_counter = 1000;
+}
+
 
 // ***************************************************** //
 // ***************************************************** //
 //! Class managing DSP algorithm clocks
 /*! The main purpose of this class is to manage
  *  multifrequency DSP algorithms.
- *
- * \todo_later Before Starting Execution (?? but once - maybe it would be
- * beter to add just function) check whether all outputs and intputs
- * are connected
- *
  *
   * Class supports independent and signal activated clocks, this allows for
   *  -# implementation of indepentend algorithms
@@ -169,8 +168,7 @@ class DSP::Clock
     //! Returns all (in ClocksList) clocks of the algorithm linked with ReferenceClock
     /*! Generaly it means that returns all the clocks with the same MasterClock as ReferenceClock.
      *
-     * ClockList - pointer to list (allocated by user) where clocks' pointers will be stored \n
-     * clocks_number - number of available entries in ClockList \n
+     * ClockList - vector with list where clocks' pointers will be stored (appended) \n
      * FindSignalActivatedClocks - if <b>true</b> function will look for
      *   signal activated clock (clocks with different MasterClock).
      *
@@ -178,10 +176,9 @@ class DSP::Clock
      * Function returns actual number of stored clocks.
      * In case of error:
      *  returns -1: no clock where found
-     *  returns clocks_number +1: ClocksList was to short to store all clocks
      */
     static long GetAlgorithmClocks(DSP::Clock_ptr ReferenceClock,
-        DSP::Clock_ptr *ClocksList, unsigned long clocks_number, bool FindSignalActivatedClocks = false);
+        vector<DSP::Clock_ptr> &ClocksList, bool FindSignalActivatedClocks = false);
 
   private:
     //8) Jednokierunkowa lista obiekt�w DSP::Clock
@@ -235,8 +232,8 @@ class DSP::Clock
     /*! e.g. audio card input
      */
     volatile static bool *InputNeedsMoreTime;
-    friend class ::DSPu_AudioInput;
-    friend class ::DSPu_SOCKETinput;
+    friend class DSP::u::AudioInput;
+    friend class DSP::u::SocketInput;
 
     //! Processes all sources related to given clock: SourcesTable
     /*! (returns false when not all sources could be processed)
@@ -251,7 +248,7 @@ class DSP::Clock
     /*! Number of clock cycles from the beginning.
      * Should be updated in DSP::Clock::Execute.
      */
-    DWORD n;
+    uint32_t n;
 
 
   private:
@@ -279,9 +276,6 @@ class DSP::Clock
 
 //?? Maybe clock's offset should also be used
     //! Creates new independent MasterClock
-    /*! \test Test if it is now possible to create several indepenent
-     * algorithms
-     */
     static DSP::Clock_ptr CreateMasterClock(void);
 
   private:
@@ -357,16 +351,6 @@ class DSP::Clock
                                  bool ReferenceClock_is_signal_activated=false);
 
   public:
-    //!Saves scheme information of the algorithm to m-file
-    /*! ReferenceClock - one of the clocks assotiated with
-     *  the algorithm which we want to store in
-     *  m-file format.
-     *
-     * \note This function is inactive in release mode.
-     *
-     */
-    static void SchemeToMfile(DSP::Clock_ptr ReferenceClock,
-                              const string &mfile_name);
     //!Saves scheme information of the algorithm to DOT-file
     /*! ReferenceClock - one of the clocks associated with
      *  the algorithm which we want to store in
@@ -386,17 +370,15 @@ class DSP::Clock
     private:
       //!Saves components information to m-file
       /*! For all components linked with this clock info is stored
-       *  in m-file format. Called from DSP::Clock::SchemeToMfile
+       *  in dot-file format. Called from DSP::Clock::SchemeToMfile
        */
-      void ClockComponentsToMfile(std::ofstream &m_plik,
-              bool *ComponentDoneTable, long max_components_number);
       bool ClockComponentsToDOTfile(std::ofstream &m_plik,
-              bool *ComponentDoneTable, long max_components_number,
-              bool *UsedMacrosTable, DSP::Macro_ptr *MacrosList, long macros_number,
-              bool *UsedClocksTable, DSP::Clock_ptr *ClocksList, long clocks_number,
+              vector<bool> &ComponentDoneTable, long max_components_number,
+              vector<bool> &UsedMacrosTable, vector<DSP::Macro_ptr> &MacrosList, 
+              vector<bool> &UsedClocksTable, vector<DSP::Clock_ptr> &ClocksList, 
               DSP::Macro_ptr DrawnMacro);
       bool ClockNotificationsToDOTfile(std::ofstream &dot_plik,
-              bool *ComponentDoneTable, long max_components_number);
+              vector<bool> &ComponentDoneTable, long max_components_number);
               //bool *UsedClocksTable, DSP::Clock_ptr *ClocksList, long clocks_number);
   #endif
 

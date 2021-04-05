@@ -1,33 +1,34 @@
 /*! Simple Digital Signal Processing Engine usage example.
  * \author Marek Blok
  * \date 2008.05.28
- * \date updated 2021.01.18
+ * \date updated 2021.04.01
  */
+#include <memory>
+
 #include <DSP_lib.h>
 
 #define buffer_size 4
-DSP_float_ptr read_buffer = NULL;
+DSP::Float_vector read_buffer;
 
-void BufferCallback(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP_float_ptr OutputSamples, DSP::void_ptr *UserDataPtr, unsigned int UserDefinedIdentifier, DSP::Component_ptr Caller)
+void BufferCallback(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP::Float_vector &OutputSamples, DSP::void_ptr *UserDataPtr, unsigned int UserDefinedIdentifier, DSP::Component_ptr Caller)
 {
-  if (NoOfInputs == DSP_Callback_Init)
+  if (NoOfInputs == DSP::Callback_Init)
   {
-    read_buffer = new DSP_float[buffer_size];
+    read_buffer.resize(buffer_size);
     return;
   }
-  if (NoOfInputs == DSP_Callback_Delete)
+  if (NoOfInputs == DSP::Callback_Delete)
   {
-    delete [] read_buffer;
-    read_buffer = NULL;
+    read_buffer.clear();
     return;
   }
 
-  DSPu_OutputBuffer *dsp_buffer;
+  DSP::u::OutputBuffer *dsp_buffer;
   int ind, counter;
 
-  dsp_buffer = (DSPu_OutputBuffer *)Caller->Convert2Block();
-  counter = dsp_buffer->ReadBuffer(read_buffer,
-                                   buffer_size*sizeof(DSP_float), // read all samples
+  dsp_buffer = (DSP::u::OutputBuffer *)Caller->Convert2Block();
+  counter = dsp_buffer->ReadBuffer(read_buffer.data(),
+                                   buffer_size*sizeof(DSP::Float), // read all samples
                                    -2,  // reset only NotificationsStep slots in buffer block
                                    DSP::e::SampleType::ST_float); // write to read_buffer in float format
 
@@ -57,30 +58,30 @@ int main(void)
   long int Fp;
   int callback_type;
 
-  DSPu_WaveInput     *AudioIn;
-  DSPu_OutputBuffer  *OutputBuffer;
-  DSPu_Multiplexer   *Multiplexer;
-  DSPu_AudioOutput   *AudioOut;
-  DSPu_Demultiplexer *Demultiplexer;
-  DSPu_Amplifier     *Scale;
-  DSPu_Multiplexer   *Multiplexer2;
+  std::shared_ptr<DSP::u::WaveInput>     AudioIn;
+  std::shared_ptr<DSP::u::OutputBuffer>  OutputBuffer;
+  std::shared_ptr<DSP::u::Multiplexer>   Multiplexer;
+  std::shared_ptr<DSP::u::AudioOutput>   AudioOut;
+  std::shared_ptr<DSP::u::Demultiplexer> Demultiplexer;
+  std::shared_ptr<DSP::u::Amplifier>     Scale;
+  std::shared_ptr<DSP::u::Multiplexer>   Multiplexer2;
 
   DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file);
   DSP::log.SetLogFileName("log_file.log");
 
-  DSP::log << DSP_lib_version_string() << endl;
+  DSP::log << DSP::lib_version_string() << endl;
 
   MasterClock=DSP::Clock::CreateMasterClock();
 
 
-  AudioIn = new DSPu_WaveInput(MasterClock, "test.wav", ".");
+  AudioIn = std::make_shared<DSP::u::WaveInput>(MasterClock, "DSPElib.wav", ".");
   Fp = AudioIn->GetSamplingRate();
 
   //callback_type = 0; // just copy samples
   callback_type = 1; // inverse spectrum
-  OutputBuffer = new DSPu_OutputBuffer(buffer_size,
+  OutputBuffer = std::make_shared<DSP::u::OutputBuffer>(buffer_size,
                               1,
-                              DSP_standard,
+                              DSP::e::BufferType::standard,
                               MasterClock,
                               -1,
                               buffer_size,
@@ -88,16 +89,16 @@ int main(void)
                               callback_type);
   BufferClock = OutputBuffer->GetOutputClock();
 
-  Multiplexer = new DSPu_Multiplexer (BufferClock, false, buffer_size);
+  Multiplexer = std::make_shared<DSP::u::Multiplexer> (BufferClock, false, buffer_size);
   MuxClock = Multiplexer->GetOutputClock();
 
-  Demultiplexer = new DSPu_Demultiplexer(false, 2);
+  Demultiplexer = std::make_shared<DSP::u::Demultiplexer>(false, 2);
   DemuxClock = DSP::Clock::GetClock(MuxClock, 1,2);
 
-  Scale = new DSPu_Amplifier(-1.0, 1);
-  Multiplexer2 = new DSPu_Multiplexer(DemuxClock, false, 2);
+  Scale = std::make_shared<DSP::u::Amplifier>(-1.0, 1);
+  Multiplexer2 = std::make_shared<DSP::u::Multiplexer>(DemuxClock, false, 2);
 
-  AudioOut = new DSPu_AudioOutput(Fp);
+  AudioOut = std::make_shared<DSP::u::AudioOutput>(Fp);
 
 
   AudioIn->Output("out") >> OutputBuffer->Input("in");
@@ -122,14 +123,16 @@ int main(void)
     temp++;
   }
   while (AudioIn->GetBytesRead() != 0);
+  // process a bit more so the buffered samples are also sent to output
+  DSP::Clock::Execute(MasterClock, Fp/8);
 
-  delete AudioOut;
-  delete Multiplexer2;
-  delete Scale;
-  delete Demultiplexer;
-  delete OutputBuffer;
-  delete Multiplexer;
-  delete AudioIn;
+  AudioOut.reset();
+  Multiplexer2.reset();
+  Scale.reset();
+  Demultiplexer.reset();
+  OutputBuffer.reset();
+  Multiplexer.reset();
+  AudioIn.reset();
 
   DSP::Clock::ListOfAllComponents();
   DSP::Clock::FreeClocks();

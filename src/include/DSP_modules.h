@@ -7,7 +7,7 @@
 #define DSPmodulesH
 
 //#include <string.h>
-//#include <math.h>
+//#include <cmath>
 //#include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -38,7 +38,7 @@ namespace DSP {
 
   class _connect_class; //private connect functions  
 
-  class Rand;
+  class Randomization;
 }
 
 namespace DSP {
@@ -49,6 +49,50 @@ namespace DSP {
   class MacroStack;
 }
 
+namespace DSP {
+  namespace u {
+    class Copy;
+    class Delay;
+    class LoopDelay;
+    class Splitter;
+    class Amplifier;
+    class Addition;
+    class Power;
+    class Multiplication;
+    class RealMultiplication;
+    class RawDecimator;
+    class Zeroinserter;
+    class Const;
+    class Rand;
+    class BinRand;
+    class LFSR;
+    class LFSR_tester;
+    class COSpulse;
+    class DDScos;
+    class DCO;
+    class IIR;
+    class FIR;
+    class Differator;
+    class Accumulator;
+    class SamplingRateConversion;
+    class Maximum;
+    class Selector;
+    class SampleSelector;
+    class ClockTrigger;
+    class CrossSwitch;
+    class Conjugation;
+    class ABS;
+    class Angle;
+    class CMPO;
+    class PCCC;
+    class CCPC;
+    class MyFunction;
+    class Hold;
+    class Demultiplexer;
+    class Multiplexer;
+    class Quantizer;
+  }
+}
 bool operator>>( const DSP::output &output, const DSP::input &input);
 bool operator<<( const DSP::input &input, const DSP::output  &output);
 
@@ -150,7 +194,7 @@ class DSP::input
 };
 
 //! Object containing information about name of specific object
-/*! \Fixed <b>2005.10.30</b> This class is empty in release mode.
+/*! Fixed <b>2005.10.30</b> This class is empty in release mode.
  *    And in such a case returns NULL as name.
  *
  *  \warning debug libraries must be created with -I../src/include/dbg
@@ -187,14 +231,14 @@ class DSP::name
  *  in the current clock cycle.
  *
  *  \note
- *  <b>1.</b> Names of all DSP units classes should start from <b>DSPu_</b> (e.g. DSPu_ABS),
+ *  <b>1.</b> Names of all DSP units classes should start from <b>DSP::u::</b> (e.g. DSP::u::ABS),
  *  where 'u' stands for unit.
  *  \note
- *  <b>2.</b> Names of enumeration types should begin with <b>DSPe_</b>.
+ *  <b>2.</b> Names of enumeration types should begin with <b>DSP::e::</b>.
  *  \note
- *  <b>3.</b> Names of auxiliary functions should begin with <b>DSPf_</b>.
+ *  <b>3.</b> Names of auxiliary functions should begin with <b>DSP::f::</b>.
  *  \note
- *  <b>4.</b> Names of auxiliary objects should begin with <b>DSPo_</b>.
+ *  <b>4.</b> Names of auxiliary objects should begin with <b>DSP::o::</b>.
  *
  *
  *  Three types of DSP units can be implemented:
@@ -221,7 +265,7 @@ class DSP::name
  *  The new DSP unit must be descendant class of DSP::Source or DSP::Block or both.
  *  In this class at least following elements must be implemented
  *   - \ref constr_ "constructor" and \ref destr_ "destructor"
- *   - in processing unit: static function <b>bool Execute(int InputNo, DSP_float value);</b>.
+ *   - in processing unit: static function <b>bool Execute(int InputNo, DSP::Float value);</b>.
  *     \ref proc_exec_ "See ..."
  *   - in source unit: static function <b>bool Execute(void);</b>
  *     \ref source_exec_ "See ..."
@@ -247,7 +291,7 @@ class DSP::name
  *  - In algorithm creation function use DSP::Block::SetConstInput
  *    to set values to inputs you want to have constant value.
  *    \warning At least one input must be left non-constant.
- *      If all input should be constant use DSPu_Constant source
+ *      If all input should be constant use DSP::u::Constant source
  *      block for at least one input.
  *  - If block requires additional processing when constant input is set,
  *    implement descendant function for void DSP::Block::RecalculateInitials (void).
@@ -256,7 +300,7 @@ class DSP::name
  *  .
  *
  * \code
-  void DSPu_MyBlock_with_constant_inputs::RecalculateInitials (void)
+  void DSP::u::MyBlock_with_constant_inputs::RecalculateInitials (void)
   {
     int ind;
 
@@ -355,14 +399,14 @@ class DSP::name
  * {
  *   private:
  *     // ...
- *     static void Execute_test(DSP::Block_ptr block, int InputNo, DSP_float value, DSP::Component *Caller);
+ *     static void Execute_test(DSP::Block_ptr block, int InputNo, DSP::Float value, DSP::Component *Caller);
  *   public:
  *     // ...
  *     DSP_test(...);
  *
  * };
  *
- * void DSP_test::Execute_test(DSP::Block_ptr block, int InputNo, DSP_float value, DSP::Component *Caller)
+ * void DSP_test::Execute_test(DSP::Block_ptr block, int InputNo, DSP::Float value, DSP::Component *Caller)
  * {
  *  / * ... * /
  * }
@@ -384,7 +428,7 @@ class DSP::name
  * Example 1:
  * \code
   #define THIS_ ((DSP_test *)block)
-  void DSP_test::Execute(DSP::Block_ptr block, int InputNo, DSP_float value)
+  void DSP_test::Execute(DSP::Block_ptr block, int InputNo, DSP::Float value)
   {
     THIS_->OutputBlocks[0]->Execute_1(THIS_->OutputBlocks_InputNo[0], 0.5*value);
   }
@@ -399,7 +443,7 @@ class DSP::name
  * Example 2:
  * \code
   #define THIS_ ((DSP_test *)block)
-  void DSP_test::Execute_2(int InputNo, DSP_float value)
+  void DSP_test::Execute_2(int InputNo, DSP::Float value)
   {
     int ind;
 
@@ -415,7 +459,7 @@ class DSP::name
  * Example 3:
  * \code
   #define THIS_ ((DSP_test *)block)
-  void DSP_test::Execute_3(int InputNo, DSP_float value)
+  void DSP_test::Execute_3(int InputNo, DSP::Float value)
   {
     //In general we should check whether each input is executed only once per cycle
     THIS_->State += value;
@@ -435,7 +479,7 @@ class DSP::name
  * and then sent to the output block.
  * Two additional variables declared in block are used:
  * \code
-  DSP_float State;
+  DSP::Float State;
   unsigned int NoOfInputsProcessed;
    \endcode
  *
@@ -544,10 +588,10 @@ class DSP::name
  * all required input samples are ready.
  *
  \code
-  #define THIS ((DSPu_DDScos *)block)
-	void DSPu_DDScos::InputExecute( DSP::Block *  block,
+  #define THIS ((DSP::u::DDScos *)block)
+	void DSP::u::DDScos::InputExecute( DSP::Block *  block,
   					unsigned int  InputNo,
-  					DSP_float  value,
+  					DSP::Float  value,
   					DSP::Component *  Caller )
  	{
 		THIS->NoOfInputsProcessed++;
@@ -557,17 +601,17 @@ class DSP::name
 				THIS->A=value;
 				break;
 			case 1: //angular frequency
-				THIS->frequency=value/M_PIx2;
+				THIS->frequency=value/DSP::M_PIx2;
 				break;
 			case 2: //initial phase
-				THIS->phase=value/M_PIx2;
+				THIS->phase=value/DSP::M_PIx2;
 				break;
 			default:
 				break;
 		}
 	}
 
-	bool DSPu_DDScos::OutputExecute_real(DSP::Source_ptr source, DSP::Clock_ptr clock)
+	bool DSP::u::DDScos::OutputExecute_real(DSP::Source_ptr source, DSP::Clock_ptr clock)
 	{
 		if (THIS->NoOfInputsProcessed < NoOfInputs)
 		{ //Not all parameters are already read
@@ -580,7 +624,7 @@ class DSP::name
 		// Generate output sample
 		THIS->OutputBlocks[0]->Execute_ptr(
 				THIS->OutputBlocks[0], THIS->OutputBlocks_InputNo[0],
-				THIS->A * cos(M_PIx2 * (THIS->CurrentPhase + THIS->phase)), source);
+				THIS->A * cos(DSP::M_PIx2 * (THIS->CurrentPhase + THIS->phase)), source);
 
 		//Update phase for next sample
 		THIS->CurrentPhase += THIS->frequency;
@@ -620,7 +664,7 @@ class DSP::name
  *
  * \note In some cases source must wait for external events before it is ready
  *   to output samples, even though all other sources are ready. For example
- *   DSPu_AudioInput source must wait until the soundcard colects audio samples.
+ *   DSP::u::AudioInput source must wait until the soundcard colects audio samples.
  *   In such cases DSP::Clock::InputNeedsMoreTime table value must be set <b>true</b>
  *   for the master clock related to the source output clock before output execute
  *   function returns <b>false</b>.
@@ -682,7 +726,9 @@ class DSP::name
 
 #ifdef __DEBUG__
   //! DOT colors table
-  extern const vector<string> DOT_colors;
+  namespace DSP {
+    extern const vector<string> DOT_colors;
+  }
 #endif
 
 // ***************************************************** //
@@ -692,7 +738,7 @@ class DSP::name
  * and sources.
  *
  * \todo in DSP::Component::IsOutputConnectedToThisInput implement checking whether
- *  each input has only one output connected (with the exception of DSPu_Vaccum)
+ *  each input has only one output connected (with the exception of DSP::u::Vaccum)
  *
  */
 class DSP::Component : public virtual DSP::name, public DSP::_connect_class
@@ -710,11 +756,7 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
   friend class DSP::_connect_class;
 
   protected:
-  	//! component type
-  	enum Component_type {DSP_CT_none=0, DSP_CT_block=1,
-  							 DSP_CT_source=2, DSP_CT_mixed=3,
-  							 DSP_CT_copy=4};
-  	Component_type Type;
+  	DSP::e::ComponentType Type;
 
   public:
     //! converts current object's pointer to DSP::Block if possible
@@ -729,8 +771,8 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
     //! converts current object's pointer to DSP::Clock_trigger if possible
     virtual DSP::Clock_trigger_ptr Convert2ClockTrigger(void)
     { return NULL; };
-    //! converts current object's pointer to DSPu_Copy if possible
-    virtual DSPu_Copy_ptr Convert2Copy(void)
+    //! converts current object's pointer to DSP::u::Copy if possible
+    virtual DSP::u::Copy_ptr Convert2Copy(void)
     { return NULL; };
 
   protected:
@@ -752,7 +794,7 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
     //! Number of blocks registered in ComponentsTable
     static long int NoOfComponentsInTable;
     //! Base number of slots reserved in ComponentsTable
-    #define ComponentsTableSegmentSize 1024
+    static const unsigned long ComponentsTableSegmentSize;
     //! returns given component's index in ComponentsTable
     /*! Returns -1 if component not on the list
      */
@@ -778,7 +820,7 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
      *
      * \warning This function works only in DEBUG mode
      *
-     * \Fixed <b>2006.07.05</b> Added function listing to log all
+     * Fixed <b>2006.07.05</b> Added function listing to log all
      * blocks still on the list of the given master clock
      */
     static void ListComponents(void);
@@ -845,7 +887,7 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
     bool AutoFree;
 
   private:
-    //! Is set true is the component is DSPu_Splitter created automatically
+    //! Is set true is the component is DSP::u::Splitter created automatically
     bool IsAutoSplit;
 
   protected:
@@ -937,11 +979,11 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
      * */
     /*
     bool ProtectOutputClock;
-    friend class DSPu_SampleSelector;
+    friend class DSP::u::SampleSelector;
     */
 
   public:
-    //! \NewFeature Resets the block to the initial state but leaves outputs and clocks untouched
+    //! Resets the block to the initial state but leaves outputs and clocks untouched
     virtual bool Reset(void)
     { return true; };
 
@@ -956,8 +998,6 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
   public:
 
     #ifdef __DEBUG__
-      void ComponentToMfile(std::ofstream &m_plik,
-            bool *ComponentDoneTable, long max_components_number);
       //! Returns component name used in DOTfile (empty on failure)
       string GetComponentName_DOTfile();
       /*! output_index - index of the rendered output
@@ -969,16 +1009,16 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
       virtual bool UsePorts_DOTfile(void);
       //! Writes component edges to file
       void ComponentEdgesToDOTfile(std::ofstream &dot_plik, const string &this_name,
-          bool *UsedMacrosTable, DSP::Macro_ptr *MacrosList, long macros_number,
+          vector<bool> &UsedMacrosTable, vector<DSP::Macro_ptr> &MacrosList, 
           DSP::Macro_ptr DrawnMacro, unsigned int space_sep = 4);
       /*! Returns source name in first_source_name if first_source_name != NULL.
        *  User must reserve memory for it beforehand.
        *
        */
       void ComponentToDOTfile(std::ofstream &dot_plik,
-            bool *ComponentDoneTable, long max_components_number,
-            bool *UsedMacrosTable, DSP::Macro_ptr *MacrosList, long macros_number,
-            bool *UsedClocksTable, DSP::Clock_ptr *ClocksList, long clocks_number,
+            vector<bool> &ComponentDoneTable, long max_components_number,
+            vector<bool> &UsedMacrosTable, vector<DSP::Macro_ptr> &MacrosList,
+            vector<bool> &UsedClocksTable, vector<DSP::Clock_ptr> &ClocksList,
             DSP::Macro_ptr DrawnMacro = NULL,
             DSP::Clock_ptr clock_ptr = NULL);
   #endif
@@ -987,8 +1027,7 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
   /* Notifications support    */
   /****************************/
   private:
-    DSP::Clock_ptr *NotificationClocks;
-    unsigned int NoOfNotificationClocks;
+    vector<DSP::Clock_ptr> NotificationClocks;
   public:
     //! Function called by main clocks' processing function at the begining of each cycle
     /*! It is called only for registered components. It's executed for each
@@ -1054,9 +1093,9 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
 
 //! Class for common member functions for processing blocks which use random generator
 /*  This class is mainly responsible for random generator initialization.
- *  Prevents multiple generator inicializations.
+ *  Prevents multiple generator initializations.
  */
-class DSP::Rand
+class DSP::Randomization
 {
   private:
     //! true if random generator has been initialized
@@ -1064,16 +1103,16 @@ class DSP::Rand
 
   public:
     //! \warning this function thus not call InitRandGenerator
-    static DSP_float randu(void);
+    static DSP::Float randu(void);
     //! \warning this function thus not call InitRandGenerator
-    static void randu(unsigned int len, DSP_float_ptr buffer);
+    static void randu(unsigned int len, DSP::Float_ptr buffer);
     //! \warning this function thus not call InitRandGenerator
-    static DSP_float randn(void);
+    static DSP::Float randn(void);
     //! \warning this function thus not call InitRandGenerator
-    static void randn(unsigned int len, DSP_float_ptr buffer);
+    static void randn(unsigned int len, DSP::Float_ptr buffer);
 
     static void InitRandGenerator(bool force);
-    Rand(void);
+    Randomization(void);
 };
 
 //! Class for common member functions for file processing blocks
@@ -1093,18 +1132,18 @@ class DSP::File
 {
   protected:
     FILE *FileHandle;
-    //! in bits (all channel together)
-    unsigned int SampleSize;
+    //! in bits (all channels together)
+    unsigned long SampleSize;
     long long skip_counter;
 
   public:
     //! returns number of bytes read during last file access
-    virtual unsigned int GetBytesRead(void) = 0;
+    virtual unsigned long GetBytesRead(void) = 0;
     //! returns sampling rate of audio sample
-    virtual long int GetSamplingRate(void) = 0;
+    virtual unsigned long GetSamplingRate(void) = 0;
 
     DSP::File_ptr GetPointer2File(void)
-    { return this; };
+    { return DSP::File_ptr(this); };
 
     //! Changes current file position
     /*!
@@ -1116,7 +1155,7 @@ class DSP::File
      * \note use only: ftello64, fseeko64. fgetpos, fsetpos
      *   (safe for files larger than 2GB)
      */
-    bool SetOffset(long long Offset, DSPe_offset_mode mode = DSP_OM_standard);
+    bool SetOffset(long long Offset, DSP::e::OffsetMode mode = DSP::e::OffsetMode::standard);
     //! Set skip counter
     /*!
      * @param Offset number of samples to skip in file processing
@@ -1255,14 +1294,14 @@ public:
  * \todo_later No NULL clock pointers should be allowed at construction time.
  * User clock should explicitly be defined by the user.
  *
- * \Fixed <b>2005.02.13</b> while creating error messages dynamicaly
+ * Fixed <b>2005.02.13</b> while creating error messages dynamicaly
  * allocated strings (tekst) should be used instead of static ones
  *
  *
- * \todo_later Stworzy� macro CreateDSPblock(Nazwa, parameters);
- * Kt�re tworzy�o by blok o takiej nazwie oraz funkcj� SetName
- * jednocze�nie ustawia�oby mu tak� nazw� (pytanie co z kontrola poprawno�ci
- * parametr�w oraz r�nymi listami parametr�w
+ * \todo_later Stworzyc macro CreateDSPblock(Nazwa, parameters);
+ * Ktore tworzylo by blok o takiej nazwie oraz funkcje SetName
+ * jednoczesnie ustawialoby mu taka nazwe (pytanie co z kontrola poprawnosci
+ * parametrow oraz ronymi listami parametrow
  *
  * \todo Precise control other clocks correctness should be established when
  * blocks are connected
@@ -1273,13 +1312,13 @@ public:
  *
  *
  * \todo_later Check whether this is still actual:
- * DSP_Buffor <- bufor wydajcy dane zgodnie z zegarem wyj?ciowym
- *    przyjmuj?cy dane asynchronicznie (niezalenie od zegara wyjciowego
- *    jeeli wystpi adanie prbki wyjciowej po pobraniu ostatniej
- *    pr�bki wyjciowej na wyj�cie powinna by podana ta sama prbka co
- *    poprzednio (PROBLEM: zegar wyjciowy mo?e by wywoany
- *    przed wywo泳aniem bloczka podajcego warto wejciow朹,
- *    ale rwnie mo?e by tak, e warto濜 wejciowa nie bdzie
+ * DSP_Buffor <- bufor wydajcy dane zgodnie z zegarem wyjsciowym
+ *    przyjmujacy dane asynchronicznie (niezalenie od zegara wyjciowego
+ *    jezeli wystpi adanie prbki wyjciowej po pobraniu ostatniej
+ *    probki wyjciowej na wyjscie powinna by podana ta sama probka co
+ *    poprzednio (PROBLEM: zegar wyjciowy moze by wywolany
+ *    przed wywolaniem bloczka podajacego warto wejciowa,
+ *    ale rowniez moze by tak, ze wartosc wejciowa nie bedzie
  *    podana na wejcie w tym cyklu zegara)
  */
 class DSP::Block : public virtual DSP::Component
@@ -1390,7 +1429,7 @@ class DSP::Block : public virtual DSP::Component
      */
     bool BlockAllowsForConstantInputs;
     //! Values for constant inputs
-    vector<DSP_float> ConstantInputValues;
+    vector<DSP::Float> ConstantInputValues;
     //! true is given value is constant
     vector<bool> IsConstantInput;
 
@@ -1446,9 +1485,9 @@ class DSP::Block : public virtual DSP::Component
      *  Should be used before connecting any outputs
      *
      * Replaces obsolete function:
-     *   bool SetConstInput(int InputNo, DSP_float value);
+     *   bool SetConstInput(int InputNo, DSP::Float value);
      */
-    bool SetConstInput(const string &InputName, DSP_float value);
+    bool SetConstInput(const string &InputName, DSP::Float value);
     /*! Indicates given input as constant value
      *  InputNo   -> real_value
      *  InputNo+1 -> imag_value
@@ -1457,10 +1496,10 @@ class DSP::Block : public virtual DSP::Component
      *  Should be used before connecting any outputs
      *
      * Replaces obsolete function:
-     *   bool SetConstInput(int InputNo, DSP_float real_value, DSP_float imag_value);
+     *   bool SetConstInput(int InputNo, DSP::Float real_value, DSP::Float imag_value);
      */
-    bool SetConstInput(const string &InputName, DSP_float real_value, DSP_float imag_value);
-    bool SetConstInput(const string &InputName, DSP_complex value)
+    bool SetConstInput(const string &InputName, DSP::Float real_value, DSP::Float imag_value);
+    bool SetConstInput(const string &InputName, DSP::Complex value)
     {
       return SetConstInput(InputName, value.re, value.im);
     }
@@ -1538,12 +1577,12 @@ class DSP::Source : public virtual DSP::Component
     // /* ! This field is taken into account in DSP::Clock::ProcessSources method
     //  */
     // bool IsActive;
-    // // ! Indicates that this source is controlled by DSPu_BranchSelector
+    // // ! Indicates that this source is controlled by DSP::u::BranchSelector
     // bool IsControlled;
     // // ! Indicates that this source knows its current state and doesn't need to wait for state update.
     // /* ! It is only valid if IsControlled == true
     //  *
-    //  *  \note must be updated after notifycation from DSPu_BranchSelector
+    //  *  \note must be updated after notifycation from DSP::u::BranchSelector
     //  *  and after each source execution
     //  */
     // bool IsSourceStateReady;
@@ -1600,11 +1639,8 @@ class DSP::Source : public virtual DSP::Component
     //  *  and the source will be processed in subsequent clock cycles.
     //  *
     //  * If ParentClockOfTheControler != NULL this source activation is controlled
-    //  * by DSPu_BranchSelector descendant and given state is valid only
+    //  * by DSP::u::BranchSelector descendant and given state is valid only
     //  * for duration of the ParentClockOfTheControler fundamental cycle.
-    //  *
-    //  * \test Test this function when it is used together with
-    //  *  IsControlled and IsStateReady
     //  */
     // void SetState(bool TurnOn=true, DSP::Clock_ptr ParentClockOfTheControler=NULL);
 
@@ -1682,7 +1718,7 @@ class DSP::MacroStack
      * \warning The user must free MacroList table allocated
      *  by this function on his own.
      */
-    static unsigned int GetCurrentMacroList(DSP::Macro_ptr *&MacrosList);
+    static unsigned int GetCurrentMacroList(vector<DSP::Macro_ptr> &MacrosList);
 };
 
 //! User can derive class from this block to group several DSP components into single macro component
@@ -1715,7 +1751,7 @@ class DSP::Macro : public virtual DSP::name
 {
   #ifdef __DEBUG__
     friend void DSP::Component::ComponentEdgesToDOTfile(std::ofstream &, const string &,
-                      bool *, DSP::Macro_ptr *, long, DSP::Macro_ptr, unsigned int);
+                      vector<bool> &, vector<DSP::Macro_ptr> &, DSP::Macro_ptr, unsigned int);
   #endif
 
   private:
@@ -1732,9 +1768,9 @@ class DSP::Macro : public virtual DSP::name
   #ifdef __DEBUG__
     private:
       //! determines how macro will be represented on DOT graph
-      /*! Default value == DSP_DOT_macro_wrap.
+      /*! Default value == DSP::e::DOTmode::DOT_macro_wrap.
        */
-      DSPe_DOTmode DOTmode;
+      DSP::e::DOTmode DOTmode;
     public:
       //! true if macro must be drawn instead of macro components
       bool DOT_DrawMacro(void);
@@ -1746,8 +1782,8 @@ class DSP::Macro : public virtual DSP::name
 
 
   protected:
-    DSPu_Copy_ptr MacroInput_block;
-    DSPu_Copy_ptr MacroOutput_block;
+    DSP::u::Copy_ptr MacroInput_block;
+    DSP::u::Copy_ptr MacroOutput_block;
 
     //! returns internal output of the macro input of the given name
     DSP::output &MacroInput(const string &Name);
@@ -1833,7 +1869,7 @@ class DSP::Macro : public virtual DSP::name
     virtual ~Macro(void);
 
     public:
-      void SetDOTmode(DSPe_DOTmode mode = DSP_DOT_macro_wrap)
+      void SetDOTmode(DSP::e::DOTmode mode = DSP::e::DOTmode::DOT_macro_wrap)
       {
         UNUSED_RELEASE_ARGUMENT(mode);
 
@@ -1841,12 +1877,12 @@ class DSP::Macro : public virtual DSP::name
           DOTmode = mode;
         #endif
       }
-      DSPe_DOTmode GetDOTmode(void)
+      DSP::e::DOTmode GetDOTmode(void)
       {
         #ifdef __DEBUG__
           return DOTmode;
         #else
-          return DSP_DOT_macro_inactive;
+          return DSP::e::DOTmode::DOT_macro_inactive;
         #endif
       }
 
@@ -1892,13 +1928,13 @@ class DSP::Macro : public virtual DSP::name
  *    -# "in.im" == "in2"
  *    .
  */
-class DSPu_LoopDelay  : public DSP::Block, public DSP::Source
+class DSP::u::LoopDelay  : public DSP::Block, public DSP::Source
 {
   private:
     unsigned int *Delay;
-    DSP_float **State;
+    DSP::Float **State;
     bool *IsOutputProcessed, *IsInputProcessed;
-    DSP_float *tempInput;
+    DSP::Float *tempInput;
 
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
     static bool OutputExecute_multi(OUTPUT_EXECUTE_ARGS);
@@ -1907,8 +1943,8 @@ class DSPu_LoopDelay  : public DSP::Block, public DSP::Source
     static void InputExecute_multi(INPUT_EXECUTE_ARGS);
 
   public:
-    DSPu_LoopDelay(DSP::Clock_ptr ParentClock, unsigned int delay=1U, unsigned int inputs_no = 1U);
-    virtual ~DSPu_LoopDelay(void);
+    LoopDelay(DSP::Clock_ptr ParentClock, unsigned int delay=1U, unsigned int inputs_no = 1U);
+    virtual ~LoopDelay(void);
 
     //! Sets internal state for delay line related to given input
     /*! \param InputName - must be name of real valued input line
@@ -1916,13 +1952,13 @@ class DSPu_LoopDelay  : public DSP::Block, public DSP::Source
      *    equal to size of the delay
      *  \param state_buffer - buffer with initial values
      */
-    bool SetState(const string &InputName, unsigned int size, DSP_float_ptr state_buffer);
+    bool SetState(const string &InputName, unsigned int size, DSP::Float_ptr state_buffer);
     //! Sets internal state for delay line related to given input
     /*! State buffer size (block delay) must equal one.
      * \param InputName - must be name of real valued input line
      *  \param state_buffer_value - buffer with initial values
      */
-    bool SetState(const string &InputName, DSP_float state_buffer_value);
+    bool SetState(const string &InputName, DSP::Float state_buffer_value);
 };
 
 //! Delay element implemented in processing mode
@@ -1942,11 +1978,11 @@ class DSPu_LoopDelay  : public DSP::Block, public DSP::Source
  *    -# "in.im" == "in2"
  *    .
  */
-class DSPu_Delay : public DSP::Block
+class DSP::u::Delay : public DSP::Block
 {
   private:
-    unsigned int Delay;
-    DSP_float **State;
+    unsigned int delay;
+    DSP::Float **State;
     //! current index in buffer
     unsigned int *index;
 
@@ -1963,37 +1999,10 @@ class DSPu_Delay : public DSP::Block
     static void InputExecute_with_cyclic_buffer(INPUT_EXECUTE_ARGS);
     static void InputExecute_with_cyclic_buffer_multi(INPUT_EXECUTE_ARGS);
   public:
-    //! DSPu_Delay block constructor
-    DSPu_Delay(unsigned int delay = 1, unsigned int InputsNo = 1, bool IsBufferCyclic = true);
-    virtual ~DSPu_Delay(void);
+    //! DSP::u::Delay block constructor
+    Delay(unsigned int delay_in = 1, unsigned int InputsNo = 1, bool IsBufferCyclic = true);
+    virtual ~Delay(void);
 };
-//! Macro to provide backward compatibility for OBSOLETE DSPu_CyclicDelay block
-#define DSPu_CyclicDelay DSPu_Delay
-
-// Delay element implemented in processing mode
-/* \warning Cannot separate processing in digital feedback loop !!!
- *
- * This implementation uses cyclic buffer to improve performance for large delays
- *
- * Inputs and Outputs names:
- *   - Output:
- *    -# "out" (real valued)
- *   - Input:
- *    -# "in" (real valued)
- * /
-class DSPu_CyclicDelay : public DSP::Block
-{
-  private:
-    int Delay;
-    DSP_float *State;
-    int index;
-  public:
-    DSPu_CyclicDelay(int delay=1);
-    ~DSPu_CyclicDelay(void);
-
-    static void InputExecute(DSP::Block *block, int InputNo, DSP_float value, DSP::Component *Caller);
-};
- */
 
 /**************************************************/
 //! Outputs input value to multiple outputs
@@ -2007,7 +2016,7 @@ class DSPu_CyclicDelay : public DSP::Block
  *   -# "in.re" (real component)\n
  *      "in.im" (imag component if exists)
  */
-class DSPu_Splitter : public DSP::Block
+class DSP::u::Splitter : public DSP::Block
 {
   private:
     static void InputExecute(INPUT_EXECUTE_ARGS);
@@ -2020,9 +2029,9 @@ class DSPu_Splitter : public DSP::Block
   #endif
 
   public:
-    DSPu_Splitter(unsigned int No=2); //number of outputs
-    DSPu_Splitter(bool IsInputComplex, unsigned int No=2); //number of outputs
-    ~DSPu_Splitter(void);
+    Splitter(unsigned int No=2); //number of outputs
+    Splitter(bool IsInputComplex, unsigned int No=2); //number of outputs
+    ~Splitter(void);
 };
 
 /**************************************************/
@@ -2050,14 +2059,14 @@ class DSPu_Splitter : public DSP::Block
  *   -# "in1.re", "in2.re", ... (real components)\n
  *      "in1.im", "in2.im", ... (imag components if exists)
  *
- * Input/Output numbers must be selected directly using DSPu_Switch::Select
+ * Input/Output numbers must be selected directly using DSP::u::Switch::Select
  *
  * \todo Implement inputs:
  *   -# "input_selector" index of the selected input
  *   -# "output_selector" index of the selected output
  *   .
  */
-class DSPu_Switch : public DSP::Block
+class DSP::u::Switch : public DSP::Block
 {
   private:
     void Init(bool IsInputComplex, //! if true inputs are complex, otherwise real
@@ -2080,7 +2089,7 @@ class DSPu_Switch : public DSP::Block
     unsigned int MinSelectedIndexNo;
 
     // vector for storing input values before all are available and output is generated
-    DSP_float_ptr State;
+    DSP::Float_ptr State;
 
     /*! \todo_later Consider processing Output as soon as SelectedInputs are avaiable
      * \todo_later Consider storing only SelectedInputs the rest could be ignored
@@ -2088,16 +2097,16 @@ class DSPu_Switch : public DSP::Block
     static void InputExecute(INPUT_EXECUTE_ARGS);
 
   public:
-    DSPu_Switch(unsigned int InputsNo=1U,  //! number of inputs to select from
+    Switch(unsigned int InputsNo=1U,  //! number of inputs to select from
                 unsigned int OutputsNo=1U //! number of outputs to select from
 //                bool UseSelectorInputs=false //! if true additional inputs "input_selector" & "output_selector" are available
                 );
-    DSPu_Switch(bool IsInputComplex, //! if true inputs are complex, otherwise real
+    Switch(bool IsInputComplex, //! if true inputs are complex, otherwise real
                 unsigned int InputsNo=1U,  //! number of inputs to select from
                 unsigned int OutputsNo=1U //! number of outputs to select from
 //                bool UseSelectorInputs=false //! if true additional inputs "input_selector" & "output_selector" are available
                 );
-    ~DSPu_Switch(void);
+    ~Switch(void);
 
     void Select(unsigned int InputIndex, unsigned int OutputIndex);
 };
@@ -2122,17 +2131,17 @@ class DSPu_Switch : public DSP::Block
  *   -# "in1.re", "in2.re", .../n
  *      "in1.im", "in2.im", ...
  */
-class DSPu_Amplifier : public DSP::Block
+class DSP::u::Amplifier : public DSP::Block
 {
   private:
     //! index variable for input execute
     unsigned int ind;
     //! temporary variable for storing input for InputExecute_cplx_inputs_with_cplx_factor
-    DSP_float_ptr temp_inputs;
+    DSP::Float_ptr temp_inputs;
 
     bool IsGainComplex;
-    DSP_float Coeficient;
-    DSP_complex CplxCoeficient;
+    DSP::Float Coeficient;
+    DSP::Complex CplxCoeficient;
 
     static void InputExecute_one_real_input_with_real_factor(INPUT_EXECUTE_ARGS);
     static void InputExecute_real_factor(INPUT_EXECUTE_ARGS);
@@ -2140,19 +2149,19 @@ class DSPu_Amplifier : public DSP::Block
     static void InputExecute_cplx_inputs_with_cplx_factor(INPUT_EXECUTE_ARGS);
 
   public:
-    DSPu_Amplifier(DSP_float alfa, unsigned int NoOfInputs_in = 1, bool AreInputsComplex = false);
+    Amplifier(DSP::Float alfa, unsigned int NoOfInputs_in = 1, bool AreInputsComplex = false);
     //! Amplifier with complex gain factor (changes amplitude and phase)
     /*! \param  NoOfInputs_in - number of real or complex inputs
      *  \param  AreInputsComplex - if true, inputs are complex
      *  \param alfa - amplification coefficient
      */
-    DSPu_Amplifier(DSP_complex alfa, unsigned int NoOfInputs_in = 1, bool AreInputsComplex = false);
-    ~DSPu_Amplifier(void);
+    Amplifier(DSP::Complex alfa, unsigned int NoOfInputs_in = 1, bool AreInputsComplex = false);
+    ~Amplifier(void);
 
     //! changes amplification factor
-    void SetGain(DSP_float gain);
+    void SetGain(DSP::Float gain);
     //! changes amplification factor
-    void SetGain(DSP_complex gain);
+    void SetGain(DSP::Complex gain);
 };
 
 /**************************************************/
@@ -2173,32 +2182,32 @@ class DSPu_Amplifier : public DSP::Block
  *  - power with the real factor (only for real input signals)
  *  .
  */
-class DSPu_Power : public DSP::Block
+class DSP::u::Power : public DSP::Block
 {
   private:
     int IntFactor;
-    DSP_float RealFactor;
+    DSP::Float RealFactor;
 
     //! index variable for InputExecute functions
     int ind;
     //! temporary variable for complex input signal
-    DSP_complex in_value;
+    DSP::Complex in_value;
     //! temporary variable for complex output signal
-    DSP_complex out_value;
+    DSP::Complex out_value;
 
     static void InputExecute_Power2_real(INPUT_EXECUTE_ARGS);
     static void InputExecute_Power2_cplx(INPUT_EXECUTE_ARGS);
     static void InputExecute_PowerInt_real(INPUT_EXECUTE_ARGS);
     static void InputExecute_PowerInt_cplx(INPUT_EXECUTE_ARGS);
     static void InputExecute_PowerReal_real(INPUT_EXECUTE_ARGS);
-    //static void InputExecute_PowerReal_cplx(DSP::Block *block, int InputNo, DSP_float value, DSP::Component *Caller);
+    //static void InputExecute_PowerReal_cplx(DSP::Block *block, int InputNo, DSP::Float value, DSP::Component *Caller);
 
   public:
-    DSPu_Power(int factor);
-    DSPu_Power(bool IsComplex, int factor);
-    DSPu_Power(DSP_float factor);
-    DSPu_Power(bool IsComplex, DSP_float factor);
-    ~DSPu_Power(void);
+    Power(int factor);
+    Power(bool IsComplex, int factor);
+    Power(DSP::Float factor);
+    Power(bool IsComplex, DSP::Float factor);
+    ~Power(void);
 };
 
 /**************************************************/
@@ -2236,20 +2245,20 @@ class DSPu_Power : public DSP::Block
  *     - "in1.re", "in2.re", "in2.im", "in3.re", "in3.im"
  *     .
  */
-class DSPu_Addition : public DSP::Block
+class DSP::u::Addition : public DSP::Block
 {
   private:
 //    int NoOfInputsProcessed;
 //    int NoOfInputs;
-    DSP_float State_real, State_imag;
+    DSP::Float State_real, State_imag;
 
-    DSP_float_ptr   RealWeights;
-    DSP_complex_ptr CplxWeights;
+    DSP::Float_ptr   RealWeights;
+    DSP::Complex_ptr CplxWeights;
 
     //! Initial Sum value = 0.0 if no constant inputs (real part)
-    DSP_float InitialSum_real;
+    DSP::Float InitialSum_real;
     //! Initial Sum value = 0.0 if no constant inputs (imaginary part)
-    DSP_float InitialSum_imag;
+    DSP::Float InitialSum_imag;
 
     //! Standard initialization
     /*! \param ForceCplxOutput - if true forces block output to be complex
@@ -2272,12 +2281,12 @@ class DSPu_Addition : public DSP::Block
      *  first NoOfRealInputs are treated as real valued inputs
      *  this real inputs are followed by complex valued ones
      */
-    DSPu_Addition(unsigned int NoOfRealInputs_in=2, unsigned int NoOfComplexInputs_in=0); //number of inputs
-    DSPu_Addition(unsigned int NoOfRealInputs_in, DSP_float_ptr weights);
-    DSPu_Addition(unsigned int NoOfRealInputs_in, DSP_complex_ptr weights);
-    DSPu_Addition(unsigned int NoOfRealInputs_in, unsigned int NoOfComplexInputs_in, DSP_float_ptr weights);
-    DSPu_Addition(unsigned int NoOfRealInputs_in, unsigned int NoOfComplexInputs_in, DSP_complex_ptr weights);
-    ~DSPu_Addition(void);
+    Addition(unsigned int NoOfRealInputs_in=2, unsigned int NoOfComplexInputs_in=0); //number of inputs
+    Addition(unsigned int NoOfRealInputs_in, DSP::Float_ptr weights);
+    Addition(unsigned int NoOfRealInputs_in, DSP::Complex_ptr weights);
+    Addition(unsigned int NoOfRealInputs_in, unsigned int NoOfComplexInputs_in, DSP::Float_ptr weights);
+    Addition(unsigned int NoOfRealInputs_in, unsigned int NoOfComplexInputs_in, DSP::Complex_ptr weights);
+    ~Addition(void);
 };
 
 /**************************************************/
@@ -2305,12 +2314,12 @@ class DSPu_Addition : public DSP::Block
  *   "cplx_in2.re", "cplx_in2.im".
  *
  */
-class DSPu_Multiplication : public DSP::Block
+class DSP::u::Multiplication : public DSP::Block
 {
   private:
-    DSP_float_ptr State;
-    DSP_float State_Re, State_Im;
-//    DSP_float temp_re;
+    DSP::Float_ptr State;
+    DSP::Float State_Re, State_Im;
+//    DSP::Float temp_re;
 
     //! Recalculates initial value when constant input is set for this block
     void RecalculateInitials(void);
@@ -2318,9 +2327,9 @@ class DSPu_Multiplication : public DSP::Block
     static void InputExecute(INPUT_EXECUTE_ARGS);
 
   public:
-    DSPu_Multiplication(unsigned int NoOfRealInputs_in=2,
+    Multiplication(unsigned int NoOfRealInputs_in=2,
         unsigned int NoOfComplexInputs_in=0); //numbers of inputs
-    ~DSPu_Multiplication(void);
+    ~Multiplication(void);
 };
 
 /**************************************************/
@@ -2338,11 +2347,11 @@ class DSPu_Multiplication : public DSP::Block
  *
  * \note This block supports constant inputs (see DSP::Block::SetConstInput).
  */
-class DSPu_RealMultiplication : public DSP::Block
+class DSP::u::RealMultiplication : public DSP::Block
 {
   private:
-    DSP_float State;
-    DSP_float RealInitialValue;
+    DSP::Float State;
+    DSP::Float RealInitialValue;
 
     //! Recalculates initial value when constant input is set for this block
     void RecalculateInitials(void);
@@ -2350,8 +2359,8 @@ class DSPu_RealMultiplication : public DSP::Block
     static void InputExecute(INPUT_EXECUTE_ARGS);
 
   public:
-    DSPu_RealMultiplication(unsigned int NoOfRealInputs_in=2U); //numbers of inputs
-    ~DSPu_RealMultiplication(void);
+    RealMultiplication(unsigned int NoOfRealInputs_in=2U); //numbers of inputs
+    ~RealMultiplication(void);
 };
 
 /**************************************************/
@@ -2362,17 +2371,17 @@ class DSPu_RealMultiplication : public DSP::Block
  *  - Input:
  *   -# "in1", "in2", ... (real valued)
  *
- * \todo_under It seems that decimation blocks do not need to
+ * \note It seems that decimation blocks do not need to
  * be registered to the output clock, they just should know
  * the output clock for error detection purpose. THIS MUST BE SORTED OUT.
  */
-class DSPu_RawDecimator  : public DSP::Block, public DSP::Source
+class DSP::u::RawDecimator  : public DSP::Block, public DSP::Source
 {
   private:
     int  M;
     bool IsReady;
     int  InnerCounter;
-    DSP_float *State;
+    DSP::Float *State;
 
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
     static void InputExecute(INPUT_EXECUTE_ARGS);
@@ -2381,8 +2390,8 @@ class DSPu_RawDecimator  : public DSP::Block, public DSP::Source
     /*! \todo_later OutputClocks should be updated for each output
      * not only first
      */
-    DSPu_RawDecimator(DSP::Clock_ptr ParentClock, unsigned int M_in=2, unsigned int InputsNo=1);
-    ~DSPu_RawDecimator(void);
+    RawDecimator(DSP::Clock_ptr ParentClock, unsigned int M_in=2, unsigned int InputsNo=1);
+    ~RawDecimator(void);
 };
 
 //! Time expansion block: zeroinserter (+ hold)
@@ -2398,13 +2407,13 @@ class DSPu_RawDecimator  : public DSP::Block, public DSP::Source
  *
  * \todo Complex or multivalued input/output.
  */
-class DSPu_Zeroinserter  : public DSP::Block, public DSP::Source
+class DSP::u::Zeroinserter  : public DSP::Block, public DSP::Source
 {
   private:
     unsigned int  L;
     bool IsInputReady, IsReady;
     unsigned int  InnerCounter;
-    DSP_float tempInput_re, tempInput_im, State_re, State_im;
+    DSP::Float tempInput_re, tempInput_im, State_re, State_im;
 
     bool IsHold;
 
@@ -2418,9 +2427,9 @@ class DSPu_Zeroinserter  : public DSP::Block, public DSP::Source
     void Init(bool IsInputComplex, DSP::Clock_ptr ParentClock, unsigned int L_in, bool Hold);
 public:
     //if Hold == true, holds input value instead of inserting zeros
-    DSPu_Zeroinserter(DSP::Clock_ptr ParentClock, unsigned int L_in=2, bool Hold=false);
-    DSPu_Zeroinserter(bool IsInputComplex, DSP::Clock_ptr ParentClock, unsigned int L_in=2, bool Hold=false);
-    ~DSPu_Zeroinserter(void);
+    Zeroinserter(DSP::Clock_ptr ParentClock, unsigned int L_in=2, bool Hold=false);
+    Zeroinserter(bool IsInputComplex, DSP::Clock_ptr ParentClock, unsigned int L_in=2, bool Hold=false);
+    ~Zeroinserter(void);
 };
 
 // ***************************************************** //
@@ -2436,27 +2445,27 @@ public:
  *   -# "out1.im", "out2.im", ... (complex part)
  *  - Input: none
  */
-class DSPu_Const : public DSP::Source
+class DSP::u::Const : public DSP::Source
 {
   private:
-    DSP_float const_val;
-    DSP_float_ptr const_state;
+    DSP::Float const_val;
+    DSP::Float_ptr const_state;
 
     static bool OutputExecute_one(OUTPUT_EXECUTE_ARGS);
     static bool OutputExecute_many(OUTPUT_EXECUTE_ARGS);
 
   public:
-    DSPu_Const(DSP::Clock_ptr ParentClock,
-               DSP_float value);
-    DSPu_Const(DSP::Clock_ptr ParentClock,
-               DSP_float value_re, DSP_float value_im);
-    DSPu_Const(DSP::Clock_ptr ParentClock,
-               DSP_complex value);
-    DSPu_Const(DSP::Clock_ptr ParentClock,
-               unsigned int NoOfInputs_in, DSP_float_ptr values);
-    DSPu_Const(DSP::Clock_ptr ParentClock,
-               unsigned int NoOfInputs_in, DSP_complex_ptr values);
-    ~DSPu_Const(void);
+    Const(DSP::Clock_ptr ParentClock,
+          DSP::Float value);
+    Const(DSP::Clock_ptr ParentClock,
+          DSP::Float value_re, DSP::Float value_im);
+    Const(DSP::Clock_ptr ParentClock,
+          DSP::Complex value);
+    Const(DSP::Clock_ptr ParentClock,
+          unsigned int NoOfInputs_in, DSP::Float_ptr values);
+    Const(DSP::Clock_ptr ParentClock,
+          unsigned int NoOfInputs_in, DSP::Complex_ptr values);
+    ~Const(void);
 };
 
 // ***************************************************** //
@@ -2475,12 +2484,12 @@ class DSPu_Const : public DSP::Source
  *      "out.im" (imag component)
  *  - Input: none
  */
-class DSPu_COSpulse : public DSP::Source
+class DSP::u::COSpulse : public DSP::Source
 {
   private:
-    DSP_float A;
-    DSP_float alfa;
-    DSP_float omega, phase;
+    DSP::Float A;
+    DSP::Float alfa;
+    DSP::Float omega, phase;
     unsigned long N0, N1;
     unsigned long period;
 
@@ -2490,8 +2499,8 @@ class DSPu_COSpulse : public DSP::Source
     //! Initiates inner variables
     /*! Only for use with constructor
      */
-    void Init(DSP_float A_in, DSP_float alfa_in,
-              DSP_float omega_in, DSP_float phase_in,
+    void Init(DSP::Float A_in, DSP::Float alfa_in,
+              DSP::Float omega_in, DSP::Float phase_in,
               unsigned long N0_in, unsigned long N1_in,
               unsigned long period_in,
               DSP::Clock_ptr ParentClock);
@@ -2499,22 +2508,22 @@ class DSPu_COSpulse : public DSP::Source
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
 
   public:
-    DSPu_COSpulse(DSP::Clock_ptr ParentClock,
-                 DSP_float A_in, DSP_float alfa_in=0.0,
-                 DSP_float omega_in=0.0, DSP_float phase_in=0.0,
+    COSpulse(DSP::Clock_ptr ParentClock,
+                 DSP::Float A_in, DSP::Float alfa_in=0.0,
+                 DSP::Float omega_in=0.0, DSP::Float phase_in=0.0,
                  unsigned long N0_in=0, unsigned long N1_in=0,
                  unsigned long period_in=0);
-    DSPu_COSpulse(DSP::Clock_ptr ParentClock,
-                 bool IsComplex, DSP_float A_in, DSP_float alfa_in=0.0,
-                 DSP_float omega_in=0.0, DSP_float phase_in=0.0,
+    COSpulse(DSP::Clock_ptr ParentClock,
+                 bool IsComplex, DSP::Float A_in, DSP::Float alfa_in=0.0,
+                 DSP::Float omega_in=0.0, DSP::Float phase_in=0.0,
                  unsigned long N0_in=0, unsigned long N1_in=0,
                  unsigned long period_in=0);
-    ~DSPu_COSpulse(void);
+    ~COSpulse(void);
 
     //! changes amplitude parameter
-    void SetAmplitude(DSP_float new_amplitude);
+    void SetAmplitude(DSP::Float new_amplitude);
     //! Changes angular frequency
-    void SetAngularFrequency(DSP_float omega_in);
+    void SetAngularFrequency(DSP::Float omega_in);
     //! Changes pulse length in samples
     void SetPulseLength(int pulse_length);
     //! Changes pulse train period in samples
@@ -2532,7 +2541,7 @@ class DSPu_COSpulse : public DSP::Source
  *      "out.im" (imag component)
  *  - Input: none
  */
-class DSPu_rand : public DSP::Source, public DSP::Rand
+class DSP::u::Rand : public DSP::Source, public DSP::Randomization
 {
   private:
 
@@ -2543,10 +2552,10 @@ class DSPu_rand : public DSP::Source, public DSP::Rand
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
 
   public:
-    DSPu_rand(DSP::Clock_ptr ParentClock);
-    DSPu_rand(DSP::Clock_ptr ParentClock,
-                 bool IsComplex);
-    ~DSPu_rand(void);
+    Rand(DSP::Clock_ptr ParentClock);
+    Rand(DSP::Clock_ptr ParentClock,
+         bool IsComplex);
+    ~Rand(void);
 };
 
 // ***************************************************** //
@@ -2559,22 +2568,22 @@ class DSPu_rand : public DSP::Source, public DSP::Rand
  *   -# "out" (real valued)
  *  - Input: none
  */
-class DSPu_binrand : public DSP::Source, public DSP::Rand
+class DSP::u::BinRand : public DSP::Source, public DSP::Randomization
 {
   private:
-    DSP_float L_value; //! value corresponding to binary 0
-    DSP_float U_value; //! value corresponding to binary 1
+    DSP::Float L_value; //! value corresponding to binary 0
+    DSP::Float U_value; //! value corresponding to binary 1
 
     //! Initiates random generator
     void Init(DSP::Clock_ptr ParentClock,
-              DSP_float L_value_in = 0.0, DSP_float U_value_in = 1.0);
+              DSP::Float L_value_in = 0.0, DSP::Float U_value_in = 1.0);
 
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
 
   public:
-    DSPu_binrand(DSP::Clock_ptr ParentClock,
-                 DSP_float L_value_in = 0.0, DSP_float U_value_in = 1.0);
-    ~DSPu_binrand(void);
+    BinRand(DSP::Clock_ptr ParentClock,
+                 DSP::Float L_value_in = 0.0, DSP::Float U_value_in = 1.0);
+    ~BinRand(void);
 };
 
 // ***************************************************** //
@@ -2598,11 +2607,11 @@ class DSPu_binrand : public DSP::Source, public DSP::Rand
  * \note division by ULL_MSB can be changed into binary shift >>
  *   ! check if its value is correct (if it should not be larger).
  */
-class DSPu_LFSR : public DSP::Source, public DSP::Rand
+class DSP::u::LFSR : public DSP::Source, public DSP::Randomization
 {
   private:
-    DSP_float L_value; //! value corresponding to binary 0
-    DSP_float U_value; //! value corresponding to binary 1
+    DSP::Float L_value; //! value corresponding to binary 0
+    DSP::Float U_value; //! value corresponding to binary 1
     unsigned int reg_len; //! register length
     unsigned int taps_no; //! number of feedback taps
     unsigned int *taps;   //! feedback taps indexes - 1 (index in buffer)
@@ -2616,7 +2625,7 @@ class DSPu_LFSR : public DSP::Source, public DSP::Rand
     void Init(DSP::Clock_ptr ParentClock, unsigned int reg_length,
       	      unsigned int no_of_taps, unsigned int *taps_idx,
     		      bool *state = NULL,
-              DSP_float L_value_in = 0.0, DSP_float U_value_in = 1.0);
+              DSP::Float L_value_in = 0.0, DSP::Float U_value_in = 1.0);
 
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
 
@@ -2630,11 +2639,11 @@ class DSPu_LFSR : public DSP::Source, public DSP::Rand
   	 *  \note if state == NULL register will be initiated with
   	 *   none zero random sequence.
   	 */
-    DSPu_LFSR(DSP::Clock_ptr ParentClock, unsigned int reg_length,
+    LFSR(DSP::Clock_ptr ParentClock, unsigned int reg_length,
               unsigned int no_of_taps, unsigned int *taps_idx,
     		      bool *state = NULL,
-              DSP_float L_value_in = 0.0, DSP_float U_value_in = 1.0);
-    ~DSPu_LFSR(void);
+              DSP::Float L_value_in = 0.0, DSP::Float U_value_in = 1.0);
+    ~LFSR(void);
 };
 
 // ***************************************************** //
@@ -2655,11 +2664,11 @@ class DSPu_LFSR : public DSP::Source, public DSP::Rand
  * \todo change division by ULL_MSB into binary shift >>
  *   ! check if it is correct value (if it should not be larger).
  */
-class DSPu_LFSR_tester : public DSP::Block, public DSP::Rand
+class DSP::u::LFSR_tester : public DSP::Block, public DSP::Randomization
 {
   private:
-    DSP_float L_value; //! value corresponding to binary 0
-    DSP_float U_value; //! value corresponding to binary 1
+    DSP::Float L_value; //! value corresponding to binary 0
+    DSP::Float U_value; //! value corresponding to binary 1
     unsigned int reg_len; //! register length
     unsigned int taps_no; //! number of feedback taps
     unsigned int *taps;   //! feedback taps indexes - 1 (index in buffer)
@@ -2672,7 +2681,7 @@ class DSPu_LFSR_tester : public DSP::Block, public DSP::Rand
 
     //! Initiates taps mask
     void Init(unsigned int reg_length, unsigned int no_of_taps, unsigned int *taps_idx,
-              DSP_float L_value_in = 0.0, DSP_float U_value_in = 1.0);
+              DSP::Float L_value_in = 0.0, DSP::Float U_value_in = 1.0);
 
     static void InputExecute(INPUT_EXECUTE_ARGS);
 
@@ -2686,9 +2695,9 @@ class DSPu_LFSR_tester : public DSP::Block, public DSP::Rand
   	 *  \note if state == NULL register will be initiated with
   	 *   none zero random sequence.
   	 */
-  	DSPu_LFSR_tester(unsigned int reg_length, unsigned int no_of_taps, unsigned int *taps_idx,
-                     DSP_float L_value_in = 0.0, DSP_float U_value_in = 1.0);
-    ~DSPu_LFSR_tester(void);
+  	LFSR_tester(unsigned int reg_length, unsigned int no_of_taps, unsigned int *taps_idx,
+                DSP::Float L_value_in = 0.0, DSP::Float U_value_in = 1.0);
+    ~LFSR_tester(void);
 };
 
 // ***************************************************** //
@@ -2716,34 +2725,34 @@ class DSPu_LFSR_tester : public DSP::Block, public DSP::Rand
  *    -# "phase" - cosinusoid initial phase
  *
  */
-class DSPu_DDScos : public DSP::Block, public DSP::Source
+class DSP::u::DDScos : public DSP::Block, public DSP::Source
 {
   private:
     //! cosinusoid amplitude
-    DSP_float A;
-    //! initial phase divided by M_PIx2
-    DSP_float phase;
-    //! cosinusoid normalized frequency (angular frequency divided by M_PIx2)
-    DSP_float frequency;
+    DSP::Float A;
+    //! initial phase divided by DSP::M_PIx2
+    DSP::Float phase;
+    //! cosinusoid normalized frequency (angular frequency divided by DSP::M_PIx2)
+    DSP::Float frequency;
 
     //! True if DDS generator parameters are ready (constant or read from inputs in current cycle)
     bool InputParamsReady;
 //    //! Number of inputs read in current cycle
 //    int NoOfInputsRead;
 
-    //! Cosinusoid instantaneous phase divided by M_PIx2
+    //! Cosinusoid instantaneous phase divided by DSP::M_PIx2
     /*! Strictly speaking it's just cumulated instantaneous frequency
      * so it doesn't include initial phase (which in fact might be
      * changing in time too)
      */
-    DSP_float CurrentPhase;
+    DSP::Float CurrentPhase;
 
     //! Initiation - only to be used in constructor
     /*! frequency is given in [rad/cycle]
      *  phase is given in [rad]
      */
-    void Init(DSP_float A_in,
-              DSP_float frequency_in, DSP_float phase_in,
+    void Init(DSP::Float A_in,
+              DSP::Float frequency_in, DSP::Float phase_in,
               DSP::Clock_ptr ParentClock);
 
     //! Recalculates initial values
@@ -2771,21 +2780,21 @@ class DSPu_DDScos : public DSP::Block, public DSP::Source
      *  Frequency is given in [rad/cycle],
      *  phase is given in [rad]
      */
-    DSPu_DDScos(DSP::Clock_ptr ParentClock,
-               DSP_float A_in,
-               DSP_float frequency_in=0.0,
-               DSP_float phase_in=0.0);
+    DDScos(DSP::Clock_ptr ParentClock,
+           DSP::Float A_in,
+           DSP::Float frequency_in=0.0,
+           DSP::Float phase_in=0.0);
     //! DDS cosinusoid generator with constant parameters and real or complex output
     /*! Parameters are defined at block definition (creation) time
      *
      *  Frequency is given in [rad/cycle],
      *  phase is given in [rad]
      */
-    DSPu_DDScos(DSP::Clock_ptr ParentClock,
-               bool IsComplex,
-               DSP_float A_in,
-               DSP_float frequency_in=0.0,
-               DSP_float phase_in=0.0);
+    DDScos(DSP::Clock_ptr ParentClock,
+           bool IsComplex,
+           DSP::Float A_in,
+           DSP::Float frequency_in=0.0,
+           DSP::Float phase_in=0.0);
 
     //! DDS cosinusoid generator with runtime changeable parameters read from inputs and real output
     /*! Parameters are read from inputs at runtime
@@ -2798,7 +2807,7 @@ class DSPu_DDScos : public DSP::Block, public DSP::Source
      *
      * Inputs: Amplitude, angular frequency, initial phase
      */
-    DSPu_DDScos(DSP::Clock_ptr ParentClock);
+    DDScos(DSP::Clock_ptr ParentClock);
 
     //! DDS cosinusoid generator with runtime changeable parameters read from inputs and real or complex output
     /*! Parameters are read from inputs at runtime
@@ -2811,15 +2820,15 @@ class DSPu_DDScos : public DSP::Block, public DSP::Source
      *
      * Inputs: Amplitude, angular frequency, initial phase
      */
-    DSPu_DDScos(DSP::Clock_ptr ParentClock, bool IsComplex);
+    DDScos(DSP::Clock_ptr ParentClock, bool IsComplex);
 
-    ~DSPu_DDScos(void);
+    ~DDScos(void);
 
     //! Changes angular frequency (if not associated with input)
-    void SetAngularFrequency(DSP_float omega);
+    void SetAngularFrequency(DSP::Float omega);
     //! Changes amplitude (if not associated with input)
-    void SetAmplitude(DSP_float amplitude);
-    DSP_float GetFrequency(DSP_float Fp)
+    void SetAmplitude(DSP::Float amplitude);
+    DSP::Float GetFrequency(DSP::Float Fp)
     {return frequency*Fp;}
 };
 
@@ -2843,7 +2852,7 @@ class DSPu_DDScos : public DSP::Block, public DSP::Source
  *    -# "in.re" (real component)\n
  *       "in.im" (imag component if exists)
  */
-class DSPu_FIR : public DSP::Block
+class DSP::u::FIR : public DSP::Block
 {
   private:
     long N;
@@ -2853,10 +2862,10 @@ class DSPu_FIR : public DSP::Block
     int L_step;
 
     // if h == NULL, coefficients are complex
-    DSP_float *h;
-    DSP_complex *hC;
-    DSP_float *State;
-    DSP_complex in_value;
+    DSP::Float_vector h;
+    DSP::Complex_vector hC;
+    DSP::Float_vector State;
+    DSP::Complex in_value;
 
     void Init(bool IsInputComplex, bool AreCoeficientsComplex,
               unsigned long N_in, const void *h_in, int n0, int M, int L);
@@ -2874,12 +2883,12 @@ class DSPu_FIR : public DSP::Block
 
     //static void InputExecute(INPUT_EXECUTE_ARGS);
   public:
-    DSPu_FIR(const DSP_float_vector &h_in, int n0 = 0, int M = 1, int L = 1);
-    DSPu_FIR(const DSP_complex_vector &h_in, int n0 = 0, int M = 1, int L = 1);
+    FIR(const DSP::Float_vector &h_in, int n0 = 0, int M = 1, int L = 1);
+    FIR(const DSP::Complex_vector &h_in, int n0 = 0, int M = 1, int L = 1);
 
-    DSPu_FIR(bool IsInputComplex, const DSP_float_vector &h_in, int n0 = 0, int M = 1, int L = 1);
-    DSPu_FIR(bool IsInputComplex, const DSP_complex_vector &h_in, int n0 = 0, int M = 1, int L = 1);
-    ~DSPu_FIR(void);
+    FIR(bool IsInputComplex, const DSP::Float_vector &h_in, int n0 = 0, int M = 1, int L = 1);
+    FIR(bool IsInputComplex, const DSP::Complex_vector &h_in, int n0 = 0, int M = 1, int L = 1);
+    ~FIR(void);
 };
 
 /**************************************************/
@@ -2904,20 +2913,21 @@ class DSPu_FIR : public DSP::Block
  *    -# "in.re" (real component)\n
  *       "in.im" (imag component if exists)
  */
-class DSPu_IIR : public DSP::Block
+class DSP::u::IIR : public DSP::Block
 {
   private:
-    int FilterOrder;
-    int Na, Nb;
+    long FilterOrder;
+//    int Na, Nb;
 
     // bool AreCoeficientsComplex; If a == NULL, coeficients are complex
-    DSP_float *a, *b;
-    DSP_complex *aC, *bC;
+    DSP::Float_vector a, b;
+    DSP::Complex_vector aC, bC;
 
-    DSP_float *State;
-    DSP_complex in_value;
+    DSP::Float_vector State;
+    DSP::Complex in_value;
 
-    void Init(bool IsInputComplex, bool AreCoeficientsComplex, int Na_in, void *a_in, int Nb_in, void *b_in);
+    template <typename T>
+    void Init(bool IsInputComplex, bool AreCoeficientsComplex, T &a_in, T &b_in);
 
     static void InputExecute_real_coefs_cplx_input_zero_order(INPUT_EXECUTE_ARGS);
     static void InputExecute_real_coefs_real_input_zero_order(INPUT_EXECUTE_ARGS);
@@ -2929,8 +2939,6 @@ class DSPu_IIR : public DSP::Block
     static void InputExecute_cplx_coefs_cplx_input(INPUT_EXECUTE_ARGS);
     static void InputExecute_cplx_coefs_real_input(INPUT_EXECUTE_ARGS);
 
-    bool SetCoefs(bool AreCoeficientsComplex,
-                  int Na_in, void *a_in, int Nb_in, void *b_in);
   public:
     //! Allows for filter coefficients change.
     /*! Sets new set of real valued coefficients.
@@ -2944,7 +2952,7 @@ class DSPu_IIR : public DSP::Block
      *   lowered then a_in or b_in vectors must be padded at the end
      *   with zeroes.
      */
-    bool SetCoefs(int Na_in, DSP_float *a_in, int Nb_in=0, DSP_float *b_in=NULL);
+    bool SetCoefs(DSP::Float_vector &a_in, DSP::Float_vector &b_in);
     //! Allows for filter coefficients change.
     /*! Sets new set of complex valued coefficients.
      *
@@ -2957,15 +2965,23 @@ class DSPu_IIR : public DSP::Block
      *   lowered then a_in or b_in vectors must be padded at the end
      *   with zeroes.
      */
-    bool SetCoefs(int Na_in, DSP_complex *a_in, int Nb_in=0, DSP_complex *b_in=NULL);
+    bool SetCoefs(DSP::Complex_vector &a_in, DSP::Complex_vector &b_in);
 
-    DSPu_IIR(int Na_in, DSP_float *a_in, int Nb_in=0, DSP_float *b_in=NULL);
-    DSPu_IIR(bool IsInputComplex, int Na_in, DSP_float *a_in, int Nb_in=1, DSP_float *b_in=NULL);
+    //! DSP::Float_vector &b_in = {1}
+    IIR(DSP::Float_vector &a_in);
+    IIR(DSP::Float_vector &a_in, DSP::Float_vector &b_in);
+    //! DSP::Float_vector &b_in = {1}
+    IIR(bool IsInputComplex, DSP::Float_vector &a_in);
+    IIR(bool IsInputComplex, DSP::Float_vector &a_in, DSP::Float_vector &b_in);
 
-    DSPu_IIR(int Na_in, DSP_complex *a_in, int Nb_in=0, DSP_complex *b_in=NULL);
-    DSPu_IIR(bool IsInputComplex, int Na_in, DSP_complex *a_in, int Nb_in=1, DSP_complex *b_in=NULL);
+    //! DSP::Float_vector &b_in = {1}
+    IIR(DSP::Complex_vector &a_in);
+    IIR(DSP::Complex_vector &a_in, DSP::Complex_vector &b_in);
+    //! DSP::Float_vector &b_in = {1}
+    IIR(bool IsInputComplex, DSP::Complex_vector &a_in);
+    IIR(bool IsInputComplex, DSP::Complex_vector &a_in, DSP::Complex_vector &b_in);
 
-    ~DSPu_IIR(void);
+    ~IIR(void);
 };
 
 /**************************************************/
@@ -2987,21 +3003,21 @@ class DSPu_IIR : public DSP::Block
  *   -# "in.re" == "in1.re" - real component\n
  *      "in.im" == "in1.im" - imag component if exists
  */
-class DSPu_Differator : public DSP::Block
+class DSP::u::Differator : public DSP::Block
 {
   private:
-    DSP_float *State;
+    std::vector <DSP::Float> State;
 
     static void InputExecute(INPUT_EXECUTE_ARGS);
   public:
     //! Setting up internal state
-    void SetInitialState(unsigned int length, DSP_float_ptr State_init);
-    void SetInitialState(DSP_float State_init);
-    void SetInitialState(DSP_float State_init_re, DSP_float State_init_im);
-    void SetInitialState(DSP_complex State_init);
+    void SetInitialState(const DSP::Float_vector &State_init);
+    void SetInitialState(DSP::Float State_init);
+    void SetInitialState(DSP::Float State_init_re, DSP::Float State_init_im);
+    void SetInitialState(DSP::Complex State_init);
 
-    DSPu_Differator(int NoOfInputs_in, bool IsInputComplex=false);
-    ~DSPu_Differator(void);
+    Differator(int NoOfInputs_in, bool IsInputComplex=false);
+    ~Differator(void);
 };
 
 /**************************************************/
@@ -3023,28 +3039,28 @@ class DSPu_Differator : public DSP::Block
  *   -# "in.re" == "in1.re" - real component\n
  *      "in.im" == "in1.im" - imag component if exists
  */
-class DSPu_Accumulator : public DSP::Block
+class DSP::u::Accumulator : public DSP::Block
 {
   private:
-    DSP_float lambda, one_minus_lambda;
-    DSP_float *State;
+    DSP::Float lambda, one_minus_lambda;
+    DSP::Float_vector State;
 
-    void Init(int NoOfInputs_in, DSP_float lambda_in = 0.5, bool IsInputComplex=false);
+    void Init(int NoOfInputs_in, DSP::Float lambda_in = 0.5, bool IsInputComplex=false);
 
     static void InputExecute_classic(INPUT_EXECUTE_ARGS);
     static void InputExecute_leakage(INPUT_EXECUTE_ARGS);
   public:
     //! Setting up internal state
-    void SetInitialState(unsigned int length, DSP_float_ptr State_init);
-    void SetInitialState(DSP_float State_init);
-    void SetInitialState(DSP_float State_init_re, DSP_float State_init_im);
-    void SetInitialState(DSP_complex State_init);
+    void SetInitialState(const DSP::Float_vector &State_init);
+    void SetInitialState(DSP::Float State_init);
+    void SetInitialState(DSP::Float State_init_re, DSP::Float State_init_im);
+    void SetInitialState(DSP::Complex State_init);
 
     //! Classic accumulator
-    DSPu_Accumulator(int NoOfInputs_in = 1, bool IsInputComplex=false);
+    Accumulator(int NoOfInputs_in = 1, bool IsInputComplex=false);
     //! Accumulator with leakage
-    DSPu_Accumulator(DSP_float lambda_in, int NoOfInputs_in = 1, bool IsInputComplex=false);
-    ~DSPu_Accumulator(void);
+    Accumulator(DSP::Float lambda_in, int NoOfInputs_in = 1, bool IsInputComplex=false);
+    ~Accumulator(void);
 };
 
 /**************************************************/
@@ -3075,13 +3091,13 @@ class DSPu_Accumulator : public DSP::Block
  *
  * \todo_later Implement version with complex interpolation filter impulse respose
  */
-class DSPu_SamplingRateConversion : public DSP::Block, public DSP::Source
+class DSP::u::SamplingRateConversion : public DSP::Block, public DSP::Source
 {
   private:
     //int N;
     //! interpolation/decimation filter impulse response
-    DSP_float_vector h_real;
-    DSP_complex_vector h_cplx;
+    DSP::Float_vector h_real;
+    DSP::Complex_vector h_cplx;
 
     unsigned int CurrentFilterIndex, dn;
     unsigned int L, M;
@@ -3090,21 +3106,21 @@ class DSPu_SamplingRateConversion : public DSP::Block, public DSP::Source
     //! Number of samples available in output buffer
     unsigned int NoOfSamplesReady;
     //! Buffer for the output samples
-    DSP_float_vector OutputBuffer_real;
-    DSP_complex_vector OutputBuffer_cplx;
+    DSP::Float_vector OutputBuffer_real;
+    DSP::Complex_vector OutputBuffer_cplx;
 
     //! State buffer for polyphase filters
-    DSP_float_vector StateBuffer_real;
-    DSP_complex_vector StateBuffer_cplx;
+    DSP::Float_vector StateBuffer_real;
+    DSP::Complex_vector StateBuffer_cplx;
 
     //! Variable for storing components of the input sample (in case of complex inputs)
-    DSP_complex in_value;
+    DSP::Complex in_value;
 
     void Init(bool IsInputComplex, unsigned int L_in, unsigned int M_in,
-              const DSP_float_vector &h_in,
+              const DSP::Float_vector &h_in,
               DSP::Clock_ptr ParentClock);
     void Init(bool IsInputComplex, unsigned int L_in, unsigned int M_in,
-              const DSP_complex_vector &h_in,
+              const DSP::Complex_vector &h_in,
               DSP::Clock_ptr ParentClock);
 
     static void InputExecute_real_in_real_h(INPUT_EXECUTE_ARGS);
@@ -3116,18 +3132,18 @@ class DSPu_SamplingRateConversion : public DSP::Block, public DSP::Source
 
   public:
     //! Variant assumming IsInputComplex = false
-    DSPu_SamplingRateConversion(DSP::Clock_ptr ParentClock, unsigned int L_in, unsigned int M_in,
-        const DSP_float_vector &h_in);
+    SamplingRateConversion(DSP::Clock_ptr ParentClock, unsigned int L_in, unsigned int M_in,
+        const DSP::Float_vector &h_in);
     //! Variant assumming IsInputComplex = false
-    DSPu_SamplingRateConversion(DSP::Clock_ptr ParentClock, unsigned int L_in, unsigned int M_in,
-        const DSP_complex_vector &h_in);
-    DSPu_SamplingRateConversion(bool IsInputComplex,
+    SamplingRateConversion(DSP::Clock_ptr ParentClock, unsigned int L_in, unsigned int M_in,
+        const DSP::Complex_vector &h_in);
+    SamplingRateConversion(bool IsInputComplex,
         DSP::Clock_ptr ParentClock, unsigned int L_in, unsigned int M_in,
-        const DSP_float_vector &h_in);
-    DSPu_SamplingRateConversion(bool IsInputComplex,
+        const DSP::Float_vector &h_in);
+    SamplingRateConversion(bool IsInputComplex,
         DSP::Clock_ptr ParentClock, unsigned int L_in, unsigned int M_in,
-        const DSP_complex_vector &h_in);
-    ~DSPu_SamplingRateConversion(void);
+        const DSP::Complex_vector &h_in);
+    ~SamplingRateConversion(void);
 };
 
 /**************************************************/
@@ -3143,15 +3159,15 @@ class DSPu_SamplingRateConversion : public DSP::Block, public DSP::Source
  *  - Input:
  *   -# "in1", "in2", ...  - real i-th input
  */
-class DSPu_Maximum : public DSP::Block
+class DSP::u::Maximum : public DSP::Block
 {
-    DSP_float temp_max;
+    DSP::Float temp_max;
     unsigned int max_ind;
 
     static void InputExecute(INPUT_EXECUTE_ARGS);
   public:
-    DSPu_Maximum(unsigned int NumberOfInputs=2);
-    ~DSPu_Maximum(void);
+    Maximum(unsigned int NumberOfInputs=2);
+    ~Maximum(void);
 };
 
 // ***************************************************** //
@@ -3169,10 +3185,10 @@ class DSPu_Maximum : public DSP::Block
  *   -# "in1.re", "in2.re", ...  - real component of the i-th input
  *   -# "in1.im", "in2.im", ...  - imag component of the i-th input
  */
-class DSPu_Selector : public DSP::Block
+class DSP::u::Selector : public DSP::Block
 {
     unsigned int in_values_len;
-    DSP_complex_ptr in_values;
+    DSP::Complex_ptr in_values;
     unsigned int index;
     int index_offset;
   private:
@@ -3182,11 +3198,11 @@ class DSPu_Selector : public DSP::Block
 
     static void InputExecute(INPUT_EXECUTE_ARGS);
   public:
-    DSPu_Selector(unsigned int NumberOfInputs=2u,
-                  int IndexOffset=1);
-    DSPu_Selector(bool AreInputsComplex, unsigned int NumberOfInputs=2U,
-                  int IndexOffset=1);
-    ~DSPu_Selector(void);
+    Selector(unsigned int NumberOfInputs=2u,
+             int IndexOffset=1);
+    Selector(bool AreInputsComplex, unsigned int NumberOfInputs=2U,
+             int IndexOffset=1);
+    ~Selector(void);
 };
 
 /**************************************************/
@@ -3200,15 +3216,15 @@ class DSPu_Selector : public DSP::Block
  *   -# "in.re" - real component
  *      "in.im" - imag component (if exists)
  */
-class DSPu_ABS : public DSP::Block
+class DSP::u::ABS : public DSP::Block
 {
   private:
-    DSP_complex in_value;
+    DSP::Complex in_value;
 
     static void InputExecute(INPUT_EXECUTE_ARGS);
   public:
-    DSPu_ABS(bool IsInputComplex=true);
-    ~DSPu_ABS(void);
+    ABS(bool IsInputComplex=true);
+    ~ABS(void);
 };
 
 /**************************************************/
@@ -3224,13 +3240,13 @@ class DSPu_ABS : public DSP::Block
  *   -# "in.re" - real component /n
  *      "in.im" - imag component
  */
-class DSPu_Conjugation : public DSP::Block
+class DSP::u::Conjugation : public DSP::Block
 {
   private:
     static void InputExecute(INPUT_EXECUTE_ARGS);
   public:
-    DSPu_Conjugation(void);
-    ~DSPu_Conjugation(void);
+    Conjugation(void);
+    ~Conjugation(void);
 };
 
 /**************************************************/
@@ -3244,15 +3260,15 @@ class DSPu_Conjugation : public DSP::Block
  *   -# "in.re" - real component
  *      "in.im" - imag component
  */
-class DSPu_Angle : public DSP::Block
+class DSP::u::Angle : public DSP::Block
 {
   private:
-    DSP_complex in_value;
+    DSP::Complex in_value;
 
     static void InputExecute(INPUT_EXECUTE_ARGS);
   public:
-    DSPu_Angle(void);
-    ~DSPu_Angle(void);
+    Angle(void);
+    ~Angle(void);
 };
 
 /**************************************************/
@@ -3271,16 +3287,16 @@ class DSPu_Angle : public DSP::Block
  *   -# "in.re" - real component\n
  *      "in.im" - imag component
  */
-class DSPu_CMPO : public DSP::Block
+class DSP::u::CMPO : public DSP::Block
 {
   private:
-    DSP_complex last_value;
-    DSP_complex in_value;
+    DSP::Complex last_value;
+    DSP::Complex in_value;
 
     static void InputExecute(INPUT_EXECUTE_ARGS);
   public:
-    DSPu_CMPO(void);
-    ~DSPu_CMPO(void);
+    CMPO(void);
+    ~CMPO(void);
 };
 
 /**************************************************/
@@ -3301,15 +3317,15 @@ class DSPu_CMPO : public DSP::Block
  *   -# "in.re" - real component\n
  *      "in.im" - imag component
  */
-class DSPu_CCPC : public DSP::Block
+class DSP::u::CCPC : public DSP::Block
 {
   private:
-    DSP_complex in_value;
+    DSP::Complex in_value;
 
     static void InputExecute(INPUT_EXECUTE_ARGS);
   public:
-    DSPu_CCPC(void);
-    ~DSPu_CCPC(void);
+    CCPC(void);
+    ~CCPC(void);
 };
 
 /**************************************************/
@@ -3330,16 +3346,16 @@ class DSPu_CCPC : public DSP::Block
  *   -# "in.re" == "in.abs"\n
  *      "in.im" == "in.arg
  */
-class DSPu_PCCC : public DSP::Block
+class DSP::u::PCCC : public DSP::Block
 {
   private:
-    DSP_float in_value_abs;
-    DSP_float in_value_phase;
+    DSP::Float in_value_abs;
+    DSP::Float in_value_phase;
 
     static void InputExecute(INPUT_EXECUTE_ARGS);
   public:
-    DSPu_PCCC(void);
-    ~DSPu_PCCC(void);
+    PCCC(void);
+    ~PCCC(void);
 };
 
 /**************************************************/
@@ -3365,8 +3381,8 @@ class DSPu_PCCC : public DSP::Block
  * \warning Inputs and Output interpretation depends on the user.
  *
  * Callback funtion:
- * void func(int NoOfInputs,  DSP_float_ptr InputSamples,
- *           int NoOfOutputs, DSP_float_ptr OutputSamples,
+ * void func(int NoOfInputs,  DSP::Float_ptr InputSamples,
+ *           int NoOfOutputs, DSP::Float_ptr OutputSamples,
  *           DSP::void_ptr *UserDataPtr, int UserDefinedIdentifier)
  *
  * UserDataPtr - default value is NULL, in this variable user can store
@@ -3380,21 +3396,21 @@ class DSPu_PCCC : public DSP::Block
  *  -# call from block destructor with NoOfInputs = -2;
  *  this is when the user can free UserData structure
  */
-class DSPu_MyFunction : public DSP::Block
+class DSP::u::MyFunction : public DSP::Block
 {
   private:
     int UserCallbackID;
-    DSPu_callback_ptr UserFunction_ptr;
+    DSP::Callback_ptr UserFunction_ptr;
     DSP::void_ptr UserData;
 
-    DSP_float_ptr InputData;
-    DSP_float_ptr OutputData;
+    DSP::Float_ptr InputData;
+    DSP::Float_ptr OutputData;
 
     static void InputExecute(INPUT_EXECUTE_ARGS);
   public:
-    DSPu_MyFunction(unsigned int NumberOfInputs, unsigned int NumberOfOutputs,
-                    DSPu_callback_ptr func_ptr, int CallbackIdentifier=0);
-    ~DSPu_MyFunction(void);
+    MyFunction(unsigned int NumberOfInputs, unsigned int NumberOfOutputs,
+               DSP::Callback_ptr func_ptr, int CallbackIdentifier=0);
+    ~MyFunction(void);
 };
 
 /**************************************************/
@@ -3408,7 +3424,7 @@ class DSPu_MyFunction : public DSP::Block
  * State[0] - activation signal
  * State[1-...] - input signals
  *
- * \note Output clock must be activated separetly with DSPu_ClockTrigger
+ * \note Output clock must be activated separetly with DSP::u::ClockTrigger
  *
  * Inputs and Outputs names:
  *   - Output:
@@ -3423,10 +3439,10 @@ class DSPu_MyFunction : public DSP::Block
  *    .
  *   .
  */
-class DSPu_SampleSelector  : public DSP::Block, public DSP::Source, public DSP::Clock_trigger
+class DSP::u::SampleSelector  : public DSP::Block, public DSP::Source, public DSP::Clock_trigger
 {
   private:
-    DSP_float_ptr State;
+    DSP::Float_ptr State;
 
 //  protected:
 //    void SetBlockInputClock(int InputNo, DSP::Clock_ptr InputClock);
@@ -3448,26 +3464,26 @@ class DSPu_SampleSelector  : public DSP::Block, public DSP::Source, public DSP::
      *     output brach has no sources at all and ActivateOutputClock
      *     is set <b>false</b>
      * - ActivateOutputClock
-     *   - <b>true</b> if block have to work as DSPu_ClockTriger
+     *   - <b>true</b> if block have to work as DSP::u::ClockTriger
      *     activating output clock for each sample selection.
      *   - <b>false</b> if output clock is not defined or is activated
-     *     by other block, e.g. with several DSPu_SampleSelector blocks
+     *     by other block, e.g. with several DSP::u::SampleSelector blocks
      *     working synchronous.
      * - NumberOfInputs - means number of inputs and equals number of outputs.
      *
      * \warning Activation signal input doesn't count to the NumberOfInputs.
      *
      */
-    DSPu_SampleSelector(DSP::Clock_ptr ParentClock, DSP::Clock_ptr OutputClock,
-                        bool ActivateOutputClock, int NumberOfInputs=1);
+    SampleSelector(DSP::Clock_ptr ParentClock, DSP::Clock_ptr OutputClock,
+                   bool ActivateOutputClock, int NumberOfInputs=1);
     //! SampleSelector backward compatibility constructor <b>[OBSOLETE]</b>
     /*! \note This version is provided only for backward compatibility
      *    with DSP_lib version older than 0.07.003.
      *    OutputClock is assumed NULL and ActivateOutputClock is assumed false.
      */
-    DSPu_SampleSelector(DSP::Clock_ptr ParentClock, int NumberOfInputs=1);
+    SampleSelector(DSP::Clock_ptr ParentClock, int NumberOfInputs=1);
     //! SampleSelector destructor
-    ~DSPu_SampleSelector(void);
+    ~SampleSelector(void);
 
     //! true if all input samples in current cycle are ready
     bool SamplesReady;
@@ -3493,7 +3509,7 @@ class DSPu_SampleSelector  : public DSP::Block, public DSP::Source, public DSP::
  * Last sample seen on input is send to the output if required.
  * Some samples can be lost, some might be repeated several times.
  *
- * \note In most cases you would rather use DSPu_Zeroinserter with IsHold set to true.
+ * \note In most cases you would rather use DSP::u::Zeroinserter with IsHold set to true.
  * \note This block is an example of using notifications.
  * \warning because Input & Output clocks are independent to some extend then
  *   time hazards can occur.
@@ -3514,11 +3530,11 @@ class DSPu_SampleSelector  : public DSP::Block, public DSP::Source, public DSP::
  * \todo <b>IMPORTANT</b>
  *  - issue warning when Input & Output have the same MasterClock
  */
-class DSPu_Hold  : public DSP::Block, public DSP::Source
+class DSP::u::Hold  : public DSP::Block, public DSP::Source
 {
   private:
-    DSP_float_ptr currentState;
-    DSP_float_ptr newState;
+    DSP::Float_ptr currentState;
+    DSP::Float_ptr newState;
     /*! false if Input and Output clocks have the
      *  same MasterClock and Input is Expected in
      *  the given clock cycle.
@@ -3544,8 +3560,8 @@ class DSPu_Hold  : public DSP::Block, public DSP::Source
     /*! if UseZeros == true the output will be filled with zeros
      * otherwise with last sample
      */
-    DSPu_Hold(DSP::Clock_ptr InputClock, DSP::Clock_ptr OutputClock, bool UseZeros=false, unsigned int NumberOfInputs=1);
-    ~DSPu_Hold(void);
+    Hold(DSP::Clock_ptr InputClock, DSP::Clock_ptr OutputClock, bool UseZeros=false, unsigned int NumberOfInputs=1);
+    ~Hold(void);
 };
 
 
@@ -3564,17 +3580,17 @@ class DSPu_Hold  : public DSP::Block, public DSP::Source
  *   -# "in.im" - imaginary component (if exist)
  *   .
  */
-class DSPu_Demultiplexer  : public DSP::Block // , public DSP::Source
+class DSP::u::Demultiplexer  : public DSP::Block // , public DSP::Source
 {
   private:
     //! Number of the output where the current sample should be forwarded
     int  CurrentOutputNo;
-    DSP_float State[2];
+    DSP::Float State[2];
 
     static void InputExecute(INPUT_EXECUTE_ARGS);
   public:
-    DSPu_Demultiplexer(bool IsComplex, unsigned int OutputsNo=2);
-    ~DSPu_Demultiplexer(void);
+    Demultiplexer(bool IsComplex, unsigned int OutputsNo=2);
+    ~Demultiplexer(void);
 };
 
 
@@ -3593,12 +3609,12 @@ class DSPu_Demultiplexer  : public DSP::Block // , public DSP::Source
  *   .
  *  .
  */
-class DSPu_Multiplexer  : public DSP::Block, public DSP::Source
+class DSP::u::Multiplexer  : public DSP::Block, public DSP::Source
 {
   private:
     //! Number of current the output sample
     int  CurrentOutputSampleNo;
-    DSP_float_ptr State;
+    DSP::Float_ptr State;
     //! true if given state slot is ready
     bool         *StateReady;
 
@@ -3611,8 +3627,8 @@ class DSPu_Multiplexer  : public DSP::Block, public DSP::Source
     //!Execution as an processing block
     static void InputExecute(INPUT_EXECUTE_ARGS);
   public:
-    DSPu_Multiplexer(DSP::Clock_ptr ParentClock, bool IsComplex, unsigned int InputsNo=2);
-    ~DSPu_Multiplexer(void);
+    Multiplexer(DSP::Clock_ptr ParentClock, bool IsComplex, unsigned int InputsNo=2);
+    ~Multiplexer(void);
 };
 
 /**************************************************/
@@ -3632,20 +3648,20 @@ class DSPu_Multiplexer  : public DSP::Block, public DSP::Source
  *   -# "in.phase_err" - phase error correction input
  *   .
  */
-class DSPu_DCO : public DSP::Block
+class DSP::u::DCO : public DSP::Block
 {
   private:
-    DSP_float fo;
-    DSP_float freq_factor;
-    DSP_float phase_factor;
-    //DSP_float max_freq_deviation;
-    DSP_float freq_dev_min, freq_dev_max;
+    DSP::Float fo;
+    DSP::Float freq_factor;
+    DSP::Float phase_factor;
+    //DSP::Float max_freq_deviation;
+    DSP::Float freq_dev_min, freq_dev_max;
 
-    DSP_float freq_memo, phase_memo;
+    DSP::Float freq_memo, phase_memo;
 
     //temporary input variables
-    DSP_float in_freq_err;
-    DSP_float in_phase_err;
+    DSP::Float in_freq_err;
+    DSP::Float in_phase_err;
 
     //! DCO main routine
     /*!
@@ -3653,19 +3669,19 @@ class DSPu_DCO : public DSP::Block
      *
      */
     static void InputExecute(INPUT_EXECUTE_ARGS);
-    DSP_float current_frequ;
+    DSP::Float current_frequ;
     static void InputExecute_with_Freq(INPUT_EXECUTE_ARGS);
   public:
-    DSPu_DCO(DSP_float wo //!initial normalized angular frequency of the oscilator [rad/Sa]
-          , DSP_float d_wo //! maximum allowed frequency deviation (ignored if < 0.0)
-          , DSP_float freq_alfa  //! angular frequency error correction input scaling factor [rad/Sa]
-          , DSP_float phase_alfa //! phase error correction input scaling factor [rad]
+    DCO(DSP::Float wo //!initial normalized angular frequency of the oscilator [rad/Sa]
+          , DSP::Float d_wo //! maximum allowed frequency deviation (ignored if < 0.0)
+          , DSP::Float freq_alfa  //! angular frequency error correction input scaling factor [rad/Sa]
+          , DSP::Float phase_alfa //! phase error correction input scaling factor [rad]
           , bool output_current_frequency = false //! if true additional output with current frequency value is available
           );
-    ~DSPu_DCO(void);
+    ~DCO(void);
 
     //! returns current estimated signal frequency in Hz for given sampling frequency
-    DSP_float GetFrequency(DSP_float Fp);
+    DSP::Float GetFrequency(DSP::Float Fp);
 };
 
 /**************************************************/
@@ -3694,19 +3710,19 @@ class DSPu_DCO : public DSP::Block
  *   -# "in2.re" - real component\n
  *      "in2.im" - imag component (if there is one)
  */
-class DSPu_CrossSwitch : public DSP::Block
+class DSP::u::CrossSwitch : public DSP::Block
 {
   private:
     int state; //! ??? false if stright, true if crossed
     int default_state;
 
-    DSP_float_ptr inputs;
+    DSP::Float_ptr inputs;
 
     static void InputExecute(INPUT_EXECUTE_ARGS);
   public:
     //! if IsComplex is true inputs are complex
-    DSPu_CrossSwitch(bool IsComplex = false);
-    ~DSPu_CrossSwitch(void);
+    CrossSwitch(bool IsComplex = false);
+    ~CrossSwitch(void);
 };
 
 /**************************************************/
@@ -3732,7 +3748,7 @@ class DSPu_CrossSwitch : public DSP::Block
  * .
  *  \warning InputClock MUST be different from OutputClock
  */
-class DSPu_ClockTrigger : public DSP::Block, public DSP::Clock_trigger
+class DSP::u::ClockTrigger : public DSP::Block, public DSP::Clock_trigger
 {
   private:
     static void InputExecute(INPUT_EXECUTE_ARGS);
@@ -3748,8 +3764,8 @@ class DSPu_ClockTrigger : public DSP::Block, public DSP::Clock_trigger
      *    - if (NoOfCycles == -1) - number of OutputClock cycles
      *      per clock activation is given by "act" signal
      */
-    DSPu_ClockTrigger(DSP::Clock_ptr ParentClock, DSP::Clock_ptr SignalActivatedClock_in, int NoOfCycles_in = 1);
-    ~DSPu_ClockTrigger(void);
+    ClockTrigger(DSP::Clock_ptr ParentClock, DSP::Clock_ptr SignalActivatedClock_in, int NoOfCycles_in = 1);
+    ~ClockTrigger(void);
 };
 
 
@@ -3783,7 +3799,7 @@ class DSPu_ClockTrigger : public DSP::Block, public DSP::Clock_trigger
  *
  * \note Other inputs and outputs must be defined by user.
  */
-class DSPu_Copy : public DSP::Block
+class DSP::u::Copy : public DSP::Block
 {
   friend class DSP::Component;
   friend class DSP::Macro;
@@ -3798,36 +3814,36 @@ class DSPu_Copy : public DSP::Block
   private:
     //static void InputExecute(INPUT_EXECUTE_ARGS);
 
-    //! DSPu_Copy output info update
-    /*! DSPu_Copy component's output with index OutputNo must be
+    //! DSP::u::Copy output info update
+    /*! DSP::u::Copy component's output with index OutputNo must be
      *  connected to block's input with index block_InputNo.
      *
-     *  DSPu_Copy must store this info and use it to
+     *  DSP::u::Copy must store this info and use it to
      *  help DSP::Component::DSP::_connect_class::connect directly connect
-     *  block which user connects through DSPu_copy component.
+     *  block which user connects through DSP::u::copy component.
      *
      *  Returns false if input block is still unknown.
      */
 		bool SetCopyOutput(unsigned int OutputNo, DSP::Block_ptr block, unsigned int block_InputNo);
-    //! Returns block and its input number to which is connected given DSPu_Copy block output
+    //! Returns block and its input number to which is connected given DSP::u::Copy block output
     /*! If the requested data is no available function returns false and
      *  - output_block = NULL
      *  - output_block_InputNo = FO_NoInput
      *  .
      */
     bool GetCopyOutput(unsigned int OutputNo, DSP::Block_ptr &output_block, unsigned int &output_block_InputNo);
-    //! DSPu_Copy input info update
-    /*! DSPu_Copy component's input with index InputNo must be
+    //! DSP::u::Copy input info update
+    /*! DSP::u::Copy component's input with index InputNo must be
      *  connected to block's output with index block_OutputNo.
      *
-     *  DSPu_Copy must store this info and use it to
+     *  DSP::u::Copy must store this info and use it to
      *  help DSP::Component::DSP::_connect_class::connect directly connect
-     *  block which user connects through DSPu_copy component.
+     *  block which user connects through DSP::u::copy component.
      *
      *  Returns false if output block is still unknown.
      */
 		bool SetCopyInput(unsigned int InputNo, DSP::Component_ptr block, unsigned int block_OutputNo);
-    //! Returns component and its output number connected to given DSPu_Copy block input
+    //! Returns component and its output number connected to given DSP::u::Copy block input
     /*! If the requested data is no available function returns false and
      *  - input_block = NULL
      *  - input_block_OutputNo = FO_NoOutput
@@ -3835,15 +3851,15 @@ class DSPu_Copy : public DSP::Block
      */
     bool GetCopyInput(unsigned int InputNo, DSP::Component_ptr &input_block, unsigned int &input_block_OutputNo);
 
-    DSPu_Copy_ptr Convert2Copy(void)
-    { return this; };
+    DSP::u::Copy_ptr Convert2Copy(void)
+    { return (DSP::u::Copy_ptr)this; };
 
     DSP::Component_ptr *InputBlocks; //!one block pointer per one output
     unsigned int *InputBlocks_OutputNo; //!Input number of the output block
 
   public:
-    DSPu_Copy(unsigned int NoOfInputs_in);
-    ~DSPu_Copy(void);
+    Copy(unsigned int NoOfInputs_in);
+    ~Copy(void);
 };
 
 
@@ -3860,17 +3876,17 @@ class DSPu_Copy : public DSP::Block
  *
  * \todo implement version for mo�e quantization levels
  */
-class DSPu_Quantizer : public DSP::Block
+class DSP::u::Quantizer : public DSP::Block
 {
   private:
     //! number of bits - with sign bit
     unsigned int B;
     //! quantization thresholds
-    DSP_float_ptr thresholds;
+    DSP::Float_vector thresholds;
     //! values corresponding to quantization levels
-    DSP_float_ptr q_levels;
+    DSP::Float_vector q_levels;
 
-    DSP_float output_val;
+    DSP::Float output_val;
 
     static void InputExecute_1bit(INPUT_EXECUTE_ARGS);
   public:
@@ -3879,9 +3895,9 @@ class DSPu_Quantizer : public DSP::Block
      *  - value > threshold ==> returns U_value
      *  .
      */
-    DSPu_Quantizer(DSP_float threshold = 0.0, DSP_float L_value = -1.0, DSP_float U_value = +1.0);
-    //DSPu_Quantizer(unsigned int B_in);
-    ~DSPu_Quantizer(void);
+    Quantizer(DSP::Float threshold = 0.0, DSP::Float L_value = -1.0, DSP::Float U_value = +1.0);
+    //DSP::u::Quantizer(unsigned int B_in);
+    ~Quantizer(void);
 };
 
 

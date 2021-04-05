@@ -1,4 +1,84 @@
- - ver. 0.19.015 - <b>2021.03.12</b> Changed: type DSPf_ExternalSleep_ptr moved into DSP namespace:  DSP::ExternalSleep_ptr
+TODO::
+  ? DSP::Clock_ptr => migrate to std::shared_ptr
+  update Linux makefile
+  !!! Add TELEsound and PiAPS_sound projects to GitLab and start addaptation to new library version
+
+  unsigned long SamplingRate // -1 => 0
+LAST DONE:
+  - corrections in linux compilation
+
+CHANGES:
+- ver. 0.20.001 - <b>2021.04.03</b> Changed: 
+  - DSP_libver, DSP_lib_version and DSP_lib_version_string moved int o DSP:: namespace: DSP::libver, DSP::lib_version and DSP::lib_version_string
+  - moved enums into DSP::e:: namespace: DSPe_* => DSP::e::*
+  - slight modifications in enum types names: DSPe_offset_mode => DSP::e::OffsetMode, DSPe_Modulation_type => DSP::e::ModulationType, DSPe_buffer_type => DSP::e::BufferType
+
+- ver. 0.20.000 - <b>2021.04.02</b> Changed: 
+  - all DSPu_ moved into DSP::u:: namespace with some capitalization changes in blocks names
+  - DSP_modules.cpp - removed some of the uses of new and delete
+  - DSPu_callback_ptr, DSPu_buffer_callback_ptr, DSPu_notify_callback_ptr => DSP::Callback_ptr, DSP::Buffer_callback_ptr, DSP::Notify_callback_ptr
+  - DSP::Rand => DSP::Randomization
+  - DSP::u::rand, DSP::u::binrand => DSP::u::Rand, DSP::u::BinRand
+  - removed uses of BYTE, WORD, DWORD, MAXDWORD and MAXWORD
+  - added additional processign cycles in asynchronous.cpp and callback.cpp examples to avoid audio truncation 
+  - replaces test_wav with DSPElib.wav
+  - DSPu_FIR use now vectors instead of pointers as input parameters
+
+- ver. 0.19.024 - <b>2021.04.01</b> Changed: 
+  - DSPu_AudioInput, DSPu_AudioOutput moved into DSP::u:: namespace DSP::u::AudioInput, DSP::u::AudioOutput
+  - DSPu_SOCKETinput, DSPu_SOCKEToutput moved into DSP::u:: namespace DSP::u::SOCKETinput, DSP::u::SOCKEToutput
+  - DSP_socket moved into DSP namespace DSP::Socket
+  - DSPe_AudioBufferType => DSP::e::AudioBufferType
+  - DSP_IO.h changed several defines into consts and moved them into DSP namespace, e.g. DSP_file_buffer_size => DSP::File_buffer_size
+
+- ver. 0.19.023 - <b>2021.04.01</b> Changed: 
+  - change of examples wav file 
+  - DSP_modules.cpp - removed some of the uses of new and delete
+  - DSP_modules2.cpp, DSP_sockets.cpp - removed all uses of new and delete
+  - minor changes in examples
+
+- ver. 0.19.022 - <b>2021.04.01</b> Changed: 
+  - DSP_AudioMixer.cpp - removed all uses of new and delete
+  - modified input parameters list of ReadSegmentToBuffer, WriteSegmentFromBuffer
+  - DSP_IO.cpp - removed all uses of new and delete
+  - DSPu_buffer_callback_ptr uses vector instead of pointer to output values buffer
+
+- ver. 0.19.020 - <b>2021.03.31</b> Changed: 
+  - changes towards C++11 in DSP_IO.cpp/DSP_IO.h
+  - several other changes towards C++11
+  - Windows makefile update
+
+- ver. 0.19.019 - <b>2021.03.30</b> Changed: 
+  - DSP_Fourier moved into ::DSP namespace DSP::Fourier and modernized
+  - examples: callbacks.cpp, multirate.cpp, macro_example.cpp - shared_ptr instead of standard pointers
+  - examples compilation from main folder instead of examples (stores path in error compilation reports for VSC)
+
+- ver. 0.19.018 - <b>2021.03.30</b> Changed: 
+  - DSP::f::LPF_LS uses vector instead of pointer
+  - PSK_SNR_estimator and PSK_SNR_estimator2 are merged into DSP::f::PSK_SNR_estimator and buffer vector is used instead of pointer
+
+- ver. 0.19.017 - <b>2021.03.27</b> Changed: 
+  - removed obsolete DSP::Clock::SchemeToMfile and related functions
+  - DSP_DOT.cpp changed pointers into vectors
+  - changed some pointers into vectors in other modules
+  - DSP_float_vector, DSP_prec_float_vector, DSP_complex_vector => DSP::Float_vector, DSP::Prec_Float_vector, DSP::Complex_vector
+  - DSP_float, DSP_prec_float, DSP_complex => DSP_Float, DSP::Prec_Float, DSP::Complex
+  - several const char * => const string &
+  - ReadResamplerCoef uses vector instead of pointer as an input
+  - DSPu_IIR uses vectors instead of pointers as an input
+
+- ver. 0.19.016 - <b>2021.03.19</b> Changed: Some of the #defines changed into consts and moved into DSP::c:: namespace
+	-	DSP_Callback_Init => DSP::c::Callback_Init
+	-	DSP_Callback_Delete => DSP::c::Callback_Delete
+	-	CallbackID_mask => DSP::c::CallbackID_mask
+	-	CallbackID_signal_start => DSP::c::CallbackID_signal_start
+	-	CallbackID_signal_stop => DSP::c::CallbackID_signal_stop
+	-	CallbackID_mask => DSP::c::CallbackID_mask
+	-	FO_NoOutput => DSP::c::FO_NoOutput
+	-	FO_NoInput => DSP::c::FO_NoInput
+	-	FO_TheOnlyOutput => DSP::c::FO_TheOnlyOutput
+	-	MaxOutputIndex => DSP::c::MaxOutputIndex
+- ver. 0.19.015 - <b>2021.03.12</b> Changed: type DSPf_ExternalSleep_ptr moved into DSP namespace:  DSP::ExternalSleep_ptr
                                      Changed: moved strncmpi inside the T_WAVEchunk class
                                      Changed: moved DSPf_* functions into DSP::f:: namespace: DSP::f::*
  - ver. 0.19.014 - <b>2021.02.18</b> Changed: enum DSPe_SampleType moved into DSP::e namespace:  DSP::e::SampleType

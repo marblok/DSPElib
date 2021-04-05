@@ -1,26 +1,26 @@
 /*! Simple macro usage example.
  * \author Marek Blok
  * \date 2010.02.24
- * \date updated 2021.01.18
+ * \date updated 2021.03.31
  */
 #include <DSP_lib.h>
 
 class DDS_macro : public DSP::Macro
 {
   private:
-    DSPu_PCCC *alpha_state_correction;
-    DSPu_Multiplication *Alpha_state_MUL;
-    DSPu_LoopDelay *Alpha_state;
+    std::shared_ptr<DSP::u::PCCC> alpha_state_correction;
+    std::shared_ptr<DSP::u::Multiplication> Alpha_state_MUL;
+    std::shared_ptr<DSP::u::LoopDelay> Alpha_state;
 
   public:
-  DDS_macro(DSP::Clock_ptr Fp2Clock, DSP_float exp_w_n);
+    DDS_macro(DSP::Clock_ptr Fp2Clock, DSP::Float exp_w_n);
 
     ~DDS_macro(void);
 };
 
-DDS_macro::DDS_macro(DSP::Clock_ptr Fp2Clock, DSP_float w_n) : DSP::Macro("DDS", 1, 2)
+DDS_macro::DDS_macro(DSP::Clock_ptr Fp2Clock, DSP::Float w_n) : DSP::Macro("DDS", 1, 2)
 {
-  DSP_complex factor = DSP_complex(cos(w_n), sin(w_n));
+  DSP::Complex factor = DSP::Complex(cos(w_n), sin(w_n));
 
   alpha_state_correction = NULL;
   Alpha_state_MUL = NULL;
@@ -28,14 +28,14 @@ DDS_macro::DDS_macro(DSP::Clock_ptr Fp2Clock, DSP_float w_n) : DSP::Macro("DDS",
 
   MacroInitStarted();
 
-  alpha_state_correction = new DSPu_PCCC;
+  alpha_state_correction = std::make_shared<DSP::u::PCCC>();
   alpha_state_correction->SetConstInput("in.abs", 1.0);
 
-  Alpha_state_MUL = new DSPu_Multiplication(0, 3); Alpha_state_MUL->SetConstInput("in3", factor);
+  Alpha_state_MUL = std::make_shared<DSP::u::Multiplication>(0, 3); Alpha_state_MUL->SetConstInput("in3", factor);
   this->MacroInput("in") >> alpha_state_correction->Input("in.arg");
   alpha_state_correction->Output("out") >> Alpha_state_MUL->Input("in2");
 
-  Alpha_state = new DSPu_LoopDelay(Fp2Clock, 1, 2); Alpha_state->SetState("in.re", 1.0);
+  Alpha_state = std::make_shared<DSP::u::LoopDelay>(Fp2Clock, 1, 2); Alpha_state->SetState("in.re", 1.0);
   Alpha_state->Output("out") >> Alpha_state_MUL->Input("in1");
   Alpha_state_MUL->Output("out") >> Alpha_state->Input("in");
 
@@ -46,9 +46,10 @@ DDS_macro::DDS_macro(DSP::Clock_ptr Fp2Clock, DSP_float w_n) : DSP::Macro("DDS",
 
 DDS_macro::~DDS_macro(void)
 {
-  delete alpha_state_correction;
-  delete Alpha_state_MUL;
-  delete Alpha_state;
+  // this is not necessary, just remains after the previous use of delete 
+  alpha_state_correction.reset();
+  Alpha_state_MUL.reset();
+  Alpha_state.reset();
 }
 
 int main(void)
@@ -60,22 +61,21 @@ int main(void)
   DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file);
   DSP::log.SetLogFileName("log_file.log");
 
-  DSP::log << DSP_lib_version_string() << endl << endl;
+  DSP::log << DSP::lib_version_string() << endl << endl;
 
   MasterClock=DSP::Clock::CreateMasterClock();
 
 
-  DSPu_WaveInput AudioIn(MasterClock, "test.wav", ".");
+  DSP::u::WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
   Fp = AudioIn.GetSamplingRate();
-  DDS_macro DDS(MasterClock, 0.15*DSP_M_PIx1);
-  DSPu_Amplifier gain(1.0/2);
-  DSPu_AudioOutput AudioOut(Fp, 2);
-  DSPu_FILEoutput FileOut("test_out.wav", DSP::e::SampleType::ST_short, 2, DSP::e::FileType::FT_wav, Fp);
+  DDS_macro DDS(MasterClock, 0.15*DSP::M_PIx1);
+  DSP::u::Amplifier gain(1.0/2);
+  DSP::u::AudioOutput AudioOut(Fp, 2);
+  DSP::u::FileOutput FileOut("test_out.wav", DSP::e::SampleType::ST_short, 2, DSP::e::FileType::FT_wav, Fp);
 
   AudioIn.Output("out") >> gain.Input("in");
   gain.Output("out") >> DDS.Input("in");
 
-  //!\bug double splitters at macro output occur
   DDS.Output("out") >> AudioOut.Input("in");
   DDS.Output("out") >> FileOut.Input("in");
 
@@ -83,7 +83,7 @@ int main(void)
   DSP::Clock::SchemeToDOTfile(MasterClock, "macro_wraped.dot");
   DSP::Clock::SchemeToDOTfile(MasterClock, "macro_DDS.dot", &DDS);
 
-  DDS.SetDOTmode(DSP_DOT_macro_unwrap);
+  DDS.SetDOTmode(DSP::e::DOTmode::DOT_macro_unwrap);
   DSP::Clock::SchemeToDOTfile(MasterClock, "macro_unwraped.dot");
 
   temp=1;

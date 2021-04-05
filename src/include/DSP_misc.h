@@ -51,7 +51,7 @@ using namespace std;
 #include <DSP_logstream.h>
 //---------------------------------------------------------------------------
 #include <DSP_types.h>
-// All function names should begin with DSPf_
+// All function names should begin with DSP::f::
 
 namespace DSP {
   namespace e {
@@ -59,199 +59,207 @@ namespace DSP {
     LoadCoef_Type operator|(LoadCoef_Type __a, LoadCoef_Type __b);
   }
   class LoadCoef;
+
+  namespace f {
+    //! Greatest Common Dividor
+    unsigned long gcd(unsigned long a, unsigned long b);
+
+    //! Solves matrix equation using Gaussian elimination with backsubstitution
+    void SolveMatrixEqu(const vector<DSP::Float_vector> &A_in, //! square matrix of coefficients (table of rows)
+                        DSP::Float_vector &X,    //!vector reserved for solution
+                        const DSP::Float_vector &B_in); //!right-hand side quantities vector
+
+    //! Solves matrix equation using Gaussian elimination with backsubstitution
+    /*! All calculations are internally done at high precision
+    */
+    void SolveMatrixEqu_prec(
+                        const vector<DSP::Float_vector> &A_in, //!matrix coefficients (table of rows)
+                        DSP::Float_vector &X_in,    //!vector reserved for solution
+                        const DSP::Float_vector &B_in); //!right-hand side quantities vector
+    //! Solves matrix equation using Gaussian elimination with backward substitution
+    /*! All calculations are internally done at high precision based on high precision input coefficients
+    * \note suggested use_pivoting = 2
+    * \note use_pivoting = 0 should not be used
+    */
+    void SolveMatrixEqu_prec(
+                        const vector<DSP::Prec_Float_vector> &A_in, //!matrix coefficients (table of rows)
+                        DSP::Prec_Float_vector &X_in,    //!vector reserved for solution
+                        const DSP::Prec_Float_vector &B_in, //!right-hand side quantities vector
+                        int use_pivoting); //! pivoting mode: 0-none; 1-rows; 2-rows&cols
+
+    //! Minimax filter design based on real Remez exchange algorithm
+    /*! - N - filter impulse response length (order N-1)
+    *  - h_buffer - buffer for impulse response
+    * also needed: filter prototype in frequency domain,
+    * weighting function, approximation bandwidths, ...
+    */
+    void RealRemez(int N, DSP::Float_vector &h_buffer);
+
+    //! Least-squares lowpass filter design
+    /*!
+    *  - N - filter impulse responce length (order N-1)
+    *  - fp - passband upper frequency
+    *  - fs - stopband lower frequency
+    *  - Ws - stopband error weighting coefficient (Wp = 1)
+    *  - h_buffer - user buffer for impulse response
+    *  .
+    */
+    void LPF_LS (int N, DSP::Float fp, DSP::Float fs, DSP::Float_vector &h_buffer, DSP::Float Ws = 1.0);
+
+    //! Creates subdirectory in parent_dir
+    /*! \warning if parent_dir != NULL then it must exist.
+    *  \warning Will create single subdirectory (no nested subdir creation)
+    */
+    bool MakeDir(const string &dir_name, const string &parent_dir = "");
+    //! Splits directory name into bits and tries to create it subdirectory by subdirectory
+    void MakeDir_Ex(const string &dir_name);
+
+
+    //! Symbol error rate estimation for QPSK
+    DSP::Float SER4QPSK(DSP::Float SNR_lin);
+    //! Bit error rate estimation for QPSK
+    DSP::Float BER4BPSK(DSP::Float SNR_lin);
+
+    //! implemented in DSP_IO.cpp
+    void Sleep(uint32_t time);
+    //! implemented in DSP_IO.cpp
+    void SetSleepFunction(DSP::ExternalSleep_ptr new_function);
+
+    //! Divides each window sample by sum of all samples.
+    /*! Gives window with frequency response equal 1 at 0 frequency.
+    */
+    void normalise_window(int size, DSP::Float_ptr buffer);
+
+    //! Blackman window
+    /*! \f$w[n] = 0.42 - 0.5\cos\left(\frac{2{\pi}n}{N-1}\right)
+            + 0.08\cos\left(\frac{4{\pi}n}{N-1}\right)\f$
+    */
+    void Blackman(int size, DSP::Float_ptr buffer, bool normalize = false);
+
+    //! Hamming window
+    /*! \f$w[n] = 0.53836 - 0.46164\cos\left(\frac{2{\pi}n}{N-1}\right)\f$
+    */
+    void Hamming(int size, DSP::Float_ptr buffer, bool normalize = false);
+
+    //! von Hann window
+    /*! \f$w[n] = 0.5 - 0.5\cos\left(\frac{2{\pi}n}{N-1}\right)\f$
+    */
+    void Hann(int size, DSP::Float_ptr buffer, bool normalize = false);
+
+    //! Bartlett window (zero valued end-points)
+    /*! \f$w[n] = \frac{2}{N-1} \left(
+    *            \frac{N-1}{2} - \left| n - \frac{N-1}{2} \right|
+    *            \right) \f$
+    */
+    void Bartlett(int size, DSP::Float_ptr buffer, bool normalize = false);
+
+    //! Triangular window (non-zero end-points)
+    /*! \f$w[n] = \frac{2}{N} \left(
+    *            \frac{N}{2} - \left| n - \frac{N-1}{2} \right|
+    *            \right) \f$
+    */
+    void Triangular(int size, DSP::Float_ptr buffer, bool normalize = false);
+
+    //! Bartlett-Hann window
+    /*! \f$w[n] = 0.62
+    *          - 0.48 \left| \frac{n}{N-1} - \frac{1}{2} \right|
+    *          - 0.38 \cos\left(\frac{2{\pi}n}{N-1}\right)\f$
+    */
+    void Bartlett_Hann(int size, DSP::Float_ptr buffer, bool normalize = false);
+
+    //! Gauss window
+    /*! \f$w[n] = \exp ^ {
+    *          - \frac{1}{2}
+    *            \left(
+    *              \frac
+    *                   {n - (N-1)/2}
+    *                   {\sigma(N-1)/2}
+    *            \right) ^ 2
+    *          }\f$
+    * where \f$\sigma <= 0.5\f$
+    */
+    void Gauss(int size, DSP::Float_ptr buffer, DSP::Float sigma, bool normalize = false);
+
+    //! Rectangular window
+    /*! \f$w[n] = 1\f$
+    */
+    void Rectangular(int size, DSP::Float_ptr buffer, bool normalize = false);
+
+    //! Nuttall window, continuous first derivative
+    /*! \f$w[n] = 0.355768
+    *          - 0.487396 \cos\left(\frac{2{\pi}n}{N-1}\right)
+    *          + 0.144232 \cos\left(\frac{4{\pi}n}{N-1}\right)
+    *          - 0.012604 \cos\left(\frac{6{\pi}n}{N-1}\right)
+    * \f$
+    */
+    void Nuttall(int size, DSP::Float_ptr buffer, bool normalize = false);
+
+    //! Blackman-Harris window, continuous first derivative
+    /*! \f$w[n] = 0.35875
+    *          - 0.48829 \cos\left(\frac{2{\pi}n}{N-1}\right)
+    *          + 0.14128 \cos\left(\frac{4{\pi}n}{N-1}\right)
+    *          - 0.01168 \cos\left(\frac{6{\pi}n}{N-1}\right)
+    * \f$
+    */
+    void Blackman_Harris(int size, DSP::Float_ptr buffer, bool normalize = false);
+
+    //!Blackman-Nuttall window
+    /*! \f$w[n] = 0.3635819
+    *          - 0.4891775 \cos\left(\frac{2{\pi}n}{N-1}\right)
+    *          + 0.1365995 \cos\left(\frac{4{\pi}n}{N-1}\right)
+    *          - 0.0106411 \cos\left(\frac{6{\pi}n}{N-1}\right)
+    * \f$
+    */
+    void Blackman_Nuttall(int size, DSP::Float_ptr buffer, bool normalize = false);
+
+    //!Flat top window
+    /*! \f$w[n] = 1
+    *          - 1.93 \cos\left(\frac{2{\pi}n}{N-1}\right)
+    *          + 1.29 \cos\left(\frac{4{\pi}n}{N-1}\right)
+    *          - 0.388 \cos\left(\frac{6{\pi}n}{N-1}\right)
+    *          + 0.032 \cos\left(\frac{8{\pi}n}{N-1}\right)
+    * \f$
+    */
+    void Flat_top(int size, DSP::Float_ptr buffer, bool normalize = false);
+
+    //! Normalized sinc function
+    /*!  - Input: buffer contains funtion argumets
+    *   - Output: results are stored in buffer (input values will be overwritten)
+    *
+    * \f$x(x) = \frac{\sin({\pi}x)}{{\pi}x)}\f$
+    */
+    void sinc(int size, DSP::Float_ptr buffer);
+    //! Normalized sinc function
+    /*!  - Input: arguments contains funtion argumets
+    *   - Output: returns results
+    *
+    * \f$x(x) = \frac{\sin({\pi}x)}{{\pi}x)}\f$
+    */
+    template <typename T>
+    void sinc(const DSP::Float_vector& arguments, vector<T> &output_buffer);
+
+    //! Normalized sinc function
+    /*!
+    * \f$x(x) = \frac{\sin({\pi}x)}{{\pi}x)}\f$
+    */
+    DSP::Float sinc(DSP::Float x);
+    DSP::Prec_Float sinc_prec(DSP::Prec_Float x);
+
+    //! Saves to *.flt file samples from given real valued vector with information out its sampling rate
+    bool SaveVector(const std::string &filename, const DSP::Float_vector &vector, const unsigned int &Fp=0);
+    //! Saves to *.flt file samples from given complex valued vector with information out its sampling rate
+    bool SaveVector(const std::string &filename, const DSP::Complex_vector &vector, const unsigned int &Fp=0);
+
+  
+    //! returns sample size in bytes for given sample type
+    int SampleType2SampleSize(DSP::e::SampleType type);
+  }
 }
 
-
-//! Greatest Common Dividor
-unsigned long DSPf_gcd(unsigned long a, unsigned long b);
-
-//! Solves matrix equation using Gaussian elimination with backsubstitution
-void DSPf_SolveMatrixEqu(
-                    const vector<DSP_float_vector> &A_in, //! square matrix of coefficients (table of rows)
-                    DSP_float_vector &X,    //!vector reserved for solution
-                    const DSP_float_vector &B_in); //!right-hand side quantities vector
-
-//! Solves matrix equation using Gaussian elimination with backsubstitution
-/*! All calculations are internally done at high precision
- */
-void DSPf_SolveMatrixEqu_prec(
-                    const vector<DSP_float_vector> &A_in, //!matrix coefficients (table of rows)
-                    DSP_float_vector &X_in,    //!vector reserved for solution
-                    const DSP_float_vector &B_in); //!right-hand side quantities vector
-//! Solves matrix equation using Gaussian elimination with backward substitution
-/*! All calculations are internally done at high precision based on high precision input coefficients
- * \note suggested use_pivoting = 2
- * \note use_pivoting = 0 should not be used
- */
-void DSPf_SolveMatrixEqu_prec(
-                    const vector<DSP_prec_float_vector> &A_in, //!matrix coefficients (table of rows)
-                    DSP_prec_float_vector &X_in,    //!vector reserved for solution
-                    const DSP_prec_float_vector &B_in, //!right-hand side quantities vector
-                    int use_pivoting); //! pivoting mode: 0-none; 1-rows; 2-rows&cols
-
-//! \NewFeature minimax filter design based on real Remez exchange algorithm
-/*! - N - filter impulse response length (order N-1)
- *  - h_buffer - buffer for impulse response
- * also needed: filter prototype in frequency domain,
- * weighting function, approximation bandwidths, ...
- */
-void DSP_RealRemez (int N, DSP_float_ptr h_buffer);
-
-//! Least-squares lowpass filter design
-/*!
- *  - N - filter impulse responce length (order N-1)
- *  - fp - passband upper frequency
- *  - fs - stopband lower frequency
- *  - Ws - stopband error weighting coefficient (Wp = 1)
- *  - h_buffer - user buffer for impulse response
- *  .
- */
-void DSPf_LPF_LS (int N, DSP_float fp, DSP_float fs, DSP_float_ptr h_buffer, DSP_float Ws = 1.0);
-
-
-
 // ***************************************************** //
 // ***************************************************** //
 // ***************************************************** //
 
-//! Creates subdirectory in parent_dir
-/*! \warning if parent_dir != NULL then it must exist.
- *  \warning Will create single subdirectory (no nested subdir creation)
- */
-bool DSPf_MakeDir(const string &dir_name, const string &parent_dir = "");
-//! Splits directory name into bits and tries to create it subdirectory by subdirectory
-void DSPf_MakeDir_Ex(const string &dir_name);
-
-
-//! Symbol error rate estimation for QPSK
-DSP_float DSPf_SER4QPSK(DSP_float SNR_lin);
-//! Bit error rate estimation for QPSK
-DSP_float DSPf_BER4BPSK(DSP_float SNR_lin);
-
-//! implemented in DSP_IO.cpp
-void DSPf_Sleep(DWORD time);
-//! implemented in DSP_IO.cpp
-void DSPf_SetSleepFunction(DSPf_ExternalSleep_ptr new_function);
-
-//! Divides each window sample by sum of all samples.
-/*! Gives window with frequency response equal 1 at 0 frequency.
- */
-void DSPf_normalise_window(int size, DSP_float_ptr buffer);
-
-//! Blackman window
-/*! \f$w[n] = 0.42 - 0.5\cos\left(\frac{2{\pi}n}{N-1}\right)
-        + 0.08\cos\left(\frac{4{\pi}n}{N-1}\right)\f$
- */
-void DSPf_Blackman(int size, DSP_float_ptr buffer, bool normalize = false);
-
-//! Hamming window
-/*! \f$w[n] = 0.53836 - 0.46164\cos\left(\frac{2{\pi}n}{N-1}\right)\f$
- */
-void DSPf_Hamming(int size, DSP_float_ptr buffer, bool normalize = false);
-
-//! von Hann window
-/*! \f$w[n] = 0.5 - 0.5\cos\left(\frac{2{\pi}n}{N-1}\right)\f$
- */
-void DSPf_Hann(int size, DSP_float_ptr buffer, bool normalize = false);
-
-//! Bartlett window (zero valued end-points)
-/*! \f$w[n] = \frac{2}{N-1} \left(
- *            \frac{N-1}{2} - \left| n - \frac{N-1}{2} \right|
- *            \right) \f$
- */
-void DSPf_Bartlett(int size, DSP_float_ptr buffer, bool normalize = false);
-
-//! Triangular window (non-zero end-points)
-/*! \f$w[n] = \frac{2}{N} \left(
- *            \frac{N}{2} - \left| n - \frac{N-1}{2} \right|
- *            \right) \f$
- */
-void DSPf_Triangular(int size, DSP_float_ptr buffer, bool normalize = false);
-
-//! Bartlett-Hann window
-/*! \f$w[n] = 0.62
- *          - 0.48 \left| \frac{n}{N-1} - \frac{1}{2} \right|
- *          - 0.38 \cos\left(\frac{2{\pi}n}{N-1}\right)\f$
- */
-void DSPf_Bartlett_Hann(int size, DSP_float_ptr buffer, bool normalize = false);
-
-//! Gauss window
-/*! \f$w[n] = \exp ^ {
- *          - \frac{1}{2}
- *            \left(
- *              \frac
- *                   {n - (N-1)/2}
- *                   {\sigma(N-1)/2}
- *            \right) ^ 2
- *          }\f$
- * where \f$\sigma <= 0.5\f$
- */
-void DSPf_Gauss(int size, DSP_float_ptr buffer, DSP_float sigma, bool normalize = false);
-
-//! Rectangular window
-/*! \f$w[n] = 1\f$
- */
-void DSPf_Rectangular(int size, DSP_float_ptr buffer, bool normalize = false);
-
-//! Nuttall window, continuous first derivative
-/*! \f$w[n] = 0.355768
- *          - 0.487396 \cos\left(\frac{2{\pi}n}{N-1}\right)
- *          + 0.144232 \cos\left(\frac{4{\pi}n}{N-1}\right)
- *          - 0.012604 \cos\left(\frac{6{\pi}n}{N-1}\right)
- * \f$
- */
-void DSPf_Nuttall(int size, DSP_float_ptr buffer, bool normalize = false);
-
-//! Blackman-Harris window, continuous first derivative
-/*! \f$w[n] = 0.35875
- *          - 0.48829 \cos\left(\frac{2{\pi}n}{N-1}\right)
- *          + 0.14128 \cos\left(\frac{4{\pi}n}{N-1}\right)
- *          - 0.01168 \cos\left(\frac{6{\pi}n}{N-1}\right)
- * \f$
- */
-void DSPf_Blackman_Harris(int size, DSP_float_ptr buffer, bool normalize = false);
-
-//!Blackman-Nuttall window
-/*! \f$w[n] = 0.3635819
- *          - 0.4891775 \cos\left(\frac{2{\pi}n}{N-1}\right)
- *          + 0.1365995 \cos\left(\frac{4{\pi}n}{N-1}\right)
- *          - 0.0106411 \cos\left(\frac{6{\pi}n}{N-1}\right)
- * \f$
- */
-void DSPf_Blackman_Nuttall(int size, DSP_float_ptr buffer, bool normalize = false);
-
-//!Flat top window
-/*! \f$w[n] = 1
- *          - 1.93 \cos\left(\frac{2{\pi}n}{N-1}\right)
- *          + 1.29 \cos\left(\frac{4{\pi}n}{N-1}\right)
- *          - 0.388 \cos\left(\frac{6{\pi}n}{N-1}\right)
- *          + 0.032 \cos\left(\frac{8{\pi}n}{N-1}\right)
- * \f$
- */
-void DSPf_Flat_top(int size, DSP_float_ptr buffer, bool normalize = false);
-
-//! Normalized sinc function
-/*!  - Input: buffer contains funtion argumets
- *   - Output: results are stored in buffer (input values will be overwritten)
- *
- * \f$x(x) = \frac{\sin({\pi}x)}{{\pi}x)}\f$
- */
-void DSPf_sinc(int size, DSP_float_ptr buffer);
-//! Normalized sinc function
-/*!  - Input: arguments contains funtion argumets
- *   - Output: returns results
- *
- * \f$x(x) = \frac{\sin({\pi}x)}{{\pi}x)}\f$
- */
-template <typename T>
-void DSPf_sinc(const DSP_float_vector& arguments, vector<T> &output_buffer);
-
-//! Normalized sinc function
-/*!
- * \f$x(x) = \frac{\sin({\pi}x)}{{\pi}x)}\f$
- */
-DSP_float DSPf_sinc(DSP_float x);
-DSP_prec_float DSPf_sinc_prec(DSP_prec_float x);
 
 /*! \addtogroup load_func Config/data files processing functions
  * @{
@@ -380,7 +388,7 @@ class DSP::LoadCoef
      *
      * Returns FALSE if file type or size mismatch is detected.
      */
-    bool Load(DSP_complex_vector &FIR_coef, int vector_index = 0);
+    bool Load(DSP::Complex_vector &FIR_coef, int vector_index = 0);
     //! Loads real coefficients vector
     /*!
      *  \param FIR_coef - pointer to vector where coefficients will be stored
@@ -391,20 +399,10 @@ class DSP::LoadCoef
      *
      * Returns FALSE if file type mismatch is detected.
      */
-    bool Load(DSP_float_vector &FIR_coef, int vector_index = 0);
+    bool Load(DSP::Float_vector &FIR_coef, int vector_index = 0);
 };
 
-//! Saves to *.flt file samples from given real valued vector with information out its sampling rate
-bool DSPf_SaveVector(const std::string &filename, const DSP_float_vector &vector, const unsigned int &Fp=0);
-//! Saves to *.flt file samples from given complex valued vector with information out its sampling rate
-bool DSPf_SaveVector(const std::string &filename, const DSP_complex_vector &vector, const unsigned int &Fp=0);
-
 /*@} load_func*/
-
-//! returns sample size in bytes for given sample type
-int SampleType2SampleSize(DSP::e::SampleType type);
-
-int strncmpi(const char* str1, const char* str2, int N);
 
 /*@} misc_func*/
 

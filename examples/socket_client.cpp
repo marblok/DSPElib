@@ -16,20 +16,20 @@ int main(void)
   DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file);
   DSP::log.SetLogFileName("log_file_client.log");
 
-  DSP::log << DSP_lib_version_string() << endl << endl;
+  DSP::log << DSP::lib_version_string() << endl << endl;
 
   MasterClock=DSP::Clock::CreateMasterClock();
 
-  DSPu_WaveInput AudioIn(MasterClock, "test.wav", ".");
+  DSP::u::WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
   //Fp = AudioIn.GetSamplingRate();
 
   // use client socket
-  //DSPu_SOCKETinput in_socket(MasterClock, "153.19.48.213", true);
-  DSPu_SOCKETinput in_socket(MasterClock, "127.0.0.1", true, 0x00000002);
+  //DSP::u::SocketInput in_socket(MasterClock, "153.19.48.213", true);
+  DSP::u::SocketInput in_socket(MasterClock, "127.0.0.1", true, 0x00000002);
   Fp = 22050;
 
-  DSPu_SOCKEToutput out_socket("127.0.0.1", true, 0x00000001);
-  DSPu_AudioOutput AudioOut(Fp);
+  DSP::u::SocketOutput out_socket("127.0.0.1", true, 0x00000001);
+  DSP::u::AudioOutput AudioOut(Fp);
 
   in_socket.Output("out") >> AudioOut.Input("in");
   AudioIn.Output("out")   >> out_socket.Input("in");

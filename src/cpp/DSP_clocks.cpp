@@ -242,11 +242,9 @@ void DSP::Clock::SetAsNewMasterClock(DSP::Clock_ptr new_master)
   UpdateCycleLengths(new_master);
 }
 
-/*! \Fixed <b>2005.10.30</b> Added DSP::Clock::ReleaseMasterClock function which frees memory reserved for master clock.
+/*! Fixed <b>2005.10.30</b> Added DSP::Clock::ReleaseMasterClock function which frees memory reserved for master clock.
  *    If removed clock was last also global tables storing MasterClocks parameters are freed
  *    and NoOfMasterClocks is reset to zero.
- *
- * \todo_later check whether all alocated memory is freed
  */
 void DSP::Clock::ReleaseMasterClock(unsigned int MasterClockIndex)
 {
@@ -364,71 +362,6 @@ void DSP::Clock::ReleaseMasterClock(unsigned int MasterClockIndex)
   }
 }
 
-//Saves scheme information of the algorithm to m-file
-/* ReferenceClock - one of the clocks associated with
- *  the algorithm which we want to store in
- *  m-file format.
- *
- */
-void DSP::Clock::SchemeToMfile(DSP::Clock_ptr ReferenceClock, const string &mfile_name)
-{
-  UNUSED_RELEASE_ARGUMENT(ReferenceClock);
-  UNUSED_RELEASE_ARGUMENT(mfile_name);
-
-  #if __DEBUG__ == 1
-    // ********************************** //
-    if (ReferenceClock==NULL)
-    {
-      DSP::log << DSP::LogMode::Error << "DSP::Clock::SchemeToMfile" << DSP::LogMode::second << "NULL ReferenceClock" << endl;
-      return;
-    }
-
-    // ********************************** //
-    std::ofstream m_plik(mfile_name);
-    DSP::Clock_ptr* ClocksList;
-    long clocks_number, temp, ind;
-    long max_components_number;
-    bool *ComponentDoneTable;
-
-    // ********************************** //
-    m_plik << "%This is output of DSP::Clock::SchemeToMfile" << std::endl;
-    m_plik << "%" << DSP_lib_version_string() << std::endl;
-    m_plik << "function Bloczki = GetScheme" << std::endl << std::endl;
-    m_plik << "ind = 1;" << std::endl << std::endl;
-
-    // ********************************** //
-    // reserve space for info if given component
-    // has been already saved
-    max_components_number = DSP::Component::GetNoOfComponentsInTable();
-    ComponentDoneTable = new bool [max_components_number];
-    for (ind = 0; ind < max_components_number; ind ++)
-      ComponentDoneTable[ind] = false;
-
-    // ********************************** //
-    // Get list of clocks
-    clocks_number = DSP::Clock::GetNoOfClocks(ReferenceClock);
-    ClocksList = new DSP::Clock_ptr[clocks_number];
-    temp = DSP::Clock::GetAlgorithmClocks(ReferenceClock, ClocksList, clocks_number);
-
-    if (temp != clocks_number)
-      DSP::log << DSP::LogMode::Error << "DSP::Clock::SchemeToMfile" << DSP::LogMode::second << "GetAlgorithmClocks: return value != clocks_number" << endl;
-
-    // Process all clocks in the list
-    for (ind = 0; ind < clocks_number; ind ++)
-    {
-      ClocksList[ind]->ClockComponentsToMfile(m_plik, ComponentDoneTable, max_components_number);
-    }
-
-    if (ComponentDoneTable != NULL)
-      delete [] ComponentDoneTable;
-    if (ClocksList != NULL)
-      delete [] ClocksList;
-
-    // ********************************** //
-    m_plik.close();
-  #endif
-}
-
 /* Main processing loop ver. 2 (if NoOfCyclesToProcess != 0 <- processing
  * only NoOfCyclesToProcess cycles, otherwise runs in infinitive loop)
  *
@@ -458,10 +391,8 @@ void DSP::Clock::SchemeToMfile(DSP::Clock_ptr ReferenceClock, const string &mfil
   * returns cycles_to_process variable value
   * \note can be reused if Terminated[ReferenceClock->MasterClockIndex] == false
   *
-  * \todo FindNextActiveClocks -> zmodyfikowa� tak �eby korzysta� z wcze�niej
-  *   przygotowanych list. Przy tworzeniu nowego zegara, dla danego zegara
-  *   macierzystego aktualizowa� list� list zegar�w oraz
-  *   global_discrete_times_to_next_step.
+  * \todo FindNextActiveClocks -> modify so that the list prepared beforehand is used.
+  *   When new clock is created, for given master clock update the list of clocks and global_discrete_times_to_next_step.
   *
   */
 unsigned long DSP::Clock::Execute(DSP::Clock_ptr ReferenceClock,
@@ -478,7 +409,7 @@ unsigned long DSP::Clock::Execute(DSP::Clock_ptr ReferenceClock,
   unsigned long cycles_to_process;
 //  bool *NotifyDone;
 
-  long int timeout_counter=0;
+  unsigned long timeout_counter=0;
 
   if (ReferenceClock==NULL)
   {
@@ -581,13 +512,13 @@ unsigned long DSP::Clock::Execute(DSP::Clock_ptr ReferenceClock,
             if (InputNeedsMoreTime[ReferenceClock->MasterClockIndex] == true)
             {
               timeout_counter++;
-              if (timeout_counter > MAX_timeout_counter)
+              if (timeout_counter > DSP::MAX_timeout_counter)
                 break;
 
-              /*! \todo_later in the future use DSPf_Sleep(0)
+              /*! \todo_later in the future use DSP::f::Sleep(0)
                *  and real time measurement for timeout detection
                */
-              DSPf_Sleep(1); //wait just a bit
+              DSP::f::Sleep(1); //wait just a bit
               //AllDone=false;
               //and one more go
 
@@ -606,7 +537,7 @@ unsigned long DSP::Clock::Execute(DSP::Clock_ptr ReferenceClock,
                 {
                   #ifdef __DEBUG__
                     DSP::log << "DSP::Clock::Execute" << DSP::LogMode::second << "Not all sources processed but no source is ready" << endl;
-                    DSP::log << "DSP::Clock::Execute" << DSP::LogMode::second << ">> Check if there is the feedback loop without DSPu_LoopDelay." << endl;
+                    DSP::log << "DSP::Clock::Execute" << DSP::LogMode::second << ">> Check if there is the feedback loop without DSP::u::LoopDelay." << endl;
                     DSP::log << "DSP::Clock::Execute  >>" << DSP::LogMode::second
                       << "Number of signal activated clocks still on the list:" << *SignalActivatedClocksListLength_ptr << endl;
                     for (clock_ind=0; clock_ind<(*ListLength); clock_ind++)
@@ -677,7 +608,7 @@ unsigned long DSP::Clock::Execute(DSP::Clock_ptr ReferenceClock,
       //detecting loop end
       if (NoOfCyclesToProcess != 0)
       {
-        if (cycles_to_process > global_discrete_times_to_next_step[ReferenceClock->MasterClockIndex]) //! \Fixed <b>2008.03.25</b>
+        if (cycles_to_process > global_discrete_times_to_next_step[ReferenceClock->MasterClockIndex]) //! Fixed <b>2008.03.25</b>
         { // still something to do
           cycles_to_process -= global_discrete_times_to_next_step[ReferenceClock->MasterClockIndex];
           //global_discrete_times_to_next_step[ReferenceClock->MasterClockIndex] = 0;
@@ -697,7 +628,7 @@ unsigned long DSP::Clock::Execute(DSP::Clock_ptr ReferenceClock,
         else
         { // OK: everything has been processed
           //global_discrete_times_to_next_step[ReferenceClock->MasterClockIndex] -= cycles_to_process;
-          cycles_to_process = 0; //! \Fixed <b>2008.03.25</b>
+          cycles_to_process = 0; //! Fixed <b>2008.03.25</b>
           Terminated[ReferenceClock->MasterClockIndex]=true;
         }
       }
@@ -979,7 +910,7 @@ DSP::Clock::~Clock()
   }
 }
 
-/*! \Fixed <b>2005.10.30</b> Here clocks are just deleted.
+/*! Fixed <b>2005.10.30</b> Here clocks are just deleted.
  *  All clocks' data structures are deleted in  their destructors.
  */
 void DSP::Clock::FreeClocks(void)
@@ -1440,7 +1371,7 @@ void DSP::Clock::UpdateCycleLengths(DSP::Clock_ptr RootParentClock)
             if ((global_cycle_lengths[CurrentClock->MasterClockIndex] % clocks_out[ind]->cycle_length) != 0)
             {
               global_cycle_lengths[CurrentClock->MasterClockIndex]*=(clocks_out[ind]->cycle_length /
-                DSPf_gcd(global_cycle_lengths[CurrentClock->MasterClockIndex], clocks_out[ind]->cycle_length));
+                DSP::f::gcd(global_cycle_lengths[CurrentClock->MasterClockIndex], clocks_out[ind]->cycle_length));
             }
           }
 
@@ -1483,7 +1414,7 @@ unsigned long DSP::Clock::CalculateNewCycle(//DSP::Clock_ptr MasterClock,
 
   NewCycleLength=old_cycle*M;
 
-  global_multiplier=L/DSPf_gcd(NewCycleLength,L);
+  global_multiplier=L/DSP::f::gcd(NewCycleLength,L);
   NewCycleLength*=global_multiplier;
   NewCycleLength/=L;
 
@@ -1561,11 +1492,10 @@ unsigned long DSP::Clock::GetTimeToNextCycle(DSP::Clock_ptr CurrentMasterClock)
 // Returns all clocks of the algorithm linked with ReferenceClock
 /* Generaly it means that returns all the clocks with the same MasterClock as ReferenceClock.
  *
- * ClockList - pointer to list (allocated by user) where clocks' pointers will be stored
- * clocks_number - number of available entries in ClockList
+ * ClockList - vector with list where clocks' pointers will be stored (appended)
  */
 long DSP::Clock::GetAlgorithmClocks(DSP::Clock_ptr ReferenceClock,
-                                   DSP::Clock_ptr *ClocksList, unsigned long clocks_number,
+                                   vector<DSP::Clock_ptr> &ClocksList, 
                                    bool FindSignalActivatedClocks)
 {
   unsigned long index;
@@ -1581,15 +1511,7 @@ long DSP::Clock::GetAlgorithmClocks(DSP::Clock_ptr ReferenceClock,
   while (tempClock != NULL)
   {
     ind++;
-    if ((unsigned long)ind >= clocks_number)
-    {
-      #ifdef __DEBUG__
-        DSP::log << DSP::LogMode::Error << "DSP::Clock::GetAlgorithmClocks" << DSP::LogMode::second << "Not enough space in ClocksList" << endl;
-      #endif
-      break;
-    }
-
-    ClocksList[ind] = tempClock;
+    ClocksList.push_back(tempClock);
 
     tempClock=tempClock->Next;
   }
@@ -1614,17 +1536,9 @@ long DSP::Clock::GetAlgorithmClocks(DSP::Clock_ptr ReferenceClock,
               Ignore = true;
           if (Ignore == false)
           {
-            if ((int)clocks_number > (ind+1))
-            {
-              ile = GetAlgorithmClocks(tempClockTrigger->SignalActivatedClock,
-                                 ClocksList+ind+1, clocks_number - (ind+1), true);
-              ind += ile;
-            }
-            #ifdef __DEBUG__
-              else
-                DSP::log << DSP::LogMode::Error << "DSP::Clock::GetAlgorithmClocks" << DSP::LogMode::second
-                  << "Not enough space in ClocksList for possible signal activated clocks" << endl;
-            #endif
+            // append clocks to ClocksList vector
+            ile = GetAlgorithmClocks(tempClockTrigger->SignalActivatedClock, ClocksList, true);
+            ind += ile;
           }
         }
       }

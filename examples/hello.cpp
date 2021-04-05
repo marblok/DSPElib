@@ -20,15 +20,15 @@ int test_hello(void)
   DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file);
   DSP::log.SetLogFileName("log_file.log");
 
-  DSP::log << DSP_lib_version_string() << endl << endl;
+  DSP::log << DSP::lib_version_string() << endl << endl;
   DSP::log << "Hello" << DSP::LogMode::second << "World !!!" << endl;
  
   MasterClock=DSP::Clock::CreateMasterClock();
 
-  DSPu_WaveInput AudioIn(MasterClock, "test.wav", ".");
+  DSP::u::WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
   Fp = AudioIn.GetSamplingRate();
 
-  DSPu_AudioOutput AudioOut(Fp);
+  DSP::u::AudioOutput AudioOut(Fp);
 
   AudioIn.Output("out") >> AudioOut.Input("in");
 
