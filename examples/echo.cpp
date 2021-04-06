@@ -16,7 +16,7 @@ int main(void)
 
   DSP::log << DSP::lib_version_string() << endl;
   DSP::log << endl;
-  DSP::log << "Hello" << DSP::LogMode::second << "This is echo !!!" << endl;
+  DSP::log << "Hello" << DSP::e::LogMode::second << "This is echo !!!" << endl;
 
   MasterClock=DSP::Clock::CreateMasterClock();
 
@@ -47,7 +47,7 @@ int main(void)
   {
     DSP::Clock::Execute(MasterClock, Fp/8);
 
-    DSP::log << "MAIN" << DSP::LogMode::second << temp << endl;
+    DSP::log << "MAIN" << DSP::e::LogMode::second << temp << endl;
 
     if (AudioIn.GetBytesRead() == 0)
       temp++;
@@ -55,7 +55,7 @@ int main(void)
   while (temp < 30);
 
   DSP::Clock::FreeClocks();
-  DSP::log << "MAIN" << DSP::LogMode::second << "end" << endl << DSP::LogMode::Error << endl;
+  DSP::log << "MAIN" << DSP::e::LogMode::second << "end" << endl << DSP::e::LogMode::Error << endl;
  
   return 0;
 }

@@ -86,7 +86,7 @@ void DSP::f::SolveMatrixEqu(
   DSP::Float_vector B; //vector B
   unsigned int Size = (unsigned int)(B_in.size());
   if (Size != A_in.size()) {
-    DSP::log << DSP::LogMode::Error << "DSP::f::SolveMatrixEqu" << DSP::LogMode::second << "Size mismatch of matrix A_in and vector B_in" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::f::SolveMatrixEqu" << DSP::e::LogMode::second << "Size mismatch of matrix A_in and vector B_in" << endl;
     return;
   }
   else {
@@ -157,7 +157,7 @@ void DSP::f::SolveMatrixEqu_prec(
   DSP::Prec_Float_vector B; //vector B
   unsigned int Size = (unsigned int)(B_in.size());
   if (Size != A_in.size()) {
-    DSP::log << DSP::LogMode::Error << "DSP::f::SolveMatrixEqu_prec" << DSP::LogMode::second << "Size mismatch of matrix A_in and vector B_in" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::f::SolveMatrixEqu_prec" << DSP::e::LogMode::second << "Size mismatch of matrix A_in and vector B_in" << endl;
     return;
   }
   else {
@@ -241,7 +241,7 @@ void DSP::f::SolveMatrixEqu_prec(
   DSP::Prec_Float_vector B; //vector B
   unsigned int Size = (unsigned int)(B_in.size());
   if (Size != A_in.size()) {
-    DSP::log << DSP::LogMode::Error << "DSP::f::SolveMatrixEqu_prec" << DSP::LogMode::second << "Size mismatch of matrix A_in and vector B_in" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::f::SolveMatrixEqu_prec" << DSP::e::LogMode::second << "Size mismatch of matrix A_in and vector B_in" << endl;
     return;
   }
   else {
@@ -401,7 +401,7 @@ bool DSP::f::MakeDir(const string &dir_name, const string &parent_dir)
     if (temp_dir == NULL)
     {
       #ifdef __DEBUG__
-        DSP::log << DSP::LogMode::Error << "DSP::f::MakeDir" << DSP::LogMode::second << "Parent directory does not exist" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::f::MakeDir" << DSP::e::LogMode::second << "Parent directory does not exist" << endl;
       #endif
       return false;
     }
@@ -428,7 +428,7 @@ bool DSP::f::MakeDir(const string &dir_name, const string &parent_dir)
   if (temp_dir == NULL)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "DSP::f::MakeDir" << DSP::LogMode::second << "Could not create directory" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::f::MakeDir" << DSP::e::LogMode::second << "Could not create directory" << endl;
     #endif
     return false;
   }
@@ -471,7 +471,7 @@ bool DSP::f::MakeDir(const string& dir_name, const string& parent_dir)
 		if (_dir_exists == false)
 		{
 #ifdef __DEBUG__
-			DSP::log << DSP::LogMode::Error << "DSP::f::MakeDir", "Parent directory does not exist");
+			DSP::log << DSP::e::LogMode::Error << "DSP::f::MakeDir", "Parent directory does not exist");
 #endif
 			return false;
 		}
@@ -482,7 +482,7 @@ bool DSP::f::MakeDir(const string& dir_name, const string& parent_dir)
 	if (_mkdir(full_name.c_str()) != 0)
 	{
 #ifdef __DEBUG__
-		DSP::log << DSP::LogMode::Error << "DSP::f::MakeDir", "Could not create directory");
+		DSP::log << DSP::e::LogMode::Error << "DSP::f::MakeDir", "Could not create directory");
 #endif
 		return false;
 	}
@@ -818,7 +818,7 @@ void DSP::f::Gauss(int size, DSP::Float_ptr buffer, DSP::Float sigma, bool norma
   if (sigma > 0.5)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "DSP::f::Gauss" << DSP::LogMode::second << "Sigma must be less or equal 0.5" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::f::Gauss" << DSP::e::LogMode::second << "Sigma must be less or equal 0.5" << endl;
     #endif
     return;
   }

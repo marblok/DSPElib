@@ -11,7 +11,7 @@
 
 #define DSP_VER_MAJOR 0
 #define DSP_VER_MINOR 20
-#define DSP_VER_BUILD 2 // !!! without zeroes before, else this will be treated as octal number
+#define DSP_VER_BUILD 3 // !!! without zeroes before, else this will be treated as octal number
 #define DSP_VER_YEAR  2021
 #define DSP_VER       DSP_VER_MAJOR.DSP_VER_MINOR.DSP_VER_BUILD
 
@@ -682,12 +682,12 @@ string DSP::lib_version_string();
  *      - can list all existing blocks (for example to check if there are some not deleted blocks after clean up process)
  *      .
  *   \section lib_LOG_usr User LOG messages
- *     - DSP::LogMode::Info, DSP::LogMode::Error, DSP::LogMode::first, DSP::LogMode::second
- *       - DSP::log << "Hello" << DSP::LogMode::second << "This is echo !!!" << endl;
- *       - DSP::log << DSP::LogMode::Error << "MAIN" << DSP::LogMode::second << "end" << endl;
+ *     - DSP::e::LogMode::Info, DSP::e::LogMode::Error, DSP::e::LogMode::first, DSP::e::LogMode::second
+ *       - DSP::log << "Hello" << DSP::e::LogMode::second << "This is echo !!!" << endl;
+ *       - DSP::log << DSP::e::LogMode::Error << "MAIN" << DSP::e::LogMode::second << "end" << endl;
  *       .
- *     - DSP::LogMode::pause, DSP::LogMode::pause_off
- *       - DSP::log << DSP::LogMode::pause << "Finished SolveMatrix test" << endl;
+ *     - DSP::e::LogMode::pause, DSP::e::LogMode::pause_off
+ *       - DSP::log << DSP::e::LogMode::pause << "Finished SolveMatrix test" << endl;
  *       .
  *     .
  *   \section lib_LOG_wx Working with wxWidgets

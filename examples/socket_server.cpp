@@ -53,13 +53,13 @@ int main(void)
   {
     DSP::Clock::Execute(MasterClock, Fp/8);
 
-    DSP::log << "MAIN" << DSP::LogMode::second << temp << endl;
+    DSP::log << "MAIN" << DSP::e::LogMode::second << temp << endl;
     temp++;
   }
   while (temp < 100); //(AudioIn.GetBytesRead() != 0);
 
   DSP::Clock::FreeClocks();
-  DSP::log << DSP::LogMode::Error << "MAIN" << DSP::LogMode::second << "end" << endl;
+  DSP::log << DSP::e::LogMode::Error << "MAIN" << DSP::e::LogMode::second << "end" << endl;
   //! \bug socket will be closed at application finish not at processing end
 
   return 0;

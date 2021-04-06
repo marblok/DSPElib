@@ -59,7 +59,7 @@ int main(void)
   {
     DSP::Clock::Execute(MasterClock, Fp1/4);
 
-    DSP::log << "MAIN" << DSP::LogMode::second << temp 
+    DSP::log << "MAIN" << DSP::e::LogMode::second << temp 
              << " (" << in_socket.GetBytesRead() << ")" << endl;
     temp++;
   }

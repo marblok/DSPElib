@@ -269,21 +269,21 @@ DSP::u::DynamicCompressor::DynamicCompressor(
   if (BufferSize_in <= 0)
   {
     #ifdef __DEBUG__
-      DSP::log << "DSP::u::DynamicCompressor::DynamicCompressor" << DSP::LogMode::second << "BufferSize_in <= 0" << endl;
+      DSP::log << "DSP::u::DynamicCompressor::DynamicCompressor" << DSP::e::LogMode::second << "BufferSize_in <= 0" << endl;
     #endif
     BufferSize_in = 1;
   }
   if (OutputDelay_in < -1)
   {
     #ifdef __DEBUG__
-      DSP::log << "DSP::u::DynamicCompressor::DynamicCompressor" << DSP::LogMode::second << "OutputDelay_in < -1" << endl;
+      DSP::log << "DSP::u::DynamicCompressor::DynamicCompressor" << DSP::e::LogMode::second << "OutputDelay_in < -1" << endl;
     #endif
     OutputDelay_in = 0;
   }
   if (OutputDelay_in >= BufferSize_in)
   {
     #ifdef __DEBUG__
-      DSP::log << "DSP::u::DynamicCompressor::DynamicCompressor" << DSP::LogMode::second << "OutputDelay_in >= BufferSize_in" << endl;
+      DSP::log << "DSP::u::DynamicCompressor::DynamicCompressor" << DSP::e::LogMode::second << "OutputDelay_in >= BufferSize_in" << endl;
     #endif
     OutputDelay_in = BufferSize_in - 1;
   }
@@ -617,7 +617,7 @@ DSP::u::Farrow::Farrow(const bool& IsComplex, const vector<DSP::Float_vector>& F
 
   if (InputClock == NULL)
   {
-    DSP::log << DSP::LogMode::Error << "DSP::u::Farrow" << DSP::LogMode::second << "Undefined InputClock (AutoUpdate not implemented yet)" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::u::Farrow" << DSP::e::LogMode::second << "Undefined InputClock (AutoUpdate not implemented yet)" << endl;
     return;
   }
   else
@@ -756,11 +756,11 @@ bool DSP::u::Farrow::OutputExecute(OUTPUT_EXECUTE_ARGS)
     { // This is InputClock calling ;-)
       if (clock == THIS->InputClocks[0])
       {
-        DSP::log << DSP::LogMode::Error << "DSP::u::Farrow::OutputExecute" << DSP::LogMode::second << "WARNING: InputClock not expected !!!" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::u::Farrow::OutputExecute" << DSP::e::LogMode::second << "WARNING: InputClock not expected !!!" << endl;
       }
       else
       {
-        DSP::log << DSP::LogMode::Error << "DSP::u::Farrow::OutputExecute" << DSP::LogMode::second << "WARNING: Unexpected clock called !!!" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::u::Farrow::OutputExecute" << DSP::e::LogMode::second << "WARNING: Unexpected clock called !!!" << endl;
       }
       return true;
     }
@@ -1046,7 +1046,7 @@ void DSP::u::GardnerSampling::Init(
   { //activate output clock
     if ((InputClock == NULL) || (OutputClock == NULL))
     {
-      DSP::log << DSP::LogMode::Error << "DSP::u::GardnerSampling::Init" << DSP::LogMode::second << "Can't activate output clock: InputClock or OutputClock is NULL" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::GardnerSampling::Init" << DSP::e::LogMode::second << "Can't activate output clock: InputClock or OutputClock is NULL" << endl;
       return;
     }
     MasterClockIndex = InputClock->GetMasterClockIndex();
@@ -1547,7 +1547,7 @@ DSP::u::PSKencoder::PSKencoder(DSP::e::PSK_type type) : DSP::Block()
       break;
 
     default:
-      DSP::log << DSP::LogMode::Error << "DSP::u::PSKencoder::PSKencoder" << DSP::LogMode::second << "Unsupported modulation type, falling back to BPSK" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::PSKencoder::PSKencoder" << DSP::e::LogMode::second << "Unsupported modulation type, falling back to BPSK" << endl;
       Type = DSP::e::PSK_type::BPSK;
       Execute_ptr = &InputExecute_BPSK;
       break;
@@ -1827,7 +1827,7 @@ unsigned int getConstellation(
       break;
 
     default:
-      DSP::log << DSP::LogMode::Error << "getConstellation" << DSP::LogMode::second << "Unsupported modulation type" << endl;
+      DSP::log << DSP::e::LogMode::Error << "getConstellation" << DSP::e::LogMode::second << "Unsupported modulation type" << endl;
       break;
   }
 
@@ -1971,7 +1971,7 @@ DSP::u::Serial2Parallel::Serial2Parallel(const DSP::Clock_ptr &InputClock,
   if (first_output_vector.size() != NoOfOutputs) {
     outputs.resize(NoOfOutputs, 0.0);
     if (first_output_vector.size() > 0) {
-      DSP::log << DSP::LogMode::Error << "DSP::u::Serial2Parallel" << DSP::LogMode::second << "Wrong size of first_output_vector" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::Serial2Parallel" << DSP::e::LogMode::second << "Wrong size of first_output_vector" << endl;
     }
   }
   else {
@@ -2403,7 +2403,7 @@ DSP::u::PSKdecoder::PSKdecoder(DSP::e::PSK_type type) : DSP::Block()
       break;
 
     default:
-      DSP::log << DSP::LogMode::Error << "DSP::u::PSKdecoder::PSKdecoder" << DSP::LogMode::second << "Unsupported modulation type, falling back to BPSK" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::PSKdecoder::PSKdecoder" << DSP::e::LogMode::second << "Unsupported modulation type, falling back to BPSK" << endl;
       Execute_ptr = &InputExecute_BPSK;
       break;
   }

@@ -21,7 +21,7 @@ int test_hello(void)
   DSP::log.SetLogFileName("log_file.log");
 
   DSP::log << DSP::lib_version_string() << endl << endl;
-  DSP::log << "Hello" << DSP::LogMode::second << "World !!!" << endl;
+  DSP::log << "Hello" << DSP::e::LogMode::second << "World !!!" << endl;
  
   MasterClock=DSP::Clock::CreateMasterClock();
 
@@ -40,13 +40,13 @@ int test_hello(void)
   {
     DSP::Clock::Execute(MasterClock, Fp/8);
 
-    DSP::log << "MAIN" << DSP::LogMode::second << temp << endl;
+    DSP::log << "MAIN" << DSP::e::LogMode::second << temp << endl;
     temp++;
   }
   while (AudioIn.GetBytesRead() != 0);
 
   DSP::Clock::FreeClocks();
-  DSP::log << DSP::LogMode::Error << "MAIN" << DSP::LogMode::second << "end" << endl;
+  DSP::log << DSP::e::LogMode::Error << "MAIN" << DSP::e::LogMode::second << "end" << endl;
 
   return 0;
 }

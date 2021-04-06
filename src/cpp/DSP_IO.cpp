@@ -90,7 +90,7 @@ unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Float_vector &Buffer, unsign
     #ifdef __DEBUG__
       else
       {
-        DSP::log << DSP::LogMode::Error << "DSP::f::ReadCoefficientsFromFile" << DSP::LogMode::second << "ReadCoefficientsFromFile wrong offset" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::f::ReadCoefficientsFromFile" << DSP::e::LogMode::second << "ReadCoefficientsFromFile wrong offset" << endl;
       }
     #endif
     fclose(plik);
@@ -174,7 +174,7 @@ unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Complex_vector &Buffer, unsi
     #ifdef __DEBUG__
       else
       {
-        DSP::log << DSP::LogMode::Error << "DSP::f::ReadCoefficientsFromFile" << DSP::LogMode::second << "ReadCoefficientsFromFile wrong offset" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::f::ReadCoefficientsFromFile" << DSP::e::LogMode::second << "ReadCoefficientsFromFile wrong offset" << endl;
       }
     #endif
     fclose(plik);
@@ -374,7 +374,7 @@ DSP::u::FileInput::FileInput(DSP::Clock_ptr ParentClock,
     if (FILEtype == DSP::e::FileType::FT_raw)
     {
       #ifdef __DEBUG__
-        DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::LogMode::second
+        DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second
           << "Detection of no of channels is not supported for DSP::e::FileType::FT_raw (defaulting to 1 channels)" << endl;
         NoOfChannels = 1;
       #endif
@@ -402,7 +402,7 @@ DSP::u::FileInput::FileInput(DSP::Clock_ptr ParentClock,
     //NoOfChannels = 2;
     //! \bug support for reading files with different number of channels then number of block's outputs
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::LogMode::second << "Wrong number of channels for *.tape file !!!" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second << "Wrong number of channels for *.tape file !!!" << endl;
     #endif
     ready = false;
   }
@@ -410,7 +410,7 @@ DSP::u::FileInput::FileInput(DSP::Clock_ptr ParentClock,
   if (NoOfOutputs != NoOfFileChannels)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::LogMode::second
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second
         << "Incorrect number of input channels: expected "
         << NoOfOutputs << " but found " << NoOfFileChannels << "!!!" << endl;
     #endif
@@ -456,7 +456,7 @@ DSP::u::FileInput::FileInput(DSP::Clock_ptr ParentClock,
 
   // +++++++++++++++++++++++++++++++++++++++++++++ //
   if (ready == false) {
-    DSP::log << DSP::LogMode::Error << "DSP::u::FileInput" << DSP::LogMode::second
+    DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput" << DSP::e::LogMode::second
       << "Block <" << GetName() << "> failed to open file \"" << FileName << "\"" << endl;
     OutputExecute_ptr = &OutputExecute_Dummy;
   }
@@ -469,7 +469,7 @@ bool DSP::u::FileInput::SetSkip(long long Offset)
   UNUSED_ARGUMENT(Offset);
 
   #ifdef __DEBUG__
-    DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::SetSkip" << DSP::LogMode::second << "not implemented yet" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::SetSkip" << DSP::e::LogMode::second << "not implemented yet" << endl;
   #endif
   return false;
 }
@@ -502,7 +502,7 @@ bool DSP::u::FileInput::OpenFile(const string &FileName,
             ready = false;
 
             #ifdef __DEBUG__
-              DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::LogMode::second << "Unsupported *.flt file version !!!" << endl;
+              DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second << "Unsupported *.flt file version !!!" << endl;
               //! \todo verify if file header data match constructor parameters
             #endif
           }
@@ -526,15 +526,15 @@ bool DSP::u::FileInput::OpenFile(const string &FileName,
             ready = false;
 
             #ifdef __DEBUG__
-              DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::LogMode::second << "Unsupported *.tape file sample type!!!" << endl;
+              DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second << "Unsupported *.tape file sample type!!!" << endl;
             #endif
           }
 
           #ifdef __DEBUG__
             if (sizeof(DSP::T_TAPE_header) != DSP::TAPE_header_LEN)
-              DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::LogMode::second << "TAPE_header_LEN does not much sizeof T_TAPE_header structure !!!" << endl;
+              DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second << "TAPE_header_LEN does not much sizeof T_TAPE_header structure !!!" << endl;
             if (tape_header[0].header_size() != DSP::TAPE_header_LEN)
-              DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::LogMode::second << "Unsupported *.tape file version !!!" << endl;
+              DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second << "Unsupported *.tape file version !!!" << endl;
           #endif
 
           SamplingRate = tape_header[0].sampling_rate();
@@ -552,7 +552,7 @@ bool DSP::u::FileInput::OpenFile(const string &FileName,
 
             #ifdef __DEBUG__
             {
-              DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::LogMode::second
+              DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second
                 << "This (" << FileName << ") is not PCM WAVE file or file is corrupted !!!" << endl;
             }
             #endif
@@ -576,7 +576,7 @@ bool DSP::u::FileInput::OpenFile(const string &FileName,
               ready = false;
               #ifdef __DEBUG__
               {
-                DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::LogMode::second
+                DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second
                   << "Unsupported PCM sample size ==> " << wav_header[0].wBitsPerSample << " bits!!!" << endl;
               }
               #endif
@@ -590,7 +590,7 @@ bool DSP::u::FileInput::OpenFile(const string &FileName,
             ready = false;
             #ifdef __DEBUG__
             {
-              DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::LogMode::second
+              DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second
                 << "No data have been found in PCM file " << FileName << "!!!" << endl;
             }
             #endif
@@ -711,7 +711,7 @@ unsigned long DSP::u::FileInput::GetSampleSize(DSP::e::SampleType SampleType_in)
       sample_size=1;
       if ((DSP::File_buffer_size % 8) != 0)
       {
-        DSP::log << DSP::LogMode::Error << "DSP::u::FileInput" << DSP::LogMode::second << "Can't read bit stream corectly:"
+        DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput" << DSP::e::LogMode::second << "Can't read bit stream corectly:"
           " DSP::File_buffer_size is not a multiply of byte size (8 bits)" << endl;
       }
       break;
@@ -723,7 +723,7 @@ unsigned long DSP::u::FileInput::GetSampleSize(DSP::e::SampleType SampleType_in)
       break;
     default:
       sample_size=8*sizeof(short);
-      DSP::log << DSP::LogMode::Error << "DSP::u::FileInput" << DSP::LogMode::second << "Unsupported data type" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput" << DSP::e::LogMode::second << "Unsupported data type" << endl;
       break;
   }
   sample_size*=NoOfFileChannels;
@@ -1140,7 +1140,7 @@ bool DSP::u::FileOutput::Open(const string &FileName, DSP::e::SampleType sample_
   if (NoOfChannels > UCHAR_MAX)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "DSP::u::FileOutput::Open" << DSP::LogMode::second << "NoOfChannels to large (> UCHAR_MAX)" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput::Open" << DSP::e::LogMode::second << "NoOfChannels to large (> UCHAR_MAX)" << endl;
     #endif
     NoOfChannels = UCHAR_MAX;
   }
@@ -1185,7 +1185,7 @@ bool DSP::u::FileOutput::Open(const string &FileName, DSP::e::SampleType sample_
     case DSP::e::SampleType::ST_bit_reversed:
       if ((DSP::File_buffer_size % 8) != 0)
       {
-        DSP::log << DSP::LogMode::Error << "DSP::u::FileOutput" << DSP::LogMode::second << "Can't write bit stream correctly:"
+        DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput" << DSP::e::LogMode::second << "Can't write bit stream correctly:"
           " DSP::File_buffer_size is not a multiply of byte size (8 bits)" << endl;
       }
       // "0 / 1" byte by byte
@@ -1196,7 +1196,7 @@ bool DSP::u::FileOutput::Open(const string &FileName, DSP::e::SampleType sample_
       break;
     default:
       #ifdef __DEBUG__
-        DSP::log << DSP::LogMode::Error << "DSP::u::FileOutput" << DSP::LogMode::second << "Unsupported data type changing to DSP::e::SampleType::ST_short" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput" << DSP::e::LogMode::second << "Unsupported data type changing to DSP::e::SampleType::ST_short" << endl;
       #endif
       SampleType = DSP::e::SampleType::ST_short;
       Execute_ptr = &InputExecute_short;
@@ -1223,7 +1223,7 @@ bool DSP::u::FileOutput::Open(const string &FileName, DSP::e::SampleType sample_
             break;
           default:
             #ifdef  __DEBUG__
-              DSP::log << DSP::LogMode::Error << "DSP::u::FileOutput" << DSP::LogMode::second << "*.wav: unsupported sample type" << endl;
+              DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput" << DSP::e::LogMode::second << "*.wav: unsupported sample type" << endl;
             #endif
             break;
         }
@@ -1242,7 +1242,7 @@ bool DSP::u::FileOutput::Open(const string &FileName, DSP::e::SampleType sample_
             case DSP::e::SampleType::ST_short: // 16bit
               break;
             default:
-              DSP::log << DSP::LogMode::Error << "DSP::u::FileOutput", "*.tape: unsupported sample type");
+              DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput", "*.tape: unsupported sample type");
               break;
           }
         #endif
@@ -1283,7 +1283,7 @@ bool DSP::u::FileOutput::Open(const string &FileName, DSP::e::SampleType sample_
               break;
             default:
               #ifdef  __DEBUG__
-                DSP::log << DSP::LogMode::Error << "DSP::u::FileOutput" << DSP::LogMode::second << "*.flt: unsupported sample type" << endl;
+                DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput" << DSP::e::LogMode::second << "*.flt: unsupported sample type" << endl;
               #endif
               break;
           }
@@ -1327,7 +1327,7 @@ bool DSP::File::SetOffset(long long Offset, DSP::e::OffsetMode mode)
     case DSP::e::OffsetMode::standard:
     default:
       #ifdef __DEBUG__
-        DSP::log << DSP::LogMode::Error << "DSP::u::FileOutput:: SetOffset" << DSP::LogMode::second << "The mode is unsuported" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput:: SetOffset" << DSP::e::LogMode::second << "The mode is unsuported" << endl;
       #endif
       break;
   }
@@ -1372,7 +1372,7 @@ unsigned long DSP::u::FileOutput::GetSampleSize(DSP::e::SampleType SampleType_in
       sample_size=1;
       if ((DSP::File_buffer_size % 8) != 0)
       {
-        DSP::log << DSP::LogMode::Error << "DSP::u::FileOutput::GetSampleSize" << DSP::LogMode::second << "Can't write bit stream corectly:"
+        DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput::GetSampleSize" << DSP::e::LogMode::second << "Can't write bit stream corectly:"
           " DSP::File_buffer_size is not a multiply of byte size (8 bits)" << endl;
       }
       break;
@@ -1381,7 +1381,7 @@ unsigned long DSP::u::FileOutput::GetSampleSize(DSP::e::SampleType SampleType_in
       break;
     default:
       #ifdef __DEBUG__
-        DSP::log << DSP::LogMode::Error << "DSP::u::FileOutput::GetSampleSize" << DSP::LogMode::second << "Unsupported data type changing to DSP::e::SampleType::ST_short" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput::GetSampleSize" << DSP::e::LogMode::second << "Unsupported data type changing to DSP::e::SampleType::ST_short" << endl;
       #endif
       sample_size=8*sizeof(short);
       break;
@@ -1468,7 +1468,7 @@ bool DSP::u::FileOutput::BlockOutput(bool block)
   if (FileHandle == NULL)
   {
     #ifdef __DEBUG__
-      DSP::log << "DSP::u::FileOutput::BlockOutput" << DSP::LogMode::second << "Warning: FileHandle == NULL !!!" << endl;
+      DSP::log << "DSP::u::FileOutput::BlockOutput" << DSP::e::LogMode::second << "Warning: FileHandle == NULL !!!" << endl;
     #endif
     return false;
   }
@@ -1649,7 +1649,7 @@ unsigned long DSP::u::FileOutput::WriteSegmentFromBuffer(
       break;
 
     default:
-      DSP::log << DSP::LogMode::Error << "DSP::u::FileOutput::WriteSegmentToBuffer" << DSP::LogMode::second << "Unsupported file sample type - write aborted" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput::WriteSegmentToBuffer" << DSP::e::LogMode::second << "Unsupported file sample type - write aborted" << endl;
       return 0;
   }
 
@@ -2378,7 +2378,7 @@ void DSP::u::FileOutput::FlushBuffer(void)
     {
     #ifdef __DEBUG__
       case DSP::e::SampleType::ST_short:
-        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::LogMode::second << "DSP::e::SampleType::ST_short no longer supported" << endl;
+        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::e::LogMode::second << "DSP::e::SampleType::ST_short no longer supported" << endl;
         /*
         tempBuffer_float=Buffer;
 
@@ -2392,7 +2392,7 @@ void DSP::u::FileOutput::FlushBuffer(void)
         */
         break;
       case DSP::e::SampleType::ST_float:
-        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::LogMode::second << "DSP::e::SampleType::ST_float no longer supported" << endl;
+        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::e::LogMode::second << "DSP::e::SampleType::ST_float no longer supported" << endl;
         /*
         tempBuffer_float=Buffer;
 
@@ -2406,10 +2406,10 @@ void DSP::u::FileOutput::FlushBuffer(void)
         */
         break;
       case DSP::e::SampleType::ST_tchar:
-        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::LogMode::second << "DSP::e::SampleType::ST_tchar no longer supported" << endl;
+        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::e::LogMode::second << "DSP::e::SampleType::ST_tchar no longer supported" << endl;
         break;
       case DSP::e::SampleType::ST_uchar:
-        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::LogMode::second << "DSP::e::SampleType::ST_uchar no longer supported" << endl;
+        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::e::LogMode::second << "DSP::e::SampleType::ST_uchar no longer supported" << endl;
         /*
         tempBuffer_float=Buffer;
 
@@ -2423,7 +2423,7 @@ void DSP::u::FileOutput::FlushBuffer(void)
         */
         break;
       case DSP::e::SampleType::ST_bit_text:
-        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::LogMode::second << "DSP::e::SampleType::ST_bit_text no longer supported" << endl;
+        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::e::LogMode::second << "DSP::e::SampleType::ST_bit_text no longer supported" << endl;
         /*
         tempBuffer_float=Buffer;
 
@@ -2486,7 +2486,7 @@ void DSP::u::FileOutput::FlushBuffer(void)
         break;
       default:
         #ifdef __DEBUG__
-          DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::LogMode::second << "Unsupported format detected" << endl;
+          DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::e::LogMode::second << "Unsupported format detected" << endl;
         #endif
         break;
     }
@@ -2539,7 +2539,7 @@ bool DSP::f::GetWAVEfileParams(const string &FileName, const string &FileDir,
   {
     #ifdef __DEBUG__
     {
-      DSP::log << DSP::LogMode::Error << "DSP::f::GetWAVEfileParams" << DSP::LogMode::second
+      DSP::log << DSP::e::LogMode::Error << "DSP::f::GetWAVEfileParams" << DSP::e::LogMode::second
         << "This (" << FileName << ") is not PCM WAVE file or file is corrupted !!!" << endl;
     }
     #endif
@@ -2620,7 +2620,7 @@ bool DSP::u::WaveInput::SetSkip(long long Offset)
   UNUSED_ARGUMENT(Offset);
 
   #ifdef __DEBUG__
-    DSP::log << DSP::LogMode::Error << "DSP::u::FileInput::SetSkip" << DSP::LogMode::second << "not implemented yet" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::SetSkip" << DSP::e::LogMode::second << "not implemented yet" << endl;
   #endif
   return false;
 }
@@ -2654,7 +2654,7 @@ bool DSP::u::WaveInput::Init(void)
   if (FileHandle == NULL)
   {
     #ifdef __DEBUG__
-      DSP::log << "DSP::u::WaveInput::Init" << DSP::LogMode::second
+      DSP::log << "DSP::u::WaveInput::Init" << DSP::e::LogMode::second
         << "(Input file \"" << tekst
         << "\" in block <" << GetName() << "> could not be opened" << endl;
     #endif
@@ -2671,7 +2671,7 @@ bool DSP::u::WaveInput::Init(void)
   if (WAVEchunk.WAVEinfo(FileHandle)==false)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "DSP::u::WaveInput::Init" << DSP::LogMode::second
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::WaveInput::Init" << DSP::e::LogMode::second
         << "This (" << FileName << ") is not PCM WAVE file or file is corrupted !!!" << endl;
     #endif
     fclose(FileHandle);
@@ -2700,7 +2700,7 @@ bool DSP::u::WaveInput::Init(void)
               << WAVEchunk.wBitsPerSample << "bits";
          break;
      }
-    DSP::log << "DSP::u::WaveInput::Init" << DSP::LogMode::second << temp.str() << endl;
+    DSP::log << "DSP::u::WaveInput::Init" << DSP::e::LogMode::second << temp.str() << endl;
   }
   #endif
   //SampleSize = WAVEchunk.wBitsPerSample * WAVEchunk.nChannels;
@@ -2709,7 +2709,7 @@ bool DSP::u::WaveInput::Init(void)
   if (WAVEchunk.FindDATA(FileHandle)==false)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "DSP::u::WaveInput::Init" << DSP::LogMode::second
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::WaveInput::Init" << DSP::e::LogMode::second
         << "No data have been found in PCM file " << FileName << "!!!" << endl;
     #endif
     fclose(FileHandle);
@@ -2822,7 +2822,7 @@ uint32_t DSP::u::WaveInput::ReadAudioSegment(void)
         #ifdef __DEBUG__
           else
           {
-            DSP::log << DSP::LogMode::Error << "DSP::u::WaveInput::ReadAudioSegment" << DSP::LogMode::second << "unsupported PCM sample size" << endl;
+            DSP::log << DSP::e::LogMode::Error << "DSP::u::WaveInput::ReadAudioSegment" << DSP::e::LogMode::second << "unsupported PCM sample size" << endl;
           }
         #endif
 
@@ -3041,7 +3041,7 @@ void DSP::T_WAVEchunk::PrepareHeader(
   wBitsPerSample = wBitsPerSample_in;
   #ifdef __DEBUG__
     if ((wBitsPerSample % 8) != 0)
-      DSP::log << DSP::LogMode::Error << "T_WAVEchunk::PrepareHeader" << DSP::LogMode::second << "wBitsPerSample_in in not a multiple of 8" << endl;
+      DSP::log << DSP::e::LogMode::Error << "T_WAVEchunk::PrepareHeader" << DSP::e::LogMode::second << "wBitsPerSample_in in not a multiple of 8" << endl;
   #endif
   nBlockAlign = (uint16_t)(wBitsPerSample / 8 * nChannels);
   nAvgBytesPerSec = nSamplesPerSec * nBlockAlign;
@@ -3513,31 +3513,31 @@ inline void CDirectXInput::SourceDescription(TStringList *Text)
       switch (result)
       {
         case MMSYSERR_ALLOCATED:
-          DSP::log << DSP::LogMode::Error << "DSP_AudioCheckError" << DSP::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
             "Specified resource is already allocated." << endl;
           break;
         case MMSYSERR_BADDEVICEID:
-          DSP::log << DSP::LogMode::Error << "DSP_AudioCheckError" << DSP::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
             "Specified device identifier is out of range." << endl;
           break;
         case MMSYSERR_NODRIVER:
-          DSP::log << DSP::LogMode::Error << "DSP_AudioCheckError" << DSP::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
             "No device driver is present." << endl;
           break;
         case MMSYSERR_NOMEM:
-          DSP::log << DSP::LogMode::Error << "DSP_AudioCheckError" << DSP::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
             "Unable to allocate or lock memory." << endl;
           break;
         case WAVERR_BADFORMAT:
-          DSP::log << DSP::LogMode::Error << "DSP_AudioCheckError" << DSP::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
             "Attempted to open with an unsupported waveform-audio format." << endl;
           break;
         case WAVERR_SYNC:
-          DSP::log << DSP::LogMode::Error << "DSP_AudioCheckError" << DSP::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
             "The device is synchronous but waveOutOpen was called without using the WAVE_ALLOWSYNC flag." << endl;
           break;
         case MMSYSERR_INVALFLAG:
-          DSP::log << DSP::LogMode::Error << "DSP_AudioCheckError" << DSP::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
             "Invalid flag" << endl;
           break;
         case MMSYSERR_NOERROR:
@@ -3547,24 +3547,24 @@ inline void CDirectXInput::SourceDescription(TStringList *Text)
           //printf("\n"); getchar();
           break;
         case MMSYSERR_INVALHANDLE:
-          DSP::log << DSP::LogMode::Error << "DSP_AudioCheckError" << DSP::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
             "Specified device handle is invalid." << endl;
           break;
         case WAVERR_UNPREPARED:
-          DSP::log << DSP::LogMode::Error << "DSP_AudioCheckError" << DSP::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
             "The data block pointed to by the pwh parameter hasn't been prepared." << endl;
           break;
         case MMSYSERR_HANDLEBUSY:
-          DSP::log << DSP::LogMode::Error << "DSP_AudioCheckError" << DSP::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
             "Handle busy." << endl;
           break;
         case WAVERR_STILLPLAYING:
-          DSP::log << DSP::LogMode::Error << "DSP_AudioCheckError" << DSP::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
             "There are still buffers in the queue." << endl;
           break;
         default:
           {
-            DSP::log << DSP::LogMode::Error << "DSP_AudioCheckError" << DSP::LogMode::second
+            DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second
               << "Unknown error " << WAVERR_BASE << " " << result << endl;
           }
           break;
@@ -3598,7 +3598,7 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
 //  size / DSP::ReferenceFs == new_size / SamplingFreq
 #ifdef __DEBUG__
   if ((SamplingFreq * size) / DSP::ReferenceFs > UINT32_MAX){
-    DSP::log << DSP::LogMode::Error << "DSP::f::GetAudioBufferSize" << DSP::LogMode::second
+    DSP::log << DSP::e::LogMode::Error << "DSP::f::GetAudioBufferSize" << DSP::e::LogMode::second
        << "Buffer size (" << (SamplingFreq * size) / DSP::ReferenceFs << ") > UINT32_MAX" << endl;
   }
 #endif
@@ -3628,20 +3628,20 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
     switch (uMsg)
     {
       case WOM_OPEN:
-        DSP::log << "DSP::u::AudioOutput::waveOutProc" << DSP::LogMode::second
+        DSP::log << "DSP::u::AudioOutput::waveOutProc" << DSP::e::LogMode::second
           << "WOM_OPEN(" << (int)dwInstance << ")" << endl;
         break;
       case WOM_CLOSE:
-        DSP::log << "DSP::u::AudioOutput::waveOutProc" << DSP::LogMode::second
+        DSP::log << "DSP::u::AudioOutput::waveOutProc" << DSP::e::LogMode::second
           << "WOM_CLOSE(" << (int)dwInstance << ")" << endl;
         break;
       case WOM_DONE:
-        DSP::log << "DSP::u::AudioOutput::waveOutProc" << DSP::LogMode::second
+        DSP::log << "DSP::u::AudioOutput::waveOutProc" << DSP::e::LogMode::second
           << "WOM_DONE(" << (int)dwInstance << ")" << endl;
 
         if (Current->StopPlaying)
         {
-          DSP::log << "DSP::u::AudioOutput::waveOutProc" << DSP::LogMode::second << "StopPlaying is set" << endl;
+          DSP::log << "DSP::u::AudioOutput::waveOutProc" << DSP::e::LogMode::second << "StopPlaying is set" << endl;
           return;
         }
         else
@@ -3650,7 +3650,7 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
           for (ind=0; ind < DSP_NoOfAudioOutputBuffers; ind++)
             AllDone &= (Current->waveHeaderOut[ind].dwFlags & WHDR_DONE);
           if (AllDone)
-            DSP::log << "DSP::u::AudioOutput::waveOutProc" << DSP::LogMode::second << "All buffers had been used - nothing to play" << endl;
+            DSP::log << "DSP::u::AudioOutput::waveOutProc" << DSP::e::LogMode::second << "All buffers had been used - nothing to play" << endl;
         }
         break;
     }
@@ -3684,11 +3684,11 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
   #ifdef __DEBUG__
   #ifdef AUDIO_DEBUG_MESSAGES_ON
       case WIM_OPEN:
-        DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::LogMode::second
+        DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
           << "WIM_OPEN(" << (int)dwInstance << ")" << endl;
         break;
       case WIM_CLOSE:
-        DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::LogMode::second
+        DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
           << "WIM_CLOSE(" << (int)dwInstance << ")" << endl;
         break;
   #endif
@@ -3697,7 +3697,7 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
       case WIM_DATA:
   #ifdef __DEBUG__
   #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::LogMode::second
+        DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
           << "WIM_DATA(" << (int)dwInstance << ")" << endl;
   #endif
   #endif
@@ -3710,7 +3710,7 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
           {
   #ifdef __DEBUG__
   #ifdef AUDIO_DEBUG_MESSAGES_ON
-            DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::LogMode::second << "All buffers had been used - skipping input audio frame" << endl;
+            DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second << "All buffers had been used - skipping input audio frame" << endl;
   #endif
   #endif
             result=waveInUnprepareHeader(Current->hWaveIn,
@@ -3743,7 +3743,7 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
               #ifdef __DEBUG__
                 if (Current->InSampleType != DSP::e::SampleType::ST_short)
                 {
-                  DSP::log << "DSP::u::AudioInput::waveInProc_short" << DSP::LogMode::second << "Current->InSampleType != DSP::e::SampleType::ST_short" << endl;
+                  DSP::log << "DSP::u::AudioInput::waveInProc_short" << DSP::e::LogMode::second << "Current->InSampleType != DSP::e::SampleType::ST_short" << endl;
                 }
               #endif
 
@@ -3770,7 +3770,7 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
             {
   #ifdef __DEBUG__
   #ifdef AUDIO_DEBUG_MESSAGES_ON
-              DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::LogMode::second << "Wrong audio frame ready or other unexpected error" << endl;
+              DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second << "Wrong audio frame ready or other unexpected error" << endl;
   #endif
   #endif
             }
@@ -3808,11 +3808,11 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
   #ifdef __DEBUG__
   #ifdef AUDIO_DEBUG_MESSAGES_ON
       case WIM_OPEN:
-        DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::LogMode::second
+        DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
           << "WIM_OPEN(" << (int)dwInstance << ")" << end;
         break;
       case WIM_CLOSE:
-        DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::LogMode::second
+        DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
           << "WIM_CLOSE(" << (int)dwInstance << ")" << endl;
         break;
   #endif
@@ -3821,7 +3821,7 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
       case WIM_DATA:
   #ifdef __DEBUG__
   #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::LogMode::second
+        DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
           << "WIM_DATA(" << (int)dwInstance << ")" << endl;
   #endif
   #endif
@@ -3834,7 +3834,7 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
           {
   #ifdef __DEBUG__
   #ifdef AUDIO_DEBUG_MESSAGES_ON
-            DSP::log << "DSP::u::AudioInput::waveInProc"  << DSP::LogMode::second << "All buffers had been used - skipping input audio frame" << endl;
+            DSP::log << "DSP::u::AudioInput::waveInProc"  << DSP::e::LogMode::second << "All buffers had been used - skipping input audio frame" << endl;
   #endif
   #endif
             result=waveInUnprepareHeader(Current->hWaveIn,
@@ -3867,7 +3867,7 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
               #ifdef __DEBUG__
                 if (Current->InSampleType != DSP::e::SampleType::ST_uchar)
                 {
-                  DSP::log << "DSP::u::AudioInput::waveInProc_uchar" << DSP::LogMode::second << "Current->InSampleType != DSP::e::SampleType::ST_uchar" << endl;
+                  DSP::log << "DSP::u::AudioInput::waveInProc_uchar" << DSP::e::LogMode::second << "Current->InSampleType != DSP::e::SampleType::ST_uchar" << endl;
                 }
               #endif
 
@@ -3894,7 +3894,7 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
             {
   #ifdef __DEBUG__
   #ifdef AUDIO_DEBUG_MESSAGES_ON
-              DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::LogMode::second << "Wrong audio frame ready or other unexpected error" << endl;
+              DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second << "Wrong audio frame ready or other unexpected error" << endl;
   #endif
   #endif
             }
@@ -4317,7 +4317,7 @@ DSP::u::AudioOutput::~AudioOutput()
       }
 
       #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "DSP::u::AudioOutput" << DSP::LogMode::second << "Closing DSP::u::AudioOutput" << endl;
+        DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Closing DSP::u::AudioOutput" << endl;
       #endif
       result=waveOutClose(hWaveOut);
       while (result==WAVERR_STILLPLAYING)
@@ -4328,7 +4328,7 @@ DSP::u::AudioOutput::~AudioOutput()
       //      sleep(100);
       //    #endif
         #ifdef AUDIO_DEBUG_MESSAGES_ON
-          DSP::log << "DSP::u::AudioOutput" << DSP::LogMode::second << "Closing DSP::u::AudioOutput" << endl;
+          DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Closing DSP::u::AudioOutput" << endl;
         #endif
         result=waveOutClose(hWaveOut);
       }
@@ -4377,7 +4377,7 @@ DSP::u::AudioInput::~AudioInput()
       DSP::f::AudioCheckError(result);
 
       #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "DSP::u::AudioInput" << DSP::LogMode::second << "Closing DSP::u::AudioInput" << endl;
+        DSP::log << "DSP::u::AudioInput" << DSP::e::LogMode::second << "Closing DSP::u::AudioInput" << endl;
       #endif
       result=waveInClose(hWaveIn);
       while (result==WAVERR_STILLPLAYING)
@@ -4388,7 +4388,7 @@ DSP::u::AudioInput::~AudioInput()
       //      sleep(100);
       //    #endif
         #ifdef AUDIO_DEBUG_MESSAGES_ON
-          DSP::log << "DSP::u::AudioInput" << DSP::LogMode::second << "Closing DSP::u::AudioInput" << endl;
+          DSP::log << "DSP::u::AudioInput" << DSP::e::LogMode::second << "Closing DSP::u::AudioInput" << endl;
         #endif
         result=waveInClose(hWaveIn);
       }
@@ -4431,7 +4431,7 @@ void DSP::u::AudioOutput::FlushBuffer(void)
     // Send buffer to the audio device
 
   #ifdef AUDIO_DEBUG_MESSAGES_ON
-    DSP::log << "DSP::u::AudioOutput" << DSP::LogMode::second << "Flushing output buffer" << endl;
+    DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Flushing output buffer" << endl;
   #endif
 
   while (1)
@@ -4521,7 +4521,7 @@ void DSP::u::AudioOutput::FlushBuffer(void)
     {
   //    Sleep(10);
   #ifdef AUDIO_DEBUG_MESSAGES_ON
-      DSP::log << "DSP::u::AudioOutput" << DSP::LogMode::second << "Waiting for free output buffer" << endl;
+      DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Waiting for free output buffer" << endl;
   #endif
       DSP::f::Sleep(0);
     }
@@ -4567,7 +4567,7 @@ void DSP::u::AudioOutput::InputExecute(INPUT_EXECUTE_ARGS)
 
   #ifdef __DEBUG__
   #ifdef VerboseCompilation
-    DSP::log << "DSP::u::AudioOutput" << DSP::LogMode::second
+    DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second
       << InputNo << ": " << setw(5) << setprecision(3) << fixed << value << endl;
   #endif
   #endif
@@ -4598,7 +4598,7 @@ bool DSP::u::AudioInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
   if (DSP_THIS->InBufferLen == 0)
   { // no audio device opened
   	#ifdef AUDIO_DEBUG_MESSAGES_ON
-      DSP::log << "DSP::u::AudioInput::Execute" << DSP::LogMode::second << "No audio device opened" << endl;
+      DSP::log << "DSP::u::AudioInput::Execute" << DSP::e::LogMode::second << "No audio device opened" << endl;
   	#endif
 
     for (ind=0; ind < DSP_THIS->NoOfOutputs; ind++)
@@ -4623,7 +4623,7 @@ bool DSP::u::AudioInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
       // so we must wait for some
 
       #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "DSP::u::AudioInput::Execute" << DSP::LogMode::second << "no data ready we must wait" << endl;
+        DSP::log << "DSP::u::AudioInput::Execute" << DSP::e::LogMode::second << "no data ready we must wait" << endl;
       #endif
 		  DSP::Clock::InputNeedsMoreTime[DSP_THIS->my_clock->MasterClockIndex] = true;
 		  return false;
@@ -4640,7 +4640,7 @@ bool DSP::u::AudioInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
           DSP_THIS->CurrentBufferIndex %= DSP::NoOfAudioInputBuffers;
 
           #ifdef AUDIO_DEBUG_MESSAGES_ON
-            DSP::log << "DSP::u::AudioInput::Execute" << DSP::LogMode::second << "fresh data has finally arrived" << endl;
+            DSP::log << "DSP::u::AudioInput::Execute" << DSP::e::LogMode::second << "fresh data has finally arrived" << endl;
           #endif
         }
         else
@@ -4672,7 +4672,7 @@ bool DSP::u::AudioInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
     // using both buffers
     #ifdef WINMMAPI
       #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "DSP::u::AudioInput::Execute" << DSP::LogMode::second << "Starting recording using two wave buffers" << endl;
+        DSP::log << "DSP::u::AudioInput::Execute" << DSP::e::LogMode::second << "Starting recording using two wave buffers" << endl;
       #endif
 
       result=waveInAddBuffer(DSP_THIS->hWaveIn,
@@ -4877,14 +4877,14 @@ void DSP::u::InputBuffer::WriteBuffer(void *source,
   #ifdef __DEBUG__
     if (NoOfSourceSamples*InputSampleSize != source_size)
     {
-      DSP::log << DSP::LogMode::Error << "DSP::u::InputBuffer::WriteBuffer" << DSP::LogMode::second
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::InputBuffer::WriteBuffer" << DSP::e::LogMode::second
         << "(" << this->GetName() << ") source_size ("
         << source_size << ") doesn't match source_DataType" << endl;
     }
     if (BufferSize < NoOfSourceSamples)
     {
       stringstream tekst;
-      DSP::log << DSP::LogMode::Error << "DSP::u::InputBuffer::WriteBuffer" << DSP::LogMode::second
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::InputBuffer::WriteBuffer" << DSP::e::LogMode::second
         << "(" << this->GetName() << ") source_size ("
         << source_size << ") larger then Buffer size\n" << endl;
     }
@@ -5270,7 +5270,7 @@ unsigned long DSP::u::OutputBuffer::ReadBuffer(void *dest, long int dest_size,
   #ifdef __DEBUG__
     if (dest == NULL)
     {
-      DSP::log << DSP::LogMode::Error << "DSP::u::OutputBuffer::ReadBuffer" << DSP::LogMode::second << "dest == NULL !!!" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::OutputBuffer::ReadBuffer" << DSP::e::LogMode::second << "dest == NULL !!!" << endl;
       return 0;
     }
   #endif
@@ -5294,7 +5294,7 @@ unsigned long DSP::u::OutputBuffer::ReadBuffer(void *dest, long int dest_size,
   #ifdef __DEBUG__
     if (NoOfDestSamples*OutputSampleSize != dest_size)
     {
-      DSP::log << DSP::LogMode::Error << "DSP::u::OutputBuffer::ReadBuffer" << DSP::LogMode::second
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::OutputBuffer::ReadBuffer" << DSP::e::LogMode::second
          << "(" << this->GetName() << ") dest_size (" << dest_size << ") doesn't match dest_DataType" << endl;
     }
   #endif
@@ -5369,7 +5369,7 @@ unsigned long DSP::u::OutputBuffer::ReadBuffer(void *dest, long int dest_size,
         //128       128                   256           256
         #ifdef __DEBUG__
           if (reset - (BufferSize - BufferIndex) > INT_MAX) {
-            DSP::log << DSP::LogMode::Error << "DSP::u::OutputBuffer::ReadBuffer" << DSP::LogMode::second << "step > INT_MAX" << endl;
+            DSP::log << DSP::e::LogMode::Error << "DSP::u::OutputBuffer::ReadBuffer" << DSP::e::LogMode::second << "step > INT_MAX" << endl;
           }
         #endif // __DEBUG__
         step = (int)(reset - (BufferSize - BufferIndex));
@@ -5565,7 +5565,7 @@ bool DSP::u::OutputBuffer::OutputExecute(OUTPUT_EXECUTE_ARGS)
   #ifdef __DEBUG__
   else
   {
-    DSP::log << DSP::LogMode::Error << "DSP::u::OutputBuffer::OutputExecute" << DSP::LogMode::second << "DSP_THIS->OutputSamples_ready == false" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::u::OutputBuffer::OutputExecute" << DSP::e::LogMode::second << "DSP_THIS->OutputSamples_ready == false" << endl;
   }
   #endif
 
@@ -5736,7 +5736,7 @@ bool DSP::LoadCoef::Open(const string &Filename, const string &Dir)
 
   if (this->NoOfVectors == -1)
   {
-    DSP::log << DSP::LogMode::Error << "DSP_LoadCoef::Open" << DSP::LogMode::second << "File doesn't exist or unsupported file format." << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP_LoadCoef::Open" << DSP::e::LogMode::second << "File doesn't exist or unsupported file format." << endl;
     return false;
   }
 

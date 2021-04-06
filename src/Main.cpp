@@ -837,7 +837,7 @@ void Process(long int Fs, const string &WaveName, const string &Dir)
 
   DSP::Clock::FreeClocks();
 
-  DSP::log << "MAIN"  << DSP::LogMode::second << "(" << czas1-czas0 << " ms"
+  DSP::log << "MAIN"  << DSP::e::LogMode::second << "(" << czas1-czas0 << " ms"
     << " + " << czas2-czas1 << " ms)" << endl;
   // todo: DSP::u::CCPC instead of DSP::u::ABS + DSP::u::Angle
 }
@@ -1034,7 +1034,7 @@ int test_3()
 
   DSP::Clock::FreeClocks();
 
-//  DSP::log << DSP::LogMode::Error << "Koniec");
+//  DSP::log << DSP::e::LogMode::Error << "Koniec");
   return 0;
 }
 
@@ -1213,7 +1213,7 @@ int test_4()
 
   /*************************************************************/
   L1=(int)(Fp1/Fb);
-  DSP::log << "MAIN" << DSP::LogMode::second <<  "L1=" << L1 << " (Fp1=" << std::setprecision(1) << Fp1 << "Hz)" << endl;
+  DSP::log << "MAIN" << DSP::e::LogMode::second <<  "L1=" << L1 << " (Fp1=" << std::setprecision(1) << Fp1 << "Hz)" << endl;
 
   int M2=5;
 
@@ -1257,7 +1257,7 @@ int test_4()
   /*************************************************************/
   L2=(int)(Fp2/Fb);
   sprintf(tekst, "L2=%i (Fp2=%.1fHz)", L2, Fp2);
-  DSP::log << "MAIN" << DSP::LogMode::second << tekst << endl;
+  DSP::log << "MAIN" << DSP::e::LogMode::second << tekst << endl;
 
   /*************************************************************/
   // automatic gain control
@@ -1462,7 +1462,7 @@ int test_4()
             elapsed_time, float(500.0*(ind+1)/elapsed_time/1000), Fp1/1000,
             GardnerSampling.GetSamplingPeriod());
 //            PilotAGC.GetPower(), (Fo-Band/2)-pilot_DCO.GetFrequency(Fp1));
-    DSP::log << "MAIN" << DSP::LogMode::second << tekst << endl;
+    DSP::log << "MAIN" << DSP::e::LogMode::second << tekst << endl;
 
     #ifdef WIN32
       MSG temp_msg;
@@ -1491,7 +1491,7 @@ int test_4()
   }
   DSP::Clock::FreeClocks();
 
-  DSP::log << DSP::LogMode::Error << "MAIN" << DSP::LogMode::second << "Finished" << endl;
+  DSP::log << DSP::e::LogMode::Error << "MAIN" << DSP::e::LogMode::second << "Finished" << endl;
   return 0;
 }
 
@@ -1545,10 +1545,10 @@ DSP::u::Addition Sum;
   for (int temp=0; temp<40; temp++)
   {
     DSP::Clock::Execute(MasterClock, Fp/8);
-    DSP::log << "MAIN" << DSP::LogMode::second << temp << endl;
+    DSP::log << "MAIN" << DSP::e::LogMode::second << temp << endl;
   }
 
-  DSP::log << DSP::LogMode::Error << "MAIN" << DSP::LogMode::second << "end" << endl;
+  DSP::log << DSP::e::LogMode::Error << "MAIN" << DSP::e::LogMode::second << "end" << endl;
   DSP::Clock::FreeClocks();
 
   return 0;
@@ -1593,7 +1593,7 @@ int test_6()
   delete tester;
   delete const_;
 
-  DSP::log << DSP::LogMode::Error << "MAIN" << DSP::LogMode::second << "end" << endl;
+  DSP::log << DSP::e::LogMode::Error << "MAIN" << DSP::e::LogMode::second << "end" << endl;
   DSP::Clock::FreeClocks();
 
   return 0;
@@ -1701,7 +1701,7 @@ int test_7()
   {
     DSP::Clock::Execute(MasterClock, Fp/8);
 
-    DSP::log << "MAIN" << DSP::LogMode::second << temp << endl;
+    DSP::log << "MAIN" << DSP::e::LogMode::second << temp << endl;
     temp++;
   }
   while (AudioIn->GetBytesRead() != 0);
@@ -1715,7 +1715,7 @@ int test_7()
   DSP::Clock::ListOfAllComponents();
 
   DSP::Clock::FreeClocks();
-  DSP::log << "MAIN" << DSP::LogMode::second << "end" << endl;
+  DSP::log << "MAIN" << DSP::e::LogMode::second << "end" << endl;
 
   return 0;
 }
@@ -1884,7 +1884,7 @@ int test_9()
   int Fp1 = InputSignal.GetSamplingRate();
   /*if (Fp1_tmp != Fp1)
   {
-    DSP::log << DSP::LogMode::Error << "Problem z sygna�em wej�ciowym");
+    DSP::log << DSP::e::LogMode::Error << "Problem z sygna�em wej�ciowym");
   } */
 
   DSP::u::FIR H_sh(h_sh, 0, 1, L_IFIR);
@@ -1960,7 +1960,7 @@ int test_10()
   N_C = coef_info.GetSize(0);
   if (N_C < 1)
   {
-    DSP::log << DSP::LogMode::Error << "No test.coef: aborting" << endl;
+    DSP::log << DSP::e::LogMode::Error << "No test.coef: aborting" << endl;
     return -1;
   }
   else
@@ -2030,7 +2030,7 @@ int test_11()
   N_rc = coef_info.GetSize(0);
   if (N_rc < 1)
   {
-    DSP::log << DSP::LogMode::Error << "No cw5_zad1_h_rc.coef: aborting" << endl;
+    DSP::log << DSP::e::LogMode::Error << "No cw5_zad1_h_rc.coef: aborting" << endl;
     return -1;
   }
   else
@@ -2321,7 +2321,7 @@ int test_12(void)
   {
     DSP::Clock::Execute(MasterClock, Fp/8);
 
-    DSP::log << "MAIN"<< DSP::LogMode::second << temp << endl;
+    DSP::log << "MAIN"<< DSP::e::LogMode::second << temp << endl;
     temp++;
   }
   while (AudioIn->GetBytesRead() != 0);
@@ -2336,7 +2336,7 @@ int test_12(void)
 
   DSP::Clock::ListOfAllComponents();
   DSP::Clock::FreeClocks();
-  DSP::log << "MAIN" << DSP::LogMode::second << "end" << endl;
+  DSP::log << "MAIN" << DSP::e::LogMode::second << "end" << endl;
 
   return 0;
 }
@@ -2393,7 +2393,7 @@ int test_SolveMatrix(int mode) {
       break;
 
     default:
-      DSP::log << "test_SolveMatrix" << DSP::LogMode::second << "unsupported mode" << endl;
+      DSP::log << "test_SolveMatrix" << DSP::e::LogMode::second << "unsupported mode" << endl;
       break;
   }
   {
@@ -2480,7 +2480,7 @@ int test_SolveMatrix_prec(int mode) {
       break;
 
     default:
-      DSP::log << "test_SolveMatrix_prec" << DSP::LogMode::second << "unsupported mode" << endl;
+      DSP::log << "test_SolveMatrix_prec" << DSP::e::LogMode::second << "unsupported mode" << endl;
       break;
   }
   {
@@ -2582,7 +2582,7 @@ int test_ZPSTC_cw_3()
   N_rc = coef_info.GetSize(0);
   if (N_rc < 1)
   {
-    DSP::log << DSP::LogMode::Error << "No cw3_zad3_h_rc.coef: aborting" << endl;
+    DSP::log << DSP::e::LogMode::Error << "No cw3_zad3_h_rc.coef: aborting" << endl;
     return -1;
   }
   else
@@ -2596,7 +2596,7 @@ int test_ZPSTC_cw_3()
   N2 = coef_info.GetSize(0);
   if (N2 < 1)
   {
-    DSP::log << DSP::LogMode::Error << "No cw3_zad3_h2.coef: aborting" << endl;
+    DSP::log << DSP::e::LogMode::Error << "No cw3_zad3_h2.coef: aborting" << endl;
     return -1;
   }
   else
@@ -2717,8 +2717,8 @@ int main(int argc, char*argv[])
   DSP::log.SetLogFileName("DSPElib_test_log.txt");
 
   DSP::log << "test DSP::log" << endl;
-  DSP::log << "test DSP::log(2)" << DSP::LogMode::second << "2" << endl;
-  DSP::log << DSP::LogMode::Error << "test DSP::log error" << endl;
+  DSP::log << "test DSP::log(2)" << DSP::e::LogMode::second << "2" << endl;
+  DSP::log << DSP::e::LogMode::Error << "test DSP::log error" << endl;
 
   DSP::log << "Starting SolveMatrix test" << endl;
   for (auto i=0; i<3; i++) {
@@ -2728,67 +2728,67 @@ int main(int argc, char*argv[])
     test_SolveMatrix_prec(i);
   }
   //! \TODO test also DSP::f::LPF_LS
-  DSP::log << DSP::LogMode::pause << "Finished SolveMatrix test" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished SolveMatrix test" << endl;
 
   DSP::log << "Starting SymbolMapper test" << endl;
   test_SymbolMapper();
-  DSP::log << DSP::LogMode::pause << "Finished SymbolMapper test" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished SymbolMapper test" << endl;
 
   DSP::log << "Starting test_ZPSTC_cw_3" << endl;
   test_ZPSTC_cw_3();
-  DSP::log << "Finished test_ZPSTC_cw_3" << DSP::LogMode::pause << endl;
+  DSP::log << "Finished test_ZPSTC_cw_3" << DSP::e::LogMode::pause << endl;
 
 #ifdef INCLUDE_DSPE_EXAMPLES
   DSP::log << "Starting test_hello" << endl;
   test_hello();
-  DSP::log << DSP::LogMode::Error << "Finished test_hello" << endl;
+  DSP::log << DSP::e::LogMode::Error << "Finished test_hello" << endl;
 #endif // INCLUDE_DSPE_EXAMPLES
 
   DSP::log << "Starting test_1" << endl;
   test_1(argc, argv);
-  DSP::log << DSP::LogMode::pause << "Finished test_1" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_1" << endl;
 
   DSP::log << "Starting test_2" << endl;
   test_2();
-  DSP::log << DSP::LogMode::pause << "Finished test_2" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_2" << endl;
 
   DSP::log << "Starting test_3" << endl;
   test_3();
-  DSP::log << DSP::LogMode::pause << "Finished test_3" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_3" << endl;
 
   DSP::log << "Starting test_4" << endl;
   test_4();
-  DSP::log << DSP::LogMode::pause << "Finished test_4" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_4" << endl;
 
   DSP::log << "Starting test_5" << endl;
   test_5();
-  DSP::log << DSP::LogMode::pause << "Finished test_5" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_5" << endl;
 
   DSP::log << "Starting test_6" << endl;
   test_6();
-  DSP::log << DSP::LogMode::pause << "Finished test_6" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_6" << endl;
 
   DSP::log << "Starting test_7" << endl;
   test_7();
-  DSP::log << DSP::LogMode::pause << "Finished test_7" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_7" << endl;
 
   DSP::log << "Starting test_8" << endl;
   test_8();
-  DSP::log << DSP::LogMode::pause << "Finished test_8" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_8" << endl;
 
   DSP::log << "Starting test_9" << endl;
   test_9();
-  DSP::log << DSP::LogMode::pause << "Finished test_9" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_9" << endl;
 
   DSP::log << "Starting test_10" << endl;
   test_10();
-  DSP::log << DSP::LogMode::pause << "Finished test_10" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_10" << endl;
 
   DSP::log << "Starting test_11" << endl;
   test_11();
-  DSP::log << DSP::LogMode::pause << "Finished test_11" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_11" << endl;
 
   DSP::log << "Starting test_12" << endl;
   test_12();
-  DSP::log << DSP::LogMode::pause << "Finished test_12" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_12" << endl;
 }
