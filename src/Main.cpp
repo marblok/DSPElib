@@ -929,7 +929,7 @@ int test_3()
   DSP::Clock_ptr MasterClock; //, MasterClock2, Zegar1, Zegar2, Zegar3;
 
 
-  DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file_append);
+  DSP::log.SetLogState(DSP::e::LogState::console | DSP::e::LogState::file_append);
   DSP::log.SetLogFileName("log_file.log");
 
   MasterClock=DSP::Clock::CreateMasterClock();
@@ -1153,7 +1153,7 @@ int test_4()
 //  char dir_name[]=".";
 
 //  DSP::f::SetLogState(DSP_LS_console | DSP_LS_file | DSP_LS_errors_only);
-  DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file_append);
+  DSP::log.SetLogState(DSP::e::LogState::console | DSP::e::LogState::file_append);
   DSP::log.SetLogFileName("log_file.log");
 
   DSP::Float Fp, Fp1, Fp2; //sampling frequencies
@@ -1660,7 +1660,7 @@ int test_7()
   int temp;
   long int Fp;
 
-  DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file);
+  DSP::log.SetLogState(DSP::e::LogState::console | DSP::e::LogState::file);
   DSP::log.SetLogFileName("log_file.log");
 
   DSP::log << DSP::lib_version_string() << endl << endl;
@@ -1838,7 +1838,7 @@ int test_9()
   /*************************************************************/
   // Log file setup
   DSP::log.SetLogFileName("log_file.txt");
-  DSP::log.SetLogState(DSP::E_LS_Mode::LS_file | DSP::E_LS_Mode::LS_console);
+  DSP::log.SetLogState(DSP::e::LogState::file | DSP::e::LogState::console);
 
   DSP::log << DSP::lib_version_string() << endl << endl;
   /*************************************************************/
@@ -2014,7 +2014,7 @@ int test_11()
   // Log file setup
   DSP::log.SetLogFileName("log_file.log");
   //DSP::f::SetLogState(DSP_LS_file | DSP_LS_console);
-  DSP::log.SetLogState(DSP::E_LS_Mode::LS_file);
+  DSP::log.SetLogState(DSP::e::LogState::file);
 
   DSP::log << DSP::lib_version_string() << endl << endl;
   /*************************************************************/
@@ -2268,7 +2268,7 @@ int test_12(void)
   DSP::u::Amplifier     *Scale;
   DSP::u::Multiplexer   *Multiplexer2;
 
-  DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file);
+  DSP::log.SetLogState(DSP::e::LogState::console | DSP::e::LogState::file);
   DSP::log.SetLogFileName("log_file.log");
 
   DSP::log << DSP::lib_version_string() << endl;
@@ -2713,7 +2713,7 @@ int test_ZPSTC_cw_3()
 int main(int argc, char*argv[])
 {
   //  DSP::f::SetLogState(DSP_LS_console | DSP_LS_file);
-  DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file);
+  DSP::log.SetLogState(DSP::e::LogState::console | DSP::e::LogState::file);
   DSP::log.SetLogFileName("DSPElib_test_log.txt");
 
   DSP::log << "test DSP::log" << endl;

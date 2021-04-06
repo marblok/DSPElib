@@ -66,7 +66,7 @@ int main(void)
   std::shared_ptr<DSP::u::Amplifier>     Scale;
   std::shared_ptr<DSP::u::Multiplexer>   Multiplexer2;
 
-  DSP::log.SetLogState(DSP::E_LS_Mode::LS_console | DSP::E_LS_Mode::LS_file);
+  DSP::log.SetLogState(DSP::e::LogState::console | DSP::e::LogState::file);
   DSP::log.SetLogFileName("log_file.log");
 
   DSP::log << DSP::lib_version_string() << endl;

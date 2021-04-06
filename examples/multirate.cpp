@@ -49,7 +49,7 @@ int main(int argn, char *args[])
   /*************************************************************/
   // Log file setup  
   DSP::log.SetLogFileName("log_file.log");
-  DSP::log.SetLogState(DSP::E_LS_Mode::LS_file | DSP::E_LS_Mode::LS_console);
+  DSP::log.SetLogState(DSP::e::LogState::file | DSP::e::LogState::console);
 
   DSP::log << DSP::lib_version_string() << endl << endl;
   /*************************************************************/
