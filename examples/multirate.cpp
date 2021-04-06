@@ -86,7 +86,7 @@ int main(int argn, char *args[])
       
       if (Fp1 != 22050)
       {
-        DSP::log << DSP::LogMode::Error << "Input wave file's sampling rate must be 22050 Sa/s" << endl;
+        DSP::log << DSP::e::LogMode::Error << "Input wave file's sampling rate must be 22050 Sa/s" << endl;
         
         blocks["SoundIn"].reset();
         return 1;

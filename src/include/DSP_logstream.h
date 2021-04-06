@@ -27,7 +27,8 @@
 
     class logstream;
 
-      enum class LogMode {
+    namespace e {
+      enum struct LogMode {
          first,  // Main part of message (default)
          second, // Second part of message
          pause, // Force pause after message in Info mode
@@ -36,28 +37,35 @@
          Error  // ErrorMessage mode
       };
 
-      logstream& operator<< (logstream& os, const LogMode& log_mode);
+      //! LOG actions state enumerations
+      /*! Several options may be used together
+       */
+      enum struct LogState : unsigned int
+      {
+          off=0,
+          console = 1,
+          file    = console << 1,
+          append  = file << 1, //! only valid with LS_file
+          errors_only = append << 1,
+          user_function = errors_only << 1,
+
+          file_append= (file | append)
+      };
+      inline LogState operator|(LogState __a, LogState __b)
+      { return LogState(static_cast<unsigned int>(__a) | static_cast<unsigned int>(__b)); }
+      inline LogState operator&(LogState __a, LogState __b)
+      { return LogState(static_cast<unsigned int>(__a) & static_cast<unsigned int>(__b)); }
+    }
+
 
       class logbuf;
 
       typedef std::shared_ptr<logbuf> logbuf_ptr;
+  }
 
-      //! LOG actions state enumerations
-      /*! Several options may be used together
-       */
-      enum E_LS_Mode
-      {
-          LS_off=0,
-          LS_console = 1,
-          LS_file    = LS_console << 1,
-          LS_append  = LS_file << 1, //! only valid with LS_file
-          LS_errors_only = LS_append << 1,
-          LS_user_function = LS_errors_only << 1,
+  DSP::logstream& operator<< (DSP::logstream& os, const DSP::e::LogMode& log_mode);
 
-          LS_file_append= (LS_file | LS_append)
-      };
-      inline E_LS_Mode operator|(E_LS_Mode __a, E_LS_Mode __b)
-      { return E_LS_Mode(static_cast<int>(__a) | static_cast<int>(__b)); }
+  namespace DSP {
 
       class logstream : public std::ostream // std::basic_ostream
       {
@@ -66,13 +74,13 @@
         logstream(void);
         ~logstream(void);
 
-        friend logstream& operator<< (logstream& os, const LogMode& log_mode);
+        friend logstream& ::operator<< (logstream& os, const DSP::e::LogMode& log_mode);
 
       public:
         //! Sets current LOG actions state
-        void SetLogState(E_LS_Mode Mode);
+        void SetLogState(const DSP::e::LogState &Mode);
         //! Returns current LOG actions state
-        E_LS_Mode GetLogState(void);
+        DSP::e::LogState GetLogState(void);
         //! Sets/changes current LOG file name
         /*!
          * \warning this function does not change LOG state to LS_file
@@ -102,23 +110,6 @@
         logbuf_ptr log_buf;
       };
 
-    //  template <class charT, class Traits>
-    //  inline basic_ostream<charT,Traits>& operator<< (basic_ostream<charT,Traits>& os, const DSP::logMode& log_mode) {
-      inline ostream& operator<< (ostream& os, const LogMode& log_mode) {
-         logstream *p;
-         try {
-            p = dynamic_cast<logstream*>(&os);
-        }
-        catch (const std::bad_cast &)
-        {
-           return os;
-        }
-
-        *p << log_mode;
-        return os;
-      }
-
-
       //! "globalny" log stream
       extern logstream log;
 
@@ -139,5 +130,23 @@
 
 
 }
+
+//  template <class charT, class Traits>
+//  inline basic_ostream<charT,Traits>& operator<< (basic_ostream<charT,Traits>& os, const DSP::e::LogMode& log_mode) {
+inline ostream& operator<< (ostream& os, const DSP::e::LogMode& log_mode) {
+    DSP::logstream *p;
+    try {
+      p = dynamic_cast<DSP::logstream*>(&os);
+  }
+  catch (const std::bad_cast &)
+  {
+      return os;
+  }
+
+  *p << log_mode;
+  return os;
+}
+
+
 
 #endif // DSP_TEESTREAM_H

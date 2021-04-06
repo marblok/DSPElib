@@ -495,7 +495,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
   if (component_index >= max_components_number)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "DSP::Component::ComponentToDOTfile" << DSP::LogMode::second
+      DSP::log << DSP::e::LogMode::Error << "DSP::Component::ComponentToDOTfile" << DSP::e::LogMode::second
         <<  "max_components_number (" << (int)max_components_number
         << ") <= component_index (" << (int)component_index << ")" << endl;
     #endif
@@ -906,7 +906,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
         else
         {
          // this should not happen
-          DSP::log << "DSP::Macro::MacroEdgesToDOTfile" << DSP::LogMode::second << "Nothing connected to the output block's input" << endl;
+          DSP::log << "DSP::Macro::MacroEdgesToDOTfile" << DSP::e::LogMode::second << "Nothing connected to the output block's input" << endl;
         }
 
 
@@ -1050,7 +1050,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
         }
         if (current_output->Convert2Copy() != NULL)
         { // 2. Copy
-          DSP::log << "DSP::Macro::MacroInputEdgesToDOTfile" << DSP::LogMode::second << "Edge to Copy !!!" << endl;
+          DSP::log << "DSP::Macro::MacroInputEdgesToDOTfile" << DSP::e::LogMode::second << "Edge to Copy !!!" << endl;
         }
 
         // ++++++++++++++++++++++++++++++++++++++++++++++++++ //
@@ -1058,7 +1058,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
         if (current_macro != NULL)
         {
           //! \todo edge to other macro
-          DSP::log << "DSP::Macro::MacroInputEdgesToDOTfile" << DSP::LogMode::second << "edge to other macro not implemented yet" << endl;
+          DSP::log << "DSP::Macro::MacroInputEdgesToDOTfile" << DSP::e::LogMode::second << "edge to other macro not implemented yet" << endl;
         }
         else
         {
@@ -1326,7 +1326,7 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
     // ********************************** //
     if (ReferenceClock==NULL)
     {
-      DSP::log << DSP::LogMode::Error << "DSP::Clock::SchemeToDOTfile" << DSP::LogMode::second << "NULL ReferenceClock" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Clock::SchemeToDOTfile" << DSP::e::LogMode::second << "NULL ReferenceClock" << endl;
       return;
     }
 
@@ -1369,7 +1369,7 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
     DSP::Clock::GetAlgorithmClocks(ReferenceClock, ClocksList, true);
     #ifdef __DEBUG__
       if (ClocksList.size() != DSP::Clock::GetNoOfClocks())
-        DSP::log << DSP::LogMode::Error << "DSP::Clock::SchemeToDOTfile" << DSP::LogMode::second
+        DSP::log << DSP::e::LogMode::Error << "DSP::Clock::SchemeToDOTfile" << DSP::e::LogMode::second
                 << "wrong number of clocks in ClocksList" << endl;
     #endif // __DEBUG__
 
@@ -1643,7 +1643,7 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
       if (component_index >= max_components_number)
       {
         #ifdef __DEBUG__
-          DSP::log << DSP::LogMode::Error << "DSP::Clock::ClockNotificationsToDOTfile"  << DSP::LogMode::second
+          DSP::log << DSP::e::LogMode::Error << "DSP::Clock::ClockNotificationsToDOTfile"  << DSP::e::LogMode::second
             << "max_components_number (" << max_components_number
             << ") <= component_index (" << component_index << ")" << endl;
         #endif

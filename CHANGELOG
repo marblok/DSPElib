@@ -5,9 +5,13 @@ TODO::
 
   unsigned long SamplingRate // -1 => 0
 LAST DONE:
-  - corrections in linux compilation
 
 CHANGES:
+- ver. 0.20.003 - <b>2021.04.06</b> Changed: 
+  - DSP::E_LS_Mode => DSP::e::LogState
+  - DSP::LogMode => DSP::e::LogMode
+  - corrections in linux compilation
+
 - ver. 0.20.001 - <b>2021.04.03</b> Changed: 
   - DSP_libver, DSP_lib_version and DSP_lib_version_string moved int o DSP:: namespace: DSP::libver, DSP::lib_version and DSP::lib_version_string
   - moved enums into DSP::e:: namespace: DSPe_* => DSP::e::*

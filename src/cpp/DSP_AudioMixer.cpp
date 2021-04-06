@@ -99,7 +99,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
 {
   #ifdef __DEBUG__
     string tekst;
-    DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << "Mixer initialization start" << endl;
+    DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << "Mixer initialization start" << endl;
   #endif
 
   #ifdef WIN32
@@ -142,7 +142,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
 
     #ifdef __DEBUG__
     {
-      DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second
+      DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second
         << "No of mixer devices:" << to_string(MixersNumber)
         << ", No of WaveIn devices:" << to_string(WaveInNumber) << ", No of WaveOut devices:"
         << to_string(WaveOutNumber) << endl;
@@ -168,7 +168,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
         ss << setfill ('0') << setw(8) << hex << rs;
         tekst = "Opened mixer (MIXER_OBJECTF_WAVEIN (dev:" + to_string(WaveInDevNo)
             + "/" + to_string(WaveInNumber) + ")) / result:" + ss.str();
-        DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+        DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
       }
       #endif
       rs=mixerOpen(&hMixer_out, WaveOutDevNo,
@@ -181,7 +181,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
         ss << setfill ('0') << setw(8) << hex << rs;
         tekst = "Opened mixer (MIXER_OBJECTF_WAVEOUT (dev:" + to_string(WaveOutDevNo)
             + "/" + to_string(WaveOutNumber) + ")) / result:" + ss.str();
-        DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+        DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
       }
       #endif
 
@@ -198,7 +198,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
         stringstream ss;
         ss << setfill ('0') << setw(8) << hex << rs;
         tekst = "Input mixer name: \"" + Input_MixerName + "\" / result:" + ss.str();
-        DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+        DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
       }
       #endif
       //Get output Mixer name
@@ -210,7 +210,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
         stringstream ss;
         ss << setfill ('0') << setw(8) << hex << rs;
         tekst = "Output mixer name: \"" + Output_MixerName + "\" / result:" + ss.str();
-        DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+        DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
       }
       #endif
 
@@ -226,7 +226,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
       {
         //! \bug Problems might occur when there is no WAVEIN input device (MixerLineWAVEIN will be corrupt)
         #ifdef __DEBUG__
-          DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << "No WAVEIN device found !!!" << endl;
+          DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << "No WAVEIN device found !!!" << endl;
         #endif
         MixerLineWAVEIN.cControls = 0;
         MixerLineWAVEIN.cConnections = 0;
@@ -237,7 +237,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
         stringstream ss;
         ss << setfill ('0') << setw(8) << hex << rs;
         tekst = "Got info about first WAVEIN destination line / result:" + ss.str();
-        DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+        DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
       }
       #endif
 
@@ -265,7 +265,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
           stringstream ss;
           ss << setfill ('0') << setw(8) << hex << rs;
           tekst = "Got master controls of first WAVEIN destination line / result:" + ss.str();
-          DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+          DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
         }
         #endif
 
@@ -285,7 +285,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
               ss << setfill ('0') << setw(8) << hex << rs;
               tekst = "Found master input mixer or multiplexer control (no " +
                   to_string(ind) + ") / result: " + ss.str();
-              DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+              DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
             }
             #endif
           }
@@ -299,7 +299,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
               ss << setfill ('0') << setw(8) << hex << rs;
               tekst = "Found master input volume control (no " + to_string(ind)
                   + ") / result: " + ss.str();
-              DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+              DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
             }
             #endif
             //break;
@@ -314,7 +314,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
               ss << setfill ('0') << setw(8) << hex << rs;
               tekst = "Found master input mute control (no " + to_string(ind)
                   + ") / result: " + ss.str();
-              DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+              DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
             }
             #endif
             //break;
@@ -327,7 +327,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
       if (InputMixer_support==true)
       { // Card supports global MIXER or MULTIPLEXER for input lines
         #ifdef __DEBUG__
-          DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << "InputMixer_support==true" << endl;
+          DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << "InputMixer_support==true" << endl;
         #endif
         Mixer_InputLinesNumber = MixerControlWAVEIN.cMultipleItems;
 
@@ -345,7 +345,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
           stringstream ss;
           ss << setfill ('0') << setw(8) << hex << rs;
           tekst = "Input mixer /multiplexer control info read (cChannels = 1) / result: " + ss.str();
-          DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+          DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
         }
         #endif
         if (rs != 0)
@@ -357,7 +357,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
             stringstream ss;
             ss << setfill ('0') << setw(8) << hex << rs;
             tekst = "Input mixer /multiplexer control info read (cChannels = 0) / result: " + ss.str();
-            DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+            DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
           }
           #endif
         }
@@ -387,7 +387,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
             ss << setfill ('0') << setw(8) << hex << rs;
             tekst = "Input mixer/multiplexer source line " + to_string(ind)
                 + " info read / result: " + ss.str();
-            DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+            DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
           }
           #endif
           if (MixerLinesWAVEIN_MAXcChannels<MixerLinesWAVEIN[ind].cChannels)
@@ -408,7 +408,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
             ss << setfill ('0') << setw(8) << hex << rs;
             tekst = "Input mixer source line " + to_string(ind)
                 + " controls info read / result: " + ss.str();
-            DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+            DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
           }
           #endif
           //Find control MIXERCONTROL_CONTROLTYPE_VOLUME and copy it
@@ -427,7 +427,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
                 tekst = "Input mixer source line " + to_string(ind)
                     + " volume control found (no " + to_string(ind_2)
                     + ") / result: " + ss.str();
-                DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+                DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
               }
               #endif
               break;
@@ -439,7 +439,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
       { // Card does not support global MIXER or MULTIPLEXER for input lines
         // Each of input lines is controlled separately
         #ifdef __DEBUG__
-          DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second <<  "No input mixer/multiplexer device : processing source lines separately" << endl;
+          DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second <<  "No input mixer/multiplexer device : processing source lines separately" << endl;
         #endif
 
         //Free memory
@@ -465,7 +465,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
             stringstream ss;
             ss << setfill ('0') << setw(8) << hex << rs;
             tekst = "Input source line " + to_string(ind) + " info read / result: " + ss.str();
-            DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+            DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
           }
           #endif
 
@@ -508,7 +508,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
             stringstream ss;
             ss << setfill ('0') << setw(8) << hex << rs;
             tekst = "Input mixer source line " + to_string(ind) + " controls info read / result: " + ss.str();
-            DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+            DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
           }
           #endif
           //Find control MIXERCONTROL_CONTROLTYPE_VOLUME and copy it
@@ -528,7 +528,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
                 ss << setfill ('0') << setw(8) << hex << rs;
                 tekst = "Found input mixer source line " + to_string(ind)
                     + " volume control (no " + to_string(ind_2) + ") / result: " + ss.str();
-                DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+                DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
               }
               #endif
               //break;
@@ -557,7 +557,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
                 ss << setfill ('0') << setw(8) << hex << rs;
                 tekst = "Found input mixer source line " + to_string(ind)
                     + " mute control (no " + to_string(ind_2) + ") / result: " + ss.str();
-                DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+                DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
               }
               #endif
               //break;
@@ -591,7 +591,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
           stringstream ss;
           ss << setfill ('0') << setw(8) << hex << rs;
           tekst = "Got output mixer device destination line " + to_string(ind) + " info / result: " + ss.str();
-          DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+          DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
         }
         #endif
 
@@ -600,7 +600,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
           MixerSupportedOUT=true;
           #ifdef __DEBUG__
             tekst = "Found output mixer device SPEAKER destination line " + to_string(ind);
-            DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+            DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
           #endif
           break;
         }
@@ -609,7 +609,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
           MixerSupportedOUT=true;
           #ifdef __DEBUG__
             tekst = "Found output mixer device HEADPHONES destination line " + to_string(ind) + " (looking still for SPEAKER)";
-            DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+            DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
           #endif
           //break;
         }
@@ -634,7 +634,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
           stringstream ss;
           ss << setfill ('0') << setw(8) << hex << rs;
           tekst = "Got controls of main output mixer device destination line / result: " + ss.str();
-          DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+          DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
         }
         #endif
 
@@ -648,7 +648,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
             MixerSupportedOUT = true;
             #ifdef __DEBUG__
             {
-              DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second
+              DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second
                   << "Found main volume control (no " << ind
                   << ") of output mixer device destination line / result: "
                   << setfill ('0') << setw(8) << hex << rs << endl;
@@ -668,7 +668,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
               MixerSupportedOUT = true;
               #ifdef __DEBUG__
               {
-                DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second
+                DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second
                   << "Found main mute control (no " << ind
                   << ") of output mixer device destination line / result: " << setfill ('0') << setw(8) << hex << rs << endl;
               }
@@ -707,7 +707,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
               ss << setfill ('0') << setw(8) << hex << rs;
               tekst = "Got info of output source line (no " + to_string(ind)
                   + ") / result: " + ss.str();
-              DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+              DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
             }
             #endif
 
@@ -726,7 +726,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
               ss << setfill ('0') << setw(8) << hex << rs;
               tekst = "Got controls of output source line (no " + to_string(ind)
                   + ") / result: " + ss.str();
-              DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+              DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
             }
             #endif
             //Find control MIXERCONTROL_CONTROLTYPE_VOLUME and copy it
@@ -747,7 +747,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
                   tekst = "Found volume control (" + to_string(ind_2)
                       + ") of output source line (no " + to_string(ind)
                       + ") / result: " + ss.str();
-                  DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+                  DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
                 }
                 #endif
                 //break;
@@ -766,7 +766,7 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
                   tekst = "Found mute control (" + to_string(ind_2)
                       + ") of output source line (no " + to_string(ind)
                       + ") / result: " + ss.str();
-                  DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << tekst << endl;
+                  DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << tekst << endl;
                 }
                 #endif
                 //break;
@@ -811,13 +811,13 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
     Memorized_OUT_LinesVolumes.clear();
 
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << "Not supported on this platform" << endl;
+      DSP::log << DSP::e::LogMode::Error << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << "Not supported on this platform" << endl;
     #endif
 
   #endif
 
   #ifdef __DEBUG__
-    DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << "Finished mixer configuration detection" << endl;
+    DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << "Finished mixer configuration detection" << endl;
   #endif
 
   // ************************************************ //
@@ -827,15 +827,15 @@ TAudioMixer::TAudioMixer(UINT WaveInDevNo, UINT WaveOutDevNo)
 
   //TEST
   #ifdef __DEBUG__
-    DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << "MemorizeMixerSettings_WAVEIN" << endl;
+    DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << "MemorizeMixerSettings_WAVEIN" << endl;
   #endif
   MemorizeMixerSettings_WAVEIN();
   #ifdef __DEBUG__
-    DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << "MemorizeMixerSettings_OUT" << endl;
+    DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << "MemorizeMixerSettings_OUT" << endl;
   #endif
   MemorizeMixerSettings_OUT();
   #ifdef __DEBUG__
-    DSP::log << "TAudioMixer::TAudioMixer" << DSP::LogMode::second << "Constructor finaly reached the end" << endl;
+    DSP::log << "TAudioMixer::TAudioMixer" << DSP::e::LogMode::second << "Constructor finaly reached the end" << endl;
   #endif
 }
 
@@ -975,7 +975,7 @@ void TAudioMixer::MemorizeMixerSettings_WAVEIN(void)
     MixerSettingsMemorized_WAVEIN=false;
 
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "TAudioMixer::MemorizeMixerSettings_WAVEIN" << DSP::LogMode::second << "Not yet implemented on this platform" << endl;
+      DSP::log << DSP::e::LogMode::Error << "TAudioMixer::MemorizeMixerSettings_WAVEIN" << DSP::e::LogMode::second << "Not yet implemented on this platform" << endl;
     #endif
 
   #endif
@@ -991,7 +991,7 @@ void TAudioMixer::ForgetMixerSettings_WAVEIN(void)
   #else
 
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "TAudioMixer::ForgetMixerSettings_WAVEIN" << DSP::LogMode::second << "Not yet implemented on this platform" << endl;
+      DSP::log << DSP::e::LogMode::Error << "TAudioMixer::ForgetMixerSettings_WAVEIN" << DSP::e::LogMode::second << "Not yet implemented on this platform" << endl;
     #endif
 
   #endif
@@ -1070,7 +1070,7 @@ void TAudioMixer::RestoreMixerSettings_WAVEIN(void)
   #else
 
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "TAudioMixer::RestoreMixerSettings_WAVEIN" << DSP::LogMode::second << "Not yet implemented on this platform" << endl;
+      DSP::log << DSP::e::LogMode::Error << "TAudioMixer::RestoreMixerSettings_WAVEIN" << DSP::e::LogMode::second << "Not yet implemented on this platform" << endl;
     #endif
 
   #endif
@@ -1084,24 +1084,24 @@ void TAudioMixer::MemorizeMixerSettings_OUT(void)
 
   //Master Line Controls
 #ifdef __DEBUG__
-  DSP::log << "TAudioMixer::MemorizeMixerSettings_OUT" << DSP::LogMode::second << "Saving Master Line Controls State" << endl;
+  DSP::log << "TAudioMixer::MemorizeMixerSettings_OUT" << DSP::e::LogMode::second << "Saving Master Line Controls State" << endl;
 #endif
   Memorized_OUT_MasterState[0]=GetDestLineState(DSP::AM_MasterControl, 0);
   Memorized_OUT_MasterState[1]=GetDestLineState(DSP::AM_MasterControl, 1);
 #ifdef __DEBUG__
-  DSP::log << "TAudioMixer::MemorizeMixerSettings_OUT" << DSP::LogMode::second << "Saving Master Line Controls Volume" << endl;
+  DSP::log << "TAudioMixer::MemorizeMixerSettings_OUT" << DSP::e::LogMode::second << "Saving Master Line Controls Volume" << endl;
 #endif
   Memorized_OUT_MasterVolume[0]=GetDestLineVolume(DSP::AM_MasterControl, 0);
   Memorized_OUT_MasterVolume[1]=GetDestLineVolume(DSP::AM_MasterControl, 1);
 
   //Master Line connections Controls
 #ifdef __DEBUG__
-  DSP::log << "TAudioMixer::MemorizeMixerSettings_OUT" << DSP::LogMode::second << "Saving Master Line connections Controls" << endl;
+  DSP::log << "TAudioMixer::MemorizeMixerSettings_OUT" << DSP::e::LogMode::second << "Saving Master Line connections Controls" << endl;
 #endif
   ile = GetNumberOfDestLines();
 #ifdef __DEBUG__
   {
-    DSP::log << "TAudioMixer::MemorizeMixerSettings_OUT" << DSP::LogMode::second << "GetNumberOfDestLines() = " << ile << endl;
+    DSP::log << "TAudioMixer::MemorizeMixerSettings_OUT" << DSP::e::LogMode::second << "GetNumberOfDestLines() = " << ile << endl;
   }
 #endif
   Memorized_OUT_LinesStates.clear();
@@ -1113,21 +1113,21 @@ void TAudioMixer::MemorizeMixerSettings_OUT(void)
   {
 #ifdef __DEBUG__
     {
-      DSP::log << "TAudioMixer::MemorizeMixerSettings_OUT" << DSP::LogMode::second << "Saving line #" << ind << " State" << endl;
+      DSP::log << "TAudioMixer::MemorizeMixerSettings_OUT" << DSP::e::LogMode::second << "Saving line #" << ind << " State" << endl;
     }
 #endif
     Memorized_OUT_LinesStates[ind*2+0]=GetDestLineState(ind, 0);
     Memorized_OUT_LinesStates[ind*2+1]=GetDestLineState(ind, 1);
 #ifdef __DEBUG__
     {
-      DSP::log << "TAudioMixer::MemorizeMixerSettings_OUT" << DSP::LogMode::second << "Saving line #" << ind << " Volume" << endl;
+      DSP::log << "TAudioMixer::MemorizeMixerSettings_OUT" << DSP::e::LogMode::second << "Saving line #" << ind << " Volume" << endl;
     }
 #endif
     Memorized_OUT_LinesVolumes[ind*2+0]=GetDestLineVolume(ind, 0);
     Memorized_OUT_LinesVolumes[ind*2+1]=GetDestLineVolume(ind, 1);
   }
 #ifdef __DEBUG__
-  DSP::log << "TAudioMixer::MemorizeMixerSettings_OUT" << DSP::LogMode::second << "Finished Saving Master Line connections Controls" << endl;
+  DSP::log << "TAudioMixer::MemorizeMixerSettings_OUT" << DSP::e::LogMode::second << "Finished Saving Master Line connections Controls" << endl;
 #endif
 }
 
@@ -2435,7 +2435,7 @@ double TAudioMixer::GetDestLineVolume(int LineNo, int Channel)
     (void)Channel; // unused 
 
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "TAudioMixer::GetDestLineVolume" << DSP::LogMode::second << "Not yet implemented on this platform" << endl;
+      DSP::log << DSP::e::LogMode::Error << "TAudioMixer::GetDestLineVolume" << DSP::e::LogMode::second << "Not yet implemented on this platform" << endl;
     #endif
 
     return -2.0; // NO CONTROLS
@@ -2617,7 +2617,7 @@ const string TAudioMixer::GetMixerControlType(DWORD dwControlType)
     (void)dwControlType; // unused 
 
     #ifdef __DEBUG__
-      DSP::log << DSP::LogMode::Error << "TAudioMixer::GetMixerControlType" << DSP::LogMode::second << "Not yet implemented on this platform" << endl;
+      DSP::log << DSP::e::LogMode::Error << "TAudioMixer::GetMixerControlType" << DSP::e::LogMode::second << "Not yet implemented on this platform" << endl;
     #endif
 
     return NULL;

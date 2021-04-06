@@ -1038,8 +1038,8 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
       UNUSED_ARGUMENT(clock);
 
       #ifdef __DEBUG__
-        DSP::log << DSP::LogMode::Error << "DSP::Component::Notify";
-        DSP::log << DSP::LogMode::second << "Component >>" << GetName() << "<< registered for notifications but notification function not implemented !!!";
+        DSP::log << DSP::e::LogMode::Error << "DSP::Component::Notify";
+        DSP::log << DSP::e::LogMode::second << "Component >>" << GetName() << "<< registered for notifications but notification function not implemented !!!";
         DSP::log << endl;
       #endif
       return;
@@ -1538,7 +1538,7 @@ class DSP::Block : public virtual DSP::Component
           tekst << "WARNING: Block uses DummyExecute. Check block constructor if Execute_ptr is set correctly ("
                 << Caller->GetName() << ")";
         }
-        DSP::log << DSP::LogMode::Error << "DSP::Block::Execute" << DSP::LogMode::second <<  tekst.str() << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::Block::Execute" << DSP::e::LogMode::second <<  tekst.str() << endl;
       #endif
     }
 
@@ -1626,8 +1626,8 @@ class DSP::Source : public virtual DSP::Component
       UNUSED_DEBUG_ARGUMENT(clock);
 
       #ifdef __DEBUG__
-        DSP::log << DSP::LogMode::Error << "DSP::Block::Execute"
-          << DSP::LogMode::Error
+        DSP::log << DSP::e::LogMode::Error << "DSP::Block::Execute"
+          << DSP::e::LogMode::Error
           << "WARNING: Source uses DummyExecute. Check source constructor if OutputExecute_ptr is set correctly ("
           << source->GetName() << ")" << endl;
       #endif

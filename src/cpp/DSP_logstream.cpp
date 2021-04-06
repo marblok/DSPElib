@@ -38,16 +38,16 @@ namespace DSP
      */
     class LogStatus
     {
-      friend void logstream::SetLogState(E_LS_Mode);
-      friend void logstream::SetLogFileName(const string &);
-      friend void logstream::SetLogFunctionPtr(Message_callback_ptr);
-      friend long int logstream::NoOfErrors(bool Reset);
-      friend logstream& operator<< (logstream& os, const LogMode& log_mode);
-      friend class logbuf;
+      friend void DSP::logstream::SetLogState(const DSP::e::LogState &);
+      friend void DSP::logstream::SetLogFileName(const string &);
+      friend void DSP::logstream::SetLogFunctionPtr(DSP::Message_callback_ptr);
+      friend long int DSP::logstream::NoOfErrors(bool Reset);
+      friend DSP::logstream& ::operator<< (DSP::logstream& os, const DSP::e::LogMode& log_mode);
+      friend class DSP::logbuf;
 
       private:
         // LOG actions mode
-        E_LS_Mode Mode;
+        DSP::e::LogState Mode;
         long int ErrorsCounter;
 
         //! LOG file name (possibly together with path)
@@ -90,8 +90,8 @@ namespace DSP
        */
      class logbuf: public std::streambuf
      {
-        friend class logstream;
-        friend logstream& operator<< (logstream& os, const LogMode& log_mode);
+        friend class DSP::logstream;
+        friend DSP::logstream& ::operator<< (DSP::logstream& os, const DSP::e::LogMode& log_mode);
 
       public:
         logbuf(void);
@@ -104,8 +104,8 @@ namespace DSP
 
         string First_string; //! Main part of the collected message
         string Second_string; //! Second_string part of the collected message
-        LogMode mode; //! stream mode (Error/Info)
-        LogMode msg_part; //! message part (first/second)
+        DSP::e::LogMode mode; //! stream mode (Error/Info)
+        DSP::e::LogMode msg_part; //! message part (first/second)
         bool pause_after_message; //! if true wiat for key press in console mode
 
         LogStatus LogStatus_object; //DSPo_LibraryLogStatus;
@@ -208,10 +208,10 @@ namespace DSP
         {
           // send First_string and Second_string using ErrorMessage or InfoMessage
           switch (mode) {
-            case LogMode::Error:
+            case DSP::e::LogMode::Error:
               ErrorMessage(First_string, Second_string);
               break;
-            case LogMode::Info:
+            case DSP::e::LogMode::Info:
               InfoMessage(First_string, Second_string);
               break;
             default:
@@ -222,24 +222,24 @@ namespace DSP
           start_new_line = true;
           First_string = "";
           Second_string = "";
-          msg_part = LogMode::first;
-          mode = LogMode::Info; // default
+          msg_part = DSP::e::LogMode::first;
+          mode = DSP::e::LogMode::Info; // default
           pause_after_message = false;
-          msg_part = LogMode::first; // start from first part
+          msg_part = DSP::e::LogMode::first; // start from first part
 
           mtx.get()->unlock(); // drugi lock //
         }
         else {
           switch (msg_part) {
-            case LogMode::first:
+            case DSP::e::LogMode::first:
               First_string += (char)c;
               break;
-            case LogMode::second:
+            case DSP::e::LogMode::second:
               Second_string += (char)c;
               break;
             default:
               mtx.get()->unlock();
-              assert(!"Undefined DSP::LogMode value");
+              assert(!"Undefined DSP::e::LogMode value");
               break;
           }
         }
@@ -263,9 +263,9 @@ namespace DSP
 
       First_string = "";
       Second_string = "";
-      mode = LogMode::Info;
+      mode = DSP::e::LogMode::Info;
       pause_after_message = false;
-      msg_part = LogMode::first;
+      msg_part = DSP::e::LogMode::first;
     }
 
     logbuf::~logbuf(void)
@@ -305,42 +305,13 @@ namespace DSP
     */
 
 
-    logstream& operator<< (logstream& os, const LogMode& log_mode)
-    {
-    //  static_cast<Log *>(os.rdbuf())->priority_ = (int)log_priority;
-      switch (log_mode) {
-        case LogMode::first:
-        case LogMode::second:
-          os.log_buf.get()->msg_part = log_mode;
-          break;
-        case LogMode::pause:
-          os.log_buf.get()->pause_after_message = true;
-          break;
-        case LogMode::pause_off:
-          os.log_buf.get()->pause_after_message = false;
-          break;
-        case LogMode::Error:
-          os.log_buf.get()->pause_after_message = true;
-          os.log_buf.get()->mode = log_mode;
-          break;
-        case LogMode::Info:
-          os.log_buf.get()->pause_after_message = false;
-          os.log_buf.get()->mode = log_mode;
-          break;
-        default:
-          assert(!"Unsupported log_mode");
-          break;
-      }
-      return os;
-    }
-
 
     // ************************************************ //
     // ************************************************ //
     // ************************************************ //
     LogStatus::LogStatus(void)
     {
-      Mode = LS_console;
+      Mode = DSP::e::LogState::console;
       ErrorsCounter=0;
       plik = NULL;
       file_name = "";
@@ -362,12 +333,12 @@ namespace DSP
       file_name = "";
     }
 
-    void logstream::SetLogState(E_LS_Mode Mode)
+    void logstream::SetLogState(const DSP::e::LogState &Mode)
     {
       //Problem with file option if it is swithed off
       //LOG file should ne closed
-      if (((log_buf->LogStatus_object.Mode & LS_file) != 0) &&
-          ((Mode & LS_file) == 0))
+      if (((log_buf->LogStatus_object.Mode & DSP::e::LogState::file) == DSP::e::LogState::file) &&
+          ((Mode & DSP::e::LogState::file) != DSP::e::LogState::file))
       {
         log_buf->LogStatus_object.CloseLOGfile();
       }
@@ -412,9 +383,9 @@ namespace DSP
     {
       CloseLOGfile();
 
-      if ((Mode & LS_file) != 0)
+      if ((Mode & DSP::e::LogState::file) == DSP::e::LogState::file)
       {
-        if ((Mode & LS_append) != 0)
+        if ((Mode & DSP::e::LogState::append) == DSP::e::LogState::append)
         {
           plik = new std::ofstream(file_name, std::ofstream::app | std::ofstream::out);
         }
@@ -463,12 +434,12 @@ namespace DSP
       // ******************************************* //
       LogStatus_object.ErrorsCounter++;
       // ******************************************* //
-      if (LogStatus_object.Mode == LS_off)
+      if (LogStatus_object.Mode == DSP::e::LogState::off)
         return;
 //      if (source.length() == 0) // pause in console even if the message is empty
 //        return;
 
-      if ((LogStatus_object.Mode & LS_user_function) != 0)
+      if ((LogStatus_object.Mode & DSP::e::LogState::user_function) == DSP::e::LogState::user_function)
       { // console
         if (LogStatus_object.function_ptr != NULL)
           if ((*LogStatus_object.function_ptr)(source, message, true) == true)
@@ -480,18 +451,18 @@ namespace DSP
 
       // ******************************************* //
 
-      if ((LogStatus_object.Mode & LS_console) != 0)
+      if ((LogStatus_object.Mode & DSP::e::LogState::console) == DSP::e::LogState::console)
       { // console
         //printf(MessageText.c_str());
         cout << MessageText << flush;
       }
-      if ((LogStatus_object.Mode & LS_file) != 0)
+      if ((LogStatus_object.Mode & DSP::e::LogState::file) == DSP::e::LogState::file)
       { // file & file_append
         LogStatus_object.WriteMessage2LOGfile(MessageText);
       }
 
       // ******************************************* //
-      if (((LogStatus_object.Mode & LS_console) != 0) && (pause_after_message == true))
+      if (((LogStatus_object.Mode & DSP::e::LogState::console) == DSP::e::LogState::console) && (pause_after_message == true))
       { //Wait for ENTER only if console mode is ON
         pause_after_message = false;
         printf("Press ENTER");
@@ -519,14 +490,14 @@ namespace DSP
     {
       string MessageText;
 
-      if (LogStatus_object.Mode == LS_off)
+      if (LogStatus_object.Mode == DSP::e::LogState::off)
         return;
       //if (source == NULL)
       //  return;
-      if ((LogStatus_object.Mode & LS_errors_only) != 0)
+      if ((LogStatus_object.Mode & DSP::e::LogState::errors_only) == DSP::e::LogState::errors_only)
         return;
 
-      if ((LogStatus_object.Mode & LS_user_function) != 0)
+      if ((LogStatus_object.Mode & DSP::e::LogState::user_function) == DSP::e::LogState::user_function)
       { // console
         if (LogStatus_object.function_ptr != NULL)
           if ((*LogStatus_object.function_ptr)(source, message, false) == true)
@@ -537,18 +508,18 @@ namespace DSP
       MessageText = GetInfoMessage(source, message);
       // ******************************************* //
 
-      if ((LogStatus_object.Mode & LS_console) != 0)
+      if ((LogStatus_object.Mode & DSP::e::LogState::console) == DSP::e::LogState::console)
       { // console
         //printf(MessageText.c_str());
         cout << MessageText << flush;
       }
-      if ((LogStatus_object.Mode & LS_file) != 0)
+      if ((LogStatus_object.Mode & DSP::e::LogState::file) == DSP::e::LogState::file)
       { // file & file_append
         LogStatus_object.WriteMessage2LOGfile(MessageText);
       }
 
       // ******************************************* //
-      if (((LogStatus_object.Mode & LS_console) != 0) && (pause_after_message == true))
+      if (((LogStatus_object.Mode & DSP::e::LogState::console) == DSP::e::LogState::console) && (pause_after_message == true))
       { //Wait for ENTER only if console mode is ON
         pause_after_message = false;
         printf("Press ENTER");
@@ -582,5 +553,35 @@ namespace DSP
         ErrorMessage(source, message);
     }
 
+}
+
+
+DSP::logstream& operator<< (DSP::logstream& os, const DSP::e::LogMode& log_mode)
+{
+//  static_cast<Log *>(os.rdbuf())->priority_ = (int)log_priority;
+  switch (log_mode) {
+    case DSP::e::LogMode::first:
+    case DSP::e::LogMode::second:
+      os.log_buf.get()->msg_part = log_mode;
+      break;
+    case DSP::e::LogMode::pause:
+      os.log_buf.get()->pause_after_message = true;
+      break;
+    case DSP::e::LogMode::pause_off:
+      os.log_buf.get()->pause_after_message = false;
+      break;
+    case DSP::e::LogMode::Error:
+      os.log_buf.get()->pause_after_message = true;
+      os.log_buf.get()->mode = log_mode;
+      break;
+    case DSP::e::LogMode::Info:
+      os.log_buf.get()->pause_after_message = false;
+      os.log_buf.get()->mode = log_mode;
+      break;
+    default:
+      assert(!"Unsupported log_mode");
+      break;
+  }
+  return os;
 }
 

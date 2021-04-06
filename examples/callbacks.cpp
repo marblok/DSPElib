@@ -119,7 +119,7 @@ int main(void)
   {
     DSP::Clock::Execute(MasterClock, Fp/8);
 
-    DSP::log << "MAIN" << DSP::LogMode::second << temp << endl;
+    DSP::log << "MAIN" << DSP::e::LogMode::second << temp << endl;
     temp++;
   }
   while (AudioIn->GetBytesRead() != 0);
@@ -136,7 +136,7 @@ int main(void)
 
   DSP::Clock::ListOfAllComponents();
   DSP::Clock::FreeClocks();
-  DSP::log << "MAIN" << DSP::LogMode::second << "end" << endl;
+  DSP::log << "MAIN" << DSP::e::LogMode::second << "end" << endl;
 
   return 0;
 }
