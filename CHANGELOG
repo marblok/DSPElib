@@ -1,12 +1,15 @@
 TODO::
   ? DSP::Clock_ptr => migrate to std::shared_ptr
-  update Linux makefile
   !!! Add TELEsound and PiAPS_sound projects to GitLab and start addaptation to new library version
 
   unsigned long SamplingRate // -1 => 0
 LAST DONE:
 
 CHANGES:
+- ver. 0.20.004 - <b>2021.04.06</b> Changed: 
+  - Fixed makefiles for Linux - install and examples compilation works
+  - Initial work on sockets support for Linux
+
 - ver. 0.20.003 - <b>2021.04.06</b> Changed: 
   - DSP::E_LS_Mode => DSP::e::LogState
   - DSP::LogMode => DSP::e::LogMode

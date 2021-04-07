@@ -114,7 +114,7 @@ bool DSP::Socket::is_socket_error(const int &iResult) {
 
 int DSP::Socket::GetLastError() {
 #ifndef __NO_WINSOCK__
-  return WSAGetLastError());
+  return WSAGetLastError();
 #else
   return errno;
 #endif
@@ -264,7 +264,7 @@ bool DSP::Socket::TryAcceptConnection(void)
     return false;
   }
   //current_socket_state &= DSP::e::SocketStatus::timeout_mask; // no object
-  if (DSP::Socket::is_socket_valid(res) == true)
+  if (DSP::Socket::is_socket_error(res) == true)
   {
     DSP::log << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "SOCKET_ERROR" << endl;
     DSP::Socket::close_socket();

@@ -53,3 +53,5 @@ examples/socket_server_2.gif
 examples/socket_server_2.dot
 examples/morse_key.wav
 examples/log_file_client.log
+examples/morse.wav
+examples/socket_client_2.dot
