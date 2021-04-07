@@ -725,7 +725,6 @@ class DSP::name
  */
 
 #ifdef __DEBUG__
-  //! DOT colors table
   namespace DSP {
     extern const vector<string> DOT_colors;
   }

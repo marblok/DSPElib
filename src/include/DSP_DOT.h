@@ -13,8 +13,9 @@
 
 //! Main DSPElib namespace
 namespace DSP {
-       extern const std::vector<std::string> DOT_colors; //! DOT colors table
-
+       //! DOT colors table
+       extern const std::vector<std::string> DOT_colors;
+       
        //! DSPElib sub-namespace for enums definitions
        namespace e {
          enum struct DOTmode {
