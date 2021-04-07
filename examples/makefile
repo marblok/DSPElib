@@ -99,7 +99,7 @@ clean:
 	rm -f $(SRC_DIR)/socket_client_2.exe $(SRC_DIR)/socket_client_2.o
 	rm -f $(SRC_DIR)/macro_example.exe $(SRC_DIR)/macro_example.o
 	rm -f $(SRC_DIR)/*.log
-	rm -f $(SRC_DIR)/matlab/LPF_22050_8000.coef
+	rm -f $(SRC_DIR)/matlab/*.coef
 	rm -f $(SRC_DIR)/multirate.wav
 	rm -f $(SRC_DIR)/morse.wav
 	rm -f $(SRC_DIR)/morse_key.wav

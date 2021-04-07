@@ -102,22 +102,22 @@ DSP_asynchronous_CT: asynchronous_CT.o
 
 
 clean:
-	rm -f DSP_hello hello.o 
-	rm -f DSP_echo echo.o 
-	rm -f DSP_asynchronous asynchronous.o
-	rm -f DSP_asynchronous_CT asynchronous_CT.o
-	rm -f DSP_multirate multirate.o
-	rm -f DSP_callbacks callbacks.o 
-	rm -f DSP_socket_server socket_server.o 
-	rm -f DSP_socket_client socket_client.o 
-	rm -f DSP_socket_server_2 socket_server_2.o 
-	rm -f DSP_socket_client_2 socket_client_2.o
-	rm -f DSP_macro_example macro_example.o
-	rm -f *.log
-	rm -f matlab/LPF_22050_8000.coef
-	rm -f multirate.wav
-	rm -f morse.wav
-	rm -f morse_key.wav
-	rm -f test_out.wav
-	rm -f *.dot
-	rm -f *.gif
+	rm -f $(SRC_DIR)/DSP_hello $(SRC_DIR)/hello.o 
+	rm -f $(SRC_DIR)/DSP_echo $(SRC_DIR)/echo.o 
+	rm -f $(SRC_DIR)/DSP_asynchronous $(SRC_DIR)/asynchronous.o
+	rm -f $(SRC_DIR)/DSP_asynchronous_CT $(SRC_DIR)/asynchronous_CT.o
+	rm -f $(SRC_DIR)/DSP_multirate $(SRC_DIR)/multirate.o
+	rm -f $(SRC_DIR)/DSP_callbacks $(SRC_DIR)/callbacks.o 
+	rm -f $(SRC_DIR)/DSP_socket_server $(SRC_DIR)/socket_server.o 
+	rm -f $(SRC_DIR)/DSP_socket_client $(SRC_DIR)/socket_client.o 
+	rm -f $(SRC_DIR)/DSP_socket_server_2 $(SRC_DIR)/socket_server_2.o 
+	rm -f $(SRC_DIR)/DSP_socket_client_2 $(SRC_DIR)/socket_client_2.o
+	rm -f $(SRC_DIR)/DSP_macro_example $(SRC_DIR)/macro_example.o
+	rm -f $(SRC_DIR)/*.log
+	rm -f $(SRC_DIR)/matlab/*.coef
+	rm -f $(SRC_DIR)/multirate.wav
+	rm -f $(SRC_DIR)/morse.wav
+	rm -f $(SRC_DIR)/morse_key.wav
+	rm -f $(SRC_DIR)/test_out.wav
+	rm -f $(SRC_DIR)/*.dot
+	rm -f $(SRC_DIR)/*.gif
