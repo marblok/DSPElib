@@ -33,10 +33,16 @@ DSP::e::SocketStatus& DSP::e::operator&= (DSP::e::SocketStatus& left,
 bool DSP::Socket::winsock_initialized = false;
 int  DSP::Socket::NoOfSocketObjects = 0;
 const string DSP::Socket::DEFAULT_PORT = "27027";
-WSADATA DSP::Socket::wsaData;
+#ifndef  __NO_WINSOCK__
+  WSADATA DSP::Socket::wsaData;
+#endif
 
 bool DSP::Socket::listen_ready = false;
-SOCKET DSP::Socket::ListenSocket = INVALID_SOCKET;
+#ifndef __NO_WINSOCK__
+  SOCKET DSP::Socket::ListenSocket = INVALID_SOCKET;
+#else
+  SOCKET DSP::Socket::ListenSocket = -1;
+#endif
 int DSP::Socket::no_of_server_objects = 0;
 std::vector<DSP::Socket *> DSP::Socket::server_objects_list;
 
@@ -55,7 +61,11 @@ DSP::Socket::Socket(const string &address_with_port, bool run_as_client, uint32_
   }
   NoOfSocketObjects++;
 
+#ifndef __NO_WINSOCK__
   ConnectSocket = INVALID_SOCKET;
+#else
+  ConnectSocket = -1;
+#endif
 
   if (run_as_client == true)
   {
@@ -80,6 +90,34 @@ DSP::Socket::Socket(const string &address_with_port, bool run_as_client, uint32_
     }
     */
   }
+}
+
+bool DSP::Socket::is_socket_valid() {
+  return is_socket_valid(ListenSocket);
+}
+
+bool DSP::Socket::is_socket_valid(const SOCKET &socket_to_check) {
+#ifndef __NO_WINSOCK__
+  return socket_to_check != INVALID_SOCKET;
+#else
+  return socket_to_check >= 0;
+#endif
+}
+
+bool DSP::Socket::is_socket_error(const int &iResult) {
+#ifndef __NO_WINSOCK__
+  return iResult == SOCKET_ERROR;
+#else
+  return iResult < 0;
+#endif
+}
+
+int DSP::Socket::GetLastError() {
+#ifndef __NO_WINSOCK__
+  return WSAGetLastError());
+#else
+  return errno;
+#endif
 }
 
 bool DSP::Socket::InitServer_ListenSocket(const string & address_with_port)
@@ -127,9 +165,9 @@ bool DSP::Socket::InitServer_ListenSocket(const string & address_with_port)
   {
     // Create a SOCKET for the server to listen for client connections
     ListenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
-    if (ListenSocket == INVALID_SOCKET)
+    if (is_socket_valid(ListenSocket) == false)
     {
-      res = WSAGetLastError();
+      res = DSP::Socket::GetLastError();
       DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitServer" << DSP::e::LogMode::second << "Error at socket(): " << res << endl;
       freeaddrinfo(result);
       result = NULL;
@@ -140,8 +178,12 @@ bool DSP::Socket::InitServer_ListenSocket(const string & address_with_port)
     // set blocking or nonblocking mode
     // set nonblocking mode: on = 1
     unsigned long on; on = 1;
-    iResult = ioctlsocket(ListenSocket, FIONBIO, &on);
-    if (iResult == SOCKET_ERROR)
+    #ifndef  __NO_WINSOCK__
+      iResult = ioctlsocket(ListenSocket, FIONBIO, &on);
+    #else
+      iResult = ioctl(ListenSocket, FIONBIO, &on);
+    #endif
+    if (DSP::Socket::is_socket_error(iResult))
     {
       DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitServer" << DSP::e::LogMode::second << "ioctlsocket failed to set non-blocking mode" << endl;
     }
@@ -149,27 +191,25 @@ bool DSP::Socket::InitServer_ListenSocket(const string & address_with_port)
     // Setup the TCP listening socket
     iResult = bind( ListenSocket,
         result->ai_addr, (int)result->ai_addrlen);
-    if (iResult == SOCKET_ERROR)
+    if (DSP::Socket::is_socket_error(iResult))
     {
       DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitServer" << DSP::e::LogMode::second << "bind failed" << endl;
       //printf("bind failed: %d\n", WSAGetLastError());
       freeaddrinfo(result);
       result = NULL;
-      closesocket(ListenSocket);
-      ListenSocket = INVALID_SOCKET;
+      DSP::Socket::close_socket();
       listen_ready = false;
       return false;
     }
 
     // support multiple outgoing connections
-    if ( listen( ListenSocket, SOMAXCONN ) == SOCKET_ERROR )
+    if ( DSP::Socket::is_socket_error(listen( ListenSocket, SOMAXCONN )) )
     {
       DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitServer" << DSP::e::LogMode::second << "listen failed" << endl;
       //printf("listen failed: %d\n", WSAGetLastError());
       freeaddrinfo(result);
       result = NULL;
-      closesocket(ListenSocket);
-      ListenSocket = INVALID_SOCKET;
+      DSP::Socket::close_socket();
       listen_ready = false;
       return false;
     }
@@ -207,7 +247,7 @@ bool DSP::Socket::TryAcceptConnection(void)
   SOCKET temp_socket;
   string text;
 
-  if (ListenSocket == INVALID_SOCKET)
+  if (DSP::Socket::is_socket_valid(ListenSocket) == false)
     return false;
 
   if (no_of_server_objects <= 0)
@@ -224,23 +264,21 @@ bool DSP::Socket::TryAcceptConnection(void)
     return false;
   }
   //current_socket_state &= DSP::e::SocketStatus::timeout_mask; // no object
-  if (res == SOCKET_ERROR)
+  if (DSP::Socket::is_socket_valid(res) == true)
   {
     DSP::log << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "SOCKET_ERROR" << endl;
-    closesocket(ListenSocket);
-    ListenSocket = INVALID_SOCKET;
+    DSP::Socket::close_socket();
     // current_socket_state |= DSP::e::SocketStatus::error; no object
     return false;
   }
 
   // Accept a client socket
   temp_socket = accept(ListenSocket, NULL, NULL);
-  if (temp_socket == INVALID_SOCKET)
+  if (DSP::Socket::is_socket_valid(temp_socket) == false)
   {
     DSP::log << DSP::e::LogMode::Error << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "accept failed" << endl;
     //printf("accept failed: %d\n", WSAGetLastError());
-    closesocket(ListenSocket);
-    ListenSocket = INVALID_SOCKET;
+    DSP::Socket::close_socket();
     listen_ready = false;
     //current_socket_state &= DSP::e::SocketStatus::listen_active_mask; // no object
     return false;
@@ -264,18 +302,22 @@ bool DSP::Socket::TryAcceptConnection(void)
      *  Close socket only when peer closes it.
      *  ?!? this might block other connections ?!?
      */
-    closesocket(temp_socket);
+    DSP::Socket::close_socket(temp_socket);
     DSP::log << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "socket ID data has not been received (timeout - connection closed)" << endl;
     return false;
   }
-  if (res == SOCKET_ERROR)
+  if (DSP::Socket::is_socket_error( res ) == true)
   {
     DSP::log << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "error reading socket ID data" << endl;
     // current_socket_state |= DSP::e::SocketStatus::error; // no object
     return false;
   }
 
-  res = ioctlsocket(temp_socket, FIONREAD, &in_counter);
+  #ifndef  __NO_WINSOCK__
+    res = ioctlsocket(temp_socket, FIONREAD, &in_counter);
+  #else
+    res = ioctl(temp_socket, FIONREAD, &in_counter);
+  #endif
   if (in_counter == 0)
   {
     // connection has been closed
@@ -300,7 +342,7 @@ bool DSP::Socket::TryAcceptConnection(void)
       if (   (server_objects_list[ind]->ServerObjectID == 0x00000000)
           || (server_objects_list[ind]->ServerObjectID == temp_ServerObjectID))
       {
-        if (server_objects_list[ind]->ConnectSocket == INVALID_SOCKET)
+        if (DSP::Socket::is_socket_valid(server_objects_list[ind]->ConnectSocket) == false)
         {
           DSP::log << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second
             << "server_objects_list[" << ind
@@ -344,6 +386,20 @@ string DSP::Socket::extract_port(const string& address_with_port, const string &
   return port;
 }
 
+void DSP::Socket::close_socket() {
+  DSP::Socket::close_socket(ListenSocket);
+}
+
+void DSP::Socket::close_socket(SOCKET &socket_to_close) {
+  #ifndef __NO_WINSOCK__
+    closesocket(socket_to_close);
+    socket_to_close = INVALID_SOCKET;
+  #else
+    close(socket_to_close);
+    socket_to_close = -1;
+  #endif
+}
+
 bool DSP::Socket::InitClient(const string & address_with_port)
 {
   bool ready;
@@ -382,7 +438,7 @@ bool DSP::Socket::InitClient(const string & address_with_port)
     ptr=result;
     // Create a SOCKET for connecting to server
     ConnectSocket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
-    if (ConnectSocket == INVALID_SOCKET)
+    if (DSP::Socket::is_socket_valid(ConnectSocket) == false)
     {
       DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitClient" << DSP::e::LogMode::second << "Error at socket()" << endl;
       //printf("Error at socket(): %ld\n", WSAGetLastError());
@@ -393,8 +449,12 @@ bool DSP::Socket::InitClient(const string & address_with_port)
       return false;
     }
     unsigned long on; on = 1;
-    iResult = ioctlsocket(ConnectSocket, FIONBIO, &on);
-    if (iResult == SOCKET_ERROR)
+    #ifndef  __NO_WINSOCK__
+      iResult = ioctlsocket(ConnectSocket, FIONBIO, &on);
+    #else
+      iResult = ioctl(ConnectSocket, FIONBIO, &on);
+    #endif
+    if (DSP::Socket::is_socket_error(iResult) == true)
     {
       DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitClient" << DSP::e::LogMode::second << "ioctlsocket failed to set non-blocking mode" << endl;
       current_socket_state |= DSP::e::SocketStatus::error;
@@ -407,7 +467,7 @@ bool DSP::Socket::InitClient(const string & address_with_port)
 
 bool DSP::Socket::TryConnect(uint32_t SerwerObjectID)
 {
-  unsigned int out_counter;
+  unsigned long out_counter;
 #ifdef __DEBUG__
   string text;
 #endif
@@ -420,23 +480,23 @@ bool DSP::Socket::TryConnect(uint32_t SerwerObjectID)
   // connect on nonblocking socket
   // Connect to server.
   iResult = connect( ConnectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
-  if (iResult == SOCKET_ERROR)
+  if (DSP::Socket::is_socket_error(iResult) == true)
   {
-    err = WSAGetLastError();
+    err = DSP::Socket::GetLastError();
 
     switch (err)
     {
-      case WSAEWOULDBLOCK:
+      case WSAEWOULDBLOCK: // EINPROGRESS
         // OK ==> wait for finalized connection
-      case WSAEALREADY: //
-      case WSAEINVAL:
+      case WSAEALREADY: // EALREADY
+      case WSAEINVAL: // EINVAL
         // connection not ready yet
         current_socket_state &= DSP::e::SocketStatus::timeout_mask;
         DSP::f::Sleep(0);
         return false;
         break;
 
-      case WSAEISCONN:
+      case WSAEISCONN: // EISCONN
         // connection completed
         current_socket_state &= DSP::e::SocketStatus::timeout_mask;
         socket_ready = true;
@@ -445,16 +505,15 @@ bool DSP::Socket::TryConnect(uint32_t SerwerObjectID)
         #endif
         break;
 
-      case SOCKET_ERROR:
+      //case SOCKET_ERROR:
       default:
         // error or unexpected situation
         current_socket_state &= DSP::e::SocketStatus::timeout_mask;
-        err = WSAGetLastError();
+        err = DSP::Socket::GetLastError();
 
         freeaddrinfo(result);
         result = NULL;
-        closesocket(ConnectSocket);
-        ConnectSocket = INVALID_SOCKET;
+        close_socket(ConnectSocket);
         // b u g: must recreate socket before another connect attempt
 
         current_socket_state |= DSP::e::SocketStatus::closed;
@@ -506,6 +565,7 @@ bool DSP::Socket::TryConnect(uint32_t SerwerObjectID)
 
 bool DSP::Socket::Init_socket(void)
 {
+#ifndef __NO_WINSOCK__
   // Initialize Winsock
   iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
 
@@ -517,6 +577,7 @@ bool DSP::Socket::Init_socket(void)
     current_socket_state |= DSP::e::SocketStatus::error;
     return false;
   }
+#endif
   return true;
 }
 
@@ -563,10 +624,9 @@ DSP::Socket::~Socket(void)
     freeaddrinfo(result);
     result = NULL;
   }
-  if (ConnectSocket != INVALID_SOCKET)
+  if (DSP::Socket::is_socket_valid(ConnectSocket) == true)
   {
-    closesocket(ConnectSocket);
-    ConnectSocket = INVALID_SOCKET;
+    DSP::Socket::close_socket(ConnectSocket);
   }
 
   if (NoOfSocketObjects > 0)
@@ -575,14 +635,15 @@ DSP::Socket::~Socket(void)
     if ((NoOfSocketObjects == 0) && (winsock_initialized == true))
     {
       // close socket
-      if (ListenSocket != INVALID_SOCKET)
+      if (DSP::Socket::is_socket_valid(ListenSocket) == true)
       {
         listen_ready = false;
-        closesocket(ListenSocket);
-        ListenSocket = INVALID_SOCKET;
+        DSP::Socket::close_socket(ListenSocket);
       }
 
-      WSACleanup();
+      #ifndef __NO_WINSOCK__
+        WSACleanup();
+      #endif
       winsock_initialized = false;
     }
   }
@@ -797,12 +858,11 @@ bool DSP::u::SocketInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
       return false;
     }
     THIS->current_socket_state &= DSP::e::SocketStatus::timeout_mask;
-    if (res == SOCKET_ERROR)
+    if (DSP::Socket::is_socket_error(res) == true)
     {
       DSP::log << "DSP::u::SocketInput::OutputExecute" << DSP::e::LogMode::second << "SOCKET_ERROR" << endl;
       //  close socket
-      closesocket(THIS->ConnectSocket);
-      THIS->ConnectSocket = INVALID_SOCKET;
+      DSP::Socket::close_socket(THIS->ConnectSocket);
 
       THIS->socket_ready = false;
       // force repeated call to this function
@@ -813,15 +873,18 @@ bool DSP::u::SocketInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
       return false;
     }
 
-    res = ioctlsocket(THIS->ConnectSocket, FIONREAD, &in_counter);
+    #ifndef  __NO_WINSOCK__
+      res = ioctlsocket(THIS->ConnectSocket, FIONREAD, &in_counter);
+    #else
+      res = ioctl(THIS->ConnectSocket, FIONREAD, &in_counter);
+    #endif
 
     if (in_counter == 0)
     {
       // connection has been closed
       DSP::log << "DSP::u::SocketInput::OutputExecute" << DSP::e::LogMode::second << "connection has been closed" << endl;
       // close socket
-      closesocket(THIS->ConnectSocket);
-      THIS->ConnectSocket = INVALID_SOCKET;
+      close_socket(THIS->ConnectSocket);
 
       THIS->socket_ready = false;
       // force repeated call to this function
@@ -946,21 +1009,24 @@ bool DSP::u::SocketInput::ReadConnectionData(void)
     }
     while (res == 0); // timeout
     current_socket_state &= DSP::e::SocketStatus::timeout_mask;
-    if (res == SOCKET_ERROR)
+    if (DSP::Socket::is_socket_error(res) == true)
     {
       #ifdef __DEBUG__
         DSP::log << DSP::e::LogMode::Error << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second << "SOCKET_ERROR" << endl;
       #endif
       // close socket
       socket_ready = false;
-      closesocket(ConnectSocket);
-      ConnectSocket = INVALID_SOCKET;
+      close_socket(ConnectSocket);
       current_socket_state |= DSP::e::SocketStatus::closed;
       current_socket_state |= DSP::e::SocketStatus::error;
       return false;
     }
 
-    res = ioctlsocket(ConnectSocket, FIONREAD, &in_counter);
+    #ifndef  __NO_WINSOCK__
+      res = ioctlsocket(ConnectSocket, FIONREAD, &in_counter);
+    #else
+      res = ioctl(ConnectSocket, FIONREAD, &in_counter);
+    #endif
     if (in_counter == 0)
     {
       // connection has been closed
@@ -969,8 +1035,7 @@ bool DSP::u::SocketInput::ReadConnectionData(void)
       #endif
       // close socket
       socket_ready = false;
-      closesocket(ConnectSocket);
-      ConnectSocket = INVALID_SOCKET;
+      close_socket(ConnectSocket);
       current_socket_state |= DSP::e::SocketStatus::closed;
       current_socket_state &= DSP::e::SocketStatus::unconnected_mask;
       return false;
@@ -1301,13 +1366,12 @@ bool DSP::u::SocketOutput::SendConnectionData(void)
   }
   while (res == 0); // timeout : no connections awaits for acceptance
   current_socket_state &= DSP::e::SocketStatus::timeout_mask;
-  if (res == SOCKET_ERROR)
+  if (DSP::Socket::is_socket_error(res) == true)
   {
     #ifdef __DEBUG__
       DSP::log << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "SOCKET_ERROR" << endl;
     #endif
-    closesocket(ConnectSocket);
-    ConnectSocket = INVALID_SOCKET;
+    close_socket(ConnectSocket);
     current_socket_state |= DSP::e::SocketStatus::closed;
     current_socket_state |= DSP::e::SocketStatus::error;
     current_socket_state &= DSP::e::SocketStatus::unconnected_mask;

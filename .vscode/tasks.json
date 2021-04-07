@@ -50,9 +50,31 @@
             "problemMatcher": "$gcc"
         },
         {
+            "label": "build examples Linux",
+            "type": "shell",
+            "command": "make -f examples/makefile-m64.linux Mbit=64 SRC_DIR=examples DSPELIB_DIR_ROOT=../_DSPE_lib_linux_/x86_64-linux-gnu-gcc_9",
+            "group": "build",
+            "presentation": {
+                "echo": true
+            },
+            //"options": {"cwd" : "./examples"},
+            "problemMatcher": "$gcc"
+        },
+        {
             "label": "clean examples Windows",
             "type": "shell",
             "command": "make clean -f examples/makefile SRC_DIR=examples ",
+            "group": "build",
+            "presentation": {
+                "echo": true
+            },
+            //"options": {"cwd" : "./examples"},
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "clean examples Linux",
+            "type": "shell",
+            "command": "make clean -f examples/makefile-m64.linux SRC_DIR=examples ",
             "group": "build",
             "presentation": {
                 "echo": true

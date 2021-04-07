@@ -1,107 +1,118 @@
 # wersja dla kompilatora 64-bitowego (tdm-gcc 4.8.1): dodatkowa flaga -m64 
 CC = g++
 
-#comflag = -m64
-comflag = 
+ifndef TYPE
+	TYPE = dbg
+	#TYPE = rls
+endif
 
-TYPE = dbg
-#TYPE = rls
+ifndef SRC_DIR
+	SRC_DIR = .
+endif
+ifndef SRC_DIR
+	DSPELIB_DIR_ROOT = ../../_DSPE_lib_linux_/x86_64-linux-gnu-gcc_9
+endif
 
+ifndef Mbit
+	Mbit = 64
+endif
 ifeq ($(TYPE),dbg)
-  CFLAGS = $(comflag) -O0 -g3 -Wall -std=c++0x 
-  LINKER_FLAGS = $(comflag) -static-libgcc -static-libstdc++
+	CFLAGS = -m$(Mbit) -O0 -g3 -Wall -std=c++0x 
+	LINKER_FLAGS = -m$(Mbit) -static-libgcc -static-libstdc++
 else #rls
-	CFLAGS = $(comflag) -O3 -Wall -std=c++0x 
-	LINKER_FLAGS = $(comflag) -s -static-libgcc -static-libstdc++
+	CFLAGS = -m$(Mbit) -O3 -Wall -std=c++0x 
+	LINKER_FLAGS = -m$(Mbit) -s -static-libgcc -static-libstdc++
 endif
 # -static causes problems with asound lib linking
 
 DFLAGS         = -DLINUX -DDEVCPP 
 LIBS           = -lDSPE -lasound  # asound library must come after the DSPElib
-DSPElib_INCLUDE_DIR = ../../DSPElib_library/src/include
-DSPElib_DIR    = ../../DSPElib_library/out_linux_$(TYPE)
+LIBS_SOCKETS   = -lDSPEsockets # -lws2_32  
 
 SRCS = hello.cpp
 
-#all: hello echo.exe multirate.exe callbacks.exe socket_server.exe socket_client.exe #socket_server_2.exe socket_client_2.exe macro_example.exe asynchronous.exe asynchronous_CT.exe
-all: DSP_echo  
+#all: hello.exe echo.exe multirate.exe callbacks.exe socket_server.exe socket_client.exe #socket_server_2.exe socket_client_2.exe macro_example.exe asynchronous.exe asynchronous_CT.exe
+all: DSP_hello DSP_echo DSP_multirate DSP_callbacks DSP_socket_server DSP_socket_client DSP_socket_server_2 DSP_socket_client_2 DSP_macro_example DSP_asynchronous DSP_asynchronous_CT  
 
-hello.o: hello.cpp
-	$(CC) $(DFLAGS) -I$(DSPElib_INCLUDE_DIR) -I$(DSPElib_INCLUDE_DIR)/$(TYPE) $(CFLAGS) -c hello.cpp
+hello.o: $(SRC_DIR)/hello.cpp
+	$(CC) $(DFLAGS) -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/hello.cpp" -o "$(SRC_DIR)/hello.o"
 
-hello: hello.o
-	$(CC) -L$(DSPElib_DIR) hello.o -o"hello" $(LINKER_FLAGS) $(LIBS)
+DSP_hello: hello.o
+	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/hello.o" -o "$(SRC_DIR)/DSP_hello" $(LINKER_FLAGS) $(LIBS)
 
-echo.o: echo.cpp
-	$(CC) $(DFLAGS) -I$(DSPElib_INCLUDE_DIR) -I$(DSPElib_INCLUDE_DIR)/$(TYPE) $(CFLAGS) -c echo.cpp
+echo.o: $(SRC_DIR)/echo.cpp
+	$(CC) $(DFLAGS) -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/echo.cpp" -o "$(SRC_DIR)/echo.o"
 
 DSP_echo: echo.o
-	$(CC) -L$(DSPElib_DIR) echo.o -o"DSP_echo" $(LINKER_FLAGS) $(LIBS)
+	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/echo.o" -o "$(SRC_DIR)/DSP_echo" $(LINKER_FLAGS) $(LIBS)
 
-multirate.o: multirate.cpp
-	$(CC) -DWIN32 -I../include -I../$(TYPE) $(CFLAGS) -c multirate.cpp
+multirate.o: $(SRC_DIR)/multirate.cpp
+	$(CC) $(DFLAGS) -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/multirate.cpp" -o "$(SRC_DIR)/multirate.o"
 
-multirate.exe: multirate.o
-	$(CC) -L../$(TYPE) multirate.o -o"multirate.exe" $(LINKER_FLAGS) -lDSPE -lwinmm
+DSP_multirate: multirate.o
+	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/multirate.o" -o "$(SRC_DIR)/DSP_multirate" $(LINKER_FLAGS) $(LIBS)
 
-callbacks.o: callbacks.cpp
-	$(CC) -DWIN32 -I../include -I../$(TYPE) $(CFLAGS) -c callbacks.cpp
+callbacks.o: $(SRC_DIR)/callbacks.cpp
+	$(CC) $(DFLAGS) -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/callbacks.cpp" -o "$(SRC_DIR)/callbacks.o"
 
-callbacks.exe: callbacks.o
-	$(CC) -L../$(TYPE) callbacks.o -o"callbacks.exe" $(LINKER_FLAGS) -lDSPE -lwinmm 
+DSP_callbacks: callbacks.o
+	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/callbacks.o" -o "$(SRC_DIR)/DSP_callbacks" $(LINKER_FLAGS) $(LIBS)
 
-socket_server.o: socket_server.cpp
-	$(CC) -DWIN32 -I../include -I../$(TYPE) $(CFLAGS) -c socket_server.cpp
+socket_server.o: $(SRC_DIR)/socket_server.cpp
+	$(CC) $(DFLAGS) -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/socket_server.cpp" -o "$(SRC_DIR)/socket_server.o"
 
-socket_server.exe: socket_server.o
-	$(CC) -L../$(TYPE) socket_server.o -o"socket_server.exe" $(LINKER_FLAGS) -lDSPE -lwinmm -lDSPEsockets -lws2_32 
+DSP_socket_server: socket_server.o
+	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/socket_server.o" -o "$(SRC_DIR)/DSP_socket_server" $(LINKER_FLAGS) $(LIBS) $(LIBS_SOCKETS)
 
-socket_client.o: socket_client.cpp
-	$(CC) -DWIN32 -I../include -I../$(TYPE) $(CFLAGS) -c socket_client.cpp
+socket_client.o: $(SRC_DIR)/socket_client.cpp
+	$(CC) $(DFLAGS) -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/socket_client.cpp" -o "$(SRC_DIR)/socket_client.o"
 
-socket_client.exe: socket_client.o
-	$(CC) -L../$(TYPE) socket_client.o -o"socket_client.exe" $(LINKER_FLAGS) -lDSPE -lwinmm -lDSPEsockets -lws2_32 
+DSP_socket_client: socket_client.o
+	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/socket_client.o" -o "$(SRC_DIR)/DSP_socket_client" $(LINKER_FLAGS) $(LIBS) $(LIBS_SOCKETS)
 
+socket_server_2.o: $(SRC_DIR)/socket_server_2.cpp
+	$(CC) $(DFLAGS) -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/socket_server_2.cpp" -o "$(SRC_DIR)/socket_server_2.o"
 
-socket_server_2.o: socket_server_2.cpp
-	$(CC) -DWIN32 -I../include -I../$(TYPE) $(CFLAGS) -c socket_server_2.cpp
+DSP_socket_server_2: socket_server_2.o
+	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/socket_server_2.o" -o "$(SRC_DIR)/DSP_socket_server_2" $(LINKER_FLAGS) $(LIBS) $(LIBS_SOCKETS)
 
-socket_server_2.exe: socket_server_2.o
-	$(CC) -L../$(TYPE) socket_server_2.o -o"socket_server_2.exe" $(LINKER_FLAGS) -lDSPE -lwinmm -lDSPEsockets -lws2_32 
+socket_client_2.o: $(SRC_DIR)/socket_client_2.cpp
+	$(CC) $(DFLAGS) -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/socket_client_2.cpp" -o "$(SRC_DIR)/socket_client_2.o"
 
-socket_client_2.o: socket_client_2.cpp
-	$(CC) -DWIN32 -I../include -I../$(TYPE) $(CFLAGS) -c socket_client_2.cpp
+DSP_socket_client_2: socket_client_2.o
+	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/socket_client_2.o" -o "$(SRC_DIR)/DSP_socket_client_2" $(LINKER_FLAGS) $(LIBS) $(LIBS_SOCKETS)
 
-socket_client_2.exe: socket_client_2.o
-	$(CC) -L../$(TYPE) socket_client_2.o -o"socket_client_2.exe" $(LINKER_FLAGS) -lDSPE -lwinmm -lDSPEsockets -lws2_32 
+macro_example.o: $(SRC_DIR)/macro_example.cpp
+	$(CC) $(DFLAGS) -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/macro_example.cpp" -o "$(SRC_DIR)/macro_example.o"
 
-macro_example.o: macro_example.cpp
-	$(CC) -DWIN32 -I../include -I../$(TYPE) $(CFLAGS) -c macro_example.cpp
-macro_example.exe: macro_example.o
-	$(CC) -L../$(TYPE) macro_example.o -o"macro_example.exe" $(LINKER_FLAGS) -lDSPE -lwinmm -lDSPEsockets -lws2_32 
+DSP_macro_example: macro_example.o
+	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/macro_example.o" -o "$(SRC_DIR)/DSP_macro_example" $(LINKER_FLAGS) $(LIBS)
 
-asynchronous.o: asynchronous.cpp
-	$(CC) -DWIN32 -I../include -I../$(TYPE) $(CFLAGS) -c asynchronous.cpp
-asynchronous.exe: asynchronous.o
-	$(CC) -L../$(TYPE) asynchronous.o -o"asynchronous.exe" $(LINKER_FLAGS) -lDSPE -lwinmm -lDSPEsockets -lws2_32
-	 
-asynchronous_CT.o: asynchronous.cpp
-	$(CC) -Duse_clock_trigger -DWIN32 -I../include -I../$(TYPE) $(CFLAGS) -c asynchronous.cpp -o asynchronous_CT.o
-asynchronous_CT.exe: asynchronous_CT.o
-	$(CC) -L../$(TYPE) asynchronous_CT.o -o"asynchronous_CT.exe" $(LINKER_FLAGS) -lDSPE -lwinmm -lDSPEsockets -lws2_32 
+asynchronous.o: $(SRC_DIR)/asynchronous.cpp
+	$(CC) $(DFLAGS) -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/asynchronous.cpp" -o "$(SRC_DIR)/asynchronous.o"
+
+DSP_asynchronous: asynchronous.o
+	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/asynchronous.o" -o "$(SRC_DIR)/DSP_asynchronous" $(LINKER_FLAGS) $(LIBS)
+
+asynchronous_CT.o: $(SRC_DIR)/asynchronous.cpp
+	$(CC) -Duse_clock_trigger $(DFLAGS) -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/asynchronous.cpp" -o "$(SRC_DIR)/asynchronous_CT.o"
+
+DSP_asynchronous_CT: asynchronous_CT.o
+	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/asynchronous_CT.o" -o "$(SRC_DIR)/DSP_asynchronous_CT" $(LINKER_FLAGS) $(LIBS)
+
 
 clean:
-	rm -f hello hello.o 
+	rm -f DSP_hello hello.o 
 	rm -f DSP_echo echo.o 
-	rm -f asynchronous.exe asynchronous.o
-	rm -f asynchronous_CT.exe asynchronous_CT.o
-	rm -f multirate.exe multirate.o
-	rm -f callbacks.exe callbacks.o 
-	rm -f socket_server.exe socket_server.o 
-	rm -f socket_client.exe socket_client.o 
-	rm -f socket_server_2.exe socket_server_2.o 
-	rm -f socket_client_2.exe socket_client_2.o
-	rm -f macro_example.exe macro_example.o
+	rm -f DSP_asynchronous asynchronous.o
+	rm -f DSP_asynchronous_CT asynchronous_CT.o
+	rm -f DSP_multirate multirate.o
+	rm -f DSP_callbacks callbacks.o 
+	rm -f DSP_socket_server socket_server.o 
+	rm -f DSP_socket_client socket_client.o 
+	rm -f DSP_socket_server_2 socket_server_2.o 
+	rm -f DSP_socket_client_2 socket_client_2.o
+	rm -f DSP_macro_example macro_example.o
 	rm -f *.log
 	rm -f matlab/LPF_22050_8000.coef
 	rm -f multirate.wav

@@ -34,12 +34,26 @@
 
 //  #include <windef.h>
 #else
-  #warning DSP_socket.cpp has been designed to be used with WIN32
+  //#warning DSP_socket.cpp has been designed to be used with WIN32
   // https://www.techpowerup.com/forums/threads/c-c-sockets-faq-and-how-to-win-linux.56901/
-
-  #include <sys/socket.h>
   #define __NO_WINSOCK__
 
+  //#include <sys/types.h>
+  #include <sys/socket.h>
+  #include <arpa/inet.h>
+  #include <netdb.h>  /* Needed for getaddrinfo() and freeaddrinfo() */
+  #include <unistd.h> /* Needed for close() */
+  #include <sys/ioctl.h>
+  #include <cerrno>
+
+  typedef int SOCKET;
+  //const int INVALID_SOCKET = -1;
+
+  const int WSAEWOULDBLOCK = EINPROGRESS;
+  const int WSAEALREADY = EALREADY;
+  const int WSAEINVAL = EINVAL;
+  const int WSAEISCONN = EISCONN;
+  //const int SOCKET_ERROR = -1;
 #endif
 
 #include <DSP_IO.h>
@@ -127,17 +141,13 @@ class DSP::Socket
     #endif
 
     int iResult;
-    #ifndef  __NO_WINSOCK__
-      struct addrinfo *result;
-      struct addrinfo *ptr;
-      struct addrinfo  hints;
-    #endif
+    struct addrinfo *result;
+    struct addrinfo *ptr;
+    struct addrinfo  hints;
 
     //! true is listening socket is ready
     static bool listen_ready;
-    #ifndef  __NO_WINSOCK__
-      static SOCKET ListenSocket;
-    #endif
+    static SOCKET ListenSocket;
     //! length of the server_objects_list
     static int no_of_server_objects;
     //! table of DSP::Socket created in server mode
@@ -145,6 +155,10 @@ class DSP::Socket
 
     string extract_hostname(const string& address_with_port);
     string extract_port(const string& address_with_port, const string& default_port);
+
+    static void close_socket();
+  public:
+    static void close_socket(SOCKET &socket_to_close);
 
   protected:
     //! ID number for the current server object
@@ -158,9 +172,7 @@ class DSP::Socket
     bool works_as_server;
     bool socket_ready;
     //! used for server or client connections
-    #ifndef __NO_WINSOCK__
-      SOCKET ConnectSocket;
-    #endif
+    SOCKET ConnectSocket;
     //! used for client connections
     //SOCKET ClientSocket;
 
@@ -204,6 +216,11 @@ class DSP::Socket
 
     //! Waits until connection with current object is made
     bool WaitForConnection(bool stop_on_fail = false);
+
+    bool is_socket_valid();
+    static bool is_socket_valid(const SOCKET &socket_to_check);
+    static bool is_socket_error(const int &iResult);
+    int GetLastError();
 
     DSP::e::SocketStatus GetSocketStatus(void);
 };
@@ -338,16 +355,16 @@ class DSP::u::SocketInput : public DSP::File, public DSP::Socket, public DSP::So
 class DSP::u::SocketOutput : public DSP::Socket, public DSP::Block
 {
   private:
-    unsigned int BufferSize;
+    unsigned long BufferSize;
     DSP::Float_vector Buffer;
-    unsigned int BufferIndex;
+    unsigned long BufferIndex;
 
     //! Type of samples send into socket
     DSP::e::SampleType SampleType;
     //! output sample size in bits (all channels)
     unsigned int OutputSampleSize;
     //! size of the buffers used for socket
-    uint32_t outbuffer_size;
+    unsigned long outbuffer_size;
     std::vector<uint8_t> RawBuffer;
 
 

@@ -44,8 +44,7 @@ SOURCES_DBG += $(SRC_DIR)/Main.cpp
 
 # ################################################# #
 # Just sockets // currently not supported in Linux
-#SOURCES_SOCKETS_NAMES = DSP_sockets.cpp 
-SOURCES_SOCKETS_NAMES = 
+SOURCES_SOCKETS_NAMES = DSP_sockets.cpp 
 SOURCES_SOCKETS = $(addprefix $(SRC_CPP_SUBDIR)/,$(SOURCES_SOCKETS_NAMES))
 
 
