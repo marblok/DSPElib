@@ -55,3 +55,14 @@ examples/morse_key.wav
 examples/log_file_client.log
 examples/morse.wav
 examples/socket_client_2.dot
+examples/DSP_asynchronous
+examples/DSP_asynchronous_CT
+examples/DSP_callbacks
+examples/DSP_echo
+examples/DSP_hello
+examples/DSP_macro_example
+examples/DSP_multirate
+examples/DSP_socket_client
+examples/DSP_socket_client_2
+examples/DSP_socket_server
+examples/DSP_socket_server_2
