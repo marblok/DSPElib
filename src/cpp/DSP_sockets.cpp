@@ -257,7 +257,7 @@ bool DSP::Socket::TryAcceptConnection(void)
   timeout.tv_sec = 0; timeout.tv_usec = 0;
   FD_ZERO(&readfds);
   FD_SET(ListenSocket, &readfds);
-  res = select(0, &readfds, NULL, NULL, &timeout);
+  res = select(ListenSocket+1, &readfds, NULL, NULL, &timeout);
   if (res == 0)
   { //! timeout : no connections awaits for acceptance
     //current_socket_state |= DSP::e::SocketStatus::timeout; // no object
@@ -288,7 +288,7 @@ bool DSP::Socket::TryAcceptConnection(void)
   timeout.tv_sec = 1; timeout.tv_usec = 0;
   FD_ZERO(&readfds);
   FD_SET(temp_socket, &readfds);
-  res = select(0, &readfds, NULL, NULL, &timeout);
+  res = select(temp_socket+1, &readfds, NULL, NULL, &timeout);
   if (res == 0)
   { // timeout
     /*! \bug decrease timeout
@@ -533,7 +533,7 @@ bool DSP::Socket::TryConnect(uint32_t SerwerObjectID)
   #ifdef __DEBUG__
     int res = 
   #endif
-  select(0, NULL, &write_fs, NULL, &timeout);
+  select(ConnectSocket+1, NULL, &write_fs, NULL, &timeout);
   #ifdef __DEBUG__
     if (res == 0)
     {
@@ -832,7 +832,7 @@ bool DSP::u::SocketInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
 
     FD_ZERO(&readfds);
     FD_SET(THIS->ConnectSocket, &readfds);
-    res = select(0, &readfds, NULL, NULL, &timeout);
+    res = select(THIS->ConnectSocket+1, &readfds, NULL, NULL, &timeout);
     if (res == 0)
     { //! timeout
       //DSP::log << "DSP::u::SocketInput::OutputExecute", "timeout");
@@ -1000,7 +1000,7 @@ bool DSP::u::SocketInput::ReadConnectionData(void)
 
       FD_ZERO(&readfds);
       FD_SET(ConnectSocket, &readfds);
-      res = select(0, &readfds, NULL, NULL, &timeout);
+      res = select(ConnectSocket+1, &readfds, NULL, NULL, &timeout);
       if (res == 0)
       {
         //DSP::log << "DSP::u::SocketInput::ReadConnectionData", "timeout");
@@ -1322,7 +1322,7 @@ void DSP::u::SocketOutput::FlushBuffer(void)
   {
     timeout.tv_sec = 0;  timeout.tv_usec = 10;
     FD_ZERO(&write_fs); FD_SET(ConnectSocket, &write_fs);
-    res = select(0, NULL, &write_fs, NULL, &timeout);
+    res = select(ConnectSocket+1, NULL, &write_fs, NULL, &timeout);
   }
   while (res == 0);
 
@@ -1359,7 +1359,7 @@ bool DSP::u::SocketOutput::SendConnectionData(void)
   {
     FD_ZERO(&writefds);
     FD_SET(ConnectSocket, &writefds);
-    res = select(0, NULL, &writefds, NULL, &timeout);
+    res = select(ConnectSocket+1, NULL, &writefds, NULL, &timeout);
     DSP::f::Sleep(0);
     if (res == 0)
       current_socket_state |= DSP::e::SocketStatus::timeout;
