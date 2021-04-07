@@ -13,8 +13,6 @@ INSTALL_DIR_ROOT = ../_DSPE_lib_minGW_
 SRC_DIR = ./src
 SRC_CPP_SUBDIR = $(SRC_DIR)/cpp
 
-# OUT_DIR_RLS = ../out_rls
-# OUT_DIR_DBG = ../out_dbg
 OUT_DIR_RLS = ./out_win_rls
 OUT_DIR_DBG = ./out_win_dbg
 
@@ -107,7 +105,7 @@ $(OBJECTS_Release) $(OBJECTS_SOCKETS_Release): $(OUT_DIR_RLS)/%.o : %.cpp
 Debug: $(OUT_DIR_DBG)/DSPElib.exe
 
 $(OUT_DIR_DBG)/DSPElib.exe: $(OUT_DIR_DBG)/libDSPE.a $(OUT_DIR_DBG)/libDSPEsockets.a 
-	$(CC) -L"$(OUT_DIR_DBG)" "$(OUT_DIR_DBG)/src/Main.o" -o"$(OUT_DIR_DBG)/DSPElib.exe" $(LINKER_FLAGS_debug) -lDSPE -lDSPEsockets -lwinmm
+	$(CC) -L"$(OUT_DIR_DBG)" "$(OUT_DIR_DBG)/src/Main.o" -o"$(OUT_DIR_DBG)/DSPElib.exe" $(LINKER_FLAGS_debug) -lDSPE -lDSPEsockets  $(LIBS)
 
 $(OUT_DIR_DBG)/libDSPE.a: $(OBJECTS_Debug) $(OBJECTS_MISC_Debug)
 	@echo Preparing lib file $@
@@ -143,7 +141,13 @@ install_library: Debug Release
 
 	@echo '  >>   copying examples'
 	# install -p -D ./examples/* -t "$(INSTALL_DIR_ROOT)/$(com_ver)/examples"
-	cp -r -p -u ./examples/* "$(INSTALL_DIR_ROOT)/$(com_ver)/examples"
+	#cp -r -p -u ./examples/* "$(INSTALL_DIR_ROOT)/$(com_ver)/examples"
+	cp -p -u ./examples/*.cpp "$(INSTALL_DIR_ROOT)/$(com_ver)/examples"
+	cp -p -u ./examples/*.h "$(INSTALL_DIR_ROOT)/$(com_ver)/examples"
+	cp -p -u ./examples/*.bat "$(INSTALL_DIR_ROOT)/$(com_ver)/examples"
+	cp -p -u ./examples/makefile* "$(INSTALL_DIR_ROOT)/$(com_ver)/examples"
+	cp -p -u ./examples/DSPElib.wav "$(INSTALL_DIR_ROOT)/$(com_ver)/examples"
+	cp -p -u ./examples/matlab/*.m "$(INSTALL_DIR_ROOT)/$(com_ver)/examples/matlab"
 	@echo '  >>   copying toolbox'
 	cp -p -u ./matlab/toolbox/*.m "$(INSTALL_DIR_ROOT)/$(com_ver)/toolbox"
 	@echo '  >>   copying includes'

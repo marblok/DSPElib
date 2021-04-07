@@ -1,5 +1,0 @@
-DSP_output, DSP_input - zmiana typu dla atrybutu name z char * na string
-DSP_name - zmiana typu dla atrybutu ObjectName z char * na string
-DSP_name - zmiany w atrybutach metod na potrzeby u¿ycia string zamiast char*
-
-DefineOutput/UndefineOutput: string zamiast char*

@@ -4,14 +4,18 @@
 # Run: make Debug 
 CC=g++
 #comflag = -m32
+# comflag = -m64
 comflag = $(COMFLAG)
+com_ver = $(shell gcc -dumpmachine)-gcc_$(shell gcc -dumpversion)
+
+INSTALL_DIR_ROOT = ./_DSPE_lib_linux_
+
+SRC_DIR = ./src
+SRC_CPP_SUBDIR = $(SRC_DIR)/cpp
+
+
 OUT_DIR_RLS = ./out_linux_rls
 OUT_DIR_DBG = ./out_linux_dbg
-
-# DSPELIB_DIR_NAME = CodeBlocks-m32_TDM_5.1.0
-DSPELIB_DIR_NAME = VisualStudioCode_linux
-
-INSTALL_DIR_ROOT = ~/workspace/_DSPE_lib_linux_
 
 INCLUDES_DBG := -I./src/include -I./src/include/dbg 
 INCLUDES_RLS := -I./src/include -I./src/include/rls
@@ -24,35 +28,44 @@ CFLAGS_release = $(comflag) -std=c++0x -O3 -Wall -c -fmessage-length=0 -fno-stri
 CFLAGS_debug   = $(comflag) -std=c++0x -O0 -g3 -Wall -c -fmessage-length=0 -W -Wshadow -Wconversion -fstrict-aliasing -fmax-errors=5
 # -U__STRICT_ANSI__ jest potrzebne do kompilacji debug_new.cpp, je�eli pomin�� ten plik to mo�na r�wnie� wyrzuci� t� opcj�
 #CFLAGS_debug   = $(comflag) -std=c++0x -O0 -g3 -Wall -c -fmessage-length=0 -W -Wshadow -Wco#nversion -fstrict-aliasing -U__STRICT_ANSI__
+LINKER_FLAGS_debug   = $(comflag)  -static-libgcc -static-libstdc++ -static
+LINKER_FLAGS_release = $(comflag)  -s -static-libgcc -static-libstdc++ -static
 
+SOURCES_NAMES = 
+SOURCES_NAMES += DSP_AudioMixer.cpp DSP_Fourier.cpp DSP_misc.cpp DSP_clocks.cpp DSP_modules.cpp DSP_modules2.cpp 
+SOURCES_NAMES += DSP_DOT.cpp DSP_modules_misc.cpp DSP_IO.cpp DSP_logstream.cpp
+SOURCES_NAMES += ALSA_support.cpp 
 
-SRC_SUBDIR = src/cpp
-#SOURCES = Main.cpp
-SOURCES = 
-SOURCES += DSP_AudioMixer.cpp DSP_Fourier.cpp DSP_misc.cpp DSP_clocks.cpp DSP_modules.cpp DSP_modules2.cpp 
-SOURCES += DSP_DOT.cpp DSP_modules_misc.cpp DSP_IO.cpp DSP_logstream.cpp
-SOURCES += DSP_logstream.cpp 
-SOURCES += ALSA_support.cpp 
+SOURCES = $(addprefix $(SRC_CPP_SUBDIR)/,$(SOURCES_NAMES))
+
+SOURCES_DBG =
+SOURCES_DBG += $(SRC_DIR)/Main.cpp
 
 # ################################################# #
 # Just sockets // currently not supported in Linux
-#SOURCES_SOCKETS = DSP_sockets.cpp 
-SOURCES_SOCKETS = 
+#SOURCES_SOCKETS_NAMES = DSP_sockets.cpp 
+SOURCES_SOCKETS_NAMES = 
+SOURCES_SOCKETS = $(addprefix $(SRC_CPP_SUBDIR)/,$(SOURCES_SOCKETS_NAMES))
 
 
 # ################################################# #
 # RELEASE
-OBJECTS_Release 		:= $(SOURCES:%.cpp=$(OUT_DIR_RLS)/$(SRC_SUBDIR)/%.o)
-OBJECTS_SOCKETS_Release := $(SOURCES_SOCKETS:%.cpp=$(OUT_DIR_RLS)/$(SRC_SUBDIR)/%.o)
-
+OBJECTS_Release 		:= $(SOURCES:%.cpp=$(OUT_DIR_RLS)/%.o)
+DEPENDS_Release 		:= $(SOURCES:%.cpp=$(OUT_DIR_RLS)/%.d)
+OBJECTS_SOCKETS_Release := $(SOURCES_SOCKETS:%.cpp=$(OUT_DIR_RLS)/%.o)
+DEPENDS_SOCKETS_Release := $(DEPENDS_SOCKETS:%.cpp=$(OUT_DIR_RLS)/%.d)
 
 
 
 
 # ################################################# #
 # DEBUG
-OBJECTS_Debug 		  := $(SOURCES:%.cpp=$(OUT_DIR_DBG)/$(SRC_SUBDIR)/%.o)
-OBJECTS_SOCKETS_Debug := $(SOURCES_SOCKETS:%.cpp=$(OUT_DIR_DBG)/$(SRC_SUBDIR)/%.o)
+OBJECTS_Debug 		  := $(SOURCES:%.cpp=$(OUT_DIR_DBG)/%.o)
+DEPENDS_Debug 		  := $(SOURCES:%.cpp=$(OUT_DIR_DBG)/%.d)
+OBJECTS_Debug 		  += $(SOURCES_DBG:%.cpp=$(OUT_DIR_DBG)/%.o)
+DEPENDS_Debug 		  += $(SOURCES_DBG:%.cpp=$(OUT_DIR_DBG)/%.d)
+OBJECTS_SOCKETS_Debug := $(SOURCES_SOCKETS:%.cpp=$(OUT_DIR_DBG)/%.o)
+DEPENDS_SOCKETS_Debug := $(SOURCES_SOCKETS:%.cpp=$(OUT_DIR_DBG)/%.d)
 
 # SRC_DBG_SUBDIR = nvwa
 # SOURCES_MISC_Debug += debug_new.cpp
@@ -60,6 +73,10 @@ OBJECTS_SOCKETS_Debug := $(SOURCES_SOCKETS:%.cpp=$(OUT_DIR_DBG)/$(SRC_SUBDIR)/%.
 OBJECTS_MISC_Debug := 
 
 # ################################################# #
+-include $(DEPENDS_Release)
+-include $(DEPENDS_SOCKETS_Release)
+-include $(DEPENDS_Debug)
+-include $(DEPENDS_SOCKETS_Debug)
 
 all: Debug Release
 
@@ -82,13 +99,17 @@ $(OUT_DIR_RLS)/libDSPEsockets.a:  $(OBJECTS_SOCKETS_Release)
 $(OBJECTS_Release) $(OBJECTS_SOCKETS_Release): $(OUT_DIR_RLS)/%.o : %.cpp
 	@echo $(@D) $< $@
 	
-	#mkdir -p $(OUT_DIR_RLS)/$(SRC_SUBDIR)
+	#mkdir -p $(OUT_DIR_RLS)/$(SRC_CPP_SUBDIR)
 	mkdir -p $(@D)
-	$(CC) $(DFLAGS) $(CFLAGS_release) $(INCLUDES_RLS) $< -o $@
+	$(CC) $(DFLAGS) $(CFLAGS_release) $(INCLUDES_RLS) -MMD $< -o $@
 
 # ########################################################################################### #	
 # ########################################################################################### #	
-Debug: $(OUT_DIR_DBG)/libDSPE.a $(OUT_DIR_DBG)/libDSPEsockets.a
+# Debug: $(OUT_DIR_DBG)/libDSPE.a $(OUT_DIR_DBG)/libDSPEsockets.a
+Debug: $(OUT_DIR_DBG)/DSPElib.exe
+
+$(OUT_DIR_DBG)/DSPElib: $(OUT_DIR_DBG)/libDSPE.a $(OUT_DIR_DBG)/libDSPEsockets.a 
+	$(CC) -L"$(OUT_DIR_DBG)" "$(OUT_DIR_DBG)/src/Main.o" -o"$(OUT_DIR_DBG)/DSPElib.exe" $(LINKER_FLAGS_debug) -lDSPE $(LIBS)
 
 $(OUT_DIR_DBG)/libDSPE.a: $(OBJECTS_Debug) $(OBJECTS_MISC_Debug)
 	@echo Preparing lib file $@
@@ -104,14 +125,55 @@ $(OBJECTS_Debug) $(OBJECTS_SOCKETS_Debug) $(OBJECTS_MISC_Debug): $(OUT_DIR_DBG)/
 	@echo $(@D) $< $@
 	
 	mkdir -p $(@D)
-	$(CC) $(DFLAGS) $(CFLAGS_debug) $(INCLUDES_DBG) $< -o $@
+	$(CC) $(DFLAGS) $(CFLAGS_debug) $(INCLUDES_DBG) -MMD $< -o $@
+install_library: Debug Release
+    # https://www.geeksforgeeks.org/install-command-in-linux-with-examples/
+	# https://www.lifewire.com/install-linux-command-4091911
+	@echo '  >> Installing Library'
+	@echo '  >>   creating folders'
+	install -d "$(INSTALL_DIR_ROOT)"
+	install -d "$(INSTALL_DIR_ROOT)/$(com_ver)"
+	install -d "$(INSTALL_DIR_ROOT)/$(com_ver)/rls"
+	install -d "$(INSTALL_DIR_ROOT)/$(com_ver)/dbg"
+	install -d "$(INSTALL_DIR_ROOT)/$(com_ver)/include"
+	install -d "$(INSTALL_DIR_ROOT)/$(com_ver)/include/rls"
+	install -d "$(INSTALL_DIR_ROOT)/$(com_ver)/include/dbg"
+	install -d "$(INSTALL_DIR_ROOT)/$(com_ver)/examples"
+	install -d "$(INSTALL_DIR_ROOT)/$(com_ver)/examples/matlab"
+	install -d "$(INSTALL_DIR_ROOT)/$(com_ver)/toolbox"
+
+	@echo '  >>   copying examples'
+	# install -p -D ./examples/* -t "$(INSTALL_DIR_ROOT)/$(com_ver)/examples"
+	#cp -r -p -u ./examples/* "$(INSTALL_DIR_ROOT)/$(com_ver)/examples"
+	cp -p -u ./examples/*.cpp "$(INSTALL_DIR_ROOT)/$(com_ver)/examples"
+	cp -p -u ./examples/*.h "$(INSTALL_DIR_ROOT)/$(com_ver)/examples"
+	cp -p -u ./examples/*.bat "$(INSTALL_DIR_ROOT)/$(com_ver)/examples"
+	cp -p -u ./examples/makefile* "$(INSTALL_DIR_ROOT)/$(com_ver)/examples"
+	cp -p -u ./examples/DSPElib.wav "$(INSTALL_DIR_ROOT)/$(com_ver)/examples"
+	cp -p -u ./examples/matlab/*.m "$(INSTALL_DIR_ROOT)/$(com_ver)/examples/matlab"
+	@echo '  >>   copying toolbox'
+	cp -p -u ./matlab/toolbox/*.m "$(INSTALL_DIR_ROOT)/$(com_ver)/toolbox"
+	@echo '  >>   copying includes'
+	cp -p -u ./src/include/*.h "$(INSTALL_DIR_ROOT)/$(com_ver)/include"
+	cp -p -u ./src/include/rls/DSP_setup.h "$(INSTALL_DIR_ROOT)/$(com_ver)/include/rls"
+	cp -p -u ./src/include/dbg/DSP_setup.h "$(INSTALL_DIR_ROOT)/$(com_ver)/include/dbg"
+	
+	@echo '  >>   copying release libraries '
+	cp -p -u $(OUT_DIR_RLS)/libDSPE.a "$(INSTALL_DIR_ROOT)/$(com_ver)/rls"
+	cp -p -u $(OUT_DIR_RLS)/libDSPEsockets.a "$(INSTALL_DIR_ROOT)/$(com_ver)/rls"
+
+	@echo '  >>   copying debug libraries '
+	cp -p -u $(OUT_DIR_DBG)/libDSPE.a "$(INSTALL_DIR_ROOT)/$(com_ver)/dbg"
+	cp -p -u $(OUT_DIR_DBG)/libDSPEsockets.a "$(INSTALL_DIR_ROOT)/$(com_ver)/dbg"
+
 
 clean:
 	@if [ -d "$(OUT_DIR_DBG)" ]; then \
 		echo "cleaning $(OUT_DIR_DBG) ..."; \
 		#find $(OUT_DIR_DBG)/ -name "*.o" -type f -delete; \
-		rm -rf $(OUT_DIR_DBG)/$(SRC_SUBDIR)/*.o; \
-		rm -rf $(OUT_DIR_DBG)/$(SRC_SUBDIR); \
+		rm -rf $(OUT_DIR_DBG)/$(SRC_CPP_SUBDIR)/*.d; \
+		rm -rf $(OUT_DIR_DBG)/$(SRC_CPP_SUBDIR)/*.o; \
+		rm -rf $(OUT_DIR_DBG)/$(SRC_CPP_SUBDIR); \
 		rm -rf $(OUT_DIR_DBG)/*.a; \
 		rm -rf $(OUT_DIR_DBG); \
 		echo "cleaned $(OUT_DIR_DBG)"; \
@@ -119,8 +181,9 @@ clean:
 	@if [ -d "$(OUT_DIR_RLS)" ]; then \
 		echo "cleaning $(OUT_DIR_RLS) ..."; \
 		#find $(OUT_DIR_RLS)/ -name "*.o" -type f -delete; \
-		rm -rf $(OUT_DIR_RLS)/$(SRC_SUBDIR)/*.o; \
-		rm -rf $(OUT_DIR_RLS)/$(SRC_SUBDIR); \
+		rm -rf $(OUT_DIR_RLS)/$(SRC_CPP_SUBDIR)/*.d; \
+		rm -rf $(OUT_DIR_RLS)/$(SRC_CPP_SUBDIR)/*.o; \
+		rm -rf $(OUT_DIR_RLS)/$(SRC_CPP_SUBDIR); \
 		rm -rf $(OUT_DIR_RLS)/*.a; \
 		rm -rf $(OUT_DIR_RLS); \
 		echo "cleaned $(OUT_DIR_RLS)"; \
@@ -128,4 +191,3 @@ clean:
 	
 .PHONY: all Debug Release clean
 
-# \TODO install - przygotowanie biblioteki w wersji u�ytkowej
