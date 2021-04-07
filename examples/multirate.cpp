@@ -171,7 +171,7 @@ int main(int argn, char *args[])
   // *********************************** // 
   // *********************************** //
   int SamplesInSegment = 512;
-  __int64 NoOfSamplesProcessed = 0;
+  int64_t NoOfSamplesProcessed = 0;
   // 10 seconds
   #define MAX_SAMPLES_TO_PROCESS 10*8000 
   while(NoOfSamplesProcessed < MAX_SAMPLES_TO_PROCESS) 

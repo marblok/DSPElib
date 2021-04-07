@@ -18,12 +18,13 @@
   #endif
 
   //#include <windows.h>
-#if (_WIN32_WINNT < 0x0501)
-  // see http://msdn.microsoft.com/en-us/library/aa383745(VS.85).aspx
-  //#error wrong _WIN32_WINNT or WINVER
-  #define WINVER 0x501
-  #define _WIN32_WINNT 0x501
-#endif
+  #if (_WIN32_WINNT < 0x0501)
+    // see http://msdn.microsoft.com/en-us/library/aa383745(VS.85).aspx
+    //#error wrong _WIN32_WINNT or WINVER
+    #define WINVER 0x501
+    #define _WIN32_WINNT 0x501
+  #endif
+
   #include <winsock2.h>
   #include <ws2tcpip.h>
   //#include "wspiapi_x.h" // support for freeaddrinfo on Win2000
@@ -33,7 +34,12 @@
 
 //  #include <windef.h>
 #else
-  #error DSP_socket.cpp has been designed to be used with WIN32
+  #warning DSP_socket.cpp has been designed to be used with WIN32
+  // https://www.techpowerup.com/forums/threads/c-c-sockets-faq-and-how-to-win-linux.56901/
+
+  #include <sys/socket.h>
+  #define __NO_WINSOCK__
+
 #endif
 
 #include <DSP_IO.h>
@@ -116,16 +122,22 @@ class DSP::Socket
     static bool winsock_initialized;
     static int NoOfSocketObjects;
     static const string DEFAULT_PORT;
-    static WSADATA wsaData;
+    #ifndef  __NO_WINSOCK__
+      static WSADATA wsaData;
+    #endif
 
     int iResult;
-    struct addrinfo *result;
-    struct addrinfo *ptr;
-    struct addrinfo  hints;
+    #ifndef  __NO_WINSOCK__
+      struct addrinfo *result;
+      struct addrinfo *ptr;
+      struct addrinfo  hints;
+    #endif
 
     //! true is listening socket is ready
     static bool listen_ready;
-    static SOCKET ListenSocket;
+    #ifndef  __NO_WINSOCK__
+      static SOCKET ListenSocket;
+    #endif
     //! length of the server_objects_list
     static int no_of_server_objects;
     //! table of DSP::Socket created in server mode
@@ -146,7 +158,9 @@ class DSP::Socket
     bool works_as_server;
     bool socket_ready;
     //! used for server or client connections
-    SOCKET ConnectSocket;
+    #ifndef __NO_WINSOCK__
+      SOCKET ConnectSocket;
+    #endif
     //! used for client connections
     //SOCKET ClientSocket;
 

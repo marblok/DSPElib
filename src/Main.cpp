@@ -533,7 +533,7 @@ long int ReadResamplerCoef(const string &name, const string &dir, DSP::Float_vec
 int ReadIIRCoef(const string &name, const string &dir)
 { //Read IIR filter order
   DSP::Float_vector temp(1);
-  uint32_t ile;
+  unsigned long ile;
 
   temp[0]=0.0;
   ile=DSP::f::ReadCoefficientsFromFile(temp, 1, name, dir, DSP::e::SampleType::ST_float, 0);
@@ -563,7 +563,7 @@ void Process(long int Fs, const string &WaveName, const string &Dir)
 
   DSP::Clock_ptr MasterClock, Zegar1, Zegar2, Zegar3;
   long int Decym_Fs, Decym2_Fs;
-  int M1, L1, N_LPF1;
+  long M1, L1, N_LPF1;
   DSP::Float_vector h_LPF1;
   int M2, N_LPF2;
   DSP::Float_vector h_LPF2;
@@ -605,7 +605,7 @@ void Process(long int Fs, const string &WaveName, const string &Dir)
   }
   M1=Decym_Fs/8000;
 
-  DSP::u::SamplingRateConversion Stage1(false, Zegar1, L1, M1, h_LPF1);
+  DSP::u::SamplingRateConversion Stage1(false, Zegar1, (unsigned int)L1, (unsigned int)M1, h_LPF1);
   Zegar2=Stage1.GetOutputClock();
 
 
@@ -853,7 +853,7 @@ int test_2()
   Fs=CheckFs("DSPElib.wav", "examples");
   Fs2=CheckFs("test2.wav", "examples");
   DSP::u::WaveInput FileIn2(MasterClock, "test2.wav", "examples", 1);
-  DSP::u::RawDecimator Decym(MasterClock, Fs2/Fs);
+  DSP::u::RawDecimator Decym(MasterClock, (unsigned int)(Fs2/Fs));
   DSP::u::Amplifier GainIn(0.5);
 
   Zegar1=FileIn2.GetOutputClock();
@@ -941,7 +941,7 @@ int test_3()
 
   DSP::u::WaveInput FileIn2(MasterClock, "DSPElib.wav", "examples", 1);
   DSP::u::WaveInput FileIn(MasterClock, "test2.wav", "examples", 1);
-  DSP::u::RawDecimator Decym(MasterClock, Fs/Fs2);
+  DSP::u::RawDecimator Decym(MasterClock, (unsigned int)(Fs/Fs2));
 
   FileIn2.Output("out") >> Decym.Input("in");
 
@@ -1083,7 +1083,7 @@ int MeduzaSimulation(void)
 //    DBPSKencoder[ind]->Output("out") >> Zeros[ind]->Input("in");
 //    Filter[ind] = new DSP::u::FIR((long)(Fs/Fb), h_forming);
 //    Zeros[ind]->Output("out") >> Filter[ind]->Input("in");
-    Interp[ind] = new DSP::u::SamplingRateConversion (false, MasterClock, (long)(Fs/Fb), 1, h_forming);
+    Interp[ind] = new DSP::u::SamplingRateConversion (false, MasterClock, (unsigned int)(Fs/Fb), 1, h_forming);
     DBPSKencoder[ind]->Output("out") >> Interp[ind]->Input("in");
 
     DDScos[ind] = new DSP::u::DDScos (ZerosOutClock, DSP::Float(1.0),
@@ -1103,7 +1103,7 @@ int MeduzaSimulation(void)
   DDSpilot.Output("out") >> Sumator.Input("real_in11");
 
 
-  DSP::u::SamplingRateConversion  InterpOut(false, ZerosOutClock,  (long)(Fs2/Fs), 1, h_forming);
+  DSP::u::SamplingRateConversion  InterpOut(false, ZerosOutClock,  (unsigned int)(Fs2/Fs), 1, h_forming);
   Sumator.Output("out") >> InterpOut.Input("in");
 
   DSP::u::FileOutput SignalOutput("Signal.out");
@@ -1794,8 +1794,8 @@ int test_8()
 #include <DSP_lib.h>
 
 DSP::Float_ptr read_buffer = NULL;
-int buffer_size;
-int No_of_samples=0;
+unsigned long buffer_size;
+unsigned long No_of_samples=0;
 
 void FFTout_clbk(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP::Float_vector &OutputSamples, DSP::void_ptr *UserDataPtr, unsigned int UserDefinedIdentifier, DSP::Component_ptr Caller)
 {
@@ -1881,7 +1881,7 @@ int test_9()
 
 
   DSP::u::FileInput InputSignal(InputClock, "matlab/delta_44100.wav", 1U, DSP::e::SampleType::ST_short, DSP::e::FileType::FT_wav);
-  int Fp1 = InputSignal.GetSamplingRate();
+  unsigned long Fp1 = InputSignal.GetSamplingRate();
   /*if (Fp1_tmp != Fp1)
   {
     DSP::log << DSP::e::LogMode::Error << "Problem z sygna�em wej�ciowym");
@@ -1914,9 +1914,9 @@ int test_9()
 
   // *********************************** //
   int SamplesInSegment = 512;
-  __int64 NoOfSamplesProcessed = 0;
+  unsigned long NoOfSamplesProcessed = 0;
   // 10 seconds
-  __int64 MAX_SAMPLES_TO_PROCESS = 10*Fp1;
+  unsigned long MAX_SAMPLES_TO_PROCESS = 10*Fp1;
   while(NoOfSamplesProcessed < MAX_SAMPLES_TO_PROCESS)
   {
 
@@ -1979,7 +1979,7 @@ int test_10()
 
   // *********************************** //
   int SamplesInSegment = 512;
-  __int64 NoOfSamplesProcessed = 0;
+  int64_t NoOfSamplesProcessed = 0;
   // 10 seconds
 //  #define MAX_SAMPLES_TO_PROCESS 1*F_p
   while(NoOfSamplesProcessed < 10000)
@@ -2158,9 +2158,9 @@ int test_11()
 
   // *********************************** //
   int SamplesInSegment = 512;
-  __int64 NoOfSamplesProcessed = 0;
+  int64_t NoOfSamplesProcessed = 0;
   // 10 seconds
-  __int64 MAX_SAMPLES_TO_PROCESS = 1*Fp2;
+  int64_t MAX_SAMPLES_TO_PROCESS = 1*Fp2;
   while(NoOfSamplesProcessed < MAX_SAMPLES_TO_PROCESS)
   {
 
@@ -2226,7 +2226,7 @@ void BufferCallback(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP::Floa
   }
 
   DSP::u::OutputBuffer *dsp_buffer;
-  int ind, counter;
+  long int ind, counter;
 
   dsp_buffer = (DSP::u::OutputBuffer *)Caller->Convert2Block();
   counter = dsp_buffer->ReadBuffer(read_buffer,
@@ -2574,7 +2574,7 @@ int test_ZPSTC_cw_3()
 {
   long int Fp1, Fp2, F_symb;
   DSP::LoadCoef coef_info;
-  int N_rc, N2;
+  int N_rc, N2; 
   unsigned int L1, L2;
   DSP::Float_vector h_rc, h2;
 
@@ -2618,8 +2618,8 @@ int test_ZPSTC_cw_3()
   F_symb = 2400;
   DSP::u::PSKencoder PSKencoder(DSP::e::PSK_type::QPSK_A);
 
-  L1 = Fp1 / F_symb;
-  L2 = Fp2 / Fp1;
+  L1 = (unsigned int)(Fp1 / F_symb);
+  L2 = (unsigned int)(Fp2 / Fp1);
   stringstream ss;
   ss << "Fsymb = " << F_symb << ", Fp1 = " << Fp1 << ", Fp2 = " << Fp2 << ", L1 = " << L1 << ", L2 = " << L2;
   DSP::log << ss.str() << endl;
@@ -2678,9 +2678,9 @@ int test_ZPSTC_cw_3()
 
   // *********************************** //
   int SamplesInSegment = 4*512;
-  __int64 NoOfSamplesProcessed = 0;
+  int64_t NoOfSamplesProcessed = 0;
   // 10 seconds
-  __int64 MAX_SAMPLES_TO_PROCESS = 10*Fp1;
+  int64_t MAX_SAMPLES_TO_PROCESS = 10*Fp1;
   while(NoOfSamplesProcessed < MAX_SAMPLES_TO_PROCESS)
   {
 
@@ -2688,7 +2688,7 @@ int test_ZPSTC_cw_3()
     DSP::Clock::Execute(SymbolClock, SamplesInSegment);
     // ********************************************************** //
 
-    int bytes_read = BinData.GetBytesRead();
+    unsigned long bytes_read = BinData.GetBytesRead();
     DSP::log << "BinData.GetBytesRead() = " << bytes_read << endl;
     if (bytes_read > 0)
     {
