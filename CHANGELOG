@@ -6,6 +6,8 @@ TODO::
 LAST DONE:
 
 CHANGES:
+  - 2021.04.21 - Added ALSA tests in main.cpp and Launch configuration for Linux
+
 - ver. 0.20.004 - <b>2021.04.06</b> Changed: 
   - Fixed makefiles for Linux - install and examples compilation works
   - Initial work on sockets support for Linux

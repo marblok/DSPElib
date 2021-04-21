@@ -23,7 +23,28 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "build DBG Windows"
+            "preLaunchTask": "Build DSPElib"
+        },
+        {
+            "name": "(gdb) DSPElib Linux — uruchamianie",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/out_linux_dbg/DSPElib.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/out_linux_dbg",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+//            "miDebuggerPath": "d:/CodeBlocks_20_03/MinGW/bin/gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "Włącz formatowanie kodu dla gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "Build DSPElib"
         },
         {
             "name": "(gdb) Launch",
