@@ -2710,11 +2710,233 @@ int test_ZPSTC_cw_3()
   return 0;
 }
 
+
+
+#ifdef ALSA_support_H
+  /*
+  This example reads standard from input and writes
+  to the default PCM device for 5 seconds of data.
+  */
+
+  int test_playback(vector<int16_t> buffer) {
+    long loops;
+    int rc;
+    int frames_size;
+    snd_pcm_uframes_t frames;
+    //char *buffer;
+    unsigned int period_time;
+
+    ALSA_object_t ALSA_object;
+
+    /* Open PCM device for playback (2 channels). */
+    unsigned int Fs = 44100;
+    rc = ALSA_object.open_alsa_device(SND_PCM_STREAM_PLAYBACK, 2, Fs);
+
+    ALSA_object.get_params(frames, period_time);
+
+  //  /* Allocate a hardware parameters object. */
+  //  snd_pcm_hw_params_alloca(&params);
+  //  /* Fill it in with default values. */
+  //  snd_pcm_hw_params_any(alsa_handle, params);
+  //
+  //  /* Use a buffer large enough to hold one period */
+  //  snd_pcm_hw_params_get_period_size(params, &frames, &dir);
+    frames_size = frames * 2/sizeof(int16_t) * 2; /* 2 bytes/sample, 2 channels */
+    //buffer = (char *) malloc(size);
+  //
+  //  /* We want to loop for 5 seconds */
+  //  snd_pcm_hw_params_get_period_time(params, &val, &dir);
+    /* 5 seconds in microseconds divided by
+    * period time */
+    loops = 5000000 / period_time;
+    buffer.resize(loops * frames_size, 0);
+
+    int loop_index = 0;
+    while (loops > 0) {
+      loops--;
+
+  //    //rc = read(0, buffer, size);
+      for (int ind = 0; ind < frames_size; ind++)
+      {
+          buffer[ind + loop_index * frames_size] = (4*ind) % INT16_MAX;
+      }
+
+      //! \TODO check problem with vector aligments
+      rc = ALSA_object.pcm_writei(buffer.data() + loop_index * frames_size, frames);
+
+      loop_index++;
+    }
+
+    ALSA_object.close_alsa_device(true); //snd_pcm_close(alsa_handle);
+    //free(buffer);
+
+    return 0;
+  }
+
+  /*
+
+  This example reads from the default PCM device
+  and writes to standard output for 5 seconds of data.
+
+  */
+  vector<int16_t> test_record() {
+    long loops;
+    int rc;
+    int frames_size;
+    snd_pcm_t *handle;
+    snd_pcm_hw_params_t *params;
+    unsigned int val;
+    int dir;
+    snd_pcm_uframes_t frames;
+    vector<int16_t> buffer;
+
+    /* Open PCM device for recording (capture). */
+    rc = snd_pcm_open(&handle, "default",
+                      SND_PCM_STREAM_CAPTURE, 0);
+    if (rc < 0) {
+      fprintf(stderr,
+              "unable to open pcm device: %s\n",
+              snd_strerror(rc));
+      exit(1);
+    }
+
+    /* Allocate a hardware parameters object. */
+    snd_pcm_hw_params_alloca(&params);
+
+    /* Fill it in with default values. */
+    snd_pcm_hw_params_any(handle, params);
+
+    /* Set the desired hardware parameters. */
+
+    /* Interleaved mode */
+    snd_pcm_hw_params_set_access(handle, params,
+                        SND_PCM_ACCESS_RW_INTERLEAVED);
+
+    /* Signed 16-bit little-endian format */
+    snd_pcm_hw_params_set_format(handle, params,
+                                SND_PCM_FORMAT_S16_LE);
+
+    /* Two channels (stereo) */
+    snd_pcm_hw_params_set_channels(handle, params, 2);
+
+    /* 44100 bits/second sampling rate (CD quality) */
+    val = 44100;
+    snd_pcm_hw_params_set_rate_near(handle, params,
+                                    &val, &dir);
+
+    /* Set period size to 32 frames. */
+    frames = 32;
+    snd_pcm_hw_params_set_period_size_near(handle,
+                                params, &frames, &dir);
+
+    /* Write the parameters to the driver */
+    rc = snd_pcm_hw_params(handle, params);
+    if (rc < 0) {
+      fprintf(stderr,
+              "unable to set hw parameters: %s\n",
+              snd_strerror(rc));
+      exit(1);
+    }
+
+    /* Use a buffer large enough to hold one period */
+    snd_pcm_hw_params_get_period_size(params, &frames, &dir);
+    frames_size = frames * 2/sizeof(int16_t) * 2; /* 2 bytes/sample, 2 channels */
+    //buffer = (char *) malloc(size);
+
+    /* We want to loop for 5 seconds */
+    snd_pcm_hw_params_get_period_time(params, &val, &dir);
+    loops = 5000000 / val;
+
+    buffer.resize(loops * frames_size, 0);
+
+    int loop_index = 0;
+    while (loops > 0) {
+      loops--;
+      //! \TODO check problem with vector aligments
+      rc = snd_pcm_readi(handle, buffer.data()+loop_index*frames_size, frames);
+      if (rc == -EPIPE) {
+        /* EPIPE means overrun */
+        fprintf(stderr, "overrun occurred\n");
+        snd_pcm_prepare(handle);
+      }
+      else if (rc < 0) {
+        fprintf(stderr,
+                "error from read: %s\n",
+                snd_strerror(rc));
+      }
+      else if (rc != (int)frames) {
+        fprintf(stderr, "short read, read %d frames\n", rc);
+      }
+  //    rc = write(1, buffer.data(2), size*sizeof(int16_t));
+  //    if (rc != size)
+  //      fprintf(stderr,
+  //              "short write: wrote %d bytes\n", rc);
+
+      loop_index++;
+    }
+
+    snd_pcm_drain(handle);
+    snd_pcm_close(handle);
+    //free(buffer);
+
+    return buffer;
+  }
+
+/*
+DOS:
+
+Use snd_device_name_hint() for enumerating audio devices.
+Use snd_smixer_xx() instead of raw snd_ctl_xxx()
+For synchronization purposes use snd_pcm_delay().
+For checking buffer playback/capture fill level use snd_pcm_update_avail().
+Use snd_pcm_recover() to recover from errors returned by any of the ALSA functions.
+If possible use the largest buffer sizes the device supports to maximize power saving and drop-out safety. Use snd_pcm_rewind() if you need to react to user input quickly.
+
+polling:
+  snd_pcm_wait
+
+  A Minimal Interrupt-Driven Program
+  http://equalarea.com/paul/alsa-audio.html
+
+
+
+  % Use of different rates:
+    You should use the rate (rate conversion) or plug (automatic conversion) plugins. See the list of alsa-lib plugins.
+
+    The configuration should be done in the alsa-lib configuration file located in the user's home (.asoundrc).
+*/ 
+
+  int test_ALSA() {
+    ALSA_object_t ALSA_object;
+
+    ALSA_object.log_alsa_data();
+
+    unsigned int Fs = 44100;
+    int rs = ALSA_object.open_alsa_device(SND_PCM_STREAM_PLAYBACK, 2, Fs);
+    if (rs == 1) {
+      ALSA_object.close_alsa_device();
+    }
+
+
+    vector<int16_t> signal = test_record();
+    test_playback(signal);
+
+    return 0;
+  } 
+#endif // ALSA_support_H
+
 int main(int argc, char*argv[])
 {
   //  DSP::f::SetLogState(DSP_LS_console | DSP_LS_file);
   DSP::log.SetLogState(DSP::e::LogState::console | DSP::e::LogState::file);
   DSP::log.SetLogFileName("DSPElib_test_log.txt");
+
+  DSP::log << "test ALSA" << endl;
+
+  #ifdef ALSA_support_H
+    test_ALSA();
+    return 0;
+  #endif // ALSA_support_H
 
   DSP::log << "test DSP::log" << endl;
   DSP::log << "test DSP::log(2)" << DSP::e::LogMode::second << "2" << endl;
