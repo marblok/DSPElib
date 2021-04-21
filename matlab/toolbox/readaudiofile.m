@@ -1,5 +1,5 @@
 function [x, Fs] = readaudiofile(filename, param)
-% [x, Fs] = audiofileread(filename, param)
+% [x, Fs] = readaudiofile(filename, param)
 %
 % returns vector x of the size SIZE=[samples channels].
 %  eg. x = x(:,1) + j*x(:,2);
@@ -12,8 +12,11 @@ function [x, Fs] = readaudiofile(filename, param)
 %    *.flt
 %    *.wav
 %    *.tape
-% last modification: 2021.03.29
+% last modification: 2021.04.10
 % Author: Marek Blok
+if nargin == 0
+  return
+end
 
 return_cplx = 0;
 if nargin == 1,
@@ -113,8 +116,8 @@ switch file_type,
     header.reserved = fread(plik, 128, 'uint32', 0);
 %     header.reserved.'
     
-    header
-    ftell(plik)
+%     header
+%     ftell(plik)
 
     header.sample_type = 2;
     header.ch_no = 2;
@@ -127,7 +130,7 @@ switch file_type,
     if strcmp(param, 'size') == 1,
       fseek(plik, 0, 'eof');
       size = (ftell(plik) - header_size) / sample_size / header.ch_no; % sizeof(float) *2
-      x = size;
+      x = [size, header.ch_no];
     else
       fseek(plik, header_size, 'bof');
       
@@ -186,7 +189,7 @@ switch file_type,
     if strcmp(param, 'size') == 1,
       fseek(plik, 0, 'eof');
       size = (ftell(plik) - header_size) / sample_size / header.ch_no; % sizeof(float) *2
-      x = size;
+      x = [size, header.ch_no];
     else
       len = param(1);
       status = 0;

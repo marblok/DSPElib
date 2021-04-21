@@ -893,13 +893,15 @@ class DSP::u::AudioOutput : public DSP::Block
      */
     static void InputExecute(INPUT_EXECUTE_ARGS);
   public:
-    AudioOutput(void); //SamplingFrequency=8000;
+    AudioOutput(void); 
     //! DSP::u::AudioOutput constructor
     /*! Fixed <b>2005.04.14</b> Cannot be initialized after previous object destruction
      *  Fixed <b>2007.10.31</b> WaveOut device can now be selected,
      *     if WaveOutDevNo is out of range WAVE_MAPPER is used.
+     * 
+     * SamplingFrequency=8000;
      */
-    AudioOutput(unsigned long SamplingFreq, //=8000,
+    AudioOutput(unsigned long SamplingFreq, 
                     unsigned int InputsNo=1, //just one channel
                     unsigned char BitPrec=16,
                     unsigned int WaveOutDevNo=UINT_MAX);

@@ -3997,11 +3997,11 @@ void DSP::u::AudioOutput::Init(unsigned long SamplingFreq,
     //! \bug in Debug mode this callback does nothing so it would be better just not use it
     Callback = (DWORD_PTR)(&DSP::u::AudioOutput::waveOutProc);
   #endif
-
   Current_CallbackInstance=Next_CallbackInstance;
   Next_CallbackInstance++;
   AudioObjects.resize(Current_CallbackInstance+1);
   AudioObjects[Current_CallbackInstance]=this;
+
   StopPlaying = false;
 
   switch (BitPrec)
@@ -4559,7 +4559,7 @@ void DSP::u::AudioOutput::InputExecute(INPUT_EXECUTE_ARGS)
         {
           ((DSP::u::AudioOutput *)block)->OutBuffer[((DSP::u::AudioOutput *)block)->BufferIndex * ((DSP::u::AudioOutput *)block)->NoOfInputs + InputNo]=
             ((DSP::u::AudioOutput *)block)->ConstantInputValues[ind];
-          ((DSP::u::AudioOutput *)block)->NoOfInputsProcessed++;
+          // ((DSP::u::AudioOutput *)block)->NoOfInputsProcessed++;
         }
     }
     ((DSP::u::AudioOutput *)block)->NoOfInputsProcessed = ((DSP::u::AudioOutput *)block)->InitialNoOfInputsProcessed;
