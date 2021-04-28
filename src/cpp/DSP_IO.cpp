@@ -3915,8 +3915,6 @@ DSP::u::AudioOutput::AudioOutput(void)
   : DSP::Block()
 {
   Init(8000);
-
-  Execute_ptr = &InputExecute;
 }
 
 /*
@@ -3935,8 +3933,6 @@ DSP::u::AudioOutput::AudioOutput(
   : DSP::Block()
 {
   Init(SamplingFreq, InputsNo, BitPrec, WaveOutDevNo);
-
-  Execute_ptr = &InputExecute;
 }
 
 /* Inputs and Outputs names:
@@ -4093,8 +4089,9 @@ void DSP::u::AudioOutput::Init(unsigned long SamplingFreq,
   #endif  // WINMMAPI
 
   IsPlayingNow = false;
-
   NextBufferInd=0;
+
+  Execute_ptr = &InputExecute;
 }
 
 /* ***************************************** */
