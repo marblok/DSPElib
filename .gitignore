@@ -71,3 +71,4 @@ examples/DSP_socket_server_2
 examples/DSP_sound_input
 examples/captured_sample.wav
 examples/sound_input.dot
+examples/sound_input.gif
