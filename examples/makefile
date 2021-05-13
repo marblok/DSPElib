@@ -27,7 +27,7 @@ endif
 
 SRCS = hello.cpp
 
-all: hello.exe echo.exe multirate.exe callbacks.exe socket_server.exe socket_client.exe socket_server_2.exe socket_client_2.exe macro_example.exe asynchronous.exe asynchronous_CT.exe
+all: hello.exe echo.exe sound_input.exe multirate.exe callbacks.exe socket_server.exe socket_client.exe socket_server_2.exe socket_client_2.exe macro_example.exe asynchronous.exe asynchronous_CT.exe
 #all: echo.exe  
 
 hello.o: $(SRC_DIR)/hello.cpp
@@ -39,6 +39,11 @@ echo.o: $(SRC_DIR)/echo.cpp
 	$(CC) -DWIN32 -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c $(SRC_DIR)/echo.cpp -o "$(SRC_DIR)/echo.o"
 echo.exe: echo.o
 	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/echo.o" -o"$(SRC_DIR)/echo.exe" $(LINKER_FLAGS) -lDSPE -lwinmm
+
+sound_input.o: $(SRC_DIR)/sound_input.cpp
+	$(CC) -DWIN32 -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c $(SRC_DIR)/sound_input.cpp -o "$(SRC_DIR)/sound_input.o"
+sound_input.exe: sound_input.o
+	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/sound_input.o" -o"$(SRC_DIR)/sound_input.exe" $(LINKER_FLAGS) -lDSPE -lwinmm
 
 multirate.o: $(SRC_DIR)/multirate.cpp
 	$(CC) -DWIN32 -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/multirate.cpp" -o "$(SRC_DIR)/multirate.o"
@@ -89,6 +94,7 @@ asynchronous_CT.exe: asynchronous_CT.o
 clean:
 	rm -f $(SRC_DIR)/hello.exe $(SRC_DIR)/hello.o 
 	rm -f $(SRC_DIR)/echo.exe $(SRC_DIR)/echo.o 
+	rm -f $(SRC_DIR)/sound_input.exe $(SRC_DIR)/sound_input.o 
 	rm -f $(SRC_DIR)/asynchronous.exe $(SRC_DIR)/asynchronous.o
 	rm -f $(SRC_DIR)/asynchronous_CT.exe $(SRC_DIR)/asynchronous_CT.o
 	rm -f $(SRC_DIR)/multirate.exe $(SRC_DIR)/multirate.o
@@ -104,5 +110,6 @@ clean:
 	rm -f $(SRC_DIR)/morse.wav
 	rm -f $(SRC_DIR)/morse_key.wav
 	rm -f $(SRC_DIR)/test_out.wav
+	rm -f $(SRC_DIR)/captured_sample.wav
 	rm -f $(SRC_DIR)/*.dot
 	rm -f $(SRC_DIR)/*.gif

@@ -12,6 +12,7 @@ CHANGES:
   - Added to DSP_types.h a SOUND_object_t abstract class, a wrapper for different sound cards' API
   - Added WMM_object_t abstract class, a wrapper for Windows MultiMedia API
   - DSP::u::AudioOutput now uses SOUND_object_t (currently just WMM_object_t) for soundcard API
+  - Added examples/sound_input.cpp with DSP::u::AudioInput example
 
 - ver. 0.20.004 - <b>2021.04.06</b> Changed: 
   - Fixed makefiles for Linux - install and examples compilation works

@@ -24,6 +24,8 @@ examples/socket_server_2.exe
 examples/socket_server_2.o
 examples/socket_server.exe
 examples/socket_server.o
+examples/sound_input.exe
+examples/sound_input.o
 examples/matlab/LPF_8000_11025.coef
 examples/matlab/LPF_8000_48000.coef
 examples/asynchronous_CT.dot
@@ -66,3 +68,6 @@ examples/DSP_socket_client
 examples/DSP_socket_client_2
 examples/DSP_socket_server
 examples/DSP_socket_server_2
+examples/DSP_sound_input
+examples/captured_sample.wav
+examples/sound_input.dot

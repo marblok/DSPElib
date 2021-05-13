@@ -9,4 +9,5 @@ dot -Tgif socket_client_2.dot -osocket_client_2.gif
 dot -Tgif callbacks_scheme.dot -ocallbacks_scheme.gif
 dot -Tgif hello.dot -ohello.gif
 dot -Tgif echo.dot -oecho.gif
+dot -Tgif captured_sample.dot -ocaptured_sample.gif
 dot -Tgif multirate.dot -omultirate.gif
