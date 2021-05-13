@@ -3607,56 +3607,6 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
 }
 
 #ifdef WINMMAPI
-  void CALLBACK DSP::u::AudioOutput::waveOutProc(HWAVEOUT hwo, UINT uMsg,
-    uint32_t dwInstance, uint32_t dwParam1, uint32_t dwParam2)
-  {
-    UNUSED_ARGUMENT(hwo);
-    UNUSED_ARGUMENT(uMsg);
-    UNUSED_ARGUMENT(dwInstance);
-    UNUSED_ARGUMENT(dwParam1);
-    UNUSED_ARGUMENT(dwParam2);
-  #ifdef __DEBUG__
-  #ifdef AUDIO_DEBUG_MESSAGES_ON
-  //  MMRESULT result;
-    DSP::u::AudioOutput *Current;
-    bool AllDone;
-    int ind;
-    string tekst;
-
-    Current = AudioObjects[dwInstance];
-
-    switch (uMsg)
-    {
-      case WOM_OPEN:
-        DSP::log << "DSP::u::AudioOutput::waveOutProc" << DSP::e::LogMode::second
-          << "WOM_OPEN(" << (int)dwInstance << ")" << endl;
-        break;
-      case WOM_CLOSE:
-        DSP::log << "DSP::u::AudioOutput::waveOutProc" << DSP::e::LogMode::second
-          << "WOM_CLOSE(" << (int)dwInstance << ")" << endl;
-        break;
-      case WOM_DONE:
-        DSP::log << "DSP::u::AudioOutput::waveOutProc" << DSP::e::LogMode::second
-          << "WOM_DONE(" << (int)dwInstance << ")" << endl;
-
-        if (Current->StopPlaying)
-        {
-          DSP::log << "DSP::u::AudioOutput::waveOutProc" << DSP::e::LogMode::second << "StopPlaying is set" << endl;
-          return;
-        }
-        else
-        {
-          AllDone=true;
-          for (ind=0; ind < DSP_NoOfAudioOutputBuffers; ind++)
-            AllDone &= (Current->waveHeaderOut[ind].dwFlags & WHDR_DONE);
-          if (AllDone)
-            DSP::log << "DSP::u::AudioOutput::waveOutProc" << DSP::e::LogMode::second << "All buffers had been used - nothing to play" << endl;
-        }
-        break;
-    }
-  #endif
-  #endif
-  }
 
   //! \bug allow user to select number of internal buffers
   void CALLBACK DSP::u::AudioInput::waveInProc_short(HWAVEIN hwi, UINT uMsg,
@@ -3949,14 +3899,14 @@ void DSP::u::AudioOutput::Init(unsigned long SamplingFreq,
                            unsigned int WaveOutDevNo)
 {
   #ifdef WINMMAPI
-    MMRESULT result;
-    DWORD_PTR Callback;
-
-    //Rezerwacja pamięci dla formatu WAVE
-    //  WAVEFORMATEX wfx; //to wymaga korekty
-    PCMWAVEFORMAT wfx;
-
-    unsigned long ind;
+    // MMRESULT result;
+    // DWORD_PTR Callback;
+    //
+    // //Rezerwacja pamięci dla formatu WAVE
+    // //  WAVEFORMATEX wfx; //to wymaga korekty
+    // PCMWAVEFORMAT wfx;
+    //
+    // unsigned long ind;
   #else
     UNUSED_ARGUMENT(WaveOutDevNo);
   #endif
@@ -3989,10 +3939,10 @@ void DSP::u::AudioOutput::Init(unsigned long SamplingFreq,
     ClockGroups.AddInput2Group("input", Input(temp));
   }
 
-  #ifdef WINMMAPI
-    //! \bug in Debug mode this callback does nothing so it would be better just not use it
-    Callback = (DWORD_PTR)(&DSP::u::AudioOutput::waveOutProc);
-  #endif
+//  #ifdef WINMMAPI
+//    //! \bug in Debug mode this callback does nothing so it would be better just not use it
+//    Callback = (DWORD_PTR)(&DSP::u::AudioOutput::waveOutProc);
+//  #endif
   Current_CallbackInstance=Next_CallbackInstance;
   Next_CallbackInstance++;
   AudioObjects.resize(Current_CallbackInstance+1);
@@ -4000,96 +3950,28 @@ void DSP::u::AudioOutput::Init(unsigned long SamplingFreq,
 
   StopPlaying = false;
 
-  switch (BitPrec)
-  {
-    case 8:
-      OutSampleType=DSP::e::SampleType::ST_uchar;
-      break;
-    case 16:
-      OutSampleType=DSP::e::SampleType::ST_short;
-      break;
-    default:
-      OutSampleType=DSP::e::SampleType::ST_short;
-      BitPrec=16;
-      break;
-  }
-
   audio_outbuffer_size = DSP::f::GetAudioBufferSize(SamplingFreq, DSP::e::AudioBufferType::output);
 
-  #ifdef WINMMAPI
-    //Wypeniamy struktur wfx
-    wfx.wf.wFormatTag=WAVE_FORMAT_PCM;
-    wfx.wf.nChannels=(uint16_t)NoOfInputs;
-    wfx.wf.nSamplesPerSec=(UINT)SamplingFreq;
-    wfx.wBitsPerSample=BitPrec;
-    wfx.wf.nAvgBytesPerSec=wfx.wf.nSamplesPerSec*(wfx.wBitsPerSample/8);
-    wfx.wf.nBlockAlign=(uint16_t)(wfx.wf.nChannels*(wfx.wBitsPerSample/8));
+  snd_object.select_device_by_number(WaveOutDevNo); // use default device
+  snd_object.open_PCM_device_4_output(NoOfInputs, BitPrec, SamplingFreq, audio_outbuffer_size);
 
-    if (WaveOutDevNo >= (UINT)waveOutGetNumDevs())
-      result=waveOutOpen(&hWaveOut,
-        WAVE_MAPPER, //&DeviceID,
-        (WAVEFORMATEX *)(&wfx),
-        Callback,
-        Current_CallbackInstance, //CallbackInstance,
-        CALLBACK_FUNCTION | WAVE_ALLOWSYNC | WAVE_FORMAT_DIRECT //| WAVE_MAPPED //CALLBACK_NULL
-        );
-    else
-      result=waveOutOpen(&hWaveOut,
-        WaveOutDevNo, //&DeviceID,
-        (WAVEFORMATEX *)(&wfx),
-        Callback,
-        Current_CallbackInstance, //CallbackInstance,
-        CALLBACK_FUNCTION | WAVE_ALLOWSYNC | WAVE_FORMAT_DIRECT //| WAVE_MAPPED //CALLBACK_NULL
-        );
-    if (DSP::f::AudioCheckError(result) == false)
-    { // everything  is ok
-      waveHeaderOut.resize(DSP::NoOfAudioOutputBuffers);
-      WaveOutBufferLen=wfx.wf.nBlockAlign*audio_outbuffer_size;
-      WaveOutBuffers.resize(DSP::NoOfAudioOutputBuffers);
-      for (ind=0; ind< DSP::NoOfAudioOutputBuffers; ind++)
-      {
-        WaveOutBuffers[ind].clear();
-        WaveOutBuffers[ind].resize(WaveOutBufferLen, 0);
-      }
+  OutBufferLen=NoOfInputs*audio_outbuffer_size;
+  OutBuffer.clear(); OutBuffer.resize(OutBufferLen, 0.0);
+  BufferIndex=0;
 
-      OutBufferLen=NoOfInputs*audio_outbuffer_size;
-      OutBuffer.clear(); OutBuffer.resize(OutBufferLen, 0.0);
-      BufferIndex=0;
+  // #ifdef WINMMAPI
 
-      for (ind=0; ind< DSP::NoOfAudioOutputBuffers; ind++)
-      {
-        waveHeaderOut[ind].lpData=(char *)(WaveOutBuffers[ind].data());
-        waveHeaderOut[ind].dwBufferLength=OutBufferLen*(BitPrec/8); //sizeof(short);
-        waveHeaderOut[ind].dwFlags= 0; // WHDR_BEGINLOOP | WHDR_ENDLOOP;
-        waveHeaderOut[ind].dwLoops=0;
+  // #else
 
-        result=waveOutPrepareHeader(hWaveOut,
-          &(waveHeaderOut[ind]), sizeof(WAVEHDR));
-        DSP::f::AudioCheckError(result);
-        waveHeaderOut[ind].dwFlags= WHDR_DONE; // WHDR_BEGINLOOP | WHDR_ENDLOOP;
-      }
-    }
-    else
-    { //error while creating audio output
-      waveHeaderOut.clear();
-      WaveOutBuffers.clear();
-      WaveOutBufferLen = 0;
-      OutBuffer.clear(); 
-      OutBufferLen = 0;
-      BufferIndex=0;
-    }
+  //   WaveOutBufferLen = 0;
+  //   WaveOutBuffers.clear();
+  //   OutBuffer.clear(); OutBufferLen = 0;
+  //   BufferIndex=0;
 
-  #else
+  // #endif  // WINMMAPI
 
-    WaveOutBufferLen = 0;
-    WaveOutBuffers.clear();
-    OutBuffer.clear(); OutBufferLen = 0;
-    BufferIndex=0;
-
-  #endif  // WINMMAPI
-
-  IsPlayingNow = false;
-  NextBufferInd=0;
+  // IsPlayingNow = false;
+  //NextBufferInd=0;
 
   Execute_ptr = &InputExecute;
 }
@@ -4294,50 +4176,52 @@ void DSP::u::AudioInput::Init(DSP::Clock_ptr ParentClock,
 
 DSP::u::AudioOutput::~AudioOutput()
 {
-  #ifdef WINMMAPI
-    MMRESULT result;
-    unsigned long ind;
-  #endif
+  // #ifdef WINMMAPI
+  //   MMRESULT result;
+  //   unsigned long ind;
+  // #endif
 
   if (OutBufferLen != 0)
   { // if device was opened successfully
     StopPlaying=true;
 
-    #ifdef WINMMAPI
-      result = waveOutReset(hWaveOut);
-      DSP::f::AudioCheckError(result);
-      for (ind=0; ind< DSP::NoOfAudioOutputBuffers; ind++)
-      {
-        result=waveOutUnprepareHeader(hWaveOut,
-          &(waveHeaderOut[ind]), sizeof(WAVEHDR));
-        DSP::f::AudioCheckError(result);
-      }
+    snd_object.close_PCM_device();
 
-      #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Closing DSP::u::AudioOutput" << endl;
-      #endif
-      result=waveOutClose(hWaveOut);
-      while (result==WAVERR_STILLPLAYING)
-      {
-      //    #ifdef WINBASEAPI
-        DSP::f::Sleep(100);
-      //    #else
-      //      sleep(100);
-      //    #endif
-        #ifdef AUDIO_DEBUG_MESSAGES_ON
-          DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Closing DSP::u::AudioOutput" << endl;
-        #endif
-        result=waveOutClose(hWaveOut);
-      }
-      DSP::f::AudioCheckError(result);
-    #endif
+    // #ifdef WINMMAPI
+    //   result = waveOutReset(hWaveOut);
+    //   DSP::f::AudioCheckError(result);
+    //   for (ind=0; ind< DSP::NoOfAudioOutputBuffers; ind++)
+    //   {
+    //     result=waveOutUnprepareHeader(hWaveOut,
+    //       &(waveHeaderOut[ind]), sizeof(WAVEHDR));
+    //     DSP::f::AudioCheckError(result);
+    //   }
+
+    //   #ifdef AUDIO_DEBUG_MESSAGES_ON
+    //     DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Closing DSP::u::AudioOutput" << endl;
+    //   #endif
+    //   result=waveOutClose(hWaveOut);
+    //   while (result==WAVERR_STILLPLAYING)
+    //   {
+    //   //    #ifdef WINBASEAPI
+    //     DSP::f::Sleep(100);
+    //   //    #else
+    //   //      sleep(100);
+    //   //    #endif
+    //     #ifdef AUDIO_DEBUG_MESSAGES_ON
+    //       DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Closing DSP::u::AudioOutput" << endl;
+    //     #endif
+    //     result=waveOutClose(hWaveOut);
+    //   }
+    //   DSP::f::AudioCheckError(result);
+    // #endif
 
 
-    // 2) Free buffers
-    WaveOutBuffers.clear();
-    #ifdef WINMMAPI
-      waveHeaderOut.clear();
-    #endif
+    // // 2) Free buffers
+    // WaveOutBuffers.clear();
+    // #ifdef WINMMAPI
+    //   waveHeaderOut.clear();
+    // #endif
 
     OutBuffer.clear();
   }
@@ -4416,114 +4300,116 @@ DSP::u::AudioInput::~AudioInput()
 
 void DSP::u::AudioOutput::FlushBuffer(void)
 {
-  #ifdef WINMMAPI
-    MMRESULT result;
-    uint8_t *temp8;
-    short *temp16;
-    DSP::Float_ptr Sample;
-    short Znak;
-    uint32_t ind;
+  snd_object.append_playback_buffer(OutBuffer);
 
-    // ************************************************** //
-    // Send buffer to the audio device
+  // #ifdef WINMMAPI
+  //   MMRESULT result;
+  //   uint8_t *temp8;
+  //   short *temp16;
+  //   DSP::Float_ptr Sample;
+  //   short Znak;
+  //   uint32_t ind;
 
-  #ifdef AUDIO_DEBUG_MESSAGES_ON
-    DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Flushing output buffer" << endl;
-  #endif
+  //   // ************************************************** //
+  //   // Send buffer to the audio device
 
-  while (1)
-  {
-    if (waveHeaderOut[NextBufferInd].dwFlags & WHDR_DONE)
-    {
-      result=waveOutUnprepareHeader(hWaveOut,
-        &(waveHeaderOut[NextBufferInd]), sizeof(WAVEHDR));
-      DSP::f::AudioCheckError(result);
+  // #ifdef AUDIO_DEBUG_MESSAGES_ON
+  //   DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Flushing output buffer" << endl;
+  // #endif
 
-      Sample=OutBuffer.data();
-      // ************************************************** //
-      // Converts samples format to the one suitable for the audio device
-      switch (OutSampleType)
-      {
-        case DSP::e::SampleType::ST_uchar:
-          temp8=(uint8_t *)(WaveOutBuffers[NextBufferInd].data());
-          for (ind=0; ind<OutBufferLen; ind++)
-          {
-            if (*Sample < 0)
-              Znak=-1;
-            else
-              Znak=1;
+  // while (1)
+  // {
+  //   if (waveHeaderOut[NextBufferInd].dwFlags & WHDR_DONE)
+  //   {
+  //     result=waveOutUnprepareHeader(hWaveOut,
+  //       &(waveHeaderOut[NextBufferInd]), sizeof(WAVEHDR));
+  //     DSP::f::AudioCheckError(result);
 
-            *Sample*=127;
-            if ((*Sample)*Znak > 127)
-              *temp8=(unsigned char)(128+Znak*127);
-            else
-              *temp8=(unsigned char)(128+*Sample+Znak*0.5);
+  //     Sample=OutBuffer.data();
+  //     // ************************************************** //
+  //     // Converts samples format to the one suitable for the audio device
+  //     switch (OutSampleType)
+  //     {
+  //       case DSP::e::SampleType::ST_uchar:
+  //         temp8=(uint8_t *)(WaveOutBuffers[NextBufferInd].data());
+  //         for (ind=0; ind<OutBufferLen; ind++)
+  //         {
+  //           if (*Sample < 0)
+  //             Znak=-1;
+  //           else
+  //             Znak=1;
 
-            Sample++;
-            temp8++;
-          }
-          break;
-        case DSP::e::SampleType::ST_short:
-          temp16=(short *)(WaveOutBuffers[NextBufferInd].data());
-          for (ind=0; ind<OutBufferLen; ind++)
-          {
-            if (*Sample < 0)
-              Znak=-1;
-            else
-              Znak=1;
+  //           *Sample*=127;
+  //           if ((*Sample)*Znak > 127)
+  //             *temp8=(unsigned char)(128+Znak*127);
+  //           else
+  //             *temp8=(unsigned char)(128+*Sample+Znak*0.5);
 
-            *Sample*=SHRT_MAX;
-            if ((*Sample)*Znak > SHRT_MAX)
-              *temp16=(short)(Znak*SHRT_MAX);
-            else
-              *temp16=(short)(*Sample+Znak*0.5);
-            Sample++;
-            temp16++;
-          }
-          break;
-        default:
-          break;
-      }
+  //           Sample++;
+  //           temp8++;
+  //         }
+  //         break;
+  //       case DSP::e::SampleType::ST_short:
+  //         temp16=(short *)(WaveOutBuffers[NextBufferInd].data());
+  //         for (ind=0; ind<OutBufferLen; ind++)
+  //         {
+  //           if (*Sample < 0)
+  //             Znak=-1;
+  //           else
+  //             Znak=1;
 
-      result=waveOutPrepareHeader(hWaveOut,
-        &(waveHeaderOut[NextBufferInd]), sizeof(WAVEHDR));
-      DSP::f::AudioCheckError(result);
+  //           *Sample*=SHRT_MAX;
+  //           if ((*Sample)*Znak > SHRT_MAX)
+  //             *temp16=(short)(Znak*SHRT_MAX);
+  //           else
+  //             *temp16=(short)(*Sample+Znak*0.5);
+  //           Sample++;
+  //           temp16++;
+  //         }
+  //         break;
+  //       default:
+  //         break;
+  //     }
 
-      if (IsPlayingNow == false)
-      {
-        if (NextBufferInd == 1)
-        {
-          for (ind=0; ind < DSP::NoOfAudioOutputBuffers-1; ind++) //one spare buffer
-          {
-            result=waveOutWrite(hWaveOut,
-              &(waveHeaderOut[ind]), sizeof(WAVEHDR));
-            DSP::f::AudioCheckError(result);
-          }
-          IsPlayingNow = true;
-        }
+  //     result=waveOutPrepareHeader(hWaveOut,
+  //       &(waveHeaderOut[NextBufferInd]), sizeof(WAVEHDR));
+  //     DSP::f::AudioCheckError(result);
 
-      }
-      else
-      {
-        result=waveOutWrite(hWaveOut,
-          &(waveHeaderOut[NextBufferInd]), sizeof(WAVEHDR));
-        DSP::f::AudioCheckError(result);
-      }
-      NextBufferInd++;
-      NextBufferInd %= DSP::NoOfAudioOutputBuffers;
+  //     if (IsPlayingNow == false)
+  //     {
+  //       if (NextBufferInd == 1)
+  //       {
+  //         for (ind=0; ind < DSP::NoOfAudioOutputBuffers-1; ind++) //one spare buffer
+  //         {
+  //           result=waveOutWrite(hWaveOut,
+  //             &(waveHeaderOut[ind]), sizeof(WAVEHDR));
+  //           DSP::f::AudioCheckError(result);
+  //         }
+  //         IsPlayingNow = true;
+  //       }
 
-      break;
-    }
-    else
-    {
-  //    Sleep(10);
-  #ifdef AUDIO_DEBUG_MESSAGES_ON
-      DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Waiting for free output buffer" << endl;
-  #endif
-      DSP::f::Sleep(0);
-    }
-  }
-  #endif // WINMMAPI
+  //     }
+  //     else
+  //     {
+  //       result=waveOutWrite(hWaveOut,
+  //         &(waveHeaderOut[NextBufferInd]), sizeof(WAVEHDR));
+  //       DSP::f::AudioCheckError(result);
+  //     }
+  //     NextBufferInd++;
+  //     NextBufferInd %= DSP::NoOfAudioOutputBuffers;
+
+  //     break;
+  //   }
+  //   else
+  //   {
+  // //    Sleep(10);
+  // #ifdef AUDIO_DEBUG_MESSAGES_ON
+  //     DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Waiting for free output buffer" << endl;
+  // #endif
+  //     DSP::f::Sleep(0);
+  //   }
+  // }
+  // #endif // WINMMAPI
 }
 
 void DSP::u::AudioOutput::InputExecute(INPUT_EXECUTE_ARGS)

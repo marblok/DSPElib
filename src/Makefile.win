@@ -32,7 +32,7 @@ LINKER_FLAGS_release = $(comflag)  -s -static-libgcc -static-libstdc++ -static
 
 SOURCES_NAMES = 
 SOURCES_NAMES += DSP_AudioMixer.cpp DSP_Fourier.cpp DSP_misc.cpp DSP_clocks.cpp DSP_modules.cpp DSP_modules2.cpp 
-SOURCES_NAMES += DSP_DOT.cpp DSP_modules_misc.cpp DSP_IO.cpp DSP_logstream.cpp
+SOURCES_NAMES += DSP_DOT.cpp DSP_modules_misc.cpp DSP_IO.cpp DSP_logstream.cpp WMM_support.cpp
 SOURCES = $(addprefix $(SRC_CPP_SUBDIR)/,$(SOURCES_NAMES))
 
 SOURCES_DBG =

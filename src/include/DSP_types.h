@@ -528,6 +528,31 @@ namespace DSP {
 #endif
 
 
+namespace DSP {
+    //! Base class for classes implementing sound card support for DSP::u::AudioInput and DSP::u::AudioOutput 
+    /*! \TODO  convert WMM support in DSP::u::AudioInput and DSP::u::AudioOutput into support through WMM_object_t
+     */
+    class SOUND_object_t {
+
+    public:
+      virtual void log_driver_data() = 0;
+
+      virtual bool select_device_by_number(const unsigned int &device_number=UINT_MAX) = 0;
+
+      virtual long open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size) = 0;
+      virtual long open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size) = 0;
+      virtual bool close_PCM_device(void) = 0;
+
+      //! returns true is the playback is on
+      virtual bool is_device_playing(void) = 0;
+
+      //! \note values stored in float_buffer might be altered
+      long append_playback_buffer(DSP::Float_vector &float_buffer);
+
+      virtual ~SOUND_object_t() {};
+    };
+}
+
 
 #include <DSP_DOT.h>
 

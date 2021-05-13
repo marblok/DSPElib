@@ -24,7 +24,7 @@ ALSA_object_t::~ALSA_object_t()
 }
 
 
-void ALSA_object_t::log_alsa_data() {
+void ALSA_object_t::log_driver_data() {
   int val;
 
   DSP::log << "ALSA library version: " << SND_LIB_VERSION_STR << endl;

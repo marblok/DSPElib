@@ -23,8 +23,7 @@
 ////#ifdef __CYGWIN__
 //#ifdef WIN32
 #if defined(WIN32) || defined(WIN64)
-  #include <windef.h>
-  #include <mmsystem.h>
+  #include <WMM_support.h>
 #else
   #ifdef LINUX
     //! \TODO adapt for linux
@@ -834,21 +833,22 @@ class DSP::u::AudioOutput : public DSP::Block
   private:
     DSP::T_WAVEchunk WAVEchunk;
     #ifdef WINMMAPI
-      HWAVEOUT hWaveOut;
+      //HWAVEOUT hWaveOut;
+      DSP::WMM_object_t snd_object;
     #endif
 
-    //! Index of the buffer which must be used next time
-    unsigned long NextBufferInd;
-    //! Type of samples in WaveOutBuffers
-    DSP::e::SampleType OutSampleType;
-    #ifdef WINMMAPI
-      std::vector<WAVEHDR> waveHeaderOut;
-    #endif
-    uint32_t WaveOutBufferLen;  // in bytes
-    //! Buffers for audio samples prepared for playing
-    std::vector<std::vector<uint8_t>> WaveOutBuffers;
+    // //! Index of the buffer which must be used next time
+    // unsigned long NextBufferInd;
+    // //! Type of samples in WaveOutBuffers
+    // DSP::e::SampleType OutSampleType;
+    //#ifdef WINMMAPI
+    //  std::vector<WAVEHDR> waveHeaderOut;
+    //#endif
+    // uint32_t WaveOutBufferLen;  // in bytes
+    // //! Buffers for audio samples prepared for playing
+    // std::vector<std::vector<uint8_t>> WaveOutBuffers;
 
-    //! size of the buffers used internally with WMM driver
+    //! size of the buffers used internally with audio driver
     uint32_t audio_outbuffer_size;
 
     //! in samples times number of channels
@@ -861,7 +861,7 @@ class DSP::u::AudioOutput : public DSP::Block
     /*! saturation logic should be implemented */
     void FlushBuffer(void);
 
-    bool IsPlayingNow;
+    //bool IsPlayingNow;
 
     bool StartAudio(void);
     bool StopAudio(void);
@@ -877,10 +877,10 @@ class DSP::u::AudioOutput : public DSP::Block
     //! (returns number of samples read per channel)
     uint32_t GetAudioSegment(void);
 
-    #ifdef WINMMAPI
-      static void CALLBACK waveOutProc(HWAVEOUT hwo, UINT uMsg,
-        uint32_t dwInstance, uint32_t dwParam1, uint32_t dwParam2);
-    #endif
+    //#ifdef WINMMAPI
+    //  static void CALLBACK waveOutProc(HWAVEOUT hwo, UINT uMsg,
+    //    uint32_t dwInstance, uint32_t dwParam1, uint32_t dwParam2);
+    //#endif
 
     void Init(unsigned long SamplingFreq,
               unsigned int InputsNo=1, //just one channel

@@ -2909,7 +2909,7 @@ polling:
   int test_ALSA() {
     ALSA_object_t ALSA_object;
 
-    ALSA_object.log_alsa_data();
+    ALSA_object.log_driver_data();
 
     unsigned int Fs = 44100;
     int rs = ALSA_object.open_alsa_device(SND_PCM_STREAM_PLAYBACK, 2, Fs);
