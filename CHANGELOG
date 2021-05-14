@@ -6,6 +6,9 @@ TODO::
 LAST DONE:
 
 CHANGES:
+- ver. 0.20.006 - <b>2021.05.14</b> Changed: 
+  - Included examples tests in DEBUG compilation for windows (test_hello, test_sound_input)
+  - DSP::u::AudioInput now uses SOUND_object_t (currently just WMM_object_t) for soundcard API
 
 - ver. 0.20.005 - <b>2021.04.21</b> Changed: 
   - Added ALSA tests in main.cpp and Launch configuration for Linux

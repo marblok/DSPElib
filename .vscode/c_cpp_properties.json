@@ -36,7 +36,8 @@
             ],
             "defines": [
                 "WIN32",
-                "__DEBUG__=1"
+                "__DEBUG__=1",
+                "INCLUDE_DSPE_EXAMPLES"
             ],
             "compilerPath": "gcc.exe",
             "cStandard": "c11",
@@ -50,7 +51,8 @@
             ],
             "defines": [
                 "WIN32",
-                "__DEBUG__=1"
+                "__DEBUG__=1",
+                "INCLUDE_DSPE_EXAMPLES"
             ],
             "compilerPath": "gcc.exe",
             "cStandard": "c11",

@@ -717,19 +717,23 @@ class DSP::u::AudioInput : public DSP::Source
   private:
     DSP::T_WAVEchunk WAVEchunk;
     #ifdef WINMMAPI
-      HWAVEIN hWaveIn;
+      // HWAVEIN hWaveIn;
+      DSP::WMM_object_t snd_object;
     #endif
 
-    //! Index of the buffer which is expected to filled next
-    short NextBufferInd;
-    //! Type of samples in WaveInBuffers
-    DSP::e::SampleType InSampleType;
-    #ifdef WINMMAPI
-      std::vector<WAVEHDR> waveHeaderIn;
-    #endif
-    uint32_t WaveInBufferLen;  // in bytes
-    //! Buffers for audio samples prepared for playing
-    std::vector<std::vector<char>> WaveInBuffers;
+    //! Called by SOUND_object_t when new data buffer is ready
+    bool SOUND_object_callback(const DSP::e::SampleType &InSampleType, const std::vector<char> &wave_in_raw_buffer);
+
+    // //! Index of the buffer which is expected to filled next
+    // short NextBufferInd;
+    // //! Type of samples in WaveInBuffers
+    // DSP::e::SampleType InSampleType;
+    // #ifdef WINMMAPI
+    //   std::vector<WAVEHDR> waveHeaderIn;
+    // #endif
+    // uint32_t WaveInBufferLen;  // in bytes
+    // //! Buffers for audio samples prepared for playing
+    // std::vector<std::vector<char>> WaveInBuffers;
 
     //! size of the buffers used internally with WMM driver
     uint32_t audio_inbuffer_size;
@@ -764,28 +768,28 @@ class DSP::u::AudioInput : public DSP::Source
               char BitPrec=16,
               unsigned int WaveInDevNo=UINT_MAX); // use WAVE_MAPPER
 
-    // indicates whether the recording started yet
-    bool IsRecordingNow;
+    // // indicates whether the recording started yet
+    // bool IsRecordingNow;
 
-    bool StartAudio(void);
-    bool StopAudio(void);
-    bool StopRecording;
+    // bool StartAudio(void);
+    // bool StopAudio(void);
+    // bool StopRecording;
     //! (returns number of samples read per channel)
     uint32_t GetAudioSegment(void);
 
-    static unsigned long Next_CallbackInstance;
-    unsigned long Current_CallbackInstance;
-    //! Addresses of audio object connected with CallbackInstances;
-    /*! Current callback instanse is also the index to this array
-     */
-    static std::vector<DSP::u::AudioInput *> AudioObjects;
+    // static unsigned long Next_CallbackInstance;
+    // unsigned long Current_CallbackInstance;
+    // //! Addresses of audio object connected with CallbackInstances;
+    // /*! Current callback instance is also the index to this array
+    //  */
+    // static std::vector<DSP::u::AudioInput *> AudioObjects;
 
-    #ifdef WINMMAPI
-      static void CALLBACK waveInProc_uchar(HWAVEIN hwi, UINT uMsg,
-        uint32_t dwInstance, uint32_t dwParam1, uint32_t dwParam2);
-      static void CALLBACK waveInProc_short(HWAVEIN hwi, UINT uMsg,
-        uint32_t dwInstance, uint32_t dwParam1, uint32_t dwParam2);
-    #endif
+    // #ifdef WINMMAPI
+    //   static void CALLBACK waveInProc_uchar(HWAVEIN hwi, UINT uMsg,
+    //     uint32_t dwInstance, uint32_t dwParam1, uint32_t dwParam2);
+    //   static void CALLBACK waveInProc_short(HWAVEIN hwi, UINT uMsg,
+    //     uint32_t dwInstance, uint32_t dwParam1, uint32_t dwParam2);
+    // #endif
 
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
 
@@ -863,16 +867,16 @@ class DSP::u::AudioOutput : public DSP::Block
 
     //bool IsPlayingNow;
 
-    bool StartAudio(void);
-    bool StopAudio(void);
-    bool StopPlaying;
+    // bool StartAudio(void);
+    // bool StopAudio(void);
+    // bool StopPlaying;
 
-    static unsigned long Next_CallbackInstance;
-    unsigned long Current_CallbackInstance;
-    //! Addresses of audio object connected with CallbackInstances;
-    /*! Current callback instanse is also the index to this array
-     */
-    static std::vector<DSP::u::AudioOutput *> AudioObjects;
+    // static unsigned long Next_CallbackInstance;
+    // unsigned long Current_CallbackInstance;
+    // //! Addresses of audio object connected with CallbackInstances;
+    // /*! Current callback instanse is also the index to this array
+    // */
+    //static std::vector<DSP::u::AudioOutput *> AudioObjects;
 
     //! (returns number of samples read per channel)
     uint32_t GetAudioSegment(void);

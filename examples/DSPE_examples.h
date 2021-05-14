@@ -9,6 +9,7 @@
 #define EXAMPLES_DSPE_EXAMPLES_H_
 
 int test_hello(void);
+int test_sound_input(void);
 
 
 #endif /* EXAMPLES_DSPE_EXAMPLES_H_ */

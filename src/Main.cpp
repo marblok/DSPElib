@@ -2931,9 +2931,8 @@ int main(int argc, char*argv[])
   DSP::log.SetLogState(DSP::e::LogState::console | DSP::e::LogState::file);
   DSP::log.SetLogFileName("DSPElib_test_log.txt");
 
-  DSP::log << "test ALSA" << endl;
-
   #ifdef ALSA_support_H
+    DSP::log << "test ALSA" << endl;
     test_ALSA();
     return 0;
   #endif // ALSA_support_H
@@ -2952,6 +2951,16 @@ int main(int argc, char*argv[])
   //! \TODO test also DSP::f::LPF_LS
   DSP::log << DSP::e::LogMode::pause << "Finished SolveMatrix test" << endl;
 
+#ifdef INCLUDE_DSPE_EXAMPLES
+  DSP::log << "Starting test_sound_input" << endl;
+  test_sound_input();
+  DSP::log << DSP::e::LogMode::Error << "Finished test_sound_input" << endl;
+
+  DSP::log << "Starting test_hello" << endl;
+  test_hello();
+  DSP::log << DSP::e::LogMode::Error << "Finished test_hello" << endl;
+#endif // INCLUDE_DSPE_EXAMPLES
+
   DSP::log << "Starting SymbolMapper test" << endl;
   test_SymbolMapper();
   DSP::log << DSP::e::LogMode::pause << "Finished SymbolMapper test" << endl;
@@ -2959,12 +2968,6 @@ int main(int argc, char*argv[])
   DSP::log << "Starting test_ZPSTC_cw_3" << endl;
   test_ZPSTC_cw_3();
   DSP::log << "Finished test_ZPSTC_cw_3" << DSP::e::LogMode::pause << endl;
-
-#ifdef INCLUDE_DSPE_EXAMPLES
-  DSP::log << "Starting test_hello" << endl;
-  test_hello();
-  DSP::log << DSP::e::LogMode::Error << "Finished test_hello" << endl;
-#endif // INCLUDE_DSPE_EXAMPLES
 
   DSP::log << "Starting test_1" << endl;
   test_1(argc, argv);

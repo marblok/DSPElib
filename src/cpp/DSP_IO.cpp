@@ -3513,58 +3513,58 @@ inline void CDirectXInput::SourceDescription(TStringList *Text)
       switch (result)
       {
         case MMSYSERR_ALLOCATED:
-          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
             "Specified resource is already allocated." << endl;
           break;
         case MMSYSERR_BADDEVICEID:
-          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
             "Specified device identifier is out of range." << endl;
           break;
         case MMSYSERR_NODRIVER:
-          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
             "No device driver is present." << endl;
           break;
         case MMSYSERR_NOMEM:
-          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
             "Unable to allocate or lock memory." << endl;
           break;
         case WAVERR_BADFORMAT:
-          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
             "Attempted to open with an unsupported waveform-audio format." << endl;
           break;
         case WAVERR_SYNC:
-          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
             "The device is synchronous but waveOutOpen was called without using the WAVE_ALLOWSYNC flag." << endl;
           break;
         case MMSYSERR_INVALFLAG:
-          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
             "Invalid flag" << endl;
           break;
         case MMSYSERR_NOERROR:
           return false;
-          //printf("DSP_AudioCheckError: ");
+          //printf("DSP::f::AudioCheckError: ");
           //printf("No error.");
           //printf("\n"); getchar();
           break;
         case MMSYSERR_INVALHANDLE:
-          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
             "Specified device handle is invalid." << endl;
           break;
         case WAVERR_UNPREPARED:
-          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
             "The data block pointed to by the pwh parameter hasn't been prepared." << endl;
           break;
         case MMSYSERR_HANDLEBUSY:
-          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
             "Handle busy." << endl;
           break;
         case WAVERR_STILLPLAYING:
-          DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second <<
+          DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
             "There are still buffers in the queue." << endl;
           break;
         default:
           {
-            DSP::log << DSP::e::LogMode::Error << "DSP_AudioCheckError" << DSP::e::LogMode::second
+            DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second
               << "Unknown error " << WAVERR_BASE << " " << result << endl;
           }
           break;
@@ -3606,260 +3606,260 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
   return size;
 }
 
-#ifdef WINMMAPI
+//#ifdef WINMMAPI
 
-  //! \bug allow user to select number of internal buffers
-  void CALLBACK DSP::u::AudioInput::waveInProc_short(HWAVEIN hwi, UINT uMsg,
-    uint32_t dwInstance, uint32_t dwParam1, uint32_t dwParam2)
-  {
-    UNUSED_ARGUMENT(hwi);
-    UNUSED_ARGUMENT(dwParam1);
-    UNUSED_ARGUMENT(dwParam2);
+  // //! \bug allow user to select number of internal buffers
+  // void CALLBACK DSP::u::AudioInput::waveInProc_short(HWAVEIN hwi, UINT uMsg,
+  //   uint32_t dwInstance, uint32_t dwParam1, uint32_t dwParam2)
+  // {
+  //   UNUSED_ARGUMENT(hwi);
+  //   UNUSED_ARGUMENT(dwParam1);
+  //   UNUSED_ARGUMENT(dwParam2);
 
-    MMRESULT result;
-    DSP::u::AudioInput *Current;
-    short *temp16;
-    DSP::Float_ptr Sample;
-    unsigned int ind;
-  #ifdef __DEBUG__
-    #ifdef AUDIO_DEBUG_MESSAGES_ON
-      stringstream tekst;
-    #endif
-  #endif
+  //   MMRESULT result;
+  //   DSP::u::AudioInput *Current;
+  //   short *temp16;
+  //   DSP::Float_ptr Sample;
+  //   unsigned int ind;
+  // #ifdef __DEBUG__
+  //   #ifdef AUDIO_DEBUG_MESSAGES_ON
+  //     stringstream tekst;
+  //   #endif
+  // #endif
 
-    Current = AudioObjects[dwInstance];
+  //   Current = AudioObjects[dwInstance];
 
-    switch (uMsg)
-    {
-  #ifdef __DEBUG__
-  #ifdef AUDIO_DEBUG_MESSAGES_ON
-      case WIM_OPEN:
-        DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
-          << "WIM_OPEN(" << (int)dwInstance << ")" << endl;
-        break;
-      case WIM_CLOSE:
-        DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
-          << "WIM_CLOSE(" << (int)dwInstance << ")" << endl;
-        break;
-  #endif
-  #endif
+  //   switch (uMsg)
+  //   {
+  // #ifdef __DEBUG__
+  // #ifdef AUDIO_DEBUG_MESSAGES_ON
+  //     case WIM_OPEN:
+  //       DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
+  //         << "WIM_OPEN(" << (int)dwInstance << ")" << endl;
+  //       break;
+  //     case WIM_CLOSE:
+  //       DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
+  //         << "WIM_CLOSE(" << (int)dwInstance << ")" << endl;
+  //       break;
+  // #endif
+  // #endif
 
-      case WIM_DATA:
-  #ifdef __DEBUG__
-  #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
-          << "WIM_DATA(" << (int)dwInstance << ")" << endl;
-  #endif
-  #endif
+  //     case WIM_DATA:
+  // #ifdef __DEBUG__
+  // #ifdef AUDIO_DEBUG_MESSAGES_ON
+  //       DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
+  //         << "WIM_DATA(" << (int)dwInstance << ")" << endl;
+  // #endif
+  // #endif
 
-        if (Current->StopRecording)
-          return;
-        else
-        {
-          if (Current->EmptyBufferIndex == Current->CurrentBufferIndex)
-          {
-  #ifdef __DEBUG__
-  #ifdef AUDIO_DEBUG_MESSAGES_ON
-            DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second << "All buffers had been used - skipping input audio frame" << endl;
-  #endif
-  #endif
-            result=waveInUnprepareHeader(Current->hWaveIn,
-              &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-            DSP::f::AudioCheckError(result);
-            // ignore data
+  //       if (Current->StopRecording)
+  //         return;
+  //       else
+  //       {
+  //         if (Current->EmptyBufferIndex == Current->CurrentBufferIndex)
+  //         {
+  // #ifdef __DEBUG__
+  // #ifdef AUDIO_DEBUG_MESSAGES_ON
+  //           DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second << "All buffers had been used - skipping input audio frame" << endl;
+  // #endif
+  // #endif
+  //           result=waveInUnprepareHeader(Current->hWaveIn,
+  //             &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
+  //           DSP::f::AudioCheckError(result);
+  //           // ignore data
 
-            //add put back into recording queue
-            result=waveInPrepareHeader(Current->hWaveIn,
-              &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-            DSP::f::AudioCheckError(result);
-            result=waveInAddBuffer(Current->hWaveIn,
-              &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-            DSP::f::AudioCheckError(result);
+  //           //add put back into recording queue
+  //           result=waveInPrepareHeader(Current->hWaveIn,
+  //             &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
+  //           DSP::f::AudioCheckError(result);
+  //           result=waveInAddBuffer(Current->hWaveIn,
+  //             &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
+  //           DSP::f::AudioCheckError(result);
 
-            Current->NextBufferInd++; Current->NextBufferInd %= 2; //just two buffers
-          }
-          else
-          { //copy audio frame to buffer form audio frame NextBufferInd
-            if (Current->waveHeaderIn[Current->NextBufferInd].dwFlags & WHDR_DONE)
-            {
-              //copy data
-              result=waveInUnprepareHeader(Current->hWaveIn,
-                &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-              DSP::f::AudioCheckError(result);
+  //           Current->NextBufferInd++; Current->NextBufferInd %= 2; //just two buffers
+  //         }
+  //         else
+  //         { //copy audio frame to buffer form audio frame NextBufferInd
+  //           if (Current->waveHeaderIn[Current->NextBufferInd].dwFlags & WHDR_DONE)
+  //           {
+  //             //copy data
+  //             result=waveInUnprepareHeader(Current->hWaveIn,
+  //               &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
+  //             DSP::f::AudioCheckError(result);
 
-              Sample=Current->InBuffers[Current->EmptyBufferIndex].data();
-              // ************************************************** //
-              // Converts samples format to the one suitable for the audio device
-              #ifdef __DEBUG__
-                if (Current->InSampleType != DSP::e::SampleType::ST_short)
-                {
-                  DSP::log << "DSP::u::AudioInput::waveInProc_short" << DSP::e::LogMode::second << "Current->InSampleType != DSP::e::SampleType::ST_short" << endl;
-                }
-              #endif
+  //             Sample=Current->InBuffers[Current->EmptyBufferIndex].data();
+  //             // ************************************************** //
+  //             // Converts samples format to the one suitable for the audio device
+  //             #ifdef __DEBUG__
+  //               if (Current->InSampleType != DSP::e::SampleType::ST_short)
+  //               {
+  //                 DSP::log << "DSP::u::AudioInput::waveInProc_short" << DSP::e::LogMode::second << "Current->InSampleType != DSP::e::SampleType::ST_short" << endl;
+  //               }
+  //             #endif
 
-              temp16=(short *)(Current->WaveInBuffers[Current->NextBufferInd].data());
-              for (ind=0; ind<Current->InBufferLen; ind++)
-              {
-                *Sample = (DSP::Float)(*temp16) / SHRT_MAX;
-                Sample++;
-                temp16++;
-              }
-              Current->EmptyBufferIndex++; Current->EmptyBufferIndex %= DSP::NoOfAudioInputBuffers;
+  //             temp16=(short *)(Current->WaveInBuffers[Current->NextBufferInd].data());
+  //             for (ind=0; ind<Current->InBufferLen; ind++)
+  //             {
+  //               *Sample = (DSP::Float)(*temp16) / SHRT_MAX;
+  //               Sample++;
+  //               temp16++;
+  //             }
+  //             Current->EmptyBufferIndex++; Current->EmptyBufferIndex %= DSP::NoOfAudioInputBuffers;
 
-              //add put back into recording queue
-              result=waveInPrepareHeader(Current->hWaveIn,
-                &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-              DSP::f::AudioCheckError(result);
-              result=waveInAddBuffer(Current->hWaveIn,
-                &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-              DSP::f::AudioCheckError(result);
+  //             //add put back into recording queue
+  //             result=waveInPrepareHeader(Current->hWaveIn,
+  //               &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
+  //             DSP::f::AudioCheckError(result);
+  //             result=waveInAddBuffer(Current->hWaveIn,
+  //               &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
+  //             DSP::f::AudioCheckError(result);
 
-              Current->NextBufferInd++; Current->NextBufferInd %= 2; //just two buffers
-            }
-            else
-            {
-  #ifdef __DEBUG__
-  #ifdef AUDIO_DEBUG_MESSAGES_ON
-              DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second << "Wrong audio frame ready or other unexpected error" << endl;
-  #endif
-  #endif
-            }
-          }
-        }
-        break; // WIM_DATA
-    }
-  }
+  //             Current->NextBufferInd++; Current->NextBufferInd %= 2; //just two buffers
+  //           }
+  //           else
+  //           {
+  // #ifdef __DEBUG__
+  // #ifdef AUDIO_DEBUG_MESSAGES_ON
+  //             DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second << "Wrong audio frame ready or other unexpected error" << endl;
+  // #endif
+  // #endif
+  //           }
+  //         }
+  //       }
+  //       break; // WIM_DATA
+  //   }
+  // }
 
-  //! \bug allow user to select number of internal buffers
-  void CALLBACK DSP::u::AudioInput::waveInProc_uchar(HWAVEIN hwi, UINT uMsg,
-    uint32_t dwInstance, uint32_t dwParam1, uint32_t dwParam2)
-  {
-    UNUSED_ARGUMENT(hwi);
-    UNUSED_ARGUMENT(dwParam1);
-    UNUSED_ARGUMENT(dwParam2);
+  // //! \bug allow user to select number of internal buffers
+  // void CALLBACK DSP::u::AudioInput::waveInProc_uchar(HWAVEIN hwi, UINT uMsg,
+  //   uint32_t dwInstance, uint32_t dwParam1, uint32_t dwParam2)
+  // {
+  //   UNUSED_ARGUMENT(hwi);
+  //   UNUSED_ARGUMENT(dwParam1);
+  //   UNUSED_ARGUMENT(dwParam2);
 
-    MMRESULT result;
-    DSP::u::AudioInput *Current;
-    uint8_t *temp8;
-    DSP::Float_ptr Sample;
-    unsigned int ind;
-  #ifdef __DEBUG__
-    #ifdef AUDIO_DEBUG_MESSAGES_ON
-      stringstream tekst;
-    #else
-      UNUSED_DEBUG_ARGUMENT(uMsg);
-    #endif
-  #endif
+  //   MMRESULT result;
+  //   DSP::u::AudioInput *Current;
+  //   uint8_t *temp8;
+  //   DSP::Float_ptr Sample;
+  //   unsigned int ind;
+  // #ifdef __DEBUG__
+  //   #ifdef AUDIO_DEBUG_MESSAGES_ON
+  //     stringstream tekst;
+  //   #else
+  //     UNUSED_DEBUG_ARGUMENT(uMsg);
+  //   #endif
+  // #endif
 
-    Current = AudioObjects[dwInstance];
+  //   Current = AudioObjects[dwInstance];
 
-    switch (uMsg)
-    {
-  #ifdef __DEBUG__
-  #ifdef AUDIO_DEBUG_MESSAGES_ON
-      case WIM_OPEN:
-        DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
-          << "WIM_OPEN(" << (int)dwInstance << ")" << end;
-        break;
-      case WIM_CLOSE:
-        DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
-          << "WIM_CLOSE(" << (int)dwInstance << ")" << endl;
-        break;
-  #endif
-  #endif
+  //   switch (uMsg)
+  //   {
+  // #ifdef __DEBUG__
+  // #ifdef AUDIO_DEBUG_MESSAGES_ON
+  //     case WIM_OPEN:
+  //       DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
+  //         << "WIM_OPEN(" << (int)dwInstance << ")" << end;
+  //       break;
+  //     case WIM_CLOSE:
+  //       DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
+  //         << "WIM_CLOSE(" << (int)dwInstance << ")" << endl;
+  //       break;
+  // #endif
+  // #endif
 
-      case WIM_DATA:
-  #ifdef __DEBUG__
-  #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
-          << "WIM_DATA(" << (int)dwInstance << ")" << endl;
-  #endif
-  #endif
+  //     case WIM_DATA:
+  // #ifdef __DEBUG__
+  // #ifdef AUDIO_DEBUG_MESSAGES_ON
+  //       DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
+  //         << "WIM_DATA(" << (int)dwInstance << ")" << endl;
+  // #endif
+  // #endif
 
-        if (Current->StopRecording)
-          return;
-        else
-        {
-          if (Current->EmptyBufferIndex == Current->CurrentBufferIndex)
-          {
-  #ifdef __DEBUG__
-  #ifdef AUDIO_DEBUG_MESSAGES_ON
-            DSP::log << "DSP::u::AudioInput::waveInProc"  << DSP::e::LogMode::second << "All buffers had been used - skipping input audio frame" << endl;
-  #endif
-  #endif
-            result=waveInUnprepareHeader(Current->hWaveIn,
-              &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-            DSP::f::AudioCheckError(result);
-            // ignore data
+  //       if (Current->StopRecording)
+  //         return;
+  //       else
+  //       {
+  //         if (Current->EmptyBufferIndex == Current->CurrentBufferIndex)
+  //         {
+  // #ifdef __DEBUG__
+  // #ifdef AUDIO_DEBUG_MESSAGES_ON
+  //           DSP::log << "DSP::u::AudioInput::waveInProc"  << DSP::e::LogMode::second << "All buffers had been used - skipping input audio frame" << endl;
+  // #endif
+  // #endif
+  //           result=waveInUnprepareHeader(Current->hWaveIn,
+  //             &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
+  //           DSP::f::AudioCheckError(result);
+  //           // ignore data
 
-            //add put back into recording queue
-            result=waveInPrepareHeader(Current->hWaveIn,
-              &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-            DSP::f::AudioCheckError(result);
-            result=waveInAddBuffer(Current->hWaveIn,
-              &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-            DSP::f::AudioCheckError(result);
+  //           //add put back into recording queue
+  //           result=waveInPrepareHeader(Current->hWaveIn,
+  //             &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
+  //           DSP::f::AudioCheckError(result);
+  //           result=waveInAddBuffer(Current->hWaveIn,
+  //             &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
+  //           DSP::f::AudioCheckError(result);
 
-            Current->NextBufferInd++; Current->NextBufferInd %= 2; //just two buffers
-          }
-          else
-          { //copy audio frame to buffer form audio frame NextBufferInd
-            if (Current->waveHeaderIn[Current->NextBufferInd].dwFlags & WHDR_DONE)
-            {
-              //copy data
-              result=waveInUnprepareHeader(Current->hWaveIn,
-                &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-              DSP::f::AudioCheckError(result);
+  //           Current->NextBufferInd++; Current->NextBufferInd %= 2; //just two buffers
+  //         }
+  //         else
+  //         { //copy audio frame to buffer form audio frame NextBufferInd
+  //           if (Current->waveHeaderIn[Current->NextBufferInd].dwFlags & WHDR_DONE)
+  //           {
+  //             //copy data
+  //             result=waveInUnprepareHeader(Current->hWaveIn,
+  //               &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
+  //             DSP::f::AudioCheckError(result);
 
-              Sample=Current->InBuffers[Current->EmptyBufferIndex].data();
-              // ************************************************** //
-              // Converts samples format to the one suitable for the audio device
-              #ifdef __DEBUG__
-                if (Current->InSampleType != DSP::e::SampleType::ST_uchar)
-                {
-                  DSP::log << "DSP::u::AudioInput::waveInProc_uchar" << DSP::e::LogMode::second << "Current->InSampleType != DSP::e::SampleType::ST_uchar" << endl;
-                }
-              #endif
+  //             Sample=Current->InBuffers[Current->EmptyBufferIndex].data();
+  //             // ************************************************** //
+  //             // Converts samples format to the one suitable for the audio device
+  //             #ifdef __DEBUG__
+  //               if (Current->InSampleType != DSP::e::SampleType::ST_uchar)
+  //               {
+  //                 DSP::log << "DSP::u::AudioInput::waveInProc_uchar" << DSP::e::LogMode::second << "Current->InSampleType != DSP::e::SampleType::ST_uchar" << endl;
+  //               }
+  //             #endif
 
-              temp8=(uint8_t *)(Current->WaveInBuffers[Current->NextBufferInd].data());
-              for (ind=0; ind<Current->InBufferLen; ind++)
-              {
-                *Sample = (DSP::Float)(*temp8 - 128) / 128;
-                Sample++;
-                temp8++;
-              }
-              Current->EmptyBufferIndex++; Current->EmptyBufferIndex %= DSP::NoOfAudioInputBuffers;
+  //             temp8=(uint8_t *)(Current->WaveInBuffers[Current->NextBufferInd].data());
+  //             for (ind=0; ind<Current->InBufferLen; ind++)
+  //             {
+  //               *Sample = (DSP::Float)(*temp8 - 128) / 128;
+  //               Sample++;
+  //               temp8++;
+  //             }
+  //             Current->EmptyBufferIndex++; Current->EmptyBufferIndex %= DSP::NoOfAudioInputBuffers;
 
-              //add put back into recording queue
-              result=waveInPrepareHeader(Current->hWaveIn,
-                &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-              DSP::f::AudioCheckError(result);
-              result=waveInAddBuffer(Current->hWaveIn,
-                &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
-              DSP::f::AudioCheckError(result);
+  //             //add put back into recording queue
+  //             result=waveInPrepareHeader(Current->hWaveIn,
+  //               &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
+  //             DSP::f::AudioCheckError(result);
+  //             result=waveInAddBuffer(Current->hWaveIn,
+  //               &(Current->waveHeaderIn[Current->NextBufferInd]), sizeof(WAVEHDR));
+  //             DSP::f::AudioCheckError(result);
 
-              Current->NextBufferInd++; Current->NextBufferInd %= 2; //just two buffers
-            }
-            else
-            {
-  #ifdef __DEBUG__
-  #ifdef AUDIO_DEBUG_MESSAGES_ON
-              DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second << "Wrong audio frame ready or other unexpected error" << endl;
-  #endif
-  #endif
-            }
-          }
-          break;
-        }
+  //             Current->NextBufferInd++; Current->NextBufferInd %= 2; //just two buffers
+  //           }
+  //           else
+  //           {
+  // #ifdef __DEBUG__
+  // #ifdef AUDIO_DEBUG_MESSAGES_ON
+  //             DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second << "Wrong audio frame ready or other unexpected error" << endl;
+  // #endif
+  // #endif
+  //           }
+  //         }
+  //         break;
+  //       }
 
-    }
-  }
-#endif // WINMMAPI
+  //   }
+  // }
+//#endif // WINMMAPI
 
-unsigned long DSP::u::AudioOutput::Next_CallbackInstance=0;
-unsigned long DSP::u::AudioInput::Next_CallbackInstance =0;
-std::vector<DSP::u::AudioOutput *> DSP::u::AudioOutput::AudioObjects;
-std::vector<DSP::u::AudioInput  *> DSP::u::AudioInput::AudioObjects;
+// unsigned long DSP::u::AudioOutput::Next_CallbackInstance=0;
+// unsigned long DSP::u::AudioInput::Next_CallbackInstance =0;
+// std::vector<DSP::u::AudioOutput *> DSP::u::AudioOutput::AudioObjects;
+// std::vector<DSP::u::AudioInput  *> DSP::u::AudioInput::AudioObjects;
 
 DSP::u::AudioOutput::AudioOutput(void)
   : DSP::Block()
@@ -3943,16 +3943,14 @@ void DSP::u::AudioOutput::Init(unsigned long SamplingFreq,
 //    //! \bug in Debug mode this callback does nothing so it would be better just not use it
 //    Callback = (DWORD_PTR)(&DSP::u::AudioOutput::waveOutProc);
 //  #endif
-  Current_CallbackInstance=Next_CallbackInstance;
-  Next_CallbackInstance++;
-  AudioObjects.resize(Current_CallbackInstance+1);
-  AudioObjects[Current_CallbackInstance]=this;
-
-  StopPlaying = false;
+  // Current_CallbackInstance=Next_CallbackInstance;
+  // Next_CallbackInstance++;
+  // AudioObjects.resize(Current_CallbackInstance+1);
+  // AudioObjects[Current_CallbackInstance]=this;
 
   audio_outbuffer_size = DSP::f::GetAudioBufferSize(SamplingFreq, DSP::e::AudioBufferType::output);
 
-  snd_object.select_device_by_number(WaveOutDevNo); // use default device
+  snd_object.select_output_device_by_number(WaveOutDevNo); // use default device
   snd_object.open_PCM_device_4_output(NoOfInputs, BitPrec, SamplingFreq, audio_outbuffer_size);
 
   OutBufferLen=NoOfInputs*audio_outbuffer_size;
@@ -3991,6 +3989,57 @@ DSP::u::AudioInput::AudioInput(
   OutputExecute_ptr = &OutputExecute;
 }
 
+bool DSP::u::AudioInput::SOUND_object_callback(const DSP::e::SampleType &InSampleType, const std::vector<char> &wave_in_raw_buffer) {
+  if (EmptyBufferIndex != CurrentBufferIndex) {
+    DSP::Float_ptr Sample;
+    unsigned int ind;
+
+    //  reading sound card input buffer
+    Sample=InBuffers[EmptyBufferIndex].data();
+    // ************************************************** //
+    // Converts samples format from the one used in the audio device
+    switch (InSampleType) {
+      case DSP::e::SampleType::ST_short: {
+          short *temp16;
+
+          temp16=(short *)(wave_in_raw_buffer.data());
+          for (ind=0; ind<InBufferLen; ind++)
+          {
+            *Sample = (DSP::Float)(*temp16) / SHRT_MAX;
+            Sample++;
+            temp16++;
+          }
+        }
+        break;
+
+      case DSP::e::SampleType::ST_uchar: {
+          uint8_t *temp8;
+          
+          temp8=(uint8_t *)(wave_in_raw_buffer.data());
+          for (ind=0; ind<InBufferLen; ind++)
+          {
+            *Sample = (DSP::Float)(*temp8 - 128) / 128;
+            Sample++;
+            temp8++;
+          }
+        }
+        break;
+
+      default:
+    #ifdef __DEBUG__
+        DSP::log << "DSP::u::AudioInput::waveInProc_short" << DSP::e::LogMode::second << "Unsupported Current->InSampleType" << endl;
+    #endif
+        break;
+    }
+    EmptyBufferIndex++; EmptyBufferIndex %= DSP::NoOfAudioInputBuffers;
+
+    return true;
+  }
+  else {
+    return false;
+  }
+  return false;
+}
 
 /* Inputs and Outputs names:
  *   - Output:
@@ -4009,19 +4058,19 @@ void DSP::u::AudioInput::Init(DSP::Clock_ptr ParentClock,
   unsigned long ind;
   string temp;
 
-  #ifdef WINMMAPI
-    MMRESULT result;
-    DWORD_PTR Callback;
-  //Rezerwacja pamici dla formatu WAVE
-  //  WAVEFORMATEX wfx; //to wymaga korekty
-    PCMWAVEFORMAT wfx;
-  #elif defined(ALSA_support_H)
-    UNUSED_ARGUMENT(WaveInDevNo);
-    ALSA_object_t ALSA_object;
+  // #ifdef WINMMAPI
+  //   MMRESULT result;
+  //   DWORD_PTR Callback;
+  // //Rezerwacja pamici dla formatu WAVE
+  // //  WAVEFORMATEX wfx; //to wymaga korekty
+  //   PCMWAVEFORMAT wfx;
+  // #elif defined(ALSA_support_H)
+  //   UNUSED_ARGUMENT(WaveInDevNo);
+  //   ALSA_object_t ALSA_object;
 
-  #else
-    UNUSED_ARGUMENT(WaveInDevNo);
-  #endif
+  // #else
+  //   UNUSED_ARGUMENT(WaveInDevNo);
+  // #endif
 
   SetNoOfOutputs(OutputsNo);
   SetName("AudioInput", false);
@@ -4046,117 +4095,53 @@ void DSP::u::AudioInput::Init(DSP::Clock_ptr ParentClock,
   RegisterOutputClock(ParentClock);
   my_clock = ParentClock;
 
-  Current_CallbackInstance=Next_CallbackInstance;
-  Next_CallbackInstance++;
-  AudioObjects.resize(Current_CallbackInstance+1);
-  AudioObjects[Current_CallbackInstance]=this;
-  StopRecording = false;
+  // Current_CallbackInstance=Next_CallbackInstance;
+  // Next_CallbackInstance++;
+  // AudioObjects.resize(Current_CallbackInstance+1);
+  // AudioObjects[Current_CallbackInstance]=this;
+  // StopRecording = false;
 
-  switch (BitPrec)
-  {
-    case 8:
-      InSampleType=DSP::e::SampleType::ST_uchar;
-      #ifdef WINMMAPI
-        Callback = (DWORD_PTR)(&DSP::u::AudioInput::waveInProc_uchar);
-      #endif
-      break;
-    case 16:
-      InSampleType=DSP::e::SampleType::ST_short;
-      #ifdef WINMMAPI
-        Callback = (DWORD_PTR)(&DSP::u::AudioInput::waveInProc_short);
-      #endif
-      break;
-    default:
-      InSampleType=DSP::e::SampleType::ST_short;
-      #ifdef WINMMAPI
-        Callback = (DWORD_PTR)(&DSP::u::AudioInput::waveInProc_short);
-      #endif
-      BitPrec=16;
-      break;
-  }
+  // switch (BitPrec)
+  // {
+  //   case 8:
+  //     InSampleType=DSP::e::SampleType::ST_uchar;
+  //     #ifdef WINMMAPI
+  //       Callback = (DWORD_PTR)(&DSP::u::AudioInput::waveInProc_uchar);
+  //     #endif
+  //     break;
+  //   case 16:
+  //     InSampleType=DSP::e::SampleType::ST_short;
+  //     #ifdef WINMMAPI
+  //       Callback = (DWORD_PTR)(&DSP::u::AudioInput::waveInProc_short);
+  //     #endif
+  //     break;
+  //   default:
+  //     InSampleType=DSP::e::SampleType::ST_short;
+  //     #ifdef WINMMAPI
+  //       Callback = (DWORD_PTR)(&DSP::u::AudioInput::waveInProc_short);
+  //     #endif
+  //     BitPrec=16;
+  //     break;
+  // }
 
   audio_inbuffer_size = DSP::f::GetAudioBufferSize(SamplingFreq, DSP::e::AudioBufferType::input);
 
-  #ifdef WINMMAPI
-    //Wypeniamy struktur wfx
-    wfx.wf.wFormatTag=WAVE_FORMAT_PCM;
-    wfx.wf.nChannels=(uint16_t)NoOfOutputs;
-    wfx.wf.nSamplesPerSec=(UINT)SamplingFreq;
-    wfx.wBitsPerSample=BitPrec;
-    wfx.wf.nAvgBytesPerSec=wfx.wf.nSamplesPerSec*(wfx.wBitsPerSample/8);
-    wfx.wf.nBlockAlign=(uint16_t)(wfx.wf.nChannels*(wfx.wBitsPerSample/8));
-
-    if (waveInGetNumDevs() <= WaveInDevNo)
-      result=waveInOpen(&hWaveIn,
-        WAVE_MAPPER, //&DeviceID,
-        (WAVEFORMATEX *)(&wfx),
-        Callback,
-        Current_CallbackInstance, //CallbackInstance,
-        CALLBACK_FUNCTION | WAVE_FORMAT_DIRECT //| WAVE_MAPPED //CALLBACK_NULL
-        );
-    else
-      result=waveInOpen(&hWaveIn,
-        WaveInDevNo, //&DeviceID,
-        (WAVEFORMATEX *)(&wfx),
-        Callback,
-        Current_CallbackInstance, //CallbackInstance,
-        CALLBACK_FUNCTION | WAVE_FORMAT_DIRECT //| WAVE_MAPPED //CALLBACK_NULL
-        );
-    if (DSP::f::AudioCheckError(result) == false)
-    { // no errors
-      waveHeaderIn.resize(2);
-      WaveInBufferLen=wfx.wf.nBlockAlign*audio_inbuffer_size;
-      WaveInBuffers.resize(2);
-      /*! \bug <b>2006.08.13</b> when 8bit audio stream is created initial values should be 0x80 or 0x79 not 0x00
-       */
-      WaveInBuffers[0].clear(); WaveInBuffers[0].resize(WaveInBufferLen, 0);
-      WaveInBuffers[1].clear(); WaveInBuffers[1].resize(WaveInBufferLen, 0);
-
-      InBufferLen=NoOfOutputs*audio_inbuffer_size;
-      for (ind = 0; ind < DSP::NoOfAudioInputBuffers; ind++)
-      {
-        InBuffers[ind].clear();
-        InBuffers[ind].resize(InBufferLen);
-      }
-      EmptyBufferIndex=0;
-      CurrentBufferIndex=DSP::NoOfAudioInputBuffers-1;
-      BufferIndex=InBufferLen;
-
-      waveHeaderIn[0].lpData=(char *)(WaveInBuffers[0].data());
-      waveHeaderIn[0].dwBufferLength=InBufferLen*(BitPrec/8); //sizeof(short);
-      waveHeaderIn[0].dwFlags= 0; // WHDR_BEGINLOOP | WHDR_ENDLOOP;
-      waveHeaderIn[0].dwLoops=0;
-
-      result=waveInPrepareHeader(hWaveIn,
-        &(waveHeaderIn[0]), sizeof(WAVEHDR));
-      DSP::f::AudioCheckError(result);
-    //  waveHeaderIn[0].dwFlags= WHDR_DONE; // WHDR_BEGINLOOP | WHDR_ENDLOOP;
-
-      waveHeaderIn[1].lpData=(char *)(WaveInBuffers[1].data());
-      waveHeaderIn[1].dwBufferLength=InBufferLen*(BitPrec/8); //sizeof(short);
-      waveHeaderIn[1].dwFlags= 0; // WHDR_BEGINLOOP | WHDR_ENDLOOP;
-      waveHeaderIn[1].dwLoops=0;
-
-      result=waveInPrepareHeader(hWaveIn,
-        &(waveHeaderIn[1]), sizeof(WAVEHDR));
-      DSP::f::AudioCheckError(result);
-    //  waveHeaderIn[1].dwFlags= WHDR_DONE; // WHDR_BEGINLOOP | WHDR_ENDLOOP;
+  snd_object.select_input_device_by_number(WaveInDevNo); // use default device
+  snd_object.register_input_callback_object(this, SOUND_object_callback); // use default device
+  if (snd_object.open_PCM_device_4_input(NoOfOutputs, BitPrec, SamplingFreq, audio_inbuffer_size) > 0) {
+    InBufferLen=NoOfOutputs*audio_inbuffer_size;
+    for (ind = 0; ind < DSP::NoOfAudioInputBuffers; ind++)
+    {
+      InBuffers[ind].clear();
+      InBuffers[ind].resize(InBufferLen);
     }
-    else
-    { // error creating audio object
-      waveHeaderIn.clear(); WaveInBufferLen=0;
-      WaveInBuffers.clear();
+    EmptyBufferIndex=0;
+    CurrentBufferIndex=DSP::NoOfAudioInputBuffers-1;
+    BufferIndex=InBufferLen;
 
-      InBufferLen=0;
-      for (ind = 0; ind < DSP::NoOfAudioInputBuffers; ind++)
-      {
-        InBuffers[ind].clear();
-      }
-      EmptyBufferIndex=0; CurrentBufferIndex=0;
-      BufferIndex=0;
-    }
-
-  #else
+  }
+  else
+  { // error creating audio object
 
     InBufferLen=0;
     for (ind = 0; ind < DSP::NoOfAudioInputBuffers; ind++)
@@ -4165,12 +4150,7 @@ void DSP::u::AudioInput::Init(DSP::Clock_ptr ParentClock,
     }
     EmptyBufferIndex=0; CurrentBufferIndex=0;
     BufferIndex=0;
-
-  #endif
-
-  IsRecordingNow = false; //wait until data requested
-
-  NextBufferInd=0; //its overridden in Execute()
+  }
 }
 
 
@@ -4183,9 +4163,9 @@ DSP::u::AudioOutput::~AudioOutput()
 
   if (OutBufferLen != 0)
   { // if device was opened successfully
-    StopPlaying=true;
+    snd_object.stop_playback();
 
-    snd_object.close_PCM_device();
+    snd_object.close_PCM_device_output();
 
     // #ifdef WINMMAPI
     //   result = waveOutReset(hWaveOut);
@@ -4229,60 +4209,23 @@ DSP::u::AudioOutput::~AudioOutput()
   // *************************** //
   // Free local resourses
   // 3) remove this audio object from the list
-  if (AudioObjects.size() > 0)
-  {
-    AudioObjects.erase(AudioObjects.begin() + Current_CallbackInstance);
-  }
-  Next_CallbackInstance--;
+  // if (AudioObjects.size() > 0)
+  // {
+  //   AudioObjects.erase(AudioObjects.begin() + Current_CallbackInstance);
+  // }
+  // Next_CallbackInstance--;
 }
 
 DSP::u::AudioInput::~AudioInput()
 {
-  #ifdef WINMMAPI
-    MMRESULT result;
-  #endif
   unsigned long ind;
 
   if (InBufferLen != 0)
   { // if device was opened successfully
-    StopRecording=true;
+    // StopRecording=true;
+    snd_object.stop_recording();
 
-    #ifdef WINMMAPI
-      result = waveInReset(hWaveIn);
-      DSP::f::AudioCheckError(result);
-      result=waveInUnprepareHeader(hWaveIn,
-        &(waveHeaderIn[0]), sizeof(WAVEHDR));
-      DSP::f::AudioCheckError(result);
-      result=waveInUnprepareHeader(hWaveIn,
-        &(waveHeaderIn[1]), sizeof(WAVEHDR));
-      DSP::f::AudioCheckError(result);
-
-      #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "DSP::u::AudioInput" << DSP::e::LogMode::second << "Closing DSP::u::AudioInput" << endl;
-      #endif
-      result=waveInClose(hWaveIn);
-      while (result==WAVERR_STILLPLAYING)
-      {
-      //    #ifdef WINBASEAPI
-        DSP::f::Sleep(100);
-      //    #else
-      //      sleep(100);
-      //    #endif
-        #ifdef AUDIO_DEBUG_MESSAGES_ON
-          DSP::log << "DSP::u::AudioInput" << DSP::e::LogMode::second << "Closing DSP::u::AudioInput" << endl;
-        #endif
-        result=waveInClose(hWaveIn);
-      }
-      DSP::f::AudioCheckError(result);
-    #endif
-
-    // 2) Free buffers
-    WaveInBuffers[0].clear();
-    WaveInBuffers[1].clear();
-    WaveInBuffers.clear();
-    #ifdef WINMMAPI
-      waveHeaderIn.clear();
-    #endif
+    snd_object.close_PCM_device_input();
 
     for (ind=0; ind<DSP::NoOfAudioInputBuffers; ind++)
       InBuffers[ind].clear();
@@ -4291,11 +4234,11 @@ DSP::u::AudioInput::~AudioInput()
   // *************************** //
   // Free local resourses
   // 3) remove this audio object from the list
-  if (AudioObjects.size() > 0)
-  {
-    AudioObjects.erase(AudioObjects.begin() + Current_CallbackInstance);
-  }
-  Next_CallbackInstance--;
+  // if (AudioObjects.size() > 0)
+  // {
+  //   AudioObjects.erase(AudioObjects.begin() + Current_CallbackInstance);
+  // }
+  // Next_CallbackInstance--;
 }
 
 void DSP::u::AudioOutput::FlushBuffer(void)
@@ -4473,10 +4416,7 @@ bool DSP::u::AudioInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(clock);
 
-  #ifdef WINMMAPI
-    MMRESULT result;
-  #endif
-    unsigned int ind;
+  unsigned int ind;
 
   if (DSP_THIS->InBufferLen == 0)
   { // no audio device opened
@@ -4498,7 +4438,7 @@ bool DSP::u::AudioInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
 
 
   // if no input buffer is ready return false (system will later return here)
-  if (DSP_THIS->IsRecordingNow == true)
+  if (DSP_THIS->snd_object.is_device_recording() == true)
   { // but must check if data ready
     if ((((DSP_THIS->CurrentBufferIndex + 1) % DSP::NoOfAudioInputBuffers) == DSP_THIS->EmptyBufferIndex)
         && (DSP_THIS->BufferIndex == DSP_THIS->InBufferLen))
@@ -4553,39 +4493,22 @@ bool DSP::u::AudioInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
   else
   { // starts recording
     // using both buffers
-    #ifdef WINMMAPI
-      #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "DSP::u::AudioInput::Execute" << DSP::e::LogMode::second << "Starting recording using two wave buffers" << endl;
-      #endif
+    DSP_THIS->snd_object.start_recording();
 
-      result=waveInAddBuffer(DSP_THIS->hWaveIn,
-            &(DSP_THIS->waveHeaderIn[0]), sizeof(WAVEHDR));
-      DSP::f::AudioCheckError(result);
-      result=waveInAddBuffer(DSP_THIS->hWaveIn,
-            &(DSP_THIS->waveHeaderIn[1]), sizeof(WAVEHDR));
-      DSP::f::AudioCheckError(result);
+    //DSP_THIS->NextBufferInd = 0; //first buffer first
+    DSP_THIS->EmptyBufferIndex = 2; //simulate two full buffers
+    for (ind = 0; ind < DSP_THIS->EmptyBufferIndex; ind++) {
+      memset(DSP_THIS->InBuffers[ind].data(), 0, DSP_THIS->InBufferLen*sizeof(DSP::Float));
+    }
+    DSP_THIS->BufferIndex = 0;
 
-      DSP_THIS->NextBufferInd = 0; //first buffer first
-      DSP_THIS->EmptyBufferIndex = 2; //simulate two full buffers
-      for (ind = 0; ind < DSP_THIS->EmptyBufferIndex; ind++) {
-        memset(DSP_THIS->InBuffers[ind].data(), 0, DSP_THIS->InBufferLen*sizeof(DSP::Float));
-      }
-      DSP_THIS->BufferIndex = 0;
-
-      result=waveInStart(DSP_THIS->hWaveIn);
-      DSP::f::AudioCheckError(result);
-      DSP_THIS->IsRecordingNow = true;
-      //now just wait for buffer to fill up
-      // which should call waveInProc
-
-
-      //We cannot wait until input buffers fill-up, some other processing
-      // blocks like DSP::u::AudioOutput might wait for their time
-      /*! _bug if there are no DSP::u::AudioOutput blocks nothing
-       * will stop boost in processing speed
-       *
-       * we might want to simulated two full input buffers
-       */
+    //We cannot wait until input buffers fill-up, some other processing
+    // blocks like DSP::u::AudioOutput might wait for their time
+    /*! _bug if there are no DSP::u::AudioOutput blocks nothing
+      * will stop boost in processing speed
+      *
+      * we might want to simulated two full input buffers
+      */
   //    #ifdef AUDIO_DEBUG_MESSAGES_ON
   //      DSP::log << "DSP::u::AudioInput::Execute", "Audio recording started !!!");
   //    #endif
@@ -4597,8 +4520,6 @@ bool DSP::u::AudioInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
   //      BufferIndex++;
   //    }
   //    return true;
-
-    #endif
 
     // program will return to this function and then output should be dealt with
     DSP::Clock::InputNeedsMoreTime[DSP_THIS->my_clock->MasterClockIndex] = true;
@@ -5871,4 +5792,77 @@ bool DSP::f::SaveVector(const string &filename, const DSP::Complex_vector &vecto
   return false;
 }
 
+
+//unsigned long DSP::WMM_object_t::Next_CallbackInstance=0;
+std::vector<DSP::SOUND_object_t *> DSP::SOUND_object_t::CallbackSoundObjects;
+
+const DSP::SOUND_object_t * DSP::SOUND_object_t::get_CallbackSoundObject(const long int &instance_number) {
+  return (CallbackSoundObjects[instance_number]);
+}
+
+DSP::SOUND_object_t::SOUND_object_t() {
+  AudioOutput_object = NULL;
+  AudioInput_object = NULL;
+
+  Current_CallbackInstance=get_free_CallbackInstance();
+  CallbackSoundObjects[Current_CallbackInstance]=this;
+}
+
+DSP::u::AudioInput *DSP::SOUND_object_t::get_input_callback_object() {
+  return AudioInput_object;
+}
+
+bool DSP::SOUND_object_t::input_callback_call(const DSP::e::SampleType &InSampleType, const std::vector<char> &wave_in_raw_buffer) {
+  return (AudioInput_object->*AudioInput_callback)(InSampleType, wave_in_raw_buffer);
+}
+
+unsigned long DSP::SOUND_object_t::get_free_CallbackInstance(void) {
+  bool is_free_slot_available = false;
+  unsigned long free_slot_index;
+
+  for (unsigned int ind = 0; ind < CallbackSoundObjects.size(); ind++) {
+    if (CallbackSoundObjects[ind] == NULL) {
+      is_free_slot_available = true;
+      free_slot_index = ind;
+      break;
+    }
+  }
+
+  if (is_free_slot_available == false) {
+    CallbackSoundObjects.push_back(NULL);
+    free_slot_index = (unsigned long)(CallbackSoundObjects.size()-1);
+  }
+
+  return free_slot_index;
+}
+
+
+DSP::u::AudioOutput *DSP::SOUND_object_t::get_output_callback_object() {
+  return AudioOutput_object;
+}
+
+bool DSP::SOUND_object_t::output_callback_call() {
+  return (AudioOutput_object->*AudioOutput_callback)();
+}
+
+bool DSP::SOUND_object_t::register_input_callback_object(DSP::u::AudioInput *callback_object, bool(DSP::u::AudioInput::*cp)(const DSP::e::SampleType &, const std::vector<char> &)) {
+  if (is_input_callback_supported() == true) {
+    AudioInput_object = callback_object;
+    AudioInput_callback = cp;
+    return true;
+  }
+  return false;
+}
+
+long int DSP::SOUND_object_t::get_current_CallbackInstance() {
+  return Current_CallbackInstance;
+}
+
+DSP::SOUND_object_t::~SOUND_object_t() {
+  if (CallbackSoundObjects.size() > 0)
+  {
+    //CallbackObjects.erase(CallbackObjects.begin() + Current_CallbackInstance);
+    CallbackSoundObjects[Current_CallbackInstance] = NULL;
+  }
+}
 

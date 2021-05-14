@@ -5,12 +5,12 @@
  */
 #include <DSP_lib.h>
 
-#ifndef _DSPE_TEST_
+#ifndef INCLUDE_DSPE_EXAMPLES
 int main(void)
 #else
 #include "DSPE_examples.h"
 int test_hello(void)
-#endif // _DSPE_TEST_
+#endif // INCLUDE_DSPE_EXAMPLES
 {
   DSP::Clock_ptr MasterClock;
   string tekst;

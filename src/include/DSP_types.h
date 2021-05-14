@@ -529,28 +529,79 @@ namespace DSP {
 
 
 namespace DSP {
+  namespace u {
+    class AudioInput;
+    class AudioOutput;
+  }
+
     //! Base class for classes implementing sound card support for DSP::u::AudioInput and DSP::u::AudioOutput 
     /*! \TODO  convert WMM support in DSP::u::AudioInput and DSP::u::AudioOutput into support through WMM_object_t
      */
-    class SOUND_object_t {
+  class SOUND_object_t {
+    private:
+      DSP::u::AudioInput * AudioInput_object;
+      bool (DSP::u::AudioInput::*AudioInput_callback)(const DSP::e::SampleType &InSampleType, const std::vector<char> &wave_in_raw_buffer);
+      DSP::u::AudioOutput * AudioOutput_object;
+      bool (DSP::u::AudioOutput::*AudioOutput_callback)(void);
+
+      //static unsigned long Next_CallbackInstance;
+      unsigned long Current_CallbackInstance;
+      static std::vector<DSP::SOUND_object_t *> CallbackSoundObjects;
+      static unsigned long get_free_CallbackInstance(void);
 
     public:
       virtual void log_driver_data() = 0;
 
-      virtual bool select_device_by_number(const unsigned int &device_number=UINT_MAX) = 0;
+      virtual unsigned int select_input_device_by_number(const unsigned int &device_number=UINT_MAX) = 0;
+      virtual unsigned int select_output_device_by_number(const unsigned int &device_number=UINT_MAX) = 0;
 
       virtual long open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size) = 0;
       virtual long open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size) = 0;
-      virtual bool close_PCM_device(void) = 0;
+      virtual bool close_PCM_device_input(void) = 0;
+      virtual bool close_PCM_device_output(void) = 0;
 
       //! returns true is the playback is on
       virtual bool is_device_playing(void) = 0;
+      //! initializes playback stopping
+      virtual bool stop_playback(void) = 0;
+      //! returns true is the sound capture is on
+      virtual bool is_device_recording(void) = 0;
+      //! returns true is the sound capture is on
+      virtual bool stop_recording(void) = 0;
 
       //! \note values stored in float_buffer might be altered
-      long append_playback_buffer(DSP::Float_vector &float_buffer);
+      virtual long append_playback_buffer(DSP::Float_vector &float_buffer)=0;
+      //! Starts sound capture
+      virtual bool start_recording(void) = 0;
 
-      virtual ~SOUND_object_t() {};
-    };
+
+      long int get_current_CallbackInstance();
+      static const DSP::SOUND_object_t * get_CallbackSoundObject(const long int &instance_number);
+
+      // https://stackoverflow.com/questions/8865766/get-a-pointer-to-objects-member-function
+      /*! Returns false if callbacks are not supported of recording
+       */
+      virtual bool is_input_callback_supported(void) = 0;
+      /*! Returns false if callbacks are not supported
+       * \TODO define when it will be called and what for?
+       */
+      bool register_input_callback_object(DSP::u::AudioInput *callback_object, bool(DSP::u::AudioInput::*cp)(const DSP::e::SampleType &, const std::vector<char> &));
+      DSP::u::AudioInput *get_input_callback_object();
+      bool input_callback_call(const DSP::e::SampleType &InSampleType, const std::vector<char> &wave_in_raw_buffer);
+
+      /*! Returns false if callbacks are not supported of playback
+       */
+      virtual bool is_output_callback_supported(void) = 0;
+      /*! Returns false if callbacks are not supported
+       * \TODO define when it will be called and what for?
+       */
+      bool register_output_callback_object(DSP::u::AudioOutput *callback_object, bool(DSP::u::AudioOutput::*cp)());
+      DSP::u::AudioOutput *get_output_callback_object();
+      bool output_callback_call();
+
+      SOUND_object_t();
+      virtual ~SOUND_object_t();
+  };
 }
 
 
