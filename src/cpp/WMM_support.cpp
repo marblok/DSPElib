@@ -159,7 +159,7 @@ bool DSP::WMM_object_t::is_device_recording(void) {
   return IsRecordingNow;
 }
 
-long DSP::WMM_object_t::open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_inbuffer_size = -1) {
+long DSP::WMM_object_t::open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_inbuffer_size) {
   if (is_device_input_open)
   {
     DSP::log << "DSP::WMM_object_t::open_PCM_device_4_input" << DSP::e::LogMode::second << "Device has been already opened: closing device before reopening" << endl;
@@ -252,7 +252,7 @@ long DSP::WMM_object_t::open_PCM_device_4_input(const int &no_of_channels, int n
   return -1;
 }
 
-long DSP::WMM_object_t::open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size = -1) {
+long DSP::WMM_object_t::open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size) {
   if (is_device_output_open)
   {
     DSP::log << "DSP::WMM_object_t::open_PCM_device_4_output" << DSP::e::LogMode::second << "Device has been already opened: closing device before reopening" << endl;
