@@ -11,6 +11,7 @@ com_ver = $(shell gcc -dumpmachine)-gcc_$(shell gcc -dumpversion)
 INSTALL_DIR_ROOT = ../_DSPE_lib_linux_
 
 SRC_DIR = ./src
+SRC_EXAMPLES_DIR = ./examples
 SRC_CPP_SUBDIR = $(SRC_DIR)/cpp
 
 
@@ -42,6 +43,9 @@ SOURCES = $(addprefix $(SRC_CPP_SUBDIR)/,$(SOURCES_NAMES))
 SOURCES_DBG =
 SOURCES_DBG += $(SRC_DIR)/Main.cpp
 
+SOURCES_EXAMPLES_DBG =
+SOURCES_EXAMPLES_DBG += $(SRC_EXAMPLES_DIR)/hello.cpp $(SRC_EXAMPLES_DIR)/sound_input.cpp 
+
 # ################################################# #
 # Just sockets // currently not supported in Linux
 SOURCES_SOCKETS_NAMES = DSP_sockets.cpp 
@@ -64,6 +68,8 @@ OBJECTS_Debug 		  := $(SOURCES:%.cpp=$(OUT_DIR_DBG)/%.o)
 DEPENDS_Debug 		  := $(SOURCES:%.cpp=$(OUT_DIR_DBG)/%.d)
 OBJECTS_Debug 		  += $(SOURCES_DBG:%.cpp=$(OUT_DIR_DBG)/%.o)
 DEPENDS_Debug 		  += $(SOURCES_DBG:%.cpp=$(OUT_DIR_DBG)/%.d)
+OBJECTS_EXAMPLES_Debug := $(SOURCES_EXAMPLES_DBG:%.cpp=$(OUT_DIR_DBG)/%.o)
+DEPENDS_EXAMPLES_Debug := $(SOURCES_EXAMPLES_DBG:%.cpp=$(OUT_DIR_DBG)/%.d)
 OBJECTS_SOCKETS_Debug := $(SOURCES_SOCKETS:%.cpp=$(OUT_DIR_DBG)/%.o)
 DEPENDS_SOCKETS_Debug := $(SOURCES_SOCKETS:%.cpp=$(OUT_DIR_DBG)/%.d)
 
@@ -77,6 +83,7 @@ OBJECTS_MISC_Debug :=
 -include $(DEPENDS_SOCKETS_Release)
 -include $(DEPENDS_Debug)
 -include $(DEPENDS_SOCKETS_Debug)
+-include $(DEPENDS_EXAMPLES_Debug)
 
 all: Debug Release
 
@@ -105,11 +112,11 @@ $(OBJECTS_Release) $(OBJECTS_SOCKETS_Release): $(OUT_DIR_RLS)/%.o : %.cpp
 
 # ########################################################################################### #	
 # ########################################################################################### #	
-# Debug: $(OUT_DIR_DBG)/libDSPE.a $(OUT_DIR_DBG)/libDSPEsockets.a
+# Debug: $(OUT_DIR_DBG)/libDSPE.a $(OUT_DIR_DBG)/libDSPEsockets.a $(OUT_DIR_DBG)/libDSPEexamples.a
 Debug: $(OUT_DIR_DBG)/DSPElib.exe
 
-$(OUT_DIR_DBG)/DSPElib.exe: $(OUT_DIR_DBG)/libDSPE.a $(OUT_DIR_DBG)/libDSPEsockets.a 
-	$(CC) -L"$(OUT_DIR_DBG)" "$(OUT_DIR_DBG)/src/Main.o" -o"$(OUT_DIR_DBG)/DSPElib.exe" $(LINKER_FLAGS_debug) -lDSPE $(LIBS)
+$(OUT_DIR_DBG)/DSPElib.exe: $(OUT_DIR_DBG)/libDSPE.a $(OUT_DIR_DBG)/libDSPEsockets.a  $(OUT_DIR_DBG)/libDSPEexamples.a
+	$(CC) -L"$(OUT_DIR_DBG)" "$(OUT_DIR_DBG)/src/Main.o" -o"$(OUT_DIR_DBG)/DSPElib.exe" $(LINKER_FLAGS_debug) -lDSPE -lDSPEexamples $(LIBS)
 
 $(OUT_DIR_DBG)/libDSPE.a: $(OBJECTS_Debug) $(OBJECTS_MISC_Debug)
 	@echo Preparing lib file $@
@@ -120,8 +127,13 @@ $(OUT_DIR_DBG)/libDSPEsockets.a:  $(OBJECTS_SOCKETS_Debug)
 	ar rc $@  $(OBJECTS_SOCKETS_Debug)
 	ranlib $@
 
+$(OUT_DIR_DBG)/libDSPEexamples.a:  $(OBJECTS_EXAMPLES_Debug)
+	@echo Preparing lib file $@
+	ar rc $@  $(OBJECTS_EXAMPLES_Debug)
+	ranlib $@
+
 # Z podanej listy usuwany $(OUT_DIR_RLS)/ oraz '.o' zamieniamy na '.cpp'
-$(OBJECTS_Debug) $(OBJECTS_SOCKETS_Debug) $(OBJECTS_MISC_Debug): $(OUT_DIR_DBG)/%.o : %.cpp
+$(OBJECTS_Debug) $(OBJECTS_EXAMPLES_Debug) $(OBJECTS_SOCKETS_Debug) $(OBJECTS_MISC_Debug): $(OUT_DIR_DBG)/%.o : %.cpp
 	@echo $(@D) $< $@
 	
 	mkdir -p $(@D)

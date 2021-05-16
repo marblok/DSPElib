@@ -13,6 +13,7 @@
 #include <limits.h>
 #include <vector>
 #include <string>
+#include <functional>
 
 using namespace std;
 //---------------------------------------------------------------------------
@@ -534,15 +535,23 @@ namespace DSP {
     class AudioOutput;
   }
 
+//  typedef std::function<bool(const DSP::e::SampleType &, const std::vector<char> &)> input_callback_function;
+  // https://isocpp.org/wiki/faq/pointers-to-members#typedef-for-ptr-to-memfn
+  //! defining a type for pointer to member funtion of DSP::u::AudioInput
+  typedef bool(DSP::u::AudioInput::*input_callback_function)(const DSP::e::SampleType &, const std::vector<char> &);
+  //! defining a type for pointer to member funtion of DSP::u::AudioOutput
+  typedef bool(DSP::u::AudioOutput::*output_callback_function)(const DSP::e::SampleType &, const std::vector<char> &);
+
     //! Base class for classes implementing sound card support for DSP::u::AudioInput and DSP::u::AudioOutput 
     /*! \TODO  convert WMM support in DSP::u::AudioInput and DSP::u::AudioOutput into support through WMM_object_t
      */
   class SOUND_object_t {
     private:
       DSP::u::AudioInput * AudioInput_object;
-      bool (DSP::u::AudioInput::*AudioInput_callback)(const DSP::e::SampleType &InSampleType, const std::vector<char> &wave_in_raw_buffer);
+      //bool (DSP::u::AudioInput::*AudioInput_callback)(const DSP::e::SampleType &InSampleType, const std::vector<char> &wave_in_raw_buffer);
+      input_callback_function AudioInput_callback;
       DSP::u::AudioOutput * AudioOutput_object;
-      bool (DSP::u::AudioOutput::*AudioOutput_callback)(void);
+      output_callback_function AudioOutput_callback;
 
       //static unsigned long Next_CallbackInstance;
       unsigned long Current_CallbackInstance;
@@ -555,8 +564,8 @@ namespace DSP {
       virtual unsigned int select_input_device_by_number(const unsigned int &device_number=UINT_MAX) = 0;
       virtual unsigned int select_output_device_by_number(const unsigned int &device_number=UINT_MAX) = 0;
 
-      virtual long open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size) = 0;
-      virtual long open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size) = 0;
+      virtual long open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size = -1) = 0;
+      virtual long open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size = -1) = 0;
       virtual bool close_PCM_device_input(void) = 0;
       virtual bool close_PCM_device_output(void) = 0;
 
@@ -584,8 +593,10 @@ namespace DSP {
       virtual bool is_input_callback_supported(void) = 0;
       /*! Returns false if callbacks are not supported
        * \TODO define when it will be called and what for?
+       * 
+       * bool register_input_callback_object(DSP::u::AudioInput *callback_object, bool(DSP::u::AudioInput::*cp)(const DSP::e::SampleType &, const std::vector<char> &));
        */
-      bool register_input_callback_object(DSP::u::AudioInput *callback_object, bool(DSP::u::AudioInput::*cp)(const DSP::e::SampleType &, const std::vector<char> &));
+      bool register_input_callback_object(DSP::u::AudioInput *callback_object, input_callback_function &cp);
       DSP::u::AudioInput *get_input_callback_object();
       bool input_callback_call(const DSP::e::SampleType &InSampleType, const std::vector<char> &wave_in_raw_buffer);
 
@@ -595,9 +606,9 @@ namespace DSP {
       /*! Returns false if callbacks are not supported
        * \TODO define when it will be called and what for?
        */
-      bool register_output_callback_object(DSP::u::AudioOutput *callback_object, bool(DSP::u::AudioOutput::*cp)());
+      bool register_output_callback_object(DSP::u::AudioOutput *callback_object, output_callback_function &cp);
       DSP::u::AudioOutput *get_output_callback_object();
-      bool output_callback_call();
+      bool output_callback_call(const DSP::e::SampleType &OutSampleType, const std::vector<char> &wave_out_raw_buffer);
 
       SOUND_object_t();
       virtual ~SOUND_object_t();

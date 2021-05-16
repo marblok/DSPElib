@@ -14,6 +14,7 @@
 #include <limits.h>
 #include <typeinfo>
 #include <cstdint> // int16_t, itp.
+#include <functional> 
 
 #ifdef WINMMAPI
 //  #include <stdarg.h>
@@ -4127,7 +4128,9 @@ void DSP::u::AudioInput::Init(DSP::Clock_ptr ParentClock,
   audio_inbuffer_size = DSP::f::GetAudioBufferSize(SamplingFreq, DSP::e::AudioBufferType::input);
 
   snd_object.select_input_device_by_number(WaveInDevNo); // use default device
-  snd_object.register_input_callback_object(this, SOUND_object_callback); // use default device
+//  DSP::input_callback_function  cp = std::bind(&DSP::u::AudioInput::SOUND_object_callback, this, std::placeholders::_1, std::placeholders::_2);
+  DSP::input_callback_function  cp = &DSP::u::AudioInput::SOUND_object_callback;
+  snd_object.register_input_callback_object(this, cp); // use default device
   if (snd_object.open_PCM_device_4_input(NoOfOutputs, BitPrec, SamplingFreq, audio_inbuffer_size) > 0) {
     InBufferLen=NoOfOutputs*audio_inbuffer_size;
     for (ind = 0; ind < DSP::NoOfAudioInputBuffers; ind++)
@@ -5841,11 +5844,13 @@ DSP::u::AudioOutput *DSP::SOUND_object_t::get_output_callback_object() {
   return AudioOutput_object;
 }
 
-bool DSP::SOUND_object_t::output_callback_call() {
-  return (AudioOutput_object->*AudioOutput_callback)();
+bool DSP::SOUND_object_t::output_callback_call(const DSP::e::SampleType &OutSampleType, const std::vector<char> &wave_out_raw_buffer) {
+//  return (AudioOutput_object->*AudioOutput_callback)();
+  return (AudioOutput_object->*AudioOutput_callback)(OutSampleType, wave_out_raw_buffer);
 }
 
-bool DSP::SOUND_object_t::register_input_callback_object(DSP::u::AudioInput *callback_object, bool(DSP::u::AudioInput::*cp)(const DSP::e::SampleType &, const std::vector<char> &)) {
+//bool DSP::SOUND_object_t::register_input_callback_object(DSP::u::AudioInput *callback_object, bool(DSP::u::AudioInput::*cp)(const DSP::e::SampleType &, const std::vector<char> &)) {
+bool DSP::SOUND_object_t::register_input_callback_object(DSP::u::AudioInput *callback_object, input_callback_function &cp) {
   if (is_input_callback_supported() == true) {
     AudioInput_object = callback_object;
     AudioInput_callback = cp;
@@ -5853,6 +5858,16 @@ bool DSP::SOUND_object_t::register_input_callback_object(DSP::u::AudioInput *cal
   }
   return false;
 }
+
+bool DSP::SOUND_object_t::register_output_callback_object(DSP::u::AudioOutput *callback_object, output_callback_function &cp) {
+  if (is_output_callback_supported() == true) {
+    AudioOutput_object = callback_object;
+    AudioOutput_callback = cp;
+    return true;
+  }
+  return false;
+}
+
 
 long int DSP::SOUND_object_t::get_current_CallbackInstance() {
   return Current_CallbackInstance;

@@ -6,6 +6,9 @@ TODO::
 LAST DONE:
 
 CHANGES:
+- ver. 0.20.007 - <b>2021.05.16</b> Changed: 
+  - initial convertion of ALSA_object_t to class based on SOUND_object_t
+
 - ver. 0.20.006 - <b>2021.05.14</b> Changed: 
   - Included examples tests in DEBUG compilation for windows (test_hello, test_sound_input)
   - DSP::u::AudioInput now uses SOUND_object_t (currently just WMM_object_t) for soundcard API

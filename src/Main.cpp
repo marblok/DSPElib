@@ -2718,21 +2718,22 @@ int test_ZPSTC_cw_3()
   to the default PCM device for 5 seconds of data.
   */
 
-  int test_playback(vector<int16_t> buffer) {
+  int test_playback(DSP::Float_vector &float_buffer) {
     long loops;
-    int rc;
+    long rc;
     int frames_size;
     snd_pcm_uframes_t frames;
     //char *buffer;
     unsigned int period_time;
 
-    ALSA_object_t ALSA_object;
+    DSP::ALSA_object_t ALSA_object;
 
     /* Open PCM device for playback (2 channels). */
-    unsigned int Fs = 44100;
-    rc = ALSA_object.open_alsa_device(SND_PCM_STREAM_PLAYBACK, 2, Fs);
+    long Fs = 44100;
+    //rc = ALSA_object.open_alsa_device(SND_PCM_STREAM_PLAYBACK, 2, Fs);
+    rc = ALSA_object.open_PCM_device_4_output(2, 16, Fs);
 
-    ALSA_object.get_params(frames, period_time);
+    //ALSA_object.get_period_size(frames, period_time);
 
   //  /* Allocate a hardware parameters object. */
   //  snd_pcm_hw_params_alloca(&params);
@@ -2741,15 +2742,17 @@ int test_ZPSTC_cw_3()
   //
   //  /* Use a buffer large enough to hold one period */
   //  snd_pcm_hw_params_get_period_size(params, &frames, &dir);
-    frames_size = frames * 2/sizeof(int16_t) * 2; /* 2 bytes/sample, 2 channels */
+//    frames_size = frames * 2/sizeof(int16_t) * 2; /* 2 bytes/sample, 2 channels */
+    frames_size = 1024 * 2/sizeof(int16_t) * 2; /* 2 bytes/sample, 2 channels */
     //buffer = (char *) malloc(size);
   //
   //  /* We want to loop for 5 seconds */
   //  snd_pcm_hw_params_get_period_time(params, &val, &dir);
     /* 5 seconds in microseconds divided by
     * period time */
+    period_time = Fs/frames_size;
     loops = 5000000 / period_time;
-    buffer.resize(loops * frames_size, 0);
+    float_buffer.resize(loops * frames_size, 0);
 
     int loop_index = 0;
     while (loops > 0) {
@@ -2758,16 +2761,18 @@ int test_ZPSTC_cw_3()
   //    //rc = read(0, buffer, size);
       for (int ind = 0; ind < frames_size; ind++)
       {
-          buffer[ind + loop_index * frames_size] = (4*ind) % INT16_MAX;
+          float_buffer[ind + loop_index * frames_size] = (4*ind) % INT16_MAX;
       }
 
       //! \TODO check problem with vector aligments
-      rc = ALSA_object.pcm_writei(buffer.data() + loop_index * frames_size, frames);
+      //rc = ALSA_object.pcm_writei(buffer.data() + loop_index * frames_size, frames);
+      rc = ALSA_object.append_playback_buffer(float_buffer);
 
       loop_index++;
     }
 
-    ALSA_object.close_alsa_device(true); //snd_pcm_close(alsa_handle);
+    //ALSA_object.close_alsa_device(true); //snd_pcm_close(alsa_handle);
+    ALSA_object.close_PCM_device_output(); 
     //free(buffer);
 
     return 0;
@@ -2907,19 +2912,23 @@ polling:
 */ 
 
   int test_ALSA() {
-    ALSA_object_t ALSA_object;
+    DSP::ALSA_object_t ALSA_object;
 
     ALSA_object.log_driver_data();
 
     unsigned int Fs = 44100;
-    int rs = ALSA_object.open_alsa_device(SND_PCM_STREAM_PLAYBACK, 2, Fs);
+    int rs = ALSA_object.open_PCM_device_4_output(2, 16, Fs);
     if (rs == 1) {
-      ALSA_object.close_alsa_device();
+      ALSA_object.close_PCM_device_output();
     }
 
 
     vector<int16_t> signal = test_record();
-    test_playback(signal);
+    DSP::Float_vector float_signal;
+    for (auto ind=0; ind < signal.size(); ind++) {
+      float_signal[ind] = signal[ind];
+    }
+    test_playback(float_signal);
 
     return 0;
   } 

@@ -27,7 +27,7 @@
 #else
   #ifdef LINUX
     //! \TODO adapt for linux
-    #include "ALSA_support.h"
+    #include <ALSA_support.h>
 
   #else
     #error NO WIN32
@@ -719,6 +719,11 @@ class DSP::u::AudioInput : public DSP::Source
     #ifdef WINMMAPI
       // HWAVEIN hWaveIn;
       DSP::WMM_object_t snd_object;
+    #else
+      #ifdef ALSA_support_H
+        DSP::ALSA_object_t snd_object;
+      #else
+      #endif
     #endif
 
     //! Called by SOUND_object_t when new data buffer is ready
@@ -839,6 +844,11 @@ class DSP::u::AudioOutput : public DSP::Block
     #ifdef WINMMAPI
       //HWAVEOUT hWaveOut;
       DSP::WMM_object_t snd_object;
+    #else
+      #ifdef ALSA_support_H
+        DSP::ALSA_object_t snd_object;
+      #else
+      #endif
     #endif
 
     // //! Index of the buffer which must be used next time
