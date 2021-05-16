@@ -101,6 +101,7 @@ namespace DSP {
         //! \note values stored in float_buffer might be altered
         long append_playback_buffer(DSP::Float_vector &float_buffer);
         bool start_recording(void);
+        bool get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType, std::vector<char> &wave_in_raw_buffer);
 
         //! object constructor \TODO check use of virtual in constructor and destructor
         WMM_object_t();

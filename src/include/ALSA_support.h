@@ -57,6 +57,7 @@ namespace DSP {
         long append_playback_buffer(DSP::Float_vector &float_buffer);
         //! Starts sound capture
         bool start_recording(void);
+        bool get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType, std::vector<char> &wave_in_raw_buffer);
 
         //! Returns false if callbacks are not supported of recording
         bool is_input_callback_supported(void);

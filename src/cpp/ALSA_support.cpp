@@ -309,6 +309,9 @@ bool DSP::ALSA_object_t::start_recording(void) {
   assert(!"DSP::ALSA_object_t::stop_recording not implemented yet");
 }
 
+bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType, std::vector<char> &wave_in_raw_buffer) {
+  assert(!"DSP::ALSA_object_t::get_wave_in_raw_buffer not implemented yet");
+}
 
 snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, snd_pcm_uframes_t &frames) {
   snd_pcm_sframes_t rc = snd_pcm_writei(alsa_handle, buffer, frames);

@@ -4129,8 +4129,19 @@ void DSP::u::AudioInput::Init(DSP::Clock_ptr ParentClock,
 
   snd_object.select_input_device_by_number(WaveInDevNo); // use default device
 //  DSP::input_callback_function  cp = std::bind(&DSP::u::AudioInput::SOUND_object_callback, this, std::placeholders::_1, std::placeholders::_2);
-  DSP::input_callback_function  cp = &DSP::u::AudioInput::SOUND_object_callback;
-  snd_object.register_input_callback_object(this, cp); // use default device
+  if (snd_object.is_input_callback_supported() == true) {
+    // use callbacks if available
+    DSP::input_callback_function  cp = &DSP::u::AudioInput::SOUND_object_callback;
+    snd_object.register_input_callback_object(this, cp); // use default device
+#ifdef __DEBUG__
+    DSP::log << "DSP::u::AudioInput::Init" << DSP::e::LogMode::second << "using callback mode" << endl;
+#endif // __DEBUG__
+  }
+#ifdef __DEBUG__
+  else {
+    DSP::log << "DSP::u::AudioInput::Init" << DSP::e::LogMode::second << "using non-callback mode" << endl;
+  }
+#endif // __DEBUG__
   if (snd_object.open_PCM_device_4_input(NoOfOutputs, BitPrec, SamplingFreq, audio_inbuffer_size) > 0) {
     InBufferLen=NoOfOutputs*audio_inbuffer_size;
     for (ind = 0; ind < DSP::NoOfAudioInputBuffers; ind++)
@@ -4439,6 +4450,17 @@ bool DSP::u::AudioInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
     return true;
   }
 
+  // If there are free buffers check whether the sound card has any audio data already available
+  if (DSP_THIS->snd_object.get_input_callback_object() == NULL) {
+    // callbacks are not used thus audio data has to be obtained directly from snd_object
+    if (DSP_THIS->GetNoOfFreeBuffers() > 0) {
+      DSP::e::SampleType InSampleType;
+      std::vector<char> wave_in_raw_buffer;
+      if (DSP_THIS->snd_object.get_wave_in_raw_buffer(InSampleType, wave_in_raw_buffer)) {
+        DSP_THIS->SOUND_object_callback(InSampleType, wave_in_raw_buffer);
+      }
+    }
+  }
 
   // if no input buffer is ready return false (system will later return here)
   if (DSP_THIS->snd_object.is_device_recording() == true)
@@ -5816,6 +5838,8 @@ DSP::u::AudioInput *DSP::SOUND_object_t::get_input_callback_object() {
 }
 
 bool DSP::SOUND_object_t::input_callback_call(const DSP::e::SampleType &InSampleType, const std::vector<char> &wave_in_raw_buffer) {
+  if (AudioInput_object == NULL)
+    return false;
   return (AudioInput_object->*AudioInput_callback)(InSampleType, wave_in_raw_buffer);
 }
 
@@ -5846,6 +5870,8 @@ DSP::u::AudioOutput *DSP::SOUND_object_t::get_output_callback_object() {
 
 bool DSP::SOUND_object_t::output_callback_call(const DSP::e::SampleType &OutSampleType, const std::vector<char> &wave_out_raw_buffer) {
 //  return (AudioOutput_object->*AudioOutput_callback)();
+  if (AudioOutput_object == NULL)
+    return false;
   return (AudioOutput_object->*AudioOutput_callback)(OutSampleType, wave_out_raw_buffer);
 }
 

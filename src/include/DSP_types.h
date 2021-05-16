@@ -558,6 +558,10 @@ namespace DSP {
       static std::vector<DSP::SOUND_object_t *> CallbackSoundObjects;
       static unsigned long get_free_CallbackInstance(void);
 
+    protected:
+      long int get_current_CallbackInstance();
+      static const DSP::SOUND_object_t * get_CallbackSoundObject(const long int &instance_number);
+
     public:
       virtual void log_driver_data() = 0;
 
@@ -584,32 +588,57 @@ namespace DSP {
       virtual bool start_recording(void) = 0;
 
 
-      long int get_current_CallbackInstance();
-      static const DSP::SOUND_object_t * get_CallbackSoundObject(const long int &instance_number);
-
       // https://stackoverflow.com/questions/8865766/get-a-pointer-to-objects-member-function
-      /*! Returns false if callbacks are not supported of recording
+      /*! Returns false if callbacks are not supported for recording
        */
       virtual bool is_input_callback_supported(void) = 0;
-      /*! Returns false if callbacks are not supported
-       * \TODO define when it will be called and what for?
+      /*! Registers callback for input buffer data ready. Returns false if callbacks are not supported
+       * If this method fails or is not used the SOUND_ocject falls back into non-callback mode.
        * 
-       * bool register_input_callback_object(DSP::u::AudioInput *callback_object, bool(DSP::u::AudioInput::*cp)(const DSP::e::SampleType &, const std::vector<char> &));
+       * Registers as a callback function that is a member function of the AudioInput class along with the object of the AudioInput class for which it should be called.
+       * - bool input_callback_function(const DSP::e::SampleType &InSampleType, const std::vector<char> &wave_in_raw_buffer);
+       * 
+       * The callback function will be called by the SOUND_object when sound card's input buffer is ready.
+       * The callback function has to return true when it processed the input buffer or false when it cannot to process it.
+       * On false the SOUND_object most probably will discard the buffer. Nevertheless it can try to call the callback again for the same data.
        */
       bool register_input_callback_object(DSP::u::AudioInput *callback_object, input_callback_function &cp);
+      //! Returns pointer to DSP::u::AudioInput for which callback is registered.
+      /*! \note If this function  returns NULL, callbacks are not used even if they are supported.
+       */
       DSP::u::AudioInput *get_input_callback_object();
+  protected:
+      //! \note this method should be used only by descending classes
       bool input_callback_call(const DSP::e::SampleType &InSampleType, const std::vector<char> &wave_in_raw_buffer);
+  public:
+      //! If enough audio data are already available then fills InSampleType and wave_in_raw_buffer
+      /*! return true on success or false if the data are not available 
+       * \note this method should be used only if callbacks are not active
+       */
+      virtual bool get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType, std::vector<char> &wave_in_raw_buffer) = 0;
 
-      /*! Returns false if callbacks are not supported of playback
+      /*! Returns false if callbacks are not supported for playback
        */
       virtual bool is_output_callback_supported(void) = 0;
       /*! Returns false if callbacks are not supported
-       * \TODO define when it will be called and what for?
+       * 
+       * Registers as a callback function that is a member function of the AudioOutput class along with the object of the AudioOutput class for which it should be called.
+       * - bool output_callback_function(const DSP::e::SampleType &OutSampleType, const std::vector<char> &wave_out_raw_buffer);
+       * 
+       * The callback function will be called by the SOUND_object when new sound card's output buffer can processed.
+       * The callback function has to return true when it filled the buffer with samples or false when there is not enought data.
+       * On false the SOUND_object most probably will discard the buffer. Nevertheless it can try to call the callback again.
+       * \TODO revise the concept when the there will be a SOUND_object_t derivative that uses this approach.
+       * \note Needs addaptation of DSP::u::AudioOutput class.
        */
       bool register_output_callback_object(DSP::u::AudioOutput *callback_object, output_callback_function &cp);
+      /*! \note If this function  returns NULL, callbacks are not used are not used even if they are supported.
+       */
       DSP::u::AudioOutput *get_output_callback_object();
+  protected:
       bool output_callback_call(const DSP::e::SampleType &OutSampleType, const std::vector<char> &wave_out_raw_buffer);
-
+  
+  public:
       SOUND_object_t();
       virtual ~SOUND_object_t();
   };

@@ -166,7 +166,6 @@ long DSP::WMM_object_t::open_PCM_device_4_input(const int &no_of_channels, int n
     close_PCM_device_input();
   }
 
-  DWORD_PTR Callback;
   switch (no_of_bits)
   {
     case 8:
@@ -180,7 +179,20 @@ long DSP::WMM_object_t::open_PCM_device_4_input(const int &no_of_channels, int n
       no_of_bits=16;
       break;
   }
-  Callback = (DWORD_PTR)(&DSP::WMM_object_t::waveInProc);
+
+  DWORD_PTR Callback;
+  DWORD_PTR dwInstance;
+  uint32_t fdwOpen;
+  if (get_input_callback_object() != NULL) {
+    Callback = (DWORD_PTR)(&DSP::WMM_object_t::waveInProc);
+    dwInstance = get_current_CallbackInstance();
+    fdwOpen = CALLBACK_FUNCTION;
+  }
+  else {
+    Callback = (DWORD_PTR)(NULL);
+    dwInstance = (DWORD_PTR)(0);
+    fdwOpen = 0;
+  }
 
   //Wypeniamy struktur wfx
   wfx.wf.wFormatTag=WAVE_FORMAT_PCM;
@@ -190,21 +202,22 @@ long DSP::WMM_object_t::open_PCM_device_4_input(const int &no_of_channels, int n
   wfx.wf.nAvgBytesPerSec=wfx.wf.nSamplesPerSec*(wfx.wBitsPerSample/8);
   wfx.wf.nBlockAlign=(uint16_t)(wfx.wf.nChannels*(wfx.wBitsPerSample/8));
 
+  fdwOpen |= WAVE_FORMAT_DIRECT;
   if (waveInGetNumDevs() <= WaveInDevNo)
     result=waveInOpen(&hWaveIn,
       WAVE_MAPPER, //&DeviceID,
       (WAVEFORMATEX *)(&wfx),
       Callback,
-      get_current_CallbackInstance(), //CallbackInstance,
-      CALLBACK_FUNCTION | WAVE_FORMAT_DIRECT //| WAVE_MAPPED //CALLBACK_NULL
+      dwInstance, //CallbackInstance,
+      fdwOpen //| WAVE_MAPPED //CALLBACK_NULL
       );
   else
     result=waveInOpen(&hWaveIn,
       WaveInDevNo, //&DeviceID,
       (WAVEFORMATEX *)(&wfx),
       Callback,
-      get_current_CallbackInstance(), //CallbackInstance,
-      CALLBACK_FUNCTION | WAVE_FORMAT_DIRECT //| WAVE_MAPPED //CALLBACK_NULL
+      dwInstance, //CallbackInstance,
+      fdwOpen //| WAVE_MAPPED //CALLBACK_NULL
       );
 
   if (DSP::f::AudioCheckError(result) == false)
@@ -427,10 +440,10 @@ bool DSP::WMM_object_t::start_recording(void) {
     DSP::log << "DSP::u::AudioInput::Execute" << DSP::e::LogMode::second << "Starting recording using two wave buffers" << endl;
   #endif
 
-  if (get_input_callback_object() == NULL) {
-    DSP::log << DSP::e::LogMode::Error << "DSP::WMM_object_t::start_recording" << DSP::e::LogMode::second << "No AudioInput object registered for callbacks" << endl;
-    return false;
-  }
+  // if (get_input_callback_object() == NULL) {
+  //   DSP::log << DSP::e::LogMode::Error << "DSP::WMM_object_t::start_recording" << DSP::e::LogMode::second << "No AudioInput object registered for callbacks" << endl;
+  //   return false;
+  // }
 
   result=waveInAddBuffer(hWaveIn, &(waveHeaderIn[0]), sizeof(WAVEHDR));
   DSP::f::AudioCheckError(result);
@@ -455,6 +468,42 @@ bool DSP::WMM_object_t::is_output_callback_supported(void) {
   return false;
 }
 
+
+bool DSP::WMM_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType_in, std::vector<char> &wave_in_raw_buffer) {
+  if (StopRecording)
+    return false;
+  else
+  {
+    if (waveHeaderIn[NextBufferInInd].dwFlags & WHDR_DONE)
+    {
+      result=waveInUnprepareHeader(hWaveIn, &(waveHeaderIn[NextBufferInInd]), sizeof(WAVEHDR));
+      DSP::f::AudioCheckError(result);
+    
+      InSampleType_in = this->InSampleType;
+      std::swap(wave_in_raw_buffer, WaveInBuffers[NextBufferInInd]);
+      WaveInBuffers[NextBufferInInd].resize(WaveInBufferLen, 0);
+      waveHeaderIn[NextBufferInInd].lpData=(char *)(WaveInBuffers[NextBufferInInd].data());
+
+      //add put back into recording queue
+      result=waveInPrepareHeader(hWaveIn, &(waveHeaderIn[NextBufferInInd]), sizeof(WAVEHDR));
+      DSP::f::AudioCheckError(result);
+      result=waveInAddBuffer(hWaveIn, &(waveHeaderIn[NextBufferInInd]), sizeof(WAVEHDR));
+      DSP::f::AudioCheckError(result);
+
+      NextBufferInInd++; NextBufferInInd %= 2; //just two buffers
+    }
+    else
+    {
+#ifdef __DEBUG__
+#ifdef AUDIO_DEBUG_MESSAGES_ON
+        DSP::log << "DSP::WMM_object_t::get_wave_in_raw_buffer" << DSP::e::LogMode::second << "Wrong audio frame ready or other unexpected error" << endl;
+#endif
+#endif
+      return false;
+    }
+  }
+  return true;
+}
 
 long DSP::WMM_object_t::append_playback_buffer(DSP::Float_vector &float_buffer) {
   uint8_t *temp8;
