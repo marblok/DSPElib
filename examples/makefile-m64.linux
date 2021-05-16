@@ -32,7 +32,7 @@ LIBS_SOCKETS   = -lDSPEsockets # -lws2_32
 SRCS = hello.cpp
 
 #all: hello.exe echo.exe multirate.exe callbacks.exe socket_server.exe socket_client.exe #socket_server_2.exe socket_client_2.exe macro_example.exe asynchronous.exe asynchronous_CT.exe
-all: DSP_hello DSP_echo DSP_sount_input DSP_multirate DSP_callbacks DSP_socket_server DSP_socket_client DSP_socket_server_2 DSP_socket_client_2 DSP_macro_example DSP_asynchronous DSP_asynchronous_CT  
+all: DSP_hello DSP_echo DSP_sound_input DSP_multirate DSP_callbacks DSP_socket_server DSP_socket_client DSP_socket_server_2 DSP_socket_client_2 DSP_macro_example DSP_asynchronous DSP_asynchronous_CT  
 
 hello.o: $(SRC_DIR)/hello.cpp
 	$(CC) $(DFLAGS) -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/hello.cpp" -o "$(SRC_DIR)/hello.o"
@@ -46,11 +46,11 @@ echo.o: $(SRC_DIR)/echo.cpp
 DSP_echo: echo.o
 	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/echo.o" -o "$(SRC_DIR)/DSP_echo" $(LINKER_FLAGS) $(LIBS)
 
-sount_input.o: $(SRC_DIR)/sount_input.cpp
-	$(CC) $(DFLAGS) -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/sount_input.cpp" -o "$(SRC_DIR)/sount_input.o"
+sound_input.o: $(SRC_DIR)/sound_input.cpp
+	$(CC) $(DFLAGS) -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/sound_input.cpp" -o "$(SRC_DIR)/sound_input.o"
 
-DSP_sount_input: sount_input.o
-	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/sount_input.o" -o "$(SRC_DIR)/DSP_sount_input" $(LINKER_FLAGS) $(LIBS)
+DSP_sound_input: sound_input.o
+	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/sound_input.o" -o "$(SRC_DIR)/DSP_sound_input" $(LINKER_FLAGS) $(LIBS)
 
 multirate.o: $(SRC_DIR)/multirate.cpp
 	$(CC) $(DFLAGS) -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/multirate.cpp" -o "$(SRC_DIR)/multirate.o"
