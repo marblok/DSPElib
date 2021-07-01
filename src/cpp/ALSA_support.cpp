@@ -267,7 +267,7 @@ long DSP::ALSA_object_t::open_PCM_device_4_output(const int &no_of_channels, int
   assert(!"DSP::ALSA_object_t::open_PCM_device_4_output not implemented yet");
 }
 
-long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size) {
+long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_inbuffer_size) {
   assert(!"DSP::ALSA_object_t::open_PCM_device_4_input not implemented yet");
 }
 
