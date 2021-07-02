@@ -40,7 +40,7 @@ namespace DSP {
         unsigned int select_output_device_by_number(const unsigned int &device_number=UINT_MAX);
 
         long open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size = -1);
-        long open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size = -1);
+        long open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_inbuffer_size = -1);
         bool close_PCM_device_input(void);
         bool close_PCM_device_output(void);
 
