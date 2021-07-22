@@ -5,7 +5,9 @@
  */
 
 #include <ALSA_support.h>
-
+#include <iostream> // w przyszłości pozamieniam na DSP::log
+#include <vector>
+#include <cmath>
 #include <DSP_lib.h> // for logging 
 
 // ============================================================= //
@@ -27,10 +29,12 @@ DSP::ALSA_object_t::~ALSA_object_t()
 
 unsigned int DSP::ALSA_object_t::select_input_device_by_number(const unsigned int &device_number) {
   assert(!"ALSA_object_t::select_input_device_by_number not yet implemented");
+  
 }
 
 unsigned int DSP::ALSA_object_t::select_output_device_by_number(const unsigned int &device_number) {
   assert(!"ALSA_object_t::select_output_device_by_number not yet implemented");
+  
 }
 
 bool DSP::ALSA_object_t::is_output_callback_supported(void) {
@@ -88,12 +92,16 @@ perform any sound playback or recording.
 returns actually selected sampling_rate
 
 */
-int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, int no_of_channels, unsigned int &sampling_rate) {
+int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned int no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate) 
+{
   int rc;
   snd_pcm_t *handle;
   unsigned int val, val2;
   int dir;
   snd_pcm_uframes_t frames;
+
+  std::string endianess;
+  endianess = system("lscpu | grep \"Byte Order\" | egrep -o 'Little Endian|Big Endian'");
 
   if (alsa_handle != NULL)
     close_alsa_device();
@@ -103,12 +111,15 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, int no_of
 
   {
     //! \TODO Test mode:	Open mode (see SND_PCM_NONBLOCK, SND_PCM_ASYNC)
-    /* Open PCM device for playback. */
+    
+    DSP::log << "Opening PCM device for playback." << endl;
     rc = snd_pcm_open(&handle, "default",
                       stream_type, SND_PCM_NONBLOCK);
-    if (rc < 0) {
-      DSP::log << "unable to open pcm device: " << snd_strerror(rc) << endl;
-      //exit(1);
+
+    if (rc < 0) 
+    {
+      DSP::log << "Unable to open pcm device: " << snd_strerror(rc) << endl;
+      // exit(1);
       return -1;
     }
     alsa_handle = handle;
@@ -127,10 +138,14 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, int no_of
 
     /* Interleaved mode */
     snd_pcm_hw_params_set_access(handle, params,
-                        SND_PCM_ACCESS_RW_INTERLEAVED);
+                                 SND_PCM_ACCESS_RW_INTERLEAVED);
 
-    //! \TODO Format selection based on input parameters
-    /* Signed 16-bit little-endian format */
+    DSP::log << "Setting the SND PCM FORMAT." << endl;
+    DSP::log << "Something less than 0 means an error occurance." << endl;
+
+
+
+    
     snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_S16_LE);
 
     /* Two channels (stereo) */
@@ -265,10 +280,22 @@ void DSP::ALSA_object_t::get_period_size(snd_pcm_uframes_t &frames, unsigned int
 
 long DSP::ALSA_object_t::open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size) {
   assert(!"DSP::ALSA_object_t::open_PCM_device_4_output not implemented yet");
+  int rc;
+  unsigned int sampling_rate_alsa = sampling_rate; 
+  rc = open_alsa_device(SND_PCM_STREAM_PLAYBACK, no_of_channels, sampling_rate_alsa); // pierwszy parametr ewentualnie 0
+
+  if(rc > 0) return 1;
+  else return -1;
 }
 
 long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size) {
   assert(!"DSP::ALSA_object_t::open_PCM_device_4_input not implemented yet");
+  int rc;
+  unsigned int sampling_rate_alsa = sampling_rate; 
+  rc = open_alsa_device(SND_PCM_STREAM_CAPTURE, no_of_channels, sampling_rate_alsa);
+  
+  if(rc > 0) return 1;
+  else return -1;
 }
 
 long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer) {
