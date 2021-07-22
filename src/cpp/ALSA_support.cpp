@@ -95,6 +95,8 @@ returns actually selected sampling_rate
 int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned int no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate) 
 {
   int rc;
+  int errc;
+  int mode;
   snd_pcm_t *handle;
   unsigned int val, val2;
   int dir;
@@ -143,18 +145,119 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
     DSP::log << "Setting the SND PCM FORMAT." << endl;
     DSP::log << "Something less than 0 means an error occurance." << endl;
 
+     // M.B. docelowo dodać przynajmniej obsługę 8-bitów
+  if (no_of_bytes_in_channel == 1)
+  {
+      /* Signed 8-bit format */
 
+      errc = snd_pcm_hw_params_set_format(handle, params,
+                                          SND_PCM_FORMAT_U8);
 
-    
-    snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_S16_LE);
+       std::cout << "Format set with error code: " << errc << std::endl;
+  }
+  else if (no_of_bytes_in_channel == 2)
+  {
+      if (endianess == "Big Endian")
+      {
+        /* Signed 16-bit big-endian format */
+        errc = snd_pcm_hw_params_set_format(handle, params,
+                                            SND_PCM_FORMAT_S16_BE);
+      }
 
-    /* Two channels (stereo) */
+      else
+      {
+        /* Signed 16-bit little-endian format */
+        errc = snd_pcm_hw_params_set_format(handle, params,
+                                            SND_PCM_FORMAT_S16_LE);
+      }
+
+      std::cout << "Format set with error code: " << errc << std::endl;
+  }
+  else if (no_of_bytes_in_channel == 3) // D.K. 32-bits buffer can be used
+  {
+      if (endianess == "Big Endian")
+      {
+        /* Signed 24-bit big-endian low three bytes in 32-bit word format */
+        errc = snd_pcm_hw_params_set_format(handle, params,
+                                            SND_PCM_FORMAT_S32_BE);
+      }
+
+      else
+      {
+        /* Signed 24-bit little-endian low three bytes in 32-bit word format */
+        errc = snd_pcm_hw_params_set_format(handle, params,
+                                            SND_PCM_FORMAT_S32_LE);
+      }
+
+      mode = 1;
+
+      std::cout << "Format set with error code: " << errc << std::endl;
+  }
+  else if (no_of_bytes_in_channel == 4)
+  {
+      if (endianess == "Big Endian")
+      {
+        /* Float Little Endian, Range -1.0 to 1.0 */
+        errc = snd_pcm_hw_params_set_format(handle, params,
+                                            SND_PCM_FORMAT_FLOAT_BE);
+        mode = 0; // native
+
+        if(errc < 0)
+        {
+            /* Signed 32-bit little-endian format */
+            errc = snd_pcm_hw_params_set_format(handle, params,
+                                                SND_PCM_FORMAT_S32_BE);
+            mode = 1; // higher quality
+        }
+      }
+
+      else
+      {
+        /* Float Little Endian, Range -1.0 to 1.0 */
+        errc = snd_pcm_hw_params_set_format(handle, params,
+                                            SND_PCM_FORMAT_FLOAT_LE);
+        mode = 0; // native
+
+        if(errc < 0)
+        {
+            /* Signed 32-bit little-endian format */
+            errc = snd_pcm_hw_params_set_format(handle, params,
+                                                SND_PCM_FORMAT_S32_LE);
+            mode = 1; // higher quality
+        }
+      }
+
+      std::cout << "Format set with error code: " << errc << std::endl;
+  }
+  else if (no_of_bytes_in_channel == 8)
+  {
+      if (endianess == "Big Endian")
+      {
+        /* Float Big Endian, Range -1.0 to 1.0 */
+        errc = snd_pcm_hw_params_set_format(handle, params,
+                                            SND_PCM_FORMAT_FLOAT64_BE);
+      }
+
+      else
+      {
+        /* Float Little Endian, Range -1.0 to 1.0 */
+        errc = snd_pcm_hw_params_set_format(handle, params,
+                                            SND_PCM_FORMAT_FLOAT64_LE);
+      }
+
+      std::cout << "Format set with error code: " << errc << std::endl;
+  }
+
     snd_pcm_hw_params_set_channels(alsa_handle, params, no_of_channels);
 
-    /* 44100 bits/second sampling rate (CD quality) */
     snd_pcm_hw_params_set_rate_near(alsa_handle, params, &sampling_rate, &dir);
 
-    //snd_pcm_hw_params_set_buffer_size();
+    rc = snd_pcm_hw_params_set_buffer_size(handle,
+                                           params, 2*frames);
+    DSP::log << "Set buffer size: " << rc << endl;
+
+    snd_pcm_hw_params_set_period_size_near(handle,
+                                           params, &frames, &dir);
 
     /* Write the parameters to the driver */
     rc = snd_pcm_hw_params(alsa_handle, params);
