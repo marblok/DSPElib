@@ -34,17 +34,10 @@ namespace DSP {
         int dir;
         snd_pcm_uframes_t frames;
 
-        std::vector<unsigned char> buffer_8bit; // M.B. lepiej korzystać z kontenerów STD, są wygodniejsze i oznaczają mniej problemów z wyciekami pamięci
-        std::vector<int16_t> buffer_16bit; // M.B. dla odtwarzania 16-bitowego (int to dłuższe słowa)
-        std::vector<int32_t> buffer_32bit; // D.K. dla odtwarzania 24 i 32-bitowego
-        std::vector<double> buffer_64bit; // D.K. dla odtwarzania 64-bitowego
-
         unsigned char *pcm_buffer = NULL;
 
         bool blocking_mode = false; // M.B. na potrzeby realizacji odtwarzania w trybie non-blocking
 
-        std::string endianess;
-        endianess = system("lscpu | grep \"Byte Order\" | egrep -o 'Little Endian|Big Endian'"); // gdzies to trzeba umiescic
 
         //! open default PCM device and return 1 on success or negative error code
         /*! stream_type = SND_PCM_STREAM_PLAYBACK or SND_PCM_STREAM_CAPTURE
