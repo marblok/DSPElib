@@ -56,10 +56,12 @@ namespace DSP {
         unsigned int select_input_device_by_number(const unsigned int &device_number=UINT_MAX);
         unsigned int select_output_device_by_number(const unsigned int &device_number=UINT_MAX);
 
-        long open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size = -1);
-        long open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size = -1);
+        long open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, unsigned int &sampling_rate, const long &audio_outbuffer_size = -1);
+        long open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, unsigned int &sampling_rate, const long &audio_outbuffer_size = -1);
         bool close_PCM_device_input(void);
         bool close_PCM_device_output(void);
+
+        int set_snd_pcm_format(int errc, int no_of_bytes_in_channel, string endianess, snd_pcm_hw_params_t *params, snd_pcm_t *alsa_handle, int mode);
 
         //! returns true is the playback is on
         bool is_device_playing(void);
