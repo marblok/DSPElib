@@ -18,36 +18,43 @@ DSP::ALSA_object_t::ALSA_object_t()
 {
   alsa_handle = NULL;
   hw_params = NULL;
-};
+}
+
 DSP::ALSA_object_t::~ALSA_object_t()
 {
-  if (hw_params != NULL){
+  if (hw_params != NULL)
+  {
     snd_pcm_hw_params_free(hw_params);
     hw_params = NULL;
   }
 }
 
-unsigned int DSP::ALSA_object_t::select_input_device_by_number(const unsigned int &device_number) {
+unsigned int DSP::ALSA_object_t::select_input_device_by_number(const unsigned int &device_number)
+{
   assert(!"ALSA_object_t::select_input_device_by_number not yet implemented");
   
 }
 
-unsigned int DSP::ALSA_object_t::select_output_device_by_number(const unsigned int &device_number) {
+unsigned int DSP::ALSA_object_t::select_output_device_by_number(const unsigned int &device_number)
+{
   assert(!"ALSA_object_t::select_output_device_by_number not yet implemented");
   
 }
 
-bool DSP::ALSA_object_t::is_output_callback_supported(void) {
+bool DSP::ALSA_object_t::is_output_callback_supported(void) 
+{
   assert(!"ALSA_object_t::is_output_callback_supported not yet implemented");
   return false;
 }
 
-bool DSP::ALSA_object_t::is_input_callback_supported(void) {
+bool DSP::ALSA_object_t::is_input_callback_supported(void) 
+{
   assert(!"ALSA_object_t::is_input_callback_supported not yet implemented");
   return false;
 }
 
-void DSP::ALSA_object_t::log_driver_data() {
+void DSP::ALSA_object_t::log_driver_data() 
+{
   int val;
 
   DSP::log << "ALSA library version: " << SND_LIB_VERSION_STR << endl;
@@ -80,7 +87,6 @@ void DSP::ALSA_object_t::log_driver_data() {
   for (val = 0; val <= SND_PCM_STATE_LAST; val++)
     DSP::log << "  " << snd_pcm_state_name((snd_pcm_state_t)val) << endl;
 }
-
 
 /*
 
@@ -157,7 +163,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
 
 
     // W tym miejscu wywołać metodę int set_snd_pcm_format - te ify ponizej się w niej znajdą   
-    set_snd_pcm_format(errc, no_of_bytes_in_channel, endianess, params, alsa_handle, mode); 
+    errc = set_snd_pcm_format(errc, no_of_bytes_in_channel, endianess, params, alsa_handle, mode);
 
     snd_pcm_hw_params_set_channels(alsa_handle, params, no_of_channels);
 
@@ -187,7 +193,6 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
     snd_pcm_hw_params_malloc(&hw_params);
     snd_pcm_hw_params_copy(hw_params, params);
   }
-
 
   /* Display information about the PCM interface */
   
@@ -574,26 +579,41 @@ int set_snd_pcm_format(int errc, int no_of_bytes_in_channel, string endianess, s
 
       std::cout << "Format set with error code: " << errc << std::endl;
   }
+  return errc;
 }
 
-long DSP::ALSA_object_t::open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, unsigned int &sampling_rate, const long &audio_outbuffer_size) {
+long DSP::ALSA_object_t::open_PCM_device_4_output(unsigned int &no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate, const long &audio_outbuffer_size) {
   assert(!"DSP::ALSA_object_t::open_PCM_device_4_output not implemented yet");
   int rc;
-  unsigned int sampling_rate_alsa = sampling_rate; 
-  rc = open_alsa_device(SND_PCM_STREAM_PLAYBACK, no_of_channels, sampling_rate_alsa); // pierwszy parametr ewentualnie 0
+  unsigned int sampling_rate_alsa = sampling_rate;
 
-  if(rc > 0) return 1;
-  else return -1;
+  rc = open_alsa_device(SND_PCM_STREAM_PLAYBACK, no_of_channels, no_of_bytes_in_channel, sampling_rate_alsa); // pierwszy parametr ewentualnie 0
+
+  if(rc > 0)
+  { 
+    return 1;
+  }  
+  else 
+  {
+    return -1;
+  }
 }
 
-long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, unsigned int &sampling_rate, const long &audio_outbuffer_size) {
+long DSP::ALSA_object_t::open_PCM_device_4_input(unsigned int &no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate, const long &audio_outbuffer_size) {
   assert(!"DSP::ALSA_object_t::open_PCM_device_4_input not implemented yet");
   int rc;
-  unsigned int sampling_rate_alsa = sampling_rate; 
-  rc = open_alsa_device(SND_PCM_STREAM_CAPTURE, no_of_channels, sampling_rate_alsa);
+  unsigned int sampling_rate_alsa = sampling_rate;
+
+  rc = open_alsa_device(SND_PCM_STREAM_CAPTURE, no_of_channels, no_of_bytes_in_channel, sampling_rate_alsa);
   
-  if(rc > 0) return 1;
-  else return -1;
+  if(rc > 0)
+  { 
+    return 1;
+  }  
+  else 
+  {
+    return -1;
+  }
 }
 
 long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer) {
@@ -632,6 +652,7 @@ bool DSP::ALSA_object_t::stop_recording(void) {
 
 bool DSP::ALSA_object_t::start_recording(void) {
   assert(!"DSP::ALSA_object_t::stop_recording not implemented yet");
+  
 }
 
 bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType, std::vector<char> &wave_in_raw_buffer) {
@@ -640,40 +661,48 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
 
 snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, snd_pcm_uframes_t &frames) {
   snd_pcm_sframes_t rc = snd_pcm_writei(alsa_handle, buffer, frames);
-  if (rc == -EPIPE) {
+  if (rc == -EPIPE)
+  {
     /* EPIPE means underrun */
     fprintf(stderr, "underrun occurred\n");
     snd_pcm_prepare(alsa_handle);
-  } else if (rc < 0) {
+  } 
+  else if (rc < 0) 
+  {
     fprintf(stderr,
             "error from writei: %s\n",
             snd_strerror(int(rc)));
-  }  else if (rc != (int)frames) {
+  }  
+  else if (rc != (int)frames) 
+  {
     fprintf(stderr,
             "short write, write %d frames\n", int(rc));
   }
+  
   return rc;
 }
 
 void DSP::ALSA_object_t::close_alsa_device(bool do_drain, bool use_log) {
-  if (alsa_handle != NULL) {
-    if (do_drain == true) {
+  if (alsa_handle != NULL) 
+  {
+    if (do_drain == true)
+    {
       snd_pcm_drain(alsa_handle);
     }
+    
     snd_pcm_close(alsa_handle);
     alsa_handle = NULL;
 
-    if (hw_params != NULL){
+    if (hw_params != NULL)
+    {
       snd_pcm_hw_params_free(hw_params);
       hw_params = NULL;
     }
   }
 
-  if (use_log == true) {
+  if (use_log == true)
+  {
     DSP::log << "ALSA PCM sound closed" << endl;
   }
 }
-
-
-
 
