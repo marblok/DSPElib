@@ -161,14 +161,11 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
     /* Set the desired hardware parameters. */
 
     /* Interleaved mode */
-    snd_pcm_hw_params_set_access(alsa_handle, params,
-                                 SND_PCM_ACCESS_RW_INTERLEAVED);
+    snd_pcm_hw_params_set_access(alsa_handle, params, SND_PCM_ACCESS_RW_INTERLEAVED);
 
     DSP::log << "Setting the SND PCM FORMAT." << endl;
     DSP::log << "Something less than 0 means an error occurance." << endl;
 
-
-    // W tym miejscu wywołać metodę int set_snd_pcm_format - te ify ponizej się w niej znajdą   
     errc = set_snd_pcm_format(errc, no_of_bytes_in_channel, endianess, params, alsa_handle, mode);
 
     snd_pcm_hw_params_set_channels(alsa_handle, params, no_of_channels);
@@ -176,12 +173,13 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
     snd_pcm_hw_params_set_rate_near(alsa_handle, params, &sampling_rate, &dir);
 
     rc = snd_pcm_hw_params_set_buffer_size(alsa_handle, params, 2*frames);
-    DSP::log << "Set buffer size: " << rc << endl;
 
+    DSP::log << "Buffer size set with error code: " << rc << endl;
+
+    /* Set period size to desired number of frames. */
     snd_pcm_hw_params_set_period_size_near(alsa_handle, params, &frames, &dir);
     
     /* Write the parameters to the driver */
-
     rc = snd_pcm_hw_params(alsa_handle, params);
 
     if (rc < 0) 
@@ -192,7 +190,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
       
       return -2;
     }
-    // make a copy of hardware parameters
+    /* Make a copy of hardware parameters. */
     snd_pcm_hw_params_malloc(&hw_params);
     snd_pcm_hw_params_copy(hw_params, params);
   }
