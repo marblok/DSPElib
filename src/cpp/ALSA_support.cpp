@@ -130,14 +130,20 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
   {
     //! \TODO Test mode:	Open mode (see SND_PCM_NONBLOCK, SND_PCM_ASYNC)
     
-    DSP::log << "Opening PCM device for playback." << endl;
-    rc = snd_pcm_open(&handle, "default",
-                      stream_type, SND_PCM_NONBLOCK);
+    if (stream_type == SND_PCM_STREAM_PLAYBACK)
+    {
+      DSP::log << "Opening PCM device for playback." << endl;
+    }  
+    else
+    {
+      DSP::log << "Opening PCM device for recording (capture)." << endl;
+    }
+
+    rc = snd_pcm_open(&handle, "default", stream_type, SND_PCM_NONBLOCK);
 
     if (rc < 0) 
     {
       DSP::log << "Unable to open pcm device: " << snd_strerror(rc) << endl;
-      // exit(1);
       return -1;
     }
     alsa_handle = handle;
@@ -169,13 +175,10 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
 
     snd_pcm_hw_params_set_rate_near(alsa_handle, params, &sampling_rate, &dir);
 
-    rc = snd_pcm_hw_params_set_buffer_size(alsa_handle,
-                                           params, 2*frames);
+    rc = snd_pcm_hw_params_set_buffer_size(alsa_handle, params, 2*frames);
     DSP::log << "Set buffer size: " << rc << endl;
 
-    snd_pcm_hw_params_set_period_size_near(alsa_handle,
-                                           params, &frames, &dir);
-
+    snd_pcm_hw_params_set_period_size_near(alsa_handle, params, &frames, &dir);
     
     /* Write the parameters to the driver */
 
@@ -274,19 +277,19 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
   DSP::log << "can sync start = " << val << endl;  
 
 
-//snd_pcm_hw_params_free(params);
-//  There are two ways of allocating such structures:
-//1) Use snd_xxx_malloc() and snd_xxx_free() to allocate memory from the
-//heap, or
-//2) use snd_xxx_alloca() to allocate memory from the stack.
-//
-//The snd_xxx_alloca() functions behave just like alloca(): their memory
-//is automatically freed when the function returns.
+ //snd_pcm_hw_params_free(params);
+ //  There are two ways of allocating such structures:
+ //1) Use snd_xxx_malloc() and snd_xxx_free() to allocate memory from the
+ //heap, or
+ //2) use snd_xxx_alloca() to allocate memory from the stack.
+ //
+ //The snd_xxx_alloca() functions behave just like alloca(): their memory
+ //is automatically freed when the function returns.
 
  // return 1;
-// }
+ // }
 
-// void DSP::ALSA_object_t::get_period_size(snd_pcm_uframes_t &frames, unsigned int &period_time) {
+ // void DSP::ALSA_object_t::get_period_size(snd_pcm_uframes_t &frames, unsigned int &period_time) {
   // int dir;
 
   // snd_pcm_hw_params_current() // Retreive current PCM hardware configuration chosen with snd_pcm_hw_params.
@@ -383,6 +386,8 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
       std::cerr << "short read: read " << rc << " bytes" << std::endl;
   }
  */
+  if (stream_type == SND_PCM_STREAM_PLAYBACK)
+  {
 
     // M.B. wariant dla stałej częstotliwości
     for (unsigned int n = 0; n < size_b / no_of_bytes_in_channel / no_of_channels; n++)
@@ -457,8 +462,14 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
     {
         std::cerr << "short write, write " << rc << " frames" << std::endl;
     }
+  
+    std::cout << "The end of the playback" << std::endl;
   }
-  std::cout << "The end of the playback" << std::endl;
+
+  else if (stream_type == SND_PCM_STREAM_CAPTURE)
+  {
+    //! TBD
+  }
 
   //snd_pcm_nonblock(handle, 0);
   snd_pcm_drain(handle);
@@ -476,7 +487,8 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
 
 }
 
-int set_snd_pcm_format(int errc, int no_of_bytes_in_channel, string endianess, snd_pcm_hw_params_t *params, snd_pcm_t *alsa_handle, int mode) {
+int set_snd_pcm_format(int errc, int no_of_bytes_in_channel, string endianess, snd_pcm_hw_params_t *params, snd_pcm_t *alsa_handle, int mode) 
+{
     // M.B. docelowo dodać przynajmniej obsługę 8-bitów
   if (no_of_bytes_in_channel == 1)
   {
@@ -485,7 +497,7 @@ int set_snd_pcm_format(int errc, int no_of_bytes_in_channel, string endianess, s
       errc = snd_pcm_hw_params_set_format(alsa_handle, params,
                                           SND_PCM_FORMAT_U8);
 
-       std::cout << "Format set with error code: " << errc << std::endl;
+       DSP::log << "Format set with error code: " << errc << endl;
   }
   else if (no_of_bytes_in_channel == 2)
   {
@@ -503,7 +515,7 @@ int set_snd_pcm_format(int errc, int no_of_bytes_in_channel, string endianess, s
                                             SND_PCM_FORMAT_S16_LE);
       }
 
-      std::cout << "Format set with error code: " << errc << std::endl;
+      DSP::log << "Format set with error code: " << errc << endl;
   }
   else if (no_of_bytes_in_channel == 3) // D.K. 32-bits buffer can be used
   {
@@ -523,7 +535,7 @@ int set_snd_pcm_format(int errc, int no_of_bytes_in_channel, string endianess, s
 
       mode = 1;
 
-      std::cout << "Format set with error code: " << errc << std::endl;
+      DSP::log << "Format set with error code: " << errc << std::endl;
   }
   else if (no_of_bytes_in_channel == 4)
   {
