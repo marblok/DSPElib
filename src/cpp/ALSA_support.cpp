@@ -196,84 +196,83 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
   }
 
   /* Display information about the PCM interface */
-  
-  DSP::log << "PCM handle name = '" << snd_pcm_name(alsa_handle) << "'" << endl;
+  {
+    DSP::log << "PCM handle name = '" << snd_pcm_name(alsa_handle) << "'" << endl;
 
-  DSP::log << "PCM state = " << snd_pcm_state_name(snd_pcm_state(alsa_handle)) << endl;
+    DSP::log << "PCM state = " << snd_pcm_state_name(snd_pcm_state(alsa_handle)) << endl;
 
-  snd_pcm_hw_params_get_access(hw_params, (snd_pcm_access_t *) &val);
-  DSP::log << "access type = " << snd_pcm_access_name((snd_pcm_access_t)val) << endl;
+    snd_pcm_hw_params_get_access(hw_params, (snd_pcm_access_t *) &val);
+    DSP::log << "access type = " << snd_pcm_access_name((snd_pcm_access_t)val) << endl;
 
-  snd_pcm_format_t format;
-  snd_pcm_hw_params_get_format(hw_params, &format);
-  DSP::log << "format = '" << snd_pcm_format_name(format) << "' "
-    << "(" << snd_pcm_format_description(format) << ")" << endl;
+    snd_pcm_format_t format;
+    snd_pcm_hw_params_get_format(hw_params, &format);
+    DSP::log << "format = '" << snd_pcm_format_name(format) << "' "
+      << "(" << snd_pcm_format_description(format) << ")" << endl;
 
-  snd_pcm_hw_params_get_subformat(hw_params, (snd_pcm_subformat_t *)&val);
-  DSP::log << "subformat = '" << snd_pcm_subformat_name((snd_pcm_subformat_t)val) << "' "
-    << "(" << snd_pcm_subformat_description((snd_pcm_subformat_t)val) << ")" << endl;
+    snd_pcm_hw_params_get_subformat(hw_params, (snd_pcm_subformat_t *)&val);
+    DSP::log << "subformat = '" << snd_pcm_subformat_name((snd_pcm_subformat_t)val) << "' "
+      << "(" << snd_pcm_subformat_description((snd_pcm_subformat_t)val) << ")" << endl;
 
-  snd_pcm_hw_params_get_channels(hw_params, &val);
-  DSP::log << "channels = " << val << endl;
+    snd_pcm_hw_params_get_channels(hw_params, &val);
+    DSP::log << "channels = " << val << endl;
 
-  snd_pcm_hw_params_get_rate(hw_params, &val, &dir);
-  DSP::log << "rate = " << val << " bps" << endl;
+    snd_pcm_hw_params_get_rate(hw_params, &val, &dir);
+    DSP::log << "rate = " << val << " bps" << endl;
 
-  snd_pcm_hw_params_get_period_time(hw_params, &val, &dir);
-  DSP::log << "period time = " << val << " us" << endl;
+    snd_pcm_hw_params_get_period_time(hw_params, &val, &dir);
+    DSP::log << "period time = " << val << " us" << endl;
 
-  snd_pcm_hw_params_get_period_size(hw_params, &frames, &dir);
-  DSP::log << "period size = " << (int) frames << " frames" << endl;
+    snd_pcm_hw_params_get_period_size(hw_params, &frames, &dir);
+    DSP::log << "period size = " << (int) frames << " frames" << endl;
 
-  snd_pcm_hw_params_get_buffer_time(hw_params, &val, &dir);
-  DSP::log << "buffer time = " << val << " us" << endl;
+    snd_pcm_hw_params_get_buffer_time(hw_params, &val, &dir);
+    DSP::log << "buffer time = " << val << " us" << endl;
 
-  snd_pcm_hw_params_get_buffer_size(hw_params, (snd_pcm_uframes_t *) &val);
-  DSP::log << "buffer size = " << val << " frames" << endl;
+    snd_pcm_hw_params_get_buffer_size(hw_params, (snd_pcm_uframes_t *) &val);
+    DSP::log << "buffer size = " << val << " frames" << endl;
 
-  snd_pcm_hw_params_get_periods(hw_params, &val, &dir);
-  DSP::log << "periods per buffer = " << val << " frames" << endl;
+    snd_pcm_hw_params_get_periods(hw_params, &val, &dir);
+    DSP::log << "periods per buffer = " << val << " frames" << endl;
 
-  snd_pcm_hw_params_get_rate_numden(hw_params, &val, &val2);
-  DSP::log << "exact rate = " << val << "/" << val2 << " bps" << endl;
+    snd_pcm_hw_params_get_rate_numden(hw_params, &val, &val2);
+    DSP::log << "exact rate = " << val << "/" << val2 << " bps" << endl;
 
+    val = snd_pcm_hw_params_get_sbits(hw_params);
+    DSP::log << "significant bits = " << val << endl;
 
-  val = snd_pcm_hw_params_get_sbits(hw_params);
-  DSP::log << "significant bits = " << val << endl;
+    snd_pcm_hw_params_get_tick_time(hw_params, &val, &dir); // deprecated !!!
+    DSP::log << "tick time = " << val << " us" << endl;
 
-  snd_pcm_hw_params_get_tick_time(hw_params, &val, &dir); // deprecated !!!
-  DSP::log << "tick time = " << val << " us" << endl;
+    val = snd_pcm_hw_params_is_batch(hw_params);
+    DSP::log << "is batch = " << val << endl;
 
-  val = snd_pcm_hw_params_is_batch(hw_params);
-  DSP::log << "is batch = " << val << endl;
+    val = snd_pcm_hw_params_is_block_transfer(hw_params);
+    DSP::log << "is block transfer = " << val << endl;
 
-  val = snd_pcm_hw_params_is_block_transfer(hw_params);
-  DSP::log << "is block transfer = " << val << endl;
+    val = snd_pcm_hw_params_is_double(hw_params);
+    DSP::log << "is double = " << val << endl;
 
-  val = snd_pcm_hw_params_is_double(hw_params);
-  DSP::log << "is double = " << val << endl;
+    val = snd_pcm_hw_params_is_half_duplex(hw_params);
+    DSP::log << "is half duplex = " << val << endl;
 
-  val = snd_pcm_hw_params_is_half_duplex(hw_params);
-  DSP::log << "is half duplex = " << val << endl;
+    val = snd_pcm_hw_params_is_joint_duplex(hw_params);
+    DSP::log <<"is joint duplex = " << val << endl;
 
-  val = snd_pcm_hw_params_is_joint_duplex(hw_params);
-  DSP::log <<"is joint duplex = " << val << endl;
+    val = snd_pcm_hw_params_can_overrange(hw_params);
+    DSP::log << "can overrange = " << val << endl;
 
-  val = snd_pcm_hw_params_can_overrange(hw_params);
-  DSP::log << "can overrange = " << val << endl;
+    val = snd_pcm_hw_params_can_mmap_sample_resolution(hw_params);
+    DSP::log << "can mmap = " << val << endl;
 
-  val = snd_pcm_hw_params_can_mmap_sample_resolution(hw_params);
-  DSP::log << "can mmap = " << val << endl;
+    val = snd_pcm_hw_params_can_pause(hw_params);
+    DSP::log << "can pause = " << val << endl;
 
-  val = snd_pcm_hw_params_can_pause(hw_params);
-  DSP::log << "can pause = " << val << endl;
+    val = snd_pcm_hw_params_can_resume(hw_params);
+    DSP::log << "can resume = " << val << endl;
 
-  val = snd_pcm_hw_params_can_resume(hw_params);
-  DSP::log << "can resume = " << val << endl;
-
-  val = snd_pcm_hw_params_can_sync_start(hw_params);
-  DSP::log << "can sync start = " << val << endl;  
-
+    val = snd_pcm_hw_params_can_sync_start(hw_params);
+    DSP::log << "can sync start = " << val << endl;  
+  }
 
  //snd_pcm_hw_params_free(params);
  //  There are two ways of allocating such structures:
