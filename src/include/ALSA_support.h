@@ -30,6 +30,7 @@ namespace DSP {
         unsigned int period_time_ms; // M.B. i ograniczać wykorzystywanie jednej zmiennej do przechowywania wartości różniących się interpretacją i przeznaczeniem
         unsigned int no_of_channels;
         unsigned int no_of_bytes_in_channel;
+        long playback_time;
 
         int dir;
         snd_pcm_uframes_t frames;
@@ -42,7 +43,7 @@ namespace DSP {
         //! open default PCM device and return 1 on success or negative error code
         /*! stream_type = SND_PCM_STREAM_PLAYBACK or SND_PCM_STREAM_CAPTURE
         */
-        int open_alsa_device(snd_pcm_stream_t stream_type, unsigned int no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate);
+        int open_alsa_device(snd_pcm_stream_t stream_type, unsigned int no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate, long playback_time);
         void close_alsa_device(bool do_drain = false, bool use_log = false);
 
         void get_period_size(snd_pcm_uframes_t &frames, unsigned int &period_time);
@@ -56,8 +57,8 @@ namespace DSP {
         unsigned int select_input_device_by_number(const unsigned int &device_number=UINT_MAX);
         unsigned int select_output_device_by_number(const unsigned int &device_number=UINT_MAX);
 
-        long open_PCM_device_4_output(unsigned int &no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate, const long &audio_outbuffer_size = -1);
-        long open_PCM_device_4_input(unsigned int &no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate, const long &audio_outbuffer_size = -1);
+        long open_PCM_device_4_output(unsigned int &no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate, const long &audio_outbuffer_size = -1, long playback_time);
+        long open_PCM_device_4_input(unsigned int &no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate, const long &audio_outbuffer_size = -1. long playback_time);
         bool close_PCM_device_input(void);
         bool close_PCM_device_output(void);
 

@@ -98,7 +98,7 @@ perform any sound playback or recording.
 returns actually selected sampling_rate
 
 */
-int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned int no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate) 
+int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned int no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate, long playback_time) 
 {
   long loops;
   int rc;
@@ -331,7 +331,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
       pcm_buffer = (unsigned char *)(buffer_64bit.data());
         break;
     default:
-      std::cerr << "Unsupported no_of_bytes_in_channel" << std::endl;
+      DSP::log << "Unsupported no_of_bytes_in_channel" << endl;
       exit(1);
   }
 
@@ -347,7 +347,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
       if (rc < 0)
       {
 
-          std::cerr << "Unable to set blocking mode" << std::endl;
+          DSP::log << "Unable to set blocking mode" << endl;
           exit(1);
       }
   }
@@ -356,16 +356,15 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
       rc = snd_pcm_nonblock(handle, 1);
       if (rc < 0)
       {
-          std::cerr << "Unable to set non blocking mode" << std::endl;
+          DSP::log << "Unable to set non blocking mode" << endl;
           exit(1);
       }
   }
 
-  /* requested number of microseconds divided by period time */
-  loops = 15000000 / period_time_ms;
+  /* Requested number of microseconds divided by period time. */
+  loops = playback_time / period_time_ms;
 
-  /* sinus generator */
-  // std::cout << "generuje sinusa" << std::endl;
+  /* Sinus generator. */
   double phase_0 = 0.0, phase_0_2 = 0.0;
   double Freq = 500, Freq_2 = 200; // M.B. częstotliwość początkowa [Hz]
   while (loops > 0)
@@ -375,12 +374,12 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
   /*
   if (rc == 0)
   {
-      std::cerr << "end of file on input" << std::endl;
+      DSP::log << "End of file on input" << endl;
       break;
   }
   else if (rc != size_b)
   {
-      std::cerr << "short read: read " << rc << " bytes" << std::endl;
+      DSP:log << "Short read: read " << rc << " bytes" << endl;
   }
  */
   if (stream_type == SND_PCM_STREAM_PLAYBACK)
@@ -433,39 +432,61 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
                 buffer_64bit[no_of_channels * n + 1 ] = sin(2 * M_PI * (Freq_2) / sampling_rate * n + phase_0_2);
 
         }
-
     }
+
     phase_0 +=  2 * M_PI * Freq / sampling_rate * size_b / no_of_bytes_in_channel / no_of_channels;
     phase_0_2 +=  2 * M_PI * Freq_2 / sampling_rate * size_b / no_of_bytes_in_channel / no_of_channels;
-    std::cout << Freq << ", " << Freq_2 << std::endl;
+    DSP::log << Freq << ", " << Freq_2 << endl;
 
-    //std::cout << "Before snd_pcm_writei (" << loops << ")" << std::endl;
-    rc = snd_pcm_writei(handle, pcm_buffer, frames);
-    std::cout << "Wrote" << std::endl;
+    // DSP::log << "Before snd_pcm_writei (" << loops << ")" << endl;
+    rc = snd_pcm_writei(alsa_handle, pcm_buffer, frames);
+    DSP::log << "Wrote" << endl;
 
     if (rc == -EPIPE)
     {
         /* EPIPE means underrun */
-        std::cerr << "Underrun occurred" << std::endl;
-        snd_pcm_prepare(handle);
+        DSP::log << "Underrun occurred" << endl;
+        snd_pcm_prepare(alsa_handle);
 
     }
     else if (rc < 0)
     {
-        std::cerr << "Error from writei: " << snd_strerror(rc) << std::endl;
-
+      DSP::log << "Error from writei: " << snd_strerror(rc) << endl;
     }
     else if (rc != (int)frames)
     {
-        std::cerr << "short write, write " << rc << " frames" << std::endl;
+      DSP::log << "short write, write " << rc << " frames" << endl;
     }
   
-    std::cout << "The end of the playback" << std::endl;
+    DSP::log << "The end of the playback" << endl;
   }
 
-  else if (stream_type == SND_PCM_STREAM_CAPTURE)
+  else
   {
-    //! TBD
+    
+    rc = snd_pcm_readi(alsa_handle, pcm_buffer, frames);
+    DSP::log << "Read" << endl;
+
+    if (rc == -EPIPE)
+    {
+      /* EPIPE means overrun */
+      DSP::log << "Underrun occurred" << endl;
+
+      snd_pcm_prepare(alsa_handle);
+    } 
+    else if (rc < 0) 
+    {
+      DSP::log << "Error from readi: " << snd_strerror(rc) << endl;
+    } 
+    else if (rc != (int)frames)
+    {
+      DSP::log << "short read, read " << rc << " frames" << endl;
+    }
+    rc = write(1, pcm_buffer, size_b);
+    if (rc != size)
+    {
+      DSP::log << "short write: wrote " << rc << "bytes" << endl;
+    }  
   }
 
   //snd_pcm_nonblock(handle, 0);
@@ -591,12 +612,12 @@ int set_snd_pcm_format(int errc, int no_of_bytes_in_channel, string endianess, s
   return errc;
 }
 
-long DSP::ALSA_object_t::open_PCM_device_4_output(unsigned int &no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate, const long &audio_outbuffer_size) {
+long DSP::ALSA_object_t::open_PCM_device_4_output(unsigned int &no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate, const long &audio_outbuffer_size, long playback_time) {
   assert(!"DSP::ALSA_object_t::open_PCM_device_4_output not implemented yet");
   int rc;
   unsigned int sampling_rate_alsa = sampling_rate;
 
-  rc = open_alsa_device(SND_PCM_STREAM_PLAYBACK, no_of_channels, no_of_bytes_in_channel, sampling_rate_alsa); // pierwszy parametr ewentualnie 0
+  rc = open_alsa_device(SND_PCM_STREAM_PLAYBACK, no_of_channels, no_of_bytes_in_channel, sampling_rate_alsa, playback_time); // pierwszy parametr ewentualnie 0
 
   if(rc > 0)
   { 
@@ -608,12 +629,12 @@ long DSP::ALSA_object_t::open_PCM_device_4_output(unsigned int &no_of_channels, 
   }
 }
 
-long DSP::ALSA_object_t::open_PCM_device_4_input(unsigned int &no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate, const long &audio_outbuffer_size) {
+long DSP::ALSA_object_t::open_PCM_device_4_input(unsigned int &no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate, const long &audio_outbuffer_size, long playback_time) {
   assert(!"DSP::ALSA_object_t::open_PCM_device_4_input not implemented yet");
   int rc;
   unsigned int sampling_rate_alsa = sampling_rate;
 
-  rc = open_alsa_device(SND_PCM_STREAM_CAPTURE, no_of_channels, no_of_bytes_in_channel, sampling_rate_alsa);
+  rc = open_alsa_device(SND_PCM_STREAM_CAPTURE, no_of_channels, no_of_bytes_in_channel, sampling_rate_alsa, playback_time);
   
   if(rc > 0)
   { 
