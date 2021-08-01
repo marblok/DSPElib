@@ -568,8 +568,10 @@ namespace DSP {
       virtual unsigned int select_input_device_by_number(const unsigned int &device_number=UINT_MAX) = 0;
       virtual unsigned int select_output_device_by_number(const unsigned int &device_number=UINT_MAX) = 0;
 
+      //! audio_outbuffer_size is in samples (note that, for example, sample for 16bit stereo is represented by 4bytes)
       virtual long open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size = -1) = 0;
-      virtual long open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size = -1) = 0;
+      //! audio_inbuffer_size is in samples (note that, for example, sample for 16bit stereo is represented by 4bytes)
+      virtual long open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_inbuffer_size = -1) = 0;
       virtual bool close_PCM_device_input(void) = 0;
       virtual bool close_PCM_device_output(void) = 0;
 

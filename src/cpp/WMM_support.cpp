@@ -255,7 +255,7 @@ long DSP::WMM_object_t::open_PCM_device_4_input(const int &no_of_channels, int n
     IsRecordingNow = false;
     NextBufferInInd = 0;
 
-    return 1; //! \TODO check this also foroutput
+    return 1; //! \TODO check this also for output
   }
 
   // error creating audio object
