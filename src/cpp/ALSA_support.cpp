@@ -612,12 +612,13 @@ int set_snd_pcm_format(int errc, int no_of_bytes_in_channel, string endianess, s
   return errc;
 }
 
-long DSP::ALSA_object_t::open_PCM_device_4_output(unsigned int &no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate, const long &audio_outbuffer_size, long playback_time) {
+long DSP::ALSA_object_t::open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size, long playback_time) {
   assert(!"DSP::ALSA_object_t::open_PCM_device_4_output not implemented yet");
   int rc;
-  unsigned int sampling_rate_alsa = sampling_rate;
+  unsigned int no_of_bytes_in_channel = (unsigned int) no_of_bits / 8;
+  unsigned int sampling_rate_alsa = (unsigned int) sampling_rate;
 
-  rc = open_alsa_device(SND_PCM_STREAM_PLAYBACK, no_of_channels, no_of_bytes_in_channel, sampling_rate_alsa, playback_time); // pierwszy parametr ewentualnie 0
+  rc = open_alsa_device(SND_PCM_STREAM_PLAYBACK, (unsigned int) no_of_channels, no_of_bytes_in_channel, sampling_rate_alsa, playback_time); // pierwszy parametr ewentualnie 0
 
   if(rc > 0)
   { 
@@ -629,12 +630,13 @@ long DSP::ALSA_object_t::open_PCM_device_4_output(unsigned int &no_of_channels, 
   }
 }
 
-long DSP::ALSA_object_t::open_PCM_device_4_input(unsigned int &no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate, const long &audio_inbuffer_size, long playback_time) {
+long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_inbuffer_size, long playback_time) {
   assert(!"DSP::ALSA_object_t::open_PCM_device_4_input not implemented yet");
   int rc;
-  unsigned int sampling_rate_alsa = sampling_rate;
+  unsigned int no_of_bytes_in_channel = (unsigned int) no_of_bits / 8;
+  unsigned int sampling_rate_alsa = (unsigned int) sampling_rate;
 
-  rc = open_alsa_device(SND_PCM_STREAM_CAPTURE, no_of_channels, no_of_bytes_in_channel, sampling_rate_alsa, playback_time);
+  rc = open_alsa_device(SND_PCM_STREAM_CAPTURE, (unsigned int) no_of_channels, no_of_bytes_in_channel, sampling_rate_alsa, playback_time);
   
   if(rc > 0)
   { 
