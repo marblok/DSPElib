@@ -31,25 +31,29 @@ DSP::ALSA_object_t::~ALSA_object_t()
 
 unsigned int DSP::ALSA_object_t::select_input_device_by_number(const unsigned int &device_number)
 {
-  assert(!"ALSA_object_t::select_input_device_by_number not yet implemented");
-  
+  // assert(!"ALSA_object_t::select_input_device_by_number not yet implemented");
+  InDevNo = device_number;
+
+  return InDevNo;
 }
 
 unsigned int DSP::ALSA_object_t::select_output_device_by_number(const unsigned int &device_number)
 {
-  assert(!"ALSA_object_t::select_output_device_by_number not yet implemented");
-  
+  // assert(!"ALSA_object_t::select_output_device_by_number not yet implemented");
+  OutDevNo = device_number;
+
+  return OutDevNo;
 }
 
 bool DSP::ALSA_object_t::is_output_callback_supported(void) 
 {
-  assert(!"ALSA_object_t::is_output_callback_supported not yet implemented");
+  // assert(!"ALSA_object_t::is_output_callback_supported not yet implemented");
   return false;
 }
 
 bool DSP::ALSA_object_t::is_input_callback_supported(void) 
 {
-  assert(!"ALSA_object_t::is_input_callback_supported not yet implemented");
+  // assert(!"ALSA_object_t::is_input_callback_supported not yet implemented");
   return false;
 }
 
@@ -86,30 +90,25 @@ void DSP::ALSA_object_t::log_driver_data()
   DSP::log << "PCM states:" << endl;
   for (val = 0; val <= SND_PCM_STATE_LAST; val++)
     DSP::log << "  " << snd_pcm_state_name((snd_pcm_state_t)val) << endl;
+
 }
 
-/*
-
-This example opens the default PCM device, sets
-some parameters, and then displays the value
-of most of the hardware parameters. It does not
-perform any sound playback or recording.
-
-returns actually selected sampling_rate
-
-*/
-int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned int no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate, long playback_time) 
+int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned int no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate) 
 {
-  long loops;
+  long loops; //! \TODO Change the loop to endless playback
   int rc;
   int errc;
   int size_b;
 
   int mode;
 
-  snd_pcm_t *handle;
+  /* For logging. */
   unsigned int val, val2;
   int dir;
+
+  const char* DevNo;
+
+  snd_pcm_t *handle;
   snd_pcm_uframes_t frames;
 
   std::vector<unsigned char> buffer_8bit; // M.B. lepiej korzystać z kontenerów STD, są wygodniejsze i oznaczają mniej problemów z wyciekami pamięci
@@ -133,13 +132,17 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
     if (stream_type == SND_PCM_STREAM_PLAYBACK)
     {
       DSP::log << "Opening PCM device for playback." << endl;
+      DevNo = (const char*)select_output_device_by_number(0)
+      DevNo++;
     }  
     else
     {
       DSP::log << "Opening PCM device for recording (capture)." << endl;
+      DevNo = (const char*)select_input_device_by_number(0)
+      DevNo++;
     }
 
-    rc = snd_pcm_open(&handle, "default", stream_type, SND_PCM_NONBLOCK);
+    rc = snd_pcm_open(&handle, DevNo, stream_type, SND_PCM_NONBLOCK);
 
     if (rc < 0) 
     {

@@ -25,12 +25,14 @@ namespace DSP {
         snd_pcm_t *alsa_handle;
         snd_pcm_hw_params_t *hw_params;
 
+        unsigned int OutDevNo; // device numer used in next open operations
+        unsigned int InDevNo; // device numer used in next open operations
+
         unsigned int sampling_rate; // M.B. lepiej korzystać z nazw oddających przeznaczenie zmiennej
 
         unsigned int period_time_ms; // M.B. i ograniczać wykorzystywanie jednej zmiennej do przechowywania wartości różniących się interpretacją i przeznaczeniem
         unsigned int no_of_channels;
         unsigned int no_of_bytes_in_channel;
-        long playback_time;
 
         int dir;
         snd_pcm_uframes_t frames;
@@ -43,7 +45,7 @@ namespace DSP {
         //! open default PCM device and return 1 on success or negative error code
         /*! stream_type = SND_PCM_STREAM_PLAYBACK or SND_PCM_STREAM_CAPTURE
         */
-        int open_alsa_device(snd_pcm_stream_t stream_type, unsigned int no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate, long playback_time);
+        int open_alsa_device(snd_pcm_stream_t stream_type, unsigned int no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate);
         void close_alsa_device(bool do_drain = false, bool use_log = false);
 
         void get_period_size(snd_pcm_uframes_t &frames, unsigned int &period_time);
