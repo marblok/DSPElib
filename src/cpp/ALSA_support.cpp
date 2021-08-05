@@ -133,15 +133,14 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
     if (stream_type == SND_PCM_STREAM_PLAYBACK)
     {
       DevNo++;
-      DevNo = (const char*)DevNo;
       DSP::log << "Opening PCM device for playback." << endl;
-      DevNo = (const char*)select_output_device_by_number(0)
-    }  
+      DevNo = (const char*) select_output_device_by_number(0)
+    }
     else
     {
-      DSP::log << "Opening PCM device for recording (capture)." << endl;
-      DevNo = (const char*)select_input_device_by_number(0)
       DevNo++;
+      DSP::log << "Opening PCM device for recording (capture)." << endl;
+      DevNo = (const char*) select_input_device_by_number(0)
     }
 
     rc = snd_pcm_open(&handle, DevNo, stream_type, SND_PCM_NONBLOCK);
