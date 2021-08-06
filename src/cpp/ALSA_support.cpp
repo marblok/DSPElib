@@ -106,8 +106,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
   unsigned int val, val2;
   int dir;
 
-  const char* DevNo;
-  unsigned int DevNo = -1;
+  int DevNo = -1;
 
   snd_pcm_t *handle;
   snd_pcm_uframes_t frames;
@@ -133,12 +132,18 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
     if (stream_type == SND_PCM_STREAM_PLAYBACK)
     {
       DevNo++;
+      if (DevNo > 9)
+        DevNo = 0;
+
       DSP::log << "Opening PCM device for playback." << endl;
       DevNo = (const char*) select_output_device_by_number(0)
     }
     else
     {
       DevNo++;
+      if (DevNo > 9)
+        DevNo = 0;
+        
       DSP::log << "Opening PCM device for recording (capture)." << endl;
       DevNo = (const char*) select_input_device_by_number(0)
     }
