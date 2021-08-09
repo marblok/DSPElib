@@ -18,6 +18,7 @@ DSP::ALSA_object_t::ALSA_object_t()
 {
   alsa_handle = NULL;
   hw_params = NULL;
+  // co jeszcze dodać do konstruktora
 }
 
 DSP::ALSA_object_t::~ALSA_object_t()
@@ -394,6 +395,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
   if (stream_type == SND_PCM_STREAM_PLAYBACK)
   {
 
+    /* Sinus experimental
     // M.B. wariant dla stałej częstotliwości
     for (unsigned int n = 0; n < size_b / no_of_bytes_in_channel / no_of_channels; n++)
     {
@@ -446,6 +448,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
     phase_0 +=  2 * M_PI * Freq / sampling_rate * size_b / no_of_bytes_in_channel / no_of_channels;
     phase_0_2 +=  2 * M_PI * Freq_2 / sampling_rate * size_b / no_of_bytes_in_channel / no_of_channels;
     DSP::log << Freq << ", " << Freq_2 << endl;
+    */
 
     // DSP::log << "Before snd_pcm_writei (" << loops << ")" << endl;
     rc = snd_pcm_writei(alsa_handle, pcm_buffer, frames);
@@ -700,26 +703,32 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
   assert(!"DSP::ALSA_object_t::get_wave_in_raw_buffer not implemented yet");
 }
 
-snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, snd_pcm_uframes_t &frames) {
-  snd_pcm_sframes_t rc = snd_pcm_writei(alsa_handle, buffer, frames);
-  if (rc == -EPIPE)
-  {
-    /* EPIPE means underrun */
-    fprintf(stderr, "underrun occurred\n");
-    snd_pcm_prepare(alsa_handle);
-  } 
-  else if (rc < 0) 
-  {
-    fprintf(stderr,
-            "error from writei: %s\n",
-            snd_strerror(int(rc)));
-  }  
-  else if (rc != (int)frames) 
-  {
-    fprintf(stderr,
-            "short write, write %d frames\n", int(rc));
-  }
+
+snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(snd_pcm_t *handle, const void *buffer, snd_pcm_uframes_t &frames) {
+ // Do decyzji, czy to wyodrebiamy i analogicznie tworzymy pcm_readi
+ /* 
+  rc = snd_pcm_writei(alsa_handle, pcm_buffer, frames);
+    DSP::log << "Wrote" << endl;
+
+    if (rc == -EPIPE)
+    {
+        // EPIPE means underrun
+        DSP::log << "Underrun occurred" << endl;
+        snd_pcm_prepare(alsa_handle);
+
+    }
+    else if (rc < 0)
+    {
+      DSP::log << "Error from writei: " << snd_strerror(rc) << endl;
+    }
+    else if (rc != (int)frames)
+    {
+      DSP::log << "short write, write " << rc << " frames" << endl;
+    }
   
+    DSP::log << "The end of the playback" << endl;
+  }
+ */
   return rc;
 }
 
