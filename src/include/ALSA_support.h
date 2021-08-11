@@ -34,6 +34,12 @@ namespace DSP {
         unsigned int no_of_channels;
         unsigned int no_of_bytes_in_channel;
 
+        std::vector<unsigned char> buffer_8bit; // M.B. lepiej korzystać z kontenerów STD, są wygodniejsze i oznaczają mniej problemów z wyciekami pamięci
+        std::vector<int16_t> buffer_16bit; // M.B. dla odtwarzania 16-bitowego (int to dłuższe słowa)
+        std::vector<int32_t> buffer_32bit; // D.K. dla odtwarzania 24 i 32-bitowego
+        std::vector<float> buffer_32bit_f; // natywny dla 32 bitow
+        std::vector<double> buffer_64bit; // D.K. dla odtwarzania 64-bitowego
+
         int dir;
         snd_pcm_uframes_t frames;
 
@@ -50,6 +56,8 @@ namespace DSP {
 
         void get_period_size(snd_pcm_uframes_t &frames, unsigned int &period_time);
         snd_pcm_sframes_t pcm_writei(const void *buffer, snd_pcm_uframes_t &frames);
+        //
+        int set_snd_pcm_format(int errc, int no_of_bytes_in_channel, string endianess, snd_pcm_hw_params_t *params, snd_pcm_t *alsa_handle, int mode);
 
     public:
 
@@ -64,7 +72,6 @@ namespace DSP {
         bool close_PCM_device_input(void);
         bool close_PCM_device_output(void);
 
-        int set_snd_pcm_format(int errc, int no_of_bytes_in_channel, string endianess, snd_pcm_hw_params_t *params, snd_pcm_t *alsa_handle, int mode);
 
         //! returns true is the playback is on
         bool is_device_playing(void);

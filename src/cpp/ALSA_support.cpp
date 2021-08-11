@@ -5,7 +5,6 @@
  */
 
 #include <ALSA_support.h>
-#include <iostream> // w przyszłości pozamieniam na DSP::log
 #include <vector>
 #include <cmath>
 #include <DSP_lib.h> // for logging 
@@ -18,6 +17,14 @@ DSP::ALSA_object_t::ALSA_object_t()
 {
   alsa_handle = NULL;
   hw_params = NULL;
+  std::string endianess;
+  endianess = system("lscpu | grep \"Byte Order\" | egrep -o 'Little Endian|Big Endian'");
+
+  if (endianess == "Big Endian")
+    IsLittleEndian = false;
+  else
+    IsLittleEndian == true;
+
   // co jeszcze dodać do konstruktora
 }
 
@@ -96,7 +103,7 @@ void DSP::ALSA_object_t::log_driver_data()
 
 int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned int no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate) 
 {
-  long loops; //! \TODO Change the loop to endless playback
+  // long loops; //! \TODO Change the loop to endless playback
   int rc;
   int errc;
   int size_b;
@@ -109,17 +116,8 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
 
   int DevNo = -1;
 
-  snd_pcm_t *handle;
-  snd_pcm_uframes_t frames;
+  snd_pcm_uframes_t frames = 8000;
 
-  std::vector<unsigned char> buffer_8bit; // M.B. lepiej korzystać z kontenerów STD, są wygodniejsze i oznaczają mniej problemów z wyciekami pamięci
-  std::vector<int16_t> buffer_16bit; // M.B. dla odtwarzania 16-bitowego (int to dłuższe słowa)
-  std::vector<int32_t> buffer_32bit; // D.K. dla odtwarzania 24 i 32-bitowego
-  std::vector<float> buffer_32bit_f; // natywny dla 32 bitow
-  std::vector<double> buffer_64bit; // D.K. dla odtwarzania 64-bitowego
-
-  std::string endianess;
-  endianess = system("lscpu | grep \"Byte Order\" | egrep -o 'Little Endian|Big Endian'");
 
   if (alsa_handle != NULL)
     close_alsa_device();
@@ -149,7 +147,8 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
       DevNo = (const char*) select_input_device_by_number(0)
     }
 
-    rc = snd_pcm_open(&handle, DevNo, stream_type, SND_PCM_NONBLOCK);
+    // jakie znaczenie ma name?
+    rc = snd_pcm_open(&handle, "default", stream_type, SND_PCM_NONBLOCK);
 
     if (rc < 0) 
     {
@@ -175,8 +174,8 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
 
     DSP::log << "Setting the SND PCM FORMAT." << endl;
     DSP::log << "Something less than 0 means an error occurance." << endl;
-
-    errc = set_snd_pcm_format(errc, no_of_bytes_in_channel, endianess, params, alsa_handle, mode);
+    // do poprawy parametry
+    errc = DSP::ALSA_object_t::set_snd_pcm_format(errc, no_of_bytes_in_channel, endianess, params, alsa_handle, mode);
 
     snd_pcm_hw_params_set_channels(alsa_handle, params, no_of_channels);
 
@@ -309,7 +308,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
   /* Use a buffer large enough to hold one period */
 
   snd_pcm_hw_params_get_period_size(hw_params, &frames, &dir);
-
+  // do osobnej metody + osobna metoda, która zwróci mode
   size_b = frames * no_of_channels * no_of_bytes_in_channel; /* 2 bytes/sample, 2 channels */ // M.B. warto być gotowym na wardziej uniwersalne warianty
   switch (no_of_bytes_in_channel)
   {
@@ -372,7 +371,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
   }
 
   /* Requested number of microseconds divided by period time. */
-  loops = playback_time / period_time_ms;
+  // loops = playback_time / period_time_ms;
 
   /* Sinus generator. */
   double phase_0 = 0.0, phase_0_2 = 0.0;
@@ -517,7 +516,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
 
 }
 
-int set_snd_pcm_format(int errc, int no_of_bytes_in_channel, string endianess, snd_pcm_hw_params_t *params, snd_pcm_t *alsa_handle, int mode) 
+int DSP::ALSA_object_t::set_snd_pcm_format(int errc, int no_of_bytes_in_channel, string endianess, snd_pcm_hw_params_t *params, snd_pcm_t *alsa_handle, int mode) 
 {
     // M.B. docelowo dodać przynajmniej obsługę 8-bitów
   if (no_of_bytes_in_channel == 1)
