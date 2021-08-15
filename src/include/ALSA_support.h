@@ -40,7 +40,9 @@ namespace DSP {
         std::vector<float> buffer_32bit_f; // natywny dla 32 bitow
         std::vector<double> buffer_64bit; // D.K. dla odtwarzania 64-bitowego
 
-        int dir;
+        bool IsHigherQualityMode;
+        bool IsLittleEndian;
+
         snd_pcm_uframes_t frames;
 
         unsigned char *pcm_buffer = NULL;
@@ -56,8 +58,9 @@ namespace DSP {
 
         void get_period_size(snd_pcm_uframes_t &frames, unsigned int &period_time);
         snd_pcm_sframes_t pcm_writei(const void *buffer, snd_pcm_uframes_t &frames);
-        //
-        int set_snd_pcm_format(int errc, int no_of_bytes_in_channel, string endianess, snd_pcm_hw_params_t *params, snd_pcm_t *alsa_handle, int mode);
+        
+        //!
+        int set_snd_pcm_format(int no_of_bytes_in_channel, snd_pcm_hw_params_t *params, snd_pcm_t *alsa_handle);
 
     public:
 

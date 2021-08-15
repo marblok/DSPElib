@@ -17,15 +17,20 @@ DSP::ALSA_object_t::ALSA_object_t()
 {
   alsa_handle = NULL;
   hw_params = NULL;
+
   std::string endianess;
   endianess = system("lscpu | grep \"Byte Order\" | egrep -o 'Little Endian|Big Endian'");
 
   if (endianess == "Big Endian")
     IsLittleEndian = false;
   else
-    IsLittleEndian == true;
+    IsLittleEndian = true;
 
-  // co jeszcze dodać do konstruktora
+  bool IsHigherQualityMode = false;
+
+  unsigned int OutDevNo = -1; 
+  unsigned int InDevNo = -1;
+  
 }
 
 DSP::ALSA_object_t::~ALSA_object_t()
@@ -35,6 +40,17 @@ DSP::ALSA_object_t::~ALSA_object_t()
     snd_pcm_hw_params_free(hw_params);
     hw_params = NULL;
   }
+  //snd_pcm_nonblock(handle, 0);
+  snd_pcm_drain(handle);
+  std::cout << "Closing the PCM device" << std::endl;
+  snd_pcm_close(handle);
+  buffer_8bit.clear(); // M.B. można nawet pominąć, bo i tak będzie wykonana przy zwalnianiu pamięci zmiennej
+  buffer_16bit.clear(); // M.B. można nawet pominąć, bo i tak będzie wykonana przy zwalnianiu pamięci zmiennej
+  buffer_32bit.clear(); // D.K. it will be depricated in DSPElib
+  buffer_64bit.clear();
+
+  std::cout << "Press ENTER" << std::endl;
+  std::cin.get(); // tutaj oczekuję na wciśnięcie entera
 }
 
 unsigned int DSP::ALSA_object_t::select_input_device_by_number(const unsigned int &device_number)
@@ -101,20 +117,17 @@ void DSP::ALSA_object_t::log_driver_data()
 
 }
 
-int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned int no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate) 
-{
+int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned int no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate)
+{ 
+
   // long loops; //! \TODO Change the loop to endless playback
   int rc;
   int errc;
   int size_b;
 
-  int mode;
-
   /* For logging. */
   unsigned int val, val2;
   int dir;
-
-  int DevNo = -1;
 
   snd_pcm_uframes_t frames = 8000;
 
@@ -125,27 +138,14 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
   // ==================================================== //
   DSP::log << "Opening ALSA device" << endl;
 
-  {
+  
     //! \TODO Test mode:	Open mode (see SND_PCM_NONBLOCK, SND_PCM_ASYNC)
     
-    if (stream_type == SND_PCM_STREAM_PLAYBACK)
-    {
-      DevNo++;
-      if (DevNo > 9)
-        DevNo = 0;
-
+    if (stream_type == SND_PCM_STREAM_PLAYBACK)    
       DSP::log << "Opening PCM device for playback." << endl;
-      DevNo = (const char*) select_output_device_by_number(0)
-    }
+    
     else
-    {
-      DevNo++;
-      if (DevNo > 9)
-        DevNo = 0;
-        
       DSP::log << "Opening PCM device for recording (capture)." << endl;
-      DevNo = (const char*) select_input_device_by_number(0)
-    }
 
     // jakie znaczenie ma name?
     rc = snd_pcm_open(&handle, "default", stream_type, SND_PCM_NONBLOCK);
@@ -156,9 +156,9 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
       return -1;
     }
     alsa_handle = handle;
-  }
+  
 
-  {
+  
     snd_pcm_hw_params_t *params;
 
     /* Allocate a hardware parameters object. */
@@ -175,7 +175,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
     DSP::log << "Setting the SND PCM FORMAT." << endl;
     DSP::log << "Something less than 0 means an error occurance." << endl;
     // do poprawy parametry
-    errc = DSP::ALSA_object_t::set_snd_pcm_format(errc, no_of_bytes_in_channel, endianess, params, alsa_handle, mode);
+    errc = DSP::ALSA_object_t::set_snd_pcm_format(no_of_bytes_in_channel, params, alsa_handle);
 
     snd_pcm_hw_params_set_channels(alsa_handle, params, no_of_channels);
 
@@ -202,10 +202,10 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
     /* Make a copy of hardware parameters. */
     snd_pcm_hw_params_malloc(&hw_params);
     snd_pcm_hw_params_copy(hw_params, params);
-  }
+  
 
   /* Display information about the PCM interface */
-  {
+  
     DSP::log << "PCM handle name = '" << snd_pcm_name(alsa_handle) << "'" << endl;
 
     DSP::log << "PCM state = " << snd_pcm_state_name(snd_pcm_state(alsa_handle)) << endl;
@@ -281,21 +281,21 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
 
     val = snd_pcm_hw_params_can_sync_start(hw_params);
     DSP::log << "can sync start = " << val << endl;  
-  }
+  
 
- //snd_pcm_hw_params_free(params);
- //  There are two ways of allocating such structures:
- //1) Use snd_xxx_malloc() and snd_xxx_free() to allocate memory from the
- //heap, or
- //2) use snd_xxx_alloca() to allocate memory from the stack.
- //
- //The snd_xxx_alloca() functions behave just like alloca(): their memory
- //is automatically freed when the function returns.
+  //snd_pcm_hw_params_free(params);
+  //  There are two ways of allocating such structures:
+  //1) Use snd_xxx_malloc() and snd_xxx_free() to allocate memory from the
+  //heap, or
+  //2) use snd_xxx_alloca() to allocate memory from the stack.
+  //
+  //The snd_xxx_alloca() functions behave just like alloca(): their memory
+  //is automatically freed when the function returns.
 
- // return 1;
- // }
+  // return 1;
+  // }
 
- // void DSP::ALSA_object_t::get_period_size(snd_pcm_uframes_t &frames, unsigned int &period_time) {
+  // void DSP::ALSA_object_t::get_period_size(snd_pcm_uframes_t &frames, unsigned int &period_time) {
   // int dir;
 
   // snd_pcm_hw_params_current() // Retreive current PCM hardware configuration chosen with snd_pcm_hw_params.
@@ -308,46 +308,46 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
   /* Use a buffer large enough to hold one period */
 
   snd_pcm_hw_params_get_period_size(hw_params, &frames, &dir);
-  // do osobnej metody + osobna metoda, która zwróci mode
-  size_b = frames * no_of_channels * no_of_bytes_in_channel; /* 2 bytes/sample, 2 channels */ // M.B. warto być gotowym na wardziej uniwersalne warianty
-  switch (no_of_bytes_in_channel)
-  {
-    case 1:
-      buffer_8bit.resize(size_b / no_of_bytes_in_channel); // M.B. wygodniejsze niż malloc
-      pcm_buffer = (unsigned char *)(buffer_8bit.data());
-      break;
-    case 2:
-      buffer_16bit.resize(size_b / no_of_bytes_in_channel); // M.B. wygodniejsze niż malloc
-      pcm_buffer = (unsigned char *)(buffer_16bit.data());
-      break;
-    case 3:
-    case 4:
+   // do osobnej metody + osobna metoda, która zwróci mode
+   size_b = frames * no_of_channels * no_of_bytes_in_channel; /* 2 bytes/sample, 2 channels */ // M.B. warto być gotowym na wardziej uniwersalne warianty
+   switch (no_of_bytes_in_channel)
+   {
+     case 1:
+       buffer_8bit.resize(size_b / no_of_bytes_in_channel); // M.B. wygodniejsze niż malloc
+       pcm_buffer = (unsigned char *)(buffer_8bit.data());
+       break;
+     case 2:
+       buffer_16bit.resize(size_b / no_of_bytes_in_channel); // M.B. wygodniejsze niż malloc
+       pcm_buffer = (unsigned char *)(buffer_16bit.data());
+       break;
+     case 3:
+     case 4:
+ 
+       if (IsHigherQualityMode)
+       {
+         buffer_32bit.resize(size_b / no_of_bytes_in_channel); // M.B. wygodniejsze niż malloc
+         pcm_buffer = (unsigned char *)(buffer_32bit.data());
+       }
+ 
+       else // D.K. native mode
+       {
+         buffer_32bit_f.resize(size_b / no_of_bytes_in_channel);
+         pcm_buffer = (unsigned char *)(buffer_32bit_f.data());
+       }
+       break;
+     case 8:
+       buffer_64bit.resize(size_b / no_of_bytes_in_channel); // M.B. wygodniejsze niż malloc
+       pcm_buffer = (unsigned char *)(buffer_64bit.data());
+         break;
+     default:
+       DSP::log << "Unsupported no_of_bytes_in_channel" << endl;
+       exit(1);
+    }
+ 
+   /* We want to loop for 5 seconds */
+   snd_pcm_hw_params_get_period_time(hw_params, &period_time_ms, &dir);
 
-      if (mode == 1)
-      {
-        buffer_32bit.resize(size_b / no_of_bytes_in_channel); // M.B. wygodniejsze niż malloc
-        pcm_buffer = (unsigned char *)(buffer_32bit.data());
-      }
-
-      else // D.K. native mode
-      {
-        buffer_32bit_f.resize(size_b / no_of_bytes_in_channel);
-        pcm_buffer = (unsigned char *)(buffer_32bit_f.data());
-      }
-      break;
-    case 8:
-      buffer_64bit.resize(size_b / no_of_bytes_in_channel); // M.B. wygodniejsze niż malloc
-      pcm_buffer = (unsigned char *)(buffer_64bit.data());
-        break;
-    default:
-      DSP::log << "Unsupported no_of_bytes_in_channel" << endl;
-      exit(1);
-  }
-
-  /* We want to loop for 5 seconds */
-  snd_pcm_hw_params_get_period_time(hw_params, &period_time_ms, &dir);
-
- // TODO:
+  // TODO:
   // M.B. wybór trybu synchroniczanego lub asynchronicznego
   if (blocking_mode == false)
   {
@@ -420,7 +420,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
         }
         else if (no_of_bytes_in_channel == 4)
         {
-            if (mode == 1)
+            if (IsHigherQualityMode)
             {
                 buffer_32bit[no_of_channels * n] = INT32_MAX * sin(2 * M_PI * Freq / sampling_rate * n + phase_0);
                 if (no_of_channels == 2)
@@ -500,23 +500,11 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
     }  
   }
 
-  //snd_pcm_nonblock(handle, 0);
-  snd_pcm_drain(handle);
-  std::cout << "Closing the PCM device" << std::endl;
-  snd_pcm_close(handle);
-  buffer_8bit.clear(); // M.B. można nawet pominąć, bo i tak będzie wykonana przy zwalnianiu pamięci zmiennej
-  buffer_16bit.clear(); // M.B. można nawet pominąć, bo i tak będzie wykonana przy zwalnianiu pamięci zmiennej
-  buffer_32bit.clear(); // D.K. it will be depricated in DSPElib
-  buffer_64bit.clear();
-
-  std::cout << "Press ENTER" << std::endl;
-  std::cin.get(); // tutaj oczekuję na wciśnięcie entera
-
-  return 0;
+  return 1;
 
 }
 
-int DSP::ALSA_object_t::set_snd_pcm_format(int errc, int no_of_bytes_in_channel, string endianess, snd_pcm_hw_params_t *params, snd_pcm_t *alsa_handle, int mode) 
+int DSP::ALSA_object_t::set_snd_pcm_format(int no_of_bytes_in_channel, snd_pcm_hw_params_t *params, snd_pcm_t *alsa_handle) 
 {
     // M.B. docelowo dodać przynajmniej obsługę 8-bitów
   if (no_of_bytes_in_channel == 1)
@@ -530,7 +518,7 @@ int DSP::ALSA_object_t::set_snd_pcm_format(int errc, int no_of_bytes_in_channel,
   }
   else if (no_of_bytes_in_channel == 2)
   {
-      if (endianess == "Big Endian")
+      if (IsLittleEndian == false)
       {
         /* Signed 16-bit big-endian format */
         errc = snd_pcm_hw_params_set_format(alsa_handle, params,
@@ -548,7 +536,7 @@ int DSP::ALSA_object_t::set_snd_pcm_format(int errc, int no_of_bytes_in_channel,
   }
   else if (no_of_bytes_in_channel == 3) // D.K. 32-bits buffer can be used
   {
-      if (endianess == "Big Endian")
+      if (IsLittleEndian == false)
       {
         /* Signed 24-bit big-endian low three bytes in 32-bit word format */
         errc = snd_pcm_hw_params_set_format(alsa_handle, params,
@@ -562,25 +550,25 @@ int DSP::ALSA_object_t::set_snd_pcm_format(int errc, int no_of_bytes_in_channel,
                                             SND_PCM_FORMAT_S32_LE);
       }
 
-      mode = 1;
+      IsHigherQualityMode = true;
 
       DSP::log << "Format set with error code: " << errc << std::endl;
   }
   else if (no_of_bytes_in_channel == 4)
   {
-      if (endianess == "Big Endian")
+      if (IsLittleEndian == false)
       {
         /* Float Little Endian, Range -1.0 to 1.0 */
         errc = snd_pcm_hw_params_set_format(alsa_handle, params,
                                             SND_PCM_FORMAT_FLOAT_BE);
-        mode = 0; // native
+        IsHigherQualityMode = false; // native
 
         if(errc < 0)
         {
             /* Signed 32-bit little-endian format */
             errc = snd_pcm_hw_params_set_format(alsa_handle, params,
                                                 SND_PCM_FORMAT_S32_BE);
-            mode = 1; // higher quality
+            IsHigherQualityMode = true;
         }
       }
 
@@ -589,14 +577,14 @@ int DSP::ALSA_object_t::set_snd_pcm_format(int errc, int no_of_bytes_in_channel,
         /* Float Little Endian, Range -1.0 to 1.0 */
         errc = snd_pcm_hw_params_set_format(alsa_handle, params,
                                             SND_PCM_FORMAT_FLOAT_LE);
-        mode = 0; // native
+        IsHigherQualityMode = false; // native
 
         if(errc < 0)
         {
             /* Signed 32-bit little-endian format */
             errc = snd_pcm_hw_params_set_format(alsa_handle, params,
                                                 SND_PCM_FORMAT_S32_LE);
-            mode = 1; // higher quality
+            IsHigherQualityMode = true;
         }
       }
 
@@ -604,7 +592,7 @@ int DSP::ALSA_object_t::set_snd_pcm_format(int errc, int no_of_bytes_in_channel,
   }
   else if (no_of_bytes_in_channel == 8)
   {
-      if (endianess == "Big Endian")
+      if (IsLittleEndian == false)
       {
         /* Float Big Endian, Range -1.0 to 1.0 */
         errc = snd_pcm_hw_params_set_format(alsa_handle, params,
