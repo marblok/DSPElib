@@ -17,6 +17,7 @@ DSP::ALSA_object_t::ALSA_object_t()
 {
   alsa_handle = NULL;
   hw_params = NULL;
+  pcm_buffer = NULL;
 
   std::string endianess;
   endianess = system("lscpu | grep \"Byte Order\" | egrep -o 'Little Endian|Big Endian'");
@@ -26,11 +27,20 @@ DSP::ALSA_object_t::ALSA_object_t()
   else
     IsLittleEndian = true;
 
-  bool IsHigherQualityMode = false;
+  IsHigherQualityMode = false;
 
-  unsigned int OutDevNo = -1; 
-  unsigned int InDevNo = -1;
-  
+  blocking_mode = false
+
+  OutDevNo = -1; 
+  InDevNo = -1;
+
+  /* 44100 bits/second sampling rate (CD quality) */
+  sampling_rate = 44100;
+  no_of_channels = 2;
+  no_of_bytes_in_channel = 2;
+
+  frames = 8000;
+
 }
 
 DSP::ALSA_object_t::~ALSA_object_t()
@@ -55,7 +65,6 @@ DSP::ALSA_object_t::~ALSA_object_t()
 
 unsigned int DSP::ALSA_object_t::select_input_device_by_number(const unsigned int &device_number)
 {
-  // assert(!"ALSA_object_t::select_input_device_by_number not yet implemented");
   InDevNo = device_number;
 
   return InDevNo;
@@ -63,7 +72,6 @@ unsigned int DSP::ALSA_object_t::select_input_device_by_number(const unsigned in
 
 unsigned int DSP::ALSA_object_t::select_output_device_by_number(const unsigned int &device_number)
 {
-  // assert(!"ALSA_object_t::select_output_device_by_number not yet implemented");
   OutDevNo = device_number;
 
   return OutDevNo;
@@ -125,12 +133,11 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
   int errc;
   int size_b;
 
+  snd_pcm_hw_params_t *params;
+
   /* For logging. */
   unsigned int val, val2;
   int dir;
-
-  snd_pcm_uframes_t frames = 8000;
-
 
   if (alsa_handle != NULL)
     close_alsa_device();
@@ -138,7 +145,6 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
   // ==================================================== //
   DSP::log << "Opening ALSA device" << endl;
 
-  
     //! \TODO Test mode:	Open mode (see SND_PCM_NONBLOCK, SND_PCM_ASYNC)
     
     if (stream_type == SND_PCM_STREAM_PLAYBACK)    
@@ -156,10 +162,6 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
       return -1;
     }
     alsa_handle = handle;
-  
-
-  
-    snd_pcm_hw_params_t *params;
 
     /* Allocate a hardware parameters object. */
     snd_pcm_hw_params_alloca(&params);
@@ -309,7 +311,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
 
   snd_pcm_hw_params_get_period_size(hw_params, &frames, &dir);
    // do osobnej metody + osobna metoda, która zwróci mode
-   size_b = frames * no_of_channels * no_of_bytes_in_channel; /* 2 bytes/sample, 2 channels */ // M.B. warto być gotowym na wardziej uniwersalne warianty
+   size_b = frames * no_of_channels * no_of_bytes_in_channel; // M.B. warto być gotowym na wardziej uniwersalne warianty
    switch (no_of_bytes_in_channel)
    {
      case 1:
@@ -506,6 +508,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
 
 int DSP::ALSA_object_t::set_snd_pcm_format(int no_of_bytes_in_channel, snd_pcm_hw_params_t *params, snd_pcm_t *alsa_handle) 
 {
+  int errc;
     // M.B. docelowo dodać przynajmniej obsługę 8-bitów
   if (no_of_bytes_in_channel == 1)
   {

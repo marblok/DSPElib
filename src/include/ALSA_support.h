@@ -12,8 +12,6 @@
 
 /* All of the ALSA library API is defined in this header */
 #include <alsa/asoundlib.h>
-
-#include <iostream> // w przyszłości pozamieniam na DSP::log
 #include <vector>
 #include <cmath>
 #include <DSP_types.h> // for types
@@ -22,6 +20,7 @@ namespace DSP {
     
     class ALSA_object_t : public DSP::SOUND_object_t {
     private:
+        snd_pcm_t *handle;
         snd_pcm_t *alsa_handle;
         snd_pcm_hw_params_t *hw_params;
 
@@ -30,7 +29,7 @@ namespace DSP {
 
         unsigned int sampling_rate; // M.B. lepiej korzystać z nazw oddających przeznaczenie zmiennej
 
-        unsigned int period_time_ms; // M.B. i ograniczać wykorzystywanie jednej zmiennej do przechowywania wartości różniących się interpretacją i przeznaczeniem
+        // unsigned int period_time_ms; // M.B. i ograniczać wykorzystywanie jednej zmiennej do przechowywania wartości różniących się interpretacją i przeznaczeniem
         unsigned int no_of_channels;
         unsigned int no_of_bytes_in_channel;
 
@@ -45,9 +44,9 @@ namespace DSP {
 
         snd_pcm_uframes_t frames;
 
-        unsigned char *pcm_buffer = NULL;
+        unsigned char *pcm_buffer;
 
-        bool blocking_mode = false; // M.B. na potrzeby realizacji odtwarzania w trybie non-blocking
+        bool blocking_mode; // M.B. na potrzeby realizacji odtwarzania w trybie non-blocking
 
 
         //! open default PCM device and return 1 on success or negative error code
