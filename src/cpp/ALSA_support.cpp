@@ -29,14 +29,14 @@ DSP::ALSA_object_t::ALSA_object_t()
 
   IsHigherQualityMode = false;
 
-  blocking_mode = false
+  blocking_mode = false;
 
   OutDevNo = -1; 
   InDevNo = -1;
 
   /* 44100 bits/second sampling rate (CD quality) */
-  sampling_rate = 44100;
-  no_of_channels = 2;
+  sampling_rate_alsa = 44100;
+  no_of_channels_alsa = 2;
   no_of_bytes_in_channel = 2;
 
   frames = 8000;
@@ -51,9 +51,9 @@ DSP::ALSA_object_t::~ALSA_object_t()
     hw_params = NULL;
   }
   //snd_pcm_nonblock(handle, 0);
-  snd_pcm_drain(handle);
+  snd_pcm_drain(alsa_handle);
   std::cout << "Closing the PCM device" << std::endl;
-  snd_pcm_close(handle);
+  snd_pcm_close(alsa_handle);
   buffer_8bit.clear(); // M.B. można nawet pominąć, bo i tak będzie wykonana przy zwalnianiu pamięci zmiennej
   buffer_16bit.clear(); // M.B. można nawet pominąć, bo i tak będzie wykonana przy zwalnianiu pamięci zmiennej
   buffer_32bit.clear(); // D.K. it will be depricated in DSPElib
@@ -125,7 +125,7 @@ void DSP::ALSA_object_t::log_driver_data()
 
 }
 
-int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned int no_of_channels, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate)
+int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned int no_of_channels_alsa, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate)
 { 
 
   // long loops; //! \TODO Change the loop to endless playback
@@ -179,9 +179,9 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
     
     errc = DSP::ALSA_object_t::set_snd_pcm_format(params, alsa_handle);
 
-    snd_pcm_hw_params_set_channels(alsa_handle, params, no_of_channels);
+    snd_pcm_hw_params_set_channels(alsa_handle, params, no_of_channels_alsa);
 
-    snd_pcm_hw_params_set_rate_near(alsa_handle, params, &sampling_rate, &dir);
+    snd_pcm_hw_params_set_rate_near(alsa_handle, params, &sampling_rate_alsa, &dir);
 
     rc = snd_pcm_hw_params_set_buffer_size(alsa_handle, params, 2*frames);
 
@@ -310,8 +310,8 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
   /* Use a buffer large enough to hold one period */
 
   snd_pcm_hw_params_get_period_size(hw_params, &frames, &dir);
-   // do osobnej metody + osobna metoda, która zwróci mode
-   size_b = frames * no_of_channels * no_of_bytes_in_channel; // M.B. warto być gotowym na wardziej uniwersalne warianty
+   // do osobnej metody
+   size_b = frames * no_of_channels_alsa * no_of_bytes_in_channel; // M.B. warto być gotowym na wardziej uniwersalne warianty
    switch (no_of_bytes_in_channel)
    {
      case 1:
@@ -353,7 +353,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
   // M.B. wybór trybu synchroniczanego lub asynchronicznego
   if (blocking_mode == false)
   {
-      rc = snd_pcm_nonblock(handle, 0);
+      rc = snd_pcm_nonblock(alsa_handle, 0);
 
       if (rc < 0)
       {
@@ -364,7 +364,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
   }
   else
   {
-      rc = snd_pcm_nonblock(handle, 1);
+      rc = snd_pcm_nonblock(alsa_handle, 1);
       if (rc < 0)
       {
           DSP::log << "Unable to set non blocking mode" << endl;
@@ -376,12 +376,12 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
   // loops = playback_time / period_time_ms;
 
   /* Sinus generator. */
-  double phase_0 = 0.0, phase_0_2 = 0.0;
-  double Freq = 500, Freq_2 = 200; // M.B. częstotliwość początkowa [Hz]
-  while (loops > 0)
-  {
-    loops--;
-
+  // double phase_0 = 0.0, phase_0_2 = 0.0;
+  // double Freq = 500, Freq_2 = 200; // M.B. częstotliwość początkowa [Hz]
+  // while (loops > 0)
+  // {
+   // loops--;
+   //
   /*
   if (rc == 0)
   {
@@ -393,86 +393,67 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
       DSP:log << "Short read: read " << rc << " bytes" << endl;
   }
  */
-  if (stream_type == SND_PCM_STREAM_PLAYBACK)
-  {
+  //if (stream_type == SND_PCM_STREAM_PLAYBACK)
+  // {
 
     /* Sinus experimental
     // M.B. wariant dla stałej częstotliwości
-    for (unsigned int n = 0; n < size_b / no_of_bytes_in_channel / no_of_channels; n++)
+    for (unsigned int n = 0; n < size_b / no_of_bytes_in_channel / no_of_channels_alsa; n++)
     {
         if (no_of_bytes_in_channel == 1)
         {
-            buffer_8bit[no_of_channels*n] = 128 + 127 * sin(2 * M_PI * Freq / sampling_rate * n + phase_0);
-            if (no_of_channels == 2)
-                buffer_8bit[no_of_channels * n + 1] = 128 + 127 * sin(2 * M_PI * (Freq_2) / sampling_rate * n + phase_0_2);
+            buffer_8bit[no_of_channels_alsa*n] = 128 + 127 * sin(2 * M_PI * Freq / sampling_rate_alsa * n + phase_0);
+            if (no_of_channels_alsa == 2)
+                buffer_8bit[no_of_channels_alsa * n + 1] = 128 + 127 * sin(2 * M_PI * (Freq_2) / sampling_rate_alsa * n + phase_0_2);
 
         }
         else if (no_of_bytes_in_channel == 2)
         {
-            buffer_16bit[no_of_channels * n] = INT16_MAX * sin(2 * M_PI * Freq / sampling_rate * n + phase_0);
-            if (no_of_channels == 2)
-                buffer_16bit[no_of_channels * n + 1 ] = INT16_MAX * sin(2 * M_PI * (Freq_2) / sampling_rate * n + phase_0_2);
+            buffer_16bit[no_of_channels_alsa * n] = INT16_MAX * sin(2 * M_PI * Freq / sampling_rate_alsa * n + phase_0);
+            if (no_of_channels_alsa == 2)
+                buffer_16bit[no_of_channels_alsa * n + 1 ] = INT16_MAX * sin(2 * M_PI * (Freq_2) / sampling_rate_alsa * n + phase_0_2);
 
         }
         else if (no_of_bytes_in_channel == 3)
         {
-            buffer_32bit[no_of_channels * n] = INT32_MAX * sin(2 * M_PI * Freq / sampling_rate * n + phase_0);
-            if (no_of_channels == 2)
-                buffer_32bit[no_of_channels * n + 1 ] = INT32_MAX * sin(2 * M_PI * (Freq_2) / sampling_rate * n + phase_0_2);
+            buffer_32bit[no_of_channels_alsa * n] = INT32_MAX * sin(2 * M_PI * Freq / sampling_rate_alsa * n + phase_0);
+            if (no_of_channels_alsa == 2)
+                buffer_32bit[no_of_channels_alsa * n + 1 ] = INT32_MAX * sin(2 * M_PI * (Freq_2) / sampling_rate_alsa * n + phase_0_2);
         }
         else if (no_of_bytes_in_channel == 4)
         {
             if (IsHigherQualityMode)
             {
-                buffer_32bit[no_of_channels * n] = INT32_MAX * sin(2 * M_PI * Freq / sampling_rate * n + phase_0);
-                if (no_of_channels == 2)
-                    buffer_32bit[no_of_channels * n + 1 ] = INT32_MAX * sin(2 * M_PI * (Freq_2) / sampling_rate * n + phase_0_2);
+                buffer_32bit[no_of_channels_alsa * n] = INT32_MAX * sin(2 * M_PI * Freq / sampling_rate_alsa * n + phase_0);
+                if (no_of_channels_alsa == 2)
+                    buffer_32bit[no_of_channels_alsa * n + 1 ] = INT32_MAX * sin(2 * M_PI * (Freq_2) / sampling_rate_alsa * n + phase_0_2);
             }
 
             else
             {
-                buffer_32bit_f[no_of_channels * n] = sin(2 * M_PI * Freq / sampling_rate * n + phase_0);
-                if (no_of_channels == 2)
-                    buffer_32bit_f[no_of_channels * n + 1 ] = sin(2 * M_PI * (Freq_2) / sampling_rate * n + phase_0_2);
+                buffer_32bit_f[no_of_channels_alsa * n] = sin(2 * M_PI * Freq / sampling_rate_alsa * n + phase_0);
+                if (no_of_channels_alsa == 2)
+                    buffer_32bit_f[no_of_channels_alsa * n + 1 ] = sin(2 * M_PI * (Freq_2) / sampling_rate_alsa * n + phase_0_2);
             }
         }
 
         else if (no_of_bytes_in_channel == 8)
         {
-            buffer_64bit[no_of_channels * n] = sin(2 * M_PI * Freq / sampling_rate * n + phase_0);
-            if (no_of_channels == 2)
-                buffer_64bit[no_of_channels * n + 1 ] = sin(2 * M_PI * (Freq_2) / sampling_rate * n + phase_0_2);
+            buffer_64bit[no_of_channels_alsa * n] = sin(2 * M_PI * Freq / sampling_rate_alsa * n + phase_0);
+            if (no_of_channels_alsa == 2)
+                buffer_64bit[no_of_channels_alsa * n + 1 ] = sin(2 * M_PI * (Freq_2) / sampling_rate_alsa * n + phase_0_2);
 
         }
     }
 
-    phase_0 +=  2 * M_PI * Freq / sampling_rate * size_b / no_of_bytes_in_channel / no_of_channels;
-    phase_0_2 +=  2 * M_PI * Freq_2 / sampling_rate * size_b / no_of_bytes_in_channel / no_of_channels;
+    phase_0 +=  2 * M_PI * Freq / sampling_rate_alsa * size_b / no_of_bytes_in_channel / no_of_channels_alsa;
+    phase_0_2 +=  2 * M_PI * Freq_2 / sampling_rate_alsa * size_b / no_of_bytes_in_channel / no_of_channels_alsa;
     DSP::log << Freq << ", " << Freq_2 << endl;
     */
 
     // DSP::log << "Before snd_pcm_writei (" << loops << ")" << endl;
-    rc = snd_pcm_writei(alsa_handle, pcm_buffer, frames);
-    DSP::log << "Wrote" << endl;
-
-    if (rc == -EPIPE)
-    {
-        /* EPIPE means underrun */
-        DSP::log << "Underrun occurred" << endl;
-        snd_pcm_prepare(alsa_handle);
-
-    }
-    else if (rc < 0)
-    {
-      DSP::log << "Error from writei: " << snd_strerror(rc) << endl;
-    }
-    else if (rc != (int)frames)
-    {
-      DSP::log << "short write, write " << rc << " frames" << endl;
-    }
-  
-    DSP::log << "The end of the playback" << endl;
-  }
+  if (stream_type == SND_PCM_STREAM_PLAYBACK)
+    snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(alsa_handle, const void *buffer, frames)
 
   else
   {
@@ -619,8 +600,9 @@ long DSP::ALSA_object_t::open_PCM_device_4_output(const int &no_of_channels, int
   int rc;
   no_of_bytes_in_channel = (unsigned int) no_of_bits / 8;
   sampling_rate_alsa = (unsigned int) sampling_rate;
+  no_of_channels_alsa = (unsigned int) no_of_channels;
 
-  rc = open_alsa_device(SND_PCM_STREAM_PLAYBACK, (unsigned int) no_of_channels, no_of_bytes_in_channel, sampling_rate_alsa);
+  rc = open_alsa_device(SND_PCM_STREAM_PLAYBACK, (unsigned int) no_of_channels_alsa, no_of_bytes_in_channel, sampling_rate_alsa);
 
   if(rc > 0)
   { 
@@ -637,8 +619,9 @@ long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int 
   int rc;
   no_of_bytes_in_channel = (unsigned int) no_of_bits / 8;
   sampling_rate_alsa = (unsigned int) sampling_rate;
+  no_of_channels_alsa = (unsigned int) no_of_channels;
 
-  rc = open_alsa_device(SND_PCM_STREAM_CAPTURE, (unsigned int) no_of_channels, no_of_bytes_in_channel, sampling_rate_alsa);
+  rc = open_alsa_device(SND_PCM_STREAM_CAPTURE, (unsigned int) no_of_channels_alsa, no_of_bytes_in_channel, sampling_rate_alsa);
   
   if(rc > 0)
   { 
@@ -694,7 +677,7 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
 }
 
 
-snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(snd_pcm_t *handle, const void *buffer, snd_pcm_uframes_t &frames) {
+snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(snd_pcm_t *alsa_handle, const void *buffer, snd_pcm_uframes_t &frames) {
 
   int rc;
   rc = snd_pcm_writei(alsa_handle, pcm_buffer, frames);
@@ -717,9 +700,8 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(snd_pcm_t *handle, const void *
     }
   
     DSP::log << "The end of the playback" << endl;
-  }
 
-  return rc;
+  return frames;
 }
 
 void DSP::ALSA_object_t::close_alsa_device(bool do_drain, bool use_log) {
