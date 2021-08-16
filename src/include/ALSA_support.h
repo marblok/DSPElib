@@ -23,6 +23,7 @@ namespace DSP {
         snd_pcm_t *handle;
         snd_pcm_t *alsa_handle;
         snd_pcm_hw_params_t *hw_params;
+        unsigned char *pcm_buffer;
 
         unsigned int OutDevNo; // device numer used in next open operations
         unsigned int InDevNo; // device numer used in next open operations
@@ -44,8 +45,6 @@ namespace DSP {
 
         snd_pcm_uframes_t frames;
 
-        unsigned char *pcm_buffer;
-
         bool blocking_mode; // M.B. na potrzeby realizacji odtwarzania w trybie non-blocking
 
 
@@ -58,8 +57,8 @@ namespace DSP {
         void get_period_size(snd_pcm_uframes_t &frames, unsigned int &period_time);
         snd_pcm_sframes_t pcm_writei(const void *buffer, snd_pcm_uframes_t &frames);
         
-        //!
-        int set_snd_pcm_format(int no_of_bytes_in_channel, snd_pcm_hw_params_t *params, snd_pcm_t *alsa_handle);
+        //! set SND PCM format depending on no of bytes in channel and CPU endianness
+        int set_snd_pcm_format(snd_pcm_hw_params_t *params, snd_pcm_t *alsa_handle);
 
     public:
 

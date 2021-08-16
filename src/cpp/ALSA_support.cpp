@@ -176,8 +176,8 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
 
     DSP::log << "Setting the SND PCM FORMAT." << endl;
     DSP::log << "Something less than 0 means an error occurance." << endl;
-    // do poprawy parametry
-    errc = DSP::ALSA_object_t::set_snd_pcm_format(no_of_bytes_in_channel, params, alsa_handle);
+    
+    errc = DSP::ALSA_object_t::set_snd_pcm_format(params, alsa_handle);
 
     snd_pcm_hw_params_set_channels(alsa_handle, params, no_of_channels);
 
@@ -506,7 +506,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
 
 }
 
-int DSP::ALSA_object_t::set_snd_pcm_format(int no_of_bytes_in_channel, snd_pcm_hw_params_t *params, snd_pcm_t *alsa_handle) 
+int DSP::ALSA_object_t::set_snd_pcm_format(snd_pcm_hw_params_t *params, snd_pcm_t *alsa_handle) 
 {
   int errc;
     // M.B. docelowo dodać przynajmniej obsługę 8-bitów
@@ -614,13 +614,13 @@ int DSP::ALSA_object_t::set_snd_pcm_format(int no_of_bytes_in_channel, snd_pcm_h
   return errc;
 }
 
-long DSP::ALSA_object_t::open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size, long playback_time) {
-  assert(!"DSP::ALSA_object_t::open_PCM_device_4_output not implemented yet");
+long DSP::ALSA_object_t::open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size) {
+  // assert(!"DSP::ALSA_object_t::open_PCM_device_4_output not implemented yet");
   int rc;
-  unsigned int no_of_bytes_in_channel = (unsigned int) no_of_bits / 8;
-  unsigned int sampling_rate_alsa = (unsigned int) sampling_rate;
+  no_of_bytes_in_channel = (unsigned int) no_of_bits / 8;
+  sampling_rate_alsa = (unsigned int) sampling_rate;
 
-  rc = open_alsa_device(SND_PCM_STREAM_PLAYBACK, (unsigned int) no_of_channels, no_of_bytes_in_channel, sampling_rate_alsa, playback_time); // pierwszy parametr ewentualnie 0
+  rc = open_alsa_device(SND_PCM_STREAM_PLAYBACK, (unsigned int) no_of_channels, no_of_bytes_in_channel, sampling_rate_alsa);
 
   if(rc > 0)
   { 
@@ -632,13 +632,13 @@ long DSP::ALSA_object_t::open_PCM_device_4_output(const int &no_of_channels, int
   }
 }
 
-long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_inbuffer_size, long playback_time) {
-  assert(!"DSP::ALSA_object_t::open_PCM_device_4_input not implemented yet");
+long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_inbuffer_size) {
+  // assert(!"DSP::ALSA_object_t::open_PCM_device_4_input not implemented yet");
   int rc;
-  unsigned int no_of_bytes_in_channel = (unsigned int) no_of_bits / 8;
-  unsigned int sampling_rate_alsa = (unsigned int) sampling_rate;
+  no_of_bytes_in_channel = (unsigned int) no_of_bits / 8;
+  sampling_rate_alsa = (unsigned int) sampling_rate;
 
-  rc = open_alsa_device(SND_PCM_STREAM_CAPTURE, (unsigned int) no_of_channels, no_of_bytes_in_channel, sampling_rate_alsa, playback_time);
+  rc = open_alsa_device(SND_PCM_STREAM_CAPTURE, (unsigned int) no_of_channels, no_of_bytes_in_channel, sampling_rate_alsa);
   
   if(rc > 0)
   { 
@@ -695,8 +695,8 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
 
 
 snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(snd_pcm_t *handle, const void *buffer, snd_pcm_uframes_t &frames) {
- // Do decyzji, czy to wyodrebiamy i analogicznie tworzymy pcm_readi
- /* 
+
+  int rc;
   rc = snd_pcm_writei(alsa_handle, pcm_buffer, frames);
     DSP::log << "Wrote" << endl;
 
@@ -718,7 +718,7 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(snd_pcm_t *handle, const void *
   
     DSP::log << "The end of the playback" << endl;
   }
- */
+
   return rc;
 }
 
