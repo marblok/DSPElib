@@ -642,21 +642,21 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
             buffer_8bit[no_of_channels_alsa * n] = Float_vector[no_of_channels_alsa * n];
             if (no_of_channels_alsa == 2)
                 buffer_8bit[no_of_channels_alsa * n + 1] = Float_vector[no_of_channels_alsa * n + 1];
+        
         }
         else if (no_of_bytes_in_channel == 2)
         {
             buffer_16bit[no_of_channels_alsa * n] = Float_vector[no_of_channels_alsa * n];
             if (no_of_channels_alsa == 2)
                 buffer_16bit[no_of_channels_alsa * n + 1 ] = Float_vector[no_of_channels_alsa * n + 1];
-            return long(buffer_16bit.size());    
-
+        
         }
         else if (no_of_bytes_in_channel == 3)
         {
             buffer_32bit[no_of_channels_alsa * n] = Float_vector[no_of_channels_alsa * n];
             if (no_of_channels_alsa == 2)
-                buffer_32bit[no_of_channels_alsa * n + 1 ] = Float_vector[no_of_channels_alsa * n + 1];
-            return long(buffer_32bit.size());    
+                buffer_32bit[no_of_channels_alsa * n + 1 ] = Float_vector[no_of_channels_alsa * n + 1];  
+        
         }
         else if (no_of_bytes_in_channel == 4)
         {
@@ -665,6 +665,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
                 buffer_32bit[no_of_channels_alsa * n] = Float_vector[no_of_channels_alsa * n];
                 if (no_of_channels_alsa == 2)
                     buffer_32bit[no_of_channels_alsa * n + 1 ] = Float_vector[no_of_channels_alsa * n + 1];
+            
             }
 
             else
@@ -672,8 +673,8 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
                 buffer_32bit_f[no_of_channels_alsa * n] = Float_vector[no_of_channels_alsa * n];
                 if (no_of_channels_alsa == 2)
                     buffer_32bit_f[no_of_channels_alsa * n + 1 ] = Float_vector[no_of_channels_alsa * n + 1];
+            
             }
-            return long(buffer_32bit.size());
         }
 
         else if (no_of_bytes_in_channel == 8)
@@ -681,8 +682,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
             buffer_64bit[no_of_channels_alsa * n] = Float_vector[no_of_channels_alsa * n];
             if (no_of_channels_alsa == 2)
                 buffer_64bit[no_of_channels_alsa * n + 1 ] = Float_vector[no_of_channels_alsa * n + 1];
-            
-            return long(buffer_64bit.size());
+        
         }
     }
     
