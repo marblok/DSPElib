@@ -40,7 +40,7 @@ DSP::ALSA_object_t::ALSA_object_t()
   no_of_bytes_in_channel = 2;
 
   frames = 8000;
-
+  size_b = 32;
 }
 
 DSP::ALSA_object_t::~ALSA_object_t()
@@ -131,8 +131,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
   // long loops; //! \TODO Change the loop to endless playback
   int rc;
   int errc;
-  int size_b;
-
+  
   snd_pcm_hw_params_t *params;
 
   /* For logging. */
@@ -635,6 +634,81 @@ long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int 
 
 long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer) {
   assert(!"DSP::ALSA_object_t::append_playback_buffer not implemented yet");
+
+  for (unsigned int n = 0; n < size_b / no_of_bytes_in_channel / no_of_channels_alsa; n++)
+    {
+        if (no_of_bytes_in_channel == 1)
+        {
+            buffer_8bit[no_of_channels_alsa * n] = Float_vector[no_of_channels_alsa * n];
+            if (no_of_channels_alsa == 2)
+                buffer_8bit[no_of_channels_alsa * n + 1] = Float_vector[no_of_channels_alsa * n + 1];
+        }
+        else if (no_of_bytes_in_channel == 2)
+        {
+            buffer_16bit[no_of_channels_alsa * n] = Float_vector[no_of_channels_alsa * n];
+            if (no_of_channels_alsa == 2)
+                buffer_16bit[no_of_channels_alsa * n + 1 ] = Float_vector[no_of_channels_alsa * n + 1];
+            return long(buffer_16bit.size());    
+
+        }
+        else if (no_of_bytes_in_channel == 3)
+        {
+            buffer_32bit[no_of_channels_alsa * n] = Float_vector[no_of_channels_alsa * n];
+            if (no_of_channels_alsa == 2)
+                buffer_32bit[no_of_channels_alsa * n + 1 ] = Float_vector[no_of_channels_alsa * n + 1];
+            return long(buffer_32bit.size());    
+        }
+        else if (no_of_bytes_in_channel == 4)
+        {
+            if (IsHigherQualityMode)
+            {
+                buffer_32bit[no_of_channels_alsa * n] = Float_vector[no_of_channels_alsa * n];
+                if (no_of_channels_alsa == 2)
+                    buffer_32bit[no_of_channels_alsa * n + 1 ] = Float_vector[no_of_channels_alsa * n + 1];
+            }
+
+            else
+            {
+                buffer_32bit_f[no_of_channels_alsa * n] = Float_vector[no_of_channels_alsa * n];
+                if (no_of_channels_alsa == 2)
+                    buffer_32bit_f[no_of_channels_alsa * n + 1 ] = Float_vector[no_of_channels_alsa * n + 1];
+            }
+            return long(buffer_32bit.size());
+        }
+
+        else if (no_of_bytes_in_channel == 8)
+        {
+            buffer_64bit[no_of_channels_alsa * n] = Float_vector[no_of_channels_alsa * n];
+            if (no_of_channels_alsa == 2)
+                buffer_64bit[no_of_channels_alsa * n + 1 ] = Float_vector[no_of_channels_alsa * n + 1];
+            
+            return long(buffer_64bit.size());
+        }
+    }
+    
+    switch (no_of_bytes_in_channel)
+    {
+      case 1:
+        return long(buffer_8bit.size());
+        break;
+
+      case 2:
+        return long(buffer_16bit.size());
+        break;
+    
+    case 3:
+    case 4:
+      return long(buffer_32bit.size());
+      break;
+
+    case 8:
+      return long(buffer_64bit.size());  
+      break;
+
+    default:
+      return size_b;
+      break;
+    }
 }
 
 bool DSP::ALSA_object_t::close_PCM_device_input(void) {

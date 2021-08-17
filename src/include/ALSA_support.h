@@ -47,6 +47,9 @@ namespace DSP {
 
         bool blocking_mode; // M.B. na potrzeby realizacji odtwarzania w trybie non-blocking
 
+        int size_b; // buffer capacity
+
+
 
         //! open default PCM device and return 1 on success or negative error code
         /*! stream_type = SND_PCM_STREAM_PLAYBACK or SND_PCM_STREAM_CAPTURE
