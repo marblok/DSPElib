@@ -34,7 +34,7 @@ namespace DSP {
         unsigned int no_of_channels_alsa;
         unsigned int no_of_bytes_in_channel;
 
-        std::vector<unsigned char> buffer_8bit; // M.B. lepiej korzystać z kontenerów STD, są wygodniejsze i oznaczają mniej problemów z wyciekami pamięci
+        std::vector<uint8_t> buffer_8bit; // M.B. lepiej korzystać z kontenerów STD, są wygodniejsze i oznaczają mniej problemów z wyciekami pamięci
         std::vector<int16_t> buffer_16bit; // M.B. dla odtwarzania 16-bitowego (int to dłuższe słowa)
         std::vector<int32_t> buffer_32bit; // D.K. dla odtwarzania 24 i 32-bitowego
         std::vector<float> buffer_32bit_f; // natywny dla 32 bitow
@@ -61,7 +61,7 @@ namespace DSP {
         snd_pcm_sframes_t pcm_writei(const void *buffer, snd_pcm_uframes_t &frames);
         
         //! set SND PCM format depending on no of bytes in channel and CPU endianness
-        int set_snd_pcm_format(snd_pcm_hw_params_t *params, snd_pcm_t *alsa_handle);
+        int set_snd_pcm_format(snd_pcm_hw_params_t *params);
 
     public:
 

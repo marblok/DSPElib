@@ -175,7 +175,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     DSP::log << "Setting the SND PCM FORMAT." << endl;
     DSP::log << "Something less than 0 means an error occurance." << endl;
     
-    errc = DSP::ALSA_object_t::set_snd_pcm_format(params, alsa_handle);
+    errc = DSP::ALSA_object_t::set_snd_pcm_format(params);
 
     snd_pcm_hw_params_set_channels(alsa_handle, params, no_of_channels_alsa);
 
@@ -292,12 +292,6 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   //The snd_xxx_alloca() functions behave just like alloca(): their memory
   //is automatically freed when the function returns.
 
-  // return 1;
-  // }
-
-  // void DSP::ALSA_object_t::get_period_size(snd_pcm_uframes_t &frames, unsigned int &period_time) {
-  // int dir;
-
   // snd_pcm_hw_params_current() // Retreive current PCM hardware configuration chosen with snd_pcm_hw_params.
   //snd_pcm_hw_params_current(alsa_handle, hw_params);
 
@@ -336,12 +330,12 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
        }
        break;
      case 8:
-       buffer_64bit.resize(size_b / no_of_bytes_in_channel); // M.B. wygodniejsze niż malloc
-       pcm_buffer = (unsigned char *)(buffer_64bit.data());
+         buffer_64bit.resize(size_b / no_of_bytes_in_channel); // M.B. wygodniejsze niż malloc
+         pcm_buffer = (unsigned char *)(buffer_64bit.data());
          break;
      default:
-       DSP::log << "Unsupported no_of_bytes_in_channel" << endl;
-       exit(1);
+       DSP::log << "Unsupported no of bytes in channel" << endl;
+       return -1;
     }
  
    /* We want to loop for 5 seconds */
@@ -357,7 +351,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
       {
 
           DSP::log << "Unable to set blocking mode" << endl;
-          exit(1);
+          return -1;
       }
   }
   else
@@ -366,7 +360,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
       if (rc < 0)
       {
           DSP::log << "Unable to set non blocking mode" << endl;
-          exit(1);
+          return -1;
       }
   }
 
@@ -485,10 +479,11 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 
 }
 
-int DSP::ALSA_object_t::set_snd_pcm_format(snd_pcm_hw_params_t *params, snd_pcm_t *alsa_handle) 
+int DSP::ALSA_object_t::set_snd_pcm_format(snd_pcm_hw_params_t *params) 
 {
   int errc;
-    // M.B. docelowo dodać przynajmniej obsługę 8-bitów
+  
+  // M.B. docelowo dodać przynajmniej obsługę 8-bitów
   if (no_of_bytes_in_channel == 1)
   {
       /* Signed 8-bit format */
