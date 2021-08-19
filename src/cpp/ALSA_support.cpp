@@ -125,10 +125,9 @@ void DSP::ALSA_object_t::log_driver_data()
 
 }
 
-int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned int no_of_channels_alsa, unsigned int no_of_bytes_in_channel, unsigned int &sampling_rate)
+int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 { 
-
-  // long loops; //! \TODO Change the loop to endless playback
+  /* Errors controllers */
   int rc;
   int errc;
   
@@ -152,7 +151,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type, unsigned 
     else
       DSP::log << "Opening PCM device for recording (capture)." << endl;
 
-    // jakie znaczenie ma name?
+    // What "name" actually means?
     rc = snd_pcm_open(&handle, "default", stream_type, SND_PCM_NONBLOCK);
 
     if (rc < 0) 
@@ -601,7 +600,7 @@ long DSP::ALSA_object_t::open_PCM_device_4_output(const int &no_of_channels, int
   sampling_rate_alsa = (unsigned int) sampling_rate;
   no_of_channels_alsa = (unsigned int) no_of_channels;
 
-  rc = open_alsa_device(SND_PCM_STREAM_PLAYBACK, (unsigned int) no_of_channels_alsa, no_of_bytes_in_channel, sampling_rate_alsa);
+  rc = open_alsa_device(SND_PCM_STREAM_PLAYBACK);
 
   if(rc > 0)
   { 
@@ -620,7 +619,7 @@ long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int 
   sampling_rate_alsa = (unsigned int) sampling_rate;
   no_of_channels_alsa = (unsigned int) no_of_channels;
 
-  rc = open_alsa_device(SND_PCM_STREAM_CAPTURE, (unsigned int) no_of_channels_alsa, no_of_bytes_in_channel, sampling_rate_alsa);
+  rc = open_alsa_device(SND_PCM_STREAM_CAPTURE);
   
   if(rc > 0)
   { 
