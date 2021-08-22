@@ -50,17 +50,12 @@ DSP::ALSA_object_t::~ALSA_object_t()
     snd_pcm_hw_params_free(hw_params);
     hw_params = NULL;
   }
-  //snd_pcm_nonblock(handle, 0);
-  snd_pcm_drain(alsa_handle);
-  std::cout << "Closing the PCM device" << std::endl;
-  snd_pcm_close(alsa_handle);
+
   buffer_8bit.clear(); // M.B. można nawet pominąć, bo i tak będzie wykonana przy zwalnianiu pamięci zmiennej
   buffer_16bit.clear(); // M.B. można nawet pominąć, bo i tak będzie wykonana przy zwalnianiu pamięci zmiennej
   buffer_32bit.clear(); // D.K. it will be depricated in DSPElib
   buffer_64bit.clear();
 
-  std::cout << "Press ENTER" << std::endl;
-  std::cin.get(); // tutaj oczekuję na wciśnięcie entera
 }
 
 unsigned int DSP::ALSA_object_t::select_input_device_by_number(const unsigned int &device_number)
@@ -302,8 +297,9 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   /* Use a buffer large enough to hold one period */
 
   snd_pcm_hw_params_get_period_size(hw_params, &frames, &dir);
-   // do osobnej metody
+  
    size_b = frames * no_of_channels_alsa * no_of_bytes_in_channel; // M.B. warto być gotowym na wardziej uniwersalne warianty
+
    switch (no_of_bytes_in_channel)
    {
      case 1:
@@ -339,7 +335,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     }
  
    /* We want to loop for 5 seconds */
-   snd_pcm_hw_params_get_period_time(hw_params, &period_time_ms, &dir);
+   // snd_pcm_hw_params_get_period_time(hw_params, &period_time_ms, &dir);
 
   // TODO:
   // M.B. wybór trybu synchroniczanego lub asynchronicznego
@@ -744,7 +740,7 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
   assert(!"DSP::ALSA_object_t::get_wave_in_raw_buffer not implemented yet");
 }
 
-
+// czy w tym miejscu takze usunac przekazywanie parametrow? gdzie powinna byc wywolana ta metoda?
 snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(snd_pcm_t *alsa_handle, const void *buffer, snd_pcm_uframes_t &frames) {
 
   int rc;
@@ -780,6 +776,7 @@ void DSP::ALSA_object_t::close_alsa_device(bool do_drain, bool use_log) {
       snd_pcm_drain(alsa_handle);
     }
     
+    DSP::log << "Closing PCM device." << endl;
     snd_pcm_close(alsa_handle);
     alsa_handle = NULL;
 
