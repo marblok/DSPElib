@@ -578,8 +578,8 @@ long DSP::WMM_object_t::append_playback_buffer(DSP::Float_vector &float_buffer) 
 
       if (IsPlayingNow == false)
       {
-        if (NextBufferOutInd == 1)
-        {
+        if (NextBufferOutInd == DSP::NoOfAudioOutputBuffers - 2) //all but one spare buffer are filled up
+        { // send all data from buffers to soundcard to start playback
           for (ind=0; ind < DSP::NoOfAudioOutputBuffers-1; ind++) //one spare buffer
           {
             result=waveOutWrite(hWaveOut,

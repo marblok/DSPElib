@@ -584,7 +584,15 @@ namespace DSP {
       //! returns true is the sound capture is on
       virtual bool stop_recording(void) = 0;
 
-      //! \note values stored in float_buffer might be altered
+      /*! Appends data to audio buffers and sends data to sound card is buffer is full.
+      * The class implementation should provide at least DSP::NoOfAudioOutputBuffers buffers with space for audio_outbuffer_size sample each.  
+      * When sound is playing then if the function call results in filling the buffer (or buffers) 
+      * all full buffers should be sent to the sound card.
+      * When sound has not stated playing yest then full buffers sould be sent to the sound card only when 
+      * DSP::NoOfAudioOutputBuffers-1 buffers are filled. This prevents sound staterring and leaves one spare buffer for new samples.
+      * 
+      * \note values stored in float_buffer might be altered
+      */
       virtual long append_playback_buffer(DSP::Float_vector &float_buffer)=0;
       //! Starts sound capture
       virtual bool start_recording(void) = 0;

@@ -4,7 +4,9 @@
         {
             "name": "Windows64-Release",
             "includePath": [
-                "${workspaceFolder}/src/**"
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/include",
+                "${workspaceFolder}/src/include/rls"
             ],
             "defines": [
                 "WIN32",
@@ -18,7 +20,9 @@
         {
             "name": "Windows32-Release",
             "includePath": [
-                "${workspaceFolder}/src/**"
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/include",
+                "${workspaceFolder}/src/include/rls"
             ],
             "defines": [
                 "WIN32",
@@ -32,7 +36,9 @@
         {
             "name": "Windows32-Debug",
             "includePath": [
-                "${workspaceFolder}/src/**"
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/include",
+                "${workspaceFolder}/src/include/dbg"
             ],
             "defines": [
                 "WIN32",
@@ -47,7 +53,9 @@
         {
             "name": "Windows64-Debug",
             "includePath": [
-                "${workspaceFolder}/src/**"
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/include",
+                "${workspaceFolder}/src/include/dbg"
             ],
             "defines": [
                 "WIN32",
@@ -77,7 +85,9 @@
         {
             "name": "Linux-Release",
             "includePath": [
-                "${workspaceFolder}/src/**"
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/include",
+                "${workspaceFolder}/src/include/rls"
             ],
             "defines": [
                 "LINUX",
@@ -91,7 +101,9 @@
         {
             "name": "Linux-Debug",
             "includePath": [
-                "${workspaceFolder}/src/include/**"
+                "${workspaceFolder}/src/include",
+                "${workspaceFolder}/src/include",
+                "${workspaceFolder}/src/include/dbg"
             ],
             "defines": [
                 "LINUX",
