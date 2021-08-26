@@ -55,28 +55,30 @@ namespace DSP {
         //! just samples
         snd_pcm_uframes_t frames;
 
-        //! we always use the non-blocking mode in DSPElib
+        //! We always use the non-blocking mode in DSPElib
         bool blocking_mode;
         
         //! buffer capacity
         int size_b;
 
-        //! Open default PCM device and return 1 on success or negative error code
-        //! stream_type = SND_PCM_STREAM_PLAYBACK or SND_PCM_STREAM_CAPTURE
+        /*! Open default PCM device and return 1 on success or negative error code
+            stream_type = SND_PCM_STREAM_PLAYBACK or SND_PCM_STREAM_CAPTURE
+            the rest of the parameters are set in the class
+        */ 
         int open_alsa_device(snd_pcm_stream_t stream_type);
         void close_alsa_device(bool do_drain = false, bool use_log = false);
 
         void get_period_size(snd_pcm_uframes_t &frames, unsigned int &period_time);
         
         //! playback
-        snd_pcm_sframes_t pcm_writei(const void *buffer, snd_pcm_uframes_t &frames);
+        snd_pcm_sframes_t pcm_writei(const void *buffer);
         
-        //! set SND PCM format depending on no of bytes in channel and CPU endianness
+        //! Set SND PCM format depending on no of bytes in channel and CPU endianness
         int set_snd_pcm_format(snd_pcm_hw_params_t *params);
 
     public:
 
-        //! log basic ALSA information
+        //! Log basic ALSA information
         void log_driver_data();
 
         //! Select the desired device from the interface
