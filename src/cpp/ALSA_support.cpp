@@ -15,6 +15,7 @@
 
 DSP::ALSA_object_t::ALSA_object_t()
 {
+  handle = NULL;
   alsa_handle = NULL;
   hw_params = NULL;
   pcm_buffer = NULL;
@@ -41,6 +42,7 @@ DSP::ALSA_object_t::ALSA_object_t()
 
   frames = 8000;
   size_b = 32;
+
 }
 
 DSP::ALSA_object_t::~ALSA_object_t()
@@ -296,7 +298,8 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 
   /* Use a buffer large enough to hold one period */
 
-  snd_pcm_hw_params_get_period_size(hw_params, &frames, &dir);
+  // Nalezy przemyśleć
+  // snd_pcm_hw_params_get_period_size(hw_params, &frames, &dir);
   
    size_b = frames * no_of_channels_alsa * no_of_bytes_in_channel; // M.B. warto być gotowym na wardziej uniwersalne warianty
 
@@ -333,9 +336,6 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
        DSP::log << "Unsupported no of bytes in channel" << endl;
        return -1;
     }
- 
-   /* We want to loop for 5 seconds */
-   // snd_pcm_hw_params_get_period_time(hw_params, &period_time_ms, &dir);
 
   // TODO:
   // M.B. wybór trybu synchroniczanego lub asynchronicznego
@@ -360,16 +360,6 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
       }
   }
 
-  /* Requested number of microseconds divided by period time. */
-  // loops = playback_time / period_time_ms;
-
-  /* Sinus generator. */
-  // double phase_0 = 0.0, phase_0_2 = 0.0;
-  // double Freq = 500, Freq_2 = 200; // M.B. częstotliwość początkowa [Hz]
-  // while (loops > 0)
-  // {
-   // loops--;
-   //
   /*
   if (rc == 0)
   {
@@ -438,7 +428,8 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     phase_0_2 +=  2 * M_PI * Freq_2 / sampling_rate_alsa * size_b / no_of_bytes_in_channel / no_of_channels_alsa;
     DSP::log << Freq << ", " << Freq_2 << endl;
     */
-
+   
+   // do innych metod
     // DSP::log << "Before snd_pcm_writei (" << loops << ")" << endl;
   if (stream_type == SND_PCM_STREAM_PLAYBACK)
     snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(alsa_handle, const void *buffer, frames)
@@ -585,11 +576,12 @@ int DSP::ALSA_object_t::set_snd_pcm_format(snd_pcm_hw_params_t *params)
 }
 
 long DSP::ALSA_object_t::open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size) {
-  // assert(!"DSP::ALSA_object_t::open_PCM_device_4_output not implemented yet");
+  
   int rc;
   no_of_bytes_in_channel = (unsigned int) no_of_bits / 8;
   sampling_rate_alsa = (unsigned int) sampling_rate;
   no_of_channels_alsa = (unsigned int) no_of_channels;
+  // frames = (int) audio_outbuffer_size
 
   rc = open_alsa_device(SND_PCM_STREAM_PLAYBACK);
 
@@ -609,6 +601,7 @@ long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int 
   no_of_bytes_in_channel = (unsigned int) no_of_bits / 8;
   sampling_rate_alsa = (unsigned int) sampling_rate;
   no_of_channels_alsa = (unsigned int) no_of_channels;
+  // frames = (int) audio_outbuffer_size
 
   rc = open_alsa_device(SND_PCM_STREAM_CAPTURE);
   
@@ -672,9 +665,11 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
             buffer_64bit[no_of_channels_alsa * n] = Float_vector[no_of_channels_alsa * n];
             if (no_of_channels_alsa == 2)
                 buffer_64bit[no_of_channels_alsa * n + 1 ] = Float_vector[no_of_channels_alsa * n + 1];
-        
+         
         }
     }
+
+    // DSP::ALSA_object_t::pcm_writei(snd_pcm_t *alsa_handle, const void *buffer, snd_pcm_uframes_t &frames)   
     
     switch (no_of_bytes_in_channel)
     {

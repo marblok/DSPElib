@@ -20,44 +20,55 @@ namespace DSP {
     
     class ALSA_object_t : public DSP::SOUND_object_t {
     private:
+        //! handlers
         snd_pcm_t *handle;
         snd_pcm_t *alsa_handle;
         snd_pcm_hw_params_t *hw_params;
         unsigned char *pcm_buffer;
 
-        unsigned int OutDevNo; // device numer used in next open operations
-        unsigned int InDevNo; // device numer used in next open operations
+        //! device number used in next open operations
+        unsigned int OutDevNo; 
+        unsigned int InDevNo;
 
+        //! variables holding values ​​from the external interface
         unsigned int sampling_rate_alsa; // M.B. lepiej korzystać z nazw oddających przeznaczenie zmiennej
-
-        // unsigned int period_time_ms; // M.B. i ograniczać wykorzystywanie jednej zmiennej do przechowywania wartości różniących się interpretacją i przeznaczeniem
         unsigned int no_of_channels_alsa;
         unsigned int no_of_bytes_in_channel;
 
-        std::vector<uint8_t> buffer_8bit; // M.B. lepiej korzystać z kontenerów STD, są wygodniejsze i oznaczają mniej problemów z wyciekami pamięci
-        std::vector<int16_t> buffer_16bit; // M.B. dla odtwarzania 16-bitowego (int to dłuższe słowa)
-        std::vector<int32_t> buffer_32bit; // D.K. dla odtwarzania 24 i 32-bitowego
-        std::vector<float> buffer_32bit_f; // natywny dla 32 bitow
-        std::vector<double> buffer_64bit; // D.K. dla odtwarzania 64-bitowego
+        //! buffers depending on samples type
+        std::vector<uint8_t> buffer_8bit; 
+        std::vector<int16_t> buffer_16bit;
+        std::vector<int32_t> buffer_32bit;
+        std::vector<float> buffer_32bit_f;
+        std::vector<double> buffer_64bit;
 
+        /*! It is better to use STD containers - they are more convenient, 
+            and they mean fewer problems with memory leaks.
+        */
+        
+        //! samples are integers rather than float values  
         bool IsHigherQualityMode;
+        
+        //! CPU architecture
         bool IsLittleEndian;
 
+        //! just samples
         snd_pcm_uframes_t frames;
 
-        bool blocking_mode; // M.B. na potrzeby realizacji odtwarzania w trybie non-blocking
+        //! we always use the non-blocking mode in DSPElib
+        bool blocking_mode;
+        
+        //! buffer capacity
+        int size_b;
 
-        int size_b; // buffer capacity
-
-
-
-        //! open default PCM device and return 1 on success or negative error code
-        /*! stream_type = SND_PCM_STREAM_PLAYBACK or SND_PCM_STREAM_CAPTURE
-        */
+        //! Open default PCM device and return 1 on success or negative error code
+        //! stream_type = SND_PCM_STREAM_PLAYBACK or SND_PCM_STREAM_CAPTURE
         int open_alsa_device(snd_pcm_stream_t stream_type);
         void close_alsa_device(bool do_drain = false, bool use_log = false);
 
         void get_period_size(snd_pcm_uframes_t &frames, unsigned int &period_time);
+        
+        //! playback
         snd_pcm_sframes_t pcm_writei(const void *buffer, snd_pcm_uframes_t &frames);
         
         //! set SND PCM format depending on no of bytes in channel and CPU endianness
@@ -68,28 +79,37 @@ namespace DSP {
         //! log basic ALSA information
         void log_driver_data();
 
+        //! Select the desired device from the interface
         unsigned int select_input_device_by_number(const unsigned int &device_number=UINT_MAX);
         unsigned int select_output_device_by_number(const unsigned int &device_number=UINT_MAX);
 
+        //! Deciding wheter PCM device is opening for playback or capture
         long open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size = -1, long playback_time);
         long open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_inbuffer_size = -1, long playback_time);
+        
+        //! Closes PCM device
         bool close_PCM_device_input(void);
         bool close_PCM_device_output(void);
 
-
-        //! returns true is the playback is on
+        //! Returns true is the playback is on
         bool is_device_playing(void);
-        //! initializes playback stopping
+
+        //! Initializes playback stopping
         bool stop_playback(void);
-        //! returns true is the sound capture is on
+
+        //! Returns true is the sound capture is on
         bool is_device_recording(void);
-        //! returns true is the sound capture is on
+
+        //! Returns true is the sound capture is on
         bool stop_recording(void);
 
         //! \note values stored in float_buffer might be altered
         long append_playback_buffer(DSP::Float_vector &float_buffer);
+
         //! Starts sound capture
         bool start_recording(void);
+
+        //! For sound capture
         bool get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType, std::vector<char> &wave_in_raw_buffer);
 
         //! Returns false if callbacks are not supported of recording
@@ -98,7 +118,7 @@ namespace DSP {
         //! Returns false if callbacks are not supported of playback
         bool is_output_callback_supported(void);
 
-        //! object constructor
+        //! object constructor and destructor
         ALSA_object_t();
         ~ALSA_object_t();
     };
