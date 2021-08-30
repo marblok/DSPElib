@@ -30,17 +30,20 @@ namespace DSP {
         unsigned int OutDevNo; 
         unsigned int InDevNo;
 
+        //! keeping track of which buffer is currently being filled
+        unsigned int NextBufferOutInd;
+
         //! variables holding values ​​from the external interface
         unsigned int sampling_rate_alsa; // M.B. lepiej korzystać z nazw oddających przeznaczenie zmiennej
         unsigned int no_of_channels_alsa;
         unsigned int no_of_bytes_in_channel;
 
         //! buffers depending on samples type
-        std::vector<uint8_t> buffer_8bit; 
-        std::vector<int16_t> buffer_16bit;
-        std::vector<int32_t> buffer_32bit;
-        std::vector<float> buffer_32bit_f;
-        std::vector<double> buffer_64bit;
+        std::vector<std::vector<uint8_t>> buffers_8bit; 
+        std::vector<std::vector<int16_t>> buffers_16bit;
+        std::vector<std::vector<int32_t>> buffers_32bit;
+        std::vector<std::vector<float>> buffers_32bit_f;
+        std::vector<std::vector<double>> buffers_64bit;
 
         /*! It is better to use STD containers - they are more convenient, 
             and they mean fewer problems with memory leaks.
@@ -51,6 +54,9 @@ namespace DSP {
         
         //! CPU architecture
         bool IsLittleEndian;
+
+        //! Has playback already started?
+        bool IsPlayingNow;
 
         //! just samples
         snd_pcm_uframes_t frames;

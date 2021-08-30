@@ -32,8 +32,12 @@ DSP::ALSA_object_t::ALSA_object_t()
 
   blocking_mode = false;
 
+  IsPlayingNow = false;
+
   OutDevNo = -1; 
   InDevNo = -1;
+
+  NextBufferOutInd = 0;
 
   /* 44100 bits/second sampling rate (CD quality) */
   sampling_rate_alsa = 44100;
@@ -685,35 +689,41 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
     switch (no_of_bytes_in_channel)
     {
       case 1:
-        DSP::ALSA_object_t::pcm_writei(&buffer_8bit);
+        uint8_t *pointer8 = buffers_8bit;
+        DSP::ALSA_object_t::pcm_writei(pointer8);
         return (long) buffer_8bit.size();
         break;
 
       case 2:
-        DSP::ALSA_object_t::pcm_writei(&buffer_16bit);
+        uint16_t *pointer16 = buffers_16bit;
+        DSP::ALSA_object_t::pcm_writei(pointer16);
         return (long) buffer_16bit.size();
         break;
     
       case 3:
-        DSP::ALSA_object_t::pcm_writei(&buffer_32bit);
+        uint32_t *pointer32 = buffers_32bit;
+        DSP::ALSA_object_t::pcm_writei(pointer32);
         return (long) buffer_32bit.size();
         break;
 
       case 4:
         if (IsHigherQualityMode)
         {
-          DSP::ALSA_object_t::pcm_writei(&buffer_32bit);
+          uint32_t *pointer32 = buffers_32bit;
+          DSP::ALSA_object_t::pcm_writei(pointer32);
           return (long) buffer_32bit.size();
         }
         else
         {
-          DSP::ALSA_object_t::pcm_writei(&buffer_32bit_f);
+          float *pointer32f = buffers_32bit_f;
+          DSP::ALSA_object_t::pcm_writei(pointer32f);
           return (long) buffer_32bit_f.size();
         }
         break;
 
       case 8:
-        DSP::ALSA_object_t::pcm_writei(&buffer_64bit);
+        double *pointer64 = buffers_64bit;
+        DSP::ALSA_object_t::pcm_writei(pointer64);
         return (long) buffer_64bit.size();  
         break;
 
