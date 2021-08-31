@@ -34,7 +34,7 @@ DSP::ALSA_object_t::ALSA_object_t()
 
   IsPlayingNow = false;
 
-  OutDevNo = -1; 
+  OutDevNo = -1;
   InDevNo = -1;
 
   NextBufferOutInd = 0;
@@ -57,10 +57,10 @@ DSP::ALSA_object_t::~ALSA_object_t()
     hw_params = NULL;
   }
 
-  buffer_8bit.clear(); // M.B. można nawet pominąć, bo i tak będzie wykonana przy zwalnianiu pamięci zmiennej
-  buffer_16bit.clear(); // M.B. można nawet pominąć, bo i tak będzie wykonana przy zwalnianiu pamięci zmiennej
-  buffer_32bit.clear(); // D.K. it will be depricated in DSPElib
-  buffer_64bit.clear();
+  buffers_8bit.clear();
+  buffers_16bit.clear();
+  buffers_32bit.clear();
+  buffers_64bit.clear();
 
 }
 
@@ -80,13 +80,11 @@ unsigned int DSP::ALSA_object_t::select_output_device_by_number(const unsigned i
 
 bool DSP::ALSA_object_t::is_output_callback_supported(void) 
 {
-  // assert(!"ALSA_object_t::is_output_callback_supported not yet implemented");
   return false;
 }
 
 bool DSP::ALSA_object_t::is_input_callback_supported(void) 
 {
-  // assert(!"ALSA_object_t::is_input_callback_supported not yet implemented");
   return false;
 }
 
@@ -120,7 +118,7 @@ void DSP::ALSA_object_t::log_driver_data()
       "(" << snd_pcm_subformat_description((snd_pcm_subformat_t)val) << ")" << endl;
 
   DSP::log << endl;
-  DSP::log << "PCM states:" << endl;
+  DSP::log << "PCM states: " << endl;
   for (val = 0; val <= SND_PCM_STATE_LAST; val++)
     DSP::log << "  " << snd_pcm_state_name((snd_pcm_state_t)val) << endl;
 
@@ -155,7 +153,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     // What "name" actually means?
     rc = snd_pcm_open(&alsa_handle, "default", stream_type, SND_PCM_NONBLOCK);
 
-    if (rc < 0) 
+    if (rc < 0)
     {
       DSP::log << "Unable to open pcm device: " << snd_strerror(rc) << endl;
       return -1;
@@ -199,12 +197,12 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
       DSP::log << "Frames is not equal to tmp_frames! Frames: " << frames << endl;    
     }
     else
-      DSP::log << "Frames has been set correctly." << endl;  
+      DSP::log << "Frames has been set correctly." << endl;
 
     /* Write the parameters to the driver */
     rc = snd_pcm_hw_params(alsa_handle, params);
 
-    if (rc < 0) 
+    if (rc < 0)
     {
       DSP::log << "Unable to set hw parameters: " << snd_strerror(rc) << endl;
       
@@ -293,7 +291,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     DSP::log << "can resume = " << val << endl;
 
     val = snd_pcm_hw_params_can_sync_start(hw_params);
-    DSP::log << "can sync start = " << val << endl;  
+    DSP::log << "can sync start = " << val << endl;
   
 
   //  snd_pcm_hw_params_free(params);
@@ -322,31 +320,31 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
    switch (no_of_bytes_in_channel)
    {
      case 1:
-       buffer_8bit.resize(size_b / no_of_bytes_in_channel);
-       pcm_buffer = (unsigned char *)(buffer_8bit.data());
+       buffers_8bit[NextBufferOutInd].resize(size_b / no_of_bytes_in_channel);
+       pcm_buffer = (unsigned char *)(buffers_8bit[NextBufferOutInd].data());
        break;
      case 2:
-       buffer_16bit.resize(size_b / no_of_bytes_in_channel);
-       pcm_buffer = (unsigned char *)(buffer_16bit.data());
+       buffers_16bit[NextBufferOutInd].resize(size_b / no_of_bytes_in_channel);
+       pcm_buffer = (unsigned char *)(buffers_16bit[NextBufferOutInd].data());
        break;
      case 3:
      case 4:
  
        if (IsHigherQualityMode)
        {
-         buffer_32bit.resize(size_b / no_of_bytes_in_channel);
-         pcm_buffer = (unsigned char *)(buffer_32bit.data());
+         buffers_32bit[NextBufferOutInd].resize(size_b / no_of_bytes_in_channel);
+         pcm_buffer = (unsigned char *)(buffers_32bit[NextBufferOutInd].data());
        }
  
        else //! native mode
        {
-         buffer_32bit_f.resize(size_b / no_of_bytes_in_channel);
-         pcm_buffer = (unsigned char *)(buffer_32bit_f.data());
+         buffers_32bit_f[NextBufferOutInd].resize(size_b / no_of_bytes_in_channel);
+         pcm_buffer = (unsigned char *)(buffers_32bit_f[NextBufferOutInd].data());
        }
        break;
      case 8:
-         buffer_64bit.resize(size_b / no_of_bytes_in_channel);
-         pcm_buffer = (unsigned char *)(buffer_64bit.data());
+         buffers_64bit[NextBufferOutInd].resize(size_b / no_of_bytes_in_channel);
+         pcm_buffer = (unsigned char *)(buffers_64bit[NextBufferOutInd].data());
          break;
      default:
        DSP::log << "Unsupported no of bytes in channel" << endl;
@@ -359,7 +357,6 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 
       if (rc < 0)
       {
-
           DSP::log << "Unable to set blocking mode" << endl;
           return -1;
       }
@@ -735,7 +732,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
         *pointer64 = buffers_64bit[NextBufferOutInd].data();
         DSP::ALSA_object_t::pcm_writei(pointer64);
         IsPlayingNow = true;
-        buffer_size = (long) buffer_64bit.size();  
+        buffer_size = (long) buffer_64bit.size();
         break;
 
       default:
