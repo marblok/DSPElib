@@ -153,14 +153,13 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
       DSP::log << "Opening PCM device for recording (capture)." << endl;
 
     // What "name" actually means?
-    rc = snd_pcm_open(&handle, "default", stream_type, SND_PCM_NONBLOCK);
+    rc = snd_pcm_open(&alsa_handle, "default", stream_type, SND_PCM_NONBLOCK);
 
     if (rc < 0) 
     {
       DSP::log << "Unable to open pcm device: " << snd_strerror(rc) << endl;
       return -1;
     }
-    alsa_handle = handle;
 
     /*! Allocate a hardware parameters object. */
     snd_pcm_hw_params_alloca(&params);
@@ -185,7 +184,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     if (frames <= 0)
       frames = 8000;
 
-    rc = snd_pcm_hw_params_set_buffer_size(alsa_handle, params, 2*frames);
+    rc = snd_pcm_hw_params_set_buffer_size(alsa_handle, params, DSP::NoOfAudioOutputBuffers*frames);
     
     snd_pcm_uframes_t tmp_frames = frames;
 
@@ -685,58 +684,66 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
         }
     }
     
-    
+    long buffer_size;
+    uint8_t *pointer8;
+    uint16_t *pointer16;
+    uint32_t *pointer32;
+    float *pointer32f;
+    double *pointer64;
+
     switch (no_of_bytes_in_channel)
     {
       case 1:
-        uint8_t *pointer8 = buffers_8bit;
+        *pointer8 = buffers_8bit[NextBufferOutInd].data();
         DSP::ALSA_object_t::pcm_writei(pointer8);
         IsPlayingNow = true;
-        return (long) buffer_8bit.size();
+        buffer_size = (long) buffer_8bit.size();
         break;
 
       case 2:
-        uint16_t *pointer16 = buffers_16bit;
+        *pointer16 = buffers_16bit[NextBufferOutInd].data();
         DSP::ALSA_object_t::pcm_writei(pointer16);
         IsPlayingNow = true;
-        return (long) buffer_16bit.size();
+        buffer_size = buffer_16bit.size();
         break;
     
       case 3:
-        uint32_t *pointer32 = buffers_32bit;
+        *pointer32 = buffers_32bit[NextBufferOutInd].data();
         DSP::ALSA_object_t::pcm_writei(pointer32);
         IsPlayingNow = true;
-        return (long) buffer_32bit.size();
+        buffer_size = (long) buffer_32bit.size();
         break;
 
       case 4:
         if (IsHigherQualityMode)
         {
-          uint32_t *pointer32 = buffers_32bit;
+          *pointer32 = buffers_32bit[NextBufferOutInd].data();
           DSP::ALSA_object_t::pcm_writei(pointer32);
           IsPlayingNow = true;
-          return (long) buffer_32bit.size();
+          buffer_size = (long) buffer_32bit.size();
         }
         else
         {
-          float *pointer32f = buffers_32bit_f;
+          *pointer32f = buffers_32bit_f[NextBufferOutInd].data();
           DSP::ALSA_object_t::pcm_writei(pointer32f);
           IsPlayingNow = true;
-          return (long) buffer_32bit_f.size();
+          buffer_size = (long) buffer_32bit_f.size();
         }
         break;
 
       case 8:
-        double *pointer64 = buffers_64bit;
+        *pointer64 = buffers_64bit[NextBufferOutInd].data();
         DSP::ALSA_object_t::pcm_writei(pointer64);
         IsPlayingNow = true;
-        return (long) buffer_64bit.size();  
+        buffer_size = (long) buffer_64bit.size();  
         break;
 
       default:
-        return (long) size_b;
+        buffer_size = (long) size_b;
         break;
     }
+
+    return buffer_size;
 }
 
 bool DSP::ALSA_object_t::close_PCM_device_input(void) {

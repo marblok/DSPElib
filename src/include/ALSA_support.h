@@ -21,7 +21,6 @@ namespace DSP {
     class ALSA_object_t : public DSP::SOUND_object_t {
     private:
         //! handlers
-        snd_pcm_t *handle;
         snd_pcm_t *alsa_handle;
         snd_pcm_hw_params_t *hw_params;
         unsigned char *pcm_buffer;
