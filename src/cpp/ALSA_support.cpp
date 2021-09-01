@@ -320,32 +320,60 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
    switch (no_of_bytes_in_channel)
    {
      case 1:
-       buffers_8bit[NextBufferOutInd].resize(size_b / no_of_bytes_in_channel);
-       pcm_buffer = (unsigned char *)(buffers_8bit[NextBufferOutInd].data());
-       break;
+        buffers_8bit.reserve(DSP::NoOfAudioInputBuffers);
+
+        for(unsigned int ind = 0; i < DSP::NoOfAudioInputBuffers; i++)
+        {
+           buffers_8bit[ind].resize(size_b / no_of_bytes_in_channel);
+           pcm_buffer = (unsigned char *)(buffers_8bit[ind].data());
+        }
+        break;
+
      case 2:
-       buffers_16bit[NextBufferOutInd].resize(size_b / no_of_bytes_in_channel);
-       pcm_buffer = (unsigned char *)(buffers_16bit[NextBufferOutInd].data());
-       break;
+        buffers_8bit.reserve(DSP::NoOfAudioInputBuffers);
+
+        for(unsigned int ind = 0; i < DSP::NoOfAudioInputBuffers; i++)
+        {
+           buffers_16bit[ind].resize(size_b / no_of_bytes_in_channel);
+           pcm_buffer = (unsigned char *)(buffers_16bit[ind].data());
+        }
+        break;
+
      case 3:
      case 4:
+        if (IsHigherQualityMode)
+        {
+          buffers_32bit.reserve(DSP::NoOfAudioInputBuffers);
+
+          for(unsigned int ind = 0; i < DSP::NoOfAudioInputBuffers; i++)
+          {
+             buffers_32bit[ind].resize(size_b / no_of_bytes_in_channel);
+             pcm_buffer = (unsigned char *)(buffers_32bit[ind].data());
+          }
+        }
  
-       if (IsHigherQualityMode)
-       {
-         buffers_32bit[NextBufferOutInd].resize(size_b / no_of_bytes_in_channel);
-         pcm_buffer = (unsigned char *)(buffers_32bit[NextBufferOutInd].data());
-       }
- 
-       else //! native mode
-       {
-         buffers_32bit_f[NextBufferOutInd].resize(size_b / no_of_bytes_in_channel);
-         pcm_buffer = (unsigned char *)(buffers_32bit_f[NextBufferOutInd].data());
-       }
-       break;
+        else //! native mode
+        {
+            buffers_32bit_f.reserve(DSP::NoOfAudioInputBuffers);
+
+            for(unsigned int ind = 0; i < DSP::NoOfAudioInputBuffers; i++)
+            {
+               buffers_32bit_f[ind].resize(size_b / no_of_bytes_in_channel);
+               pcm_buffer = (unsigned char *)(buffers_32bit_f[ind].data());
+            }
+        }
+        break;
+
      case 8:
-         buffers_64bit[NextBufferOutInd].resize(size_b / no_of_bytes_in_channel);
-         pcm_buffer = (unsigned char *)(buffers_64bit[NextBufferOutInd].data());
-         break;
+        buffers_64bit.reserve(DSP::NoOfAudioInputBuffers);
+
+        for(unsigned int ind = 0; i < DSP::NoOfAudioInputBuffers; i++)
+        {
+           buffers_64bit[ind].resize(size_b / no_of_bytes_in_channel);
+           pcm_buffer = (unsigned char *)(buffers_64bit[ind].data());
+        }
+        break;
+        
      default:
        DSP::log << "Unsupported no of bytes in channel" << endl;
        return -1;
