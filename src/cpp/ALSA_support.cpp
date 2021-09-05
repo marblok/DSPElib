@@ -18,7 +18,7 @@ DSP::ALSA_object_t::ALSA_object_t()
   handle = NULL;
   alsa_handle = NULL;
   hw_params = NULL;
-  pcm_buffer = NULL;
+  // pcm_buffer = NULL;
 
   std::string endianess;
   endianess = system("lscpu | grep \"Byte Order\" | egrep -o 'Little Endian|Big Endian'");
@@ -317,6 +317,8 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   
    size_b = frames * no_of_channels_alsa * no_of_bytes_in_channel;
 
+   pcm_buffer.reserve(DSP::NoOfAudioInputBuffers);
+
    switch (no_of_bytes_in_channel)
    {
      case 1:
@@ -325,7 +327,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
         for(unsigned int ind = 0; i < DSP::NoOfAudioInputBuffers; i++)
         {
            buffers_8bit[ind].resize(size_b / no_of_bytes_in_channel);
-           pcm_buffer = (unsigned char *)(buffers_8bit[ind].data());
+           pcm_buffer[ind] = (unsigned char *)(buffers_8bit[ind].data());
         }
         break;
 
@@ -335,7 +337,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
         for(unsigned int ind = 0; i < DSP::NoOfAudioInputBuffers; i++)
         {
            buffers_16bit[ind].resize(size_b / no_of_bytes_in_channel);
-           pcm_buffer = (unsigned char *)(buffers_16bit[ind].data());
+           pcm_buffer[ind] = (unsigned char *)(buffers_16bit[ind].data());
         }
         break;
 
@@ -348,7 +350,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
           for(unsigned int ind = 0; i < DSP::NoOfAudioInputBuffers; i++)
           {
              buffers_32bit[ind].resize(size_b / no_of_bytes_in_channel);
-             pcm_buffer = (unsigned char *)(buffers_32bit[ind].data());
+             pcm_buffer[ind] = (unsigned char *)(buffers_32bit[ind].data());
           }
         }
  
@@ -359,7 +361,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
             for(unsigned int ind = 0; i < DSP::NoOfAudioInputBuffers; i++)
             {
                buffers_32bit_f[ind].resize(size_b / no_of_bytes_in_channel);
-               pcm_buffer = (unsigned char *)(buffers_32bit_f[ind].data());
+               pcm_buffer[ind] = (unsigned char *)(buffers_32bit_f[ind].data());
             }
         }
         break;
@@ -370,10 +372,10 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
         for(unsigned int ind = 0; i < DSP::NoOfAudioInputBuffers; i++)
         {
            buffers_64bit[ind].resize(size_b / no_of_bytes_in_channel);
-           pcm_buffer = (unsigned char *)(buffers_64bit[ind].data());
+           pcm_buffer[ind] = (unsigned char *)(buffers_64bit[ind].data());
         }
         break;
-        
+
      default:
        DSP::log << "Unsupported no of bytes in channel" << endl;
        return -1;
