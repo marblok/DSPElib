@@ -26,8 +26,8 @@ namespace DSP {
         std::vector<unsigned char *> pcm_buffer;
 
         //! device number used in next open operations
-        unsigned int OutDevNo; 
-        unsigned int InDevNo;
+        int OutDevNo; 
+        int InDevNo;
 
         //! keeping track of which buffer is currently being filled
         unsigned int NextBufferOutInd;
@@ -56,6 +56,11 @@ namespace DSP {
 
         //! Has playback already started?
         bool IsPlayingNow;
+        bool StopPlayback;
+
+        //! Has recording already started?
+        bool StopRecording;
+        bool IsRecordingNow;
 
         //! just samples
         snd_pcm_uframes_t frames;
