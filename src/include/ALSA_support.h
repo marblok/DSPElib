@@ -23,7 +23,7 @@ namespace DSP {
         //! handlers
         snd_pcm_t *alsa_handle;
         snd_pcm_hw_params_t *hw_params;
-        std::vector<unsigned char> pcm_buffer;
+        std::vector<unsigned char *> pcm_buffer;
 
         //! device number used in next open operations
         unsigned int OutDevNo; 

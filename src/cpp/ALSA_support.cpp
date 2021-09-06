@@ -18,6 +18,7 @@ DSP::ALSA_object_t::ALSA_object_t()
   handle = NULL;
   alsa_handle = NULL;
   hw_params = NULL;
+  // czy w tym miejscu poowinien być zarezerwowany rozmiar wektora i wypelniony przez NULL?
   // pcm_buffer = NULL;
 
   std::string endianess;
@@ -61,7 +62,8 @@ DSP::ALSA_object_t::~ALSA_object_t()
   buffers_16bit.clear();
   buffers_32bit.clear();
   buffers_64bit.clear();
-
+  pcm_buffer.clear();
+  
 }
 
 unsigned int DSP::ALSA_object_t::select_input_device_by_number(const unsigned int &device_number)
