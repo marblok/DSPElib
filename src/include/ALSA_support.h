@@ -23,6 +23,7 @@ namespace DSP {
         //! handlers
         snd_pcm_t *alsa_handle;
         snd_pcm_hw_params_t *hw_params;
+        // czy zmienic na uint8_t, zeby utrzymac konwencje?
         std::vector<unsigned char *> pcm_buffer;
 
         //! device number used in next open operations
