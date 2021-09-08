@@ -771,20 +771,20 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
 }
 
 bool DSP::ALSA_object_t::close_PCM_device_input(void) {
-  //assert(!"DSP::ALSA_object_t::close_PCM_device_input not implemented yet");
   close_alsa_device(true);
   return true;
 }
 
 bool DSP::ALSA_object_t::close_PCM_device_output(void) {
-  //assert(!"DSP::ALSA_object_t::close_PCM_device_output not implemented yet");
   close_alsa_device(true);
   return true;
 }
 
 bool DSP::ALSA_object_t::is_device_playing(void) {
-  assert(!"DSP::ALSA_object_t::is_device_playing not implemented yet");
-  return false;
+  if (IsPlayingNow)
+    return true;
+  else
+    return false;
 }
 
 bool DSP::ALSA_object_t::is_device_recording(void) {
@@ -793,21 +793,23 @@ bool DSP::ALSA_object_t::is_device_recording(void) {
 }
 
 bool DSP::ALSA_object_t::stop_playback(void) {
-  assert(!"DSP::ALSA_object_t::stop_playback not implemented yet");
+  IsPlayingNow = false;
   return true;
 }
 
 bool DSP::ALSA_object_t::stop_recording(void) {
   assert(!"DSP::ALSA_object_t::stop_recording not implemented yet");
+  return true;
 }
 
 bool DSP::ALSA_object_t::start_recording(void) {
   assert(!"DSP::ALSA_object_t::stop_recording not implemented yet");
-  
+  return true;
 }
 
 bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType, std::vector<char> &wave_in_raw_buffer) {
   assert(!"DSP::ALSA_object_t::get_wave_in_raw_buffer not implemented yet");
+  return true;
 }
 
 snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer) {
