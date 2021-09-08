@@ -2917,18 +2917,19 @@ polling:
     ALSA_object.log_driver_data();
 
     unsigned int Fs = 44100;
-    int rs = ALSA_object.open_PCM_device_4_output(2, 16, Fs);
-    if (rs == 1) {
-      ALSA_object.close_PCM_device_output();
-    }
 
-
-    vector<int16_t> signal = test_record();
+        //vector<int16_t> signal = test_record();
     DSP::Float_vector float_signal;
-    for (auto ind=0; ind < signal.size(); ind++) {
-      float_signal[ind] = signal[ind];
+    float_signal.resize(Fs);
+    for (auto ind=0; ind < float_signal.size(); ind++) {
+      float_signal[ind] = sin(6000.0 / Fs * ind);
     }
-    test_playback(float_signal);
+
+    int rs = ALSA_object.open_PCM_device_4_output(2, 16, Fs, float_signal.size());
+
+    //test_playback(float_signal);
+    ALSA_object.append_playback_buffer(float_signal);
+    ALSA_object.close_PCM_device_output();
 
     return 0;
   } 
