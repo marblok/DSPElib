@@ -17,8 +17,6 @@ DSP::ALSA_object_t::ALSA_object_t()
 {
   alsa_handle = NULL;
   hw_params = NULL;
-  // czy w tym miejscu poowinien być zarezerwowany rozmiar wektora i wypelniony przez NULL?
-  // pcm_buffer = NULL;
 
   std::string endianess;
   endianess = system("lscpu | grep \"Byte Order\" | egrep -o 'Little Endian|Big Endian'");
@@ -406,17 +404,6 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
       }
   }
 
-  /*
-  if (rc == 0)
-  {
-      DSP::log << "End of file on input" << endl;
-      break;
-  }
-  else if (rc != size_b)
-  {
-      DSP:log << "Short read: read " << rc << " bytes" << endl;
-  }
- */
   //if (stream_type == SND_PCM_STREAM_PLAYBACK)
   // {
 
@@ -488,26 +475,6 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     rc = snd_pcm_readi(alsa_handle, pcm_buffer, frames);
     DSP::log << "Read" << endl;
 
-    if (rc == -EPIPE)
-    {
-     // EPIPE means overrun
-      DSP::log << "Underrun occurred" << endl;
-
-      snd_pcm_prepare(alsa_handle);
-    } 
-    else if (rc < 0) 
-    {
-      DSP::log << "Error from readi: " << snd_strerror(rc) << endl;
-    } 
-    else if (rc != (int)frames)
-    {
-      DSP::log << "short read, read " << rc << " frames" << endl;
-    }
-    rc = write(1, pcm_buffer, size_b);
-    if (rc != size)
-    {
-      DSP::log << "short write: wrote " << rc << "bytes" << endl;
-    }  
   }
   */
 
@@ -670,9 +637,6 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
 
   long buffer_size;
 
-  std::vector<uint8_t *> pointer8;
-  pointer8.resize(DSP::NoOfAudioOutputBuffers);
-
   while (1)
   {
     if (rc < 0)
@@ -690,39 +654,39 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
       {
             if (no_of_bytes_in_channel == 1)
             {
-                buffers_8bit[NextBufferOutInd][no_of_channels_alsa * n] = (uint8_t) float_buffer[no_of_channels_alsa * n];
+                buffers_8bit[NextBufferOutInd][no_of_channels_alsa * n] = 128 + 127 * (uint8_t) float_buffer[no_of_channels_alsa * n];
                   if (no_of_channels_alsa == 2)
-                    buffers_8bit[NextBufferOutInd][no_of_channels_alsa * n + 1] = (uint8_t) float_buffer[no_of_channels_alsa * n + 1];
+                    buffers_8bit[NextBufferOutInd][no_of_channels_alsa * n + 1] = 128 + 127 * (uint8_t) float_buffer[no_of_channels_alsa * n + 1];
 
             }
             else if (no_of_bytes_in_channel == 2)
             {
-                buffers_16bit[NextBufferOutInd][no_of_channels_alsa * n] = (int16_t) float_buffer[no_of_channels_alsa * n];
+                buffers_16bit[NextBufferOutInd][no_of_channels_alsa * n] = INT16_MAX * (int16_t) float_buffer[no_of_channels_alsa * n];
                 if (no_of_channels_alsa == 2)
-                    buffers_16bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = (int16_t) float_buffer[no_of_channels_alsa * n + 1];
+                  buffers_16bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = INT16_MAX * (int16_t) float_buffer[no_of_channels_alsa * n + 1];
 
             }
             else if (no_of_bytes_in_channel == 3)
             {
-                buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n] = (int32_t) float_buffer[no_of_channels_alsa * n];
+                buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n] = INT32_MAX * (int32_t) float_buffer[no_of_channels_alsa * n];
                 if (no_of_channels_alsa == 2)
-                    buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = (int32_t) float_buffer[no_of_channels_alsa * n + 1];  
+                  buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = INT32_MAX * (int32_t) float_buffer[no_of_channels_alsa * n + 1];  
 
             }
             else if (no_of_bytes_in_channel == 4)
             {
                 if (IsHigherQualityMode)
                 {
-                    buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n] = (int32_t) float_buffer[no_of_channels_alsa * n];
+                    buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n] = INT32_MAX * (int32_t) float_buffer[no_of_channels_alsa * n];
                     if (no_of_channels_alsa == 2)
-                        buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = (int32_t) float_buffer[no_of_channels_alsa * n + 1];
+                      buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = INT32_MAX * (int32_t) float_buffer[no_of_channels_alsa * n + 1];
 
                 }
                 else
                 {
                     buffers_32bit_f[NextBufferOutInd][no_of_channels_alsa * n] = float_buffer[no_of_channels_alsa * n];
                     if (no_of_channels_alsa == 2)
-                        buffers_32bit_f[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = float_buffer[no_of_channels_alsa * n + 1];
+                      buffers_32bit_f[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = float_buffer[no_of_channels_alsa * n + 1];
 
                 }
             }
@@ -731,7 +695,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
             {
                 buffers_64bit[NextBufferOutInd][no_of_channels_alsa * n] = float_buffer[no_of_channels_alsa * n];
                 if (no_of_channels_alsa == 2)
-                    buffers_64bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = float_buffer[no_of_channels_alsa * n + 1];
+                  buffers_64bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = float_buffer[no_of_channels_alsa * n + 1];
 
             }      
       // converting samples ends
@@ -741,35 +705,35 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
       switch (no_of_bytes_in_channel)
       {
         case 1:
-          pointer8[NextBufferOutInd] = (uint8_t *) buffers_8bit[NextBufferOutInd].data();
+          pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_8bit[NextBufferOutInd].data();
           buffer_size = (long) buffers_8bit.size();
           break;
 
         case 2:
-          pointer8[NextBufferOutInd] = (uint8_t *) buffers_16bit[NextBufferOutInd].data();
+          pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_16bit[NextBufferOutInd].data();
           buffer_size = (long) buffers_16bit.size();
           break;
     
           case 3:
-          pointer8[NextBufferOutInd] = (uint8_t *) buffers_32bit[NextBufferOutInd].data();
+          pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_32bit[NextBufferOutInd].data();
           buffer_size = (long) buffers_32bit.size();
           break;
 
         case 4:
           if (IsHigherQualityMode)
           {
-            pointer8[NextBufferOutInd] = (uint8_t *) buffers_32bit[NextBufferOutInd].data();
+            pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_32bit[NextBufferOutInd].data();
             buffer_size = (long) buffers_32bit.size();
           }
           else
           {
-            pointer8[NextBufferOutInd] = (uint8_t *) buffers_32bit_f[NextBufferOutInd].data();
+            pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_32bit_f[NextBufferOutInd].data();
             buffer_size = (long) buffers_32bit_f.size();
           }
           break;
 
         case 8:
-          pointer8[NextBufferOutInd] = (uint8_t *) buffers_64bit[NextBufferOutInd].data();
+          pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_64bit[NextBufferOutInd].data();
           buffer_size = (long) buffers_64bit.size();
           break;
 
@@ -785,7 +749,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
           // send all data from buffers to soundcard to start playback
           for (unsigned int ind = 0; ind < DSP::NoOfAudioOutputBuffers - 1; ind++) //one spare buffer
           {
-            rc = DSP::ALSA_object_t::pcm_writei(pointer8[ind]);
+            rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind]);
           }
           IsPlayingNow = true;
         }
@@ -793,7 +757,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
       }
       else
       {
-        rc = DSP::ALSA_object_t::pcm_writei(pointer8[NextBufferOutInd]);
+        rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[NextBufferOutInd]);
       }
       NextBufferOutInd++;
       NextBufferOutInd %= DSP::NoOfAudioOutputBuffers;

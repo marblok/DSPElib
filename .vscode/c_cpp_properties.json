@@ -95,7 +95,8 @@
             ],
             "defines": [
                 "LINUX",
-                "__DEBUG__=1"
+                "__DEBUG__=1",
+                "INCLUDE_DSPE_EXAMPLES"
             ],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c11",

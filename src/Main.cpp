@@ -2962,13 +2962,15 @@ int main(int argc, char*argv[])
   DSP::log << DSP::e::LogMode::pause << "Finished SolveMatrix test" << endl;
 
 #ifdef INCLUDE_DSPE_EXAMPLES
+  
+  DSP::log << "Starting test_hello" << endl;
+  test_hello();
+  DSP::log << DSP::e::LogMode::Error << "Finished test_hello" << endl;
+
   DSP::log << "Starting test_sound_input" << endl;
   test_sound_input();
   DSP::log << DSP::e::LogMode::Error << "Finished test_sound_input" << endl;
 
-  DSP::log << "Starting test_hello" << endl;
-  test_hello();
-  DSP::log << DSP::e::LogMode::Error << "Finished test_hello" << endl;
 #endif // INCLUDE_DSPE_EXAMPLES
 
   DSP::log << "Starting SymbolMapper test" << endl;
