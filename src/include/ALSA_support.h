@@ -26,15 +26,16 @@ namespace DSP {
         // czy zmienic na uint8_t, zeby utrzymac konwencje?
         std::vector<unsigned char *> pcm_buffer;
 
-        //! device number used in next open operations
-        int OutDevNo; 
-        int InDevNo;
+        //! output device number used in next open operations
+        unsigned int OutDevNo;
+        //! input device number used in next open operations 
+        unsigned int InDevNo;
 
         //! keeping track of which buffer is currently being filled
         unsigned int NextBufferOutInd;
 
         //! variables holding values ​​from the external interface
-        unsigned int sampling_rate_alsa; // M.B. lepiej korzystać z nazw oddających przeznaczenie zmiennej
+        unsigned int sampling_rate_alsa;
         unsigned int no_of_channels_alsa;
         unsigned int no_of_bytes_in_channel;
 
