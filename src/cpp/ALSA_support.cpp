@@ -717,7 +717,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
     }
     else
     {
-      DSP::log << "DSP::ALSA_object_t::append_playback_buffer" << DSP::e::LogMode::second << "Waiting for free output buffer" << endl;
+      DSP::log << "DSP::ALSA_object_t::append_playback_buffer error code is positive. Nothing to play." << endl;
       DSP::f::Sleep(0);
       IsPlayingNow = false;
     }
@@ -826,4 +826,3 @@ void DSP::ALSA_object_t::close_alsa_device(bool do_drain, bool use_log) {
   IsDeviceInputOpen = false;
   IsDeviceOutputOpen = false;
 }
-
