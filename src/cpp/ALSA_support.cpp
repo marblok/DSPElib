@@ -30,6 +30,9 @@ DSP::ALSA_object_t::ALSA_object_t()
 
   blocking_mode = false;
 
+  IsDeviceInputOpen = false;
+  IsDeviceOutputOpen = false;
+
   IsPlayingNow = false;
   StopPlayback = false;
 
@@ -65,6 +68,11 @@ DSP::ALSA_object_t::~ALSA_object_t()
   buffers_64bit.clear();
   pcm_buffer.clear();
 
+  if (IsDeviceOutputOpen)
+    close_PCM_device_input();
+  if (IsDeviceOutputOpen)
+    close_PCM_device_output();
+
 }
 
 unsigned int DSP::ALSA_object_t::select_input_device_by_number(const unsigned int &device_number)
@@ -81,14 +89,14 @@ unsigned int DSP::ALSA_object_t::select_output_device_by_number(const unsigned i
   return OutDevNo;
 }
 
-bool DSP::ALSA_object_t::is_output_callback_supported(void) 
-{
-  return false;
-}
-
 bool DSP::ALSA_object_t::is_input_callback_supported(void) 
 {
   return true;
+}
+
+bool DSP::ALSA_object_t::is_output_callback_supported(void) 
+{
+  return false;
 }
 
 void DSP::ALSA_object_t::log_driver_data() 
@@ -544,6 +552,7 @@ long DSP::ALSA_object_t::open_PCM_device_4_output(const int &no_of_channels, int
 
   if(rc > 0)
   { 
+    IsDeviceOutputOpen = true;
     return 1;
   }  
   else 
@@ -564,6 +573,7 @@ long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int 
   
   if(rc > 0)
   { 
+    IsDeviceInputOpen = true;
     return 1;
   }  
   else 
@@ -728,24 +738,20 @@ bool DSP::ALSA_object_t::close_PCM_device_output(void) {
 }
 
 bool DSP::ALSA_object_t::is_device_playing(void) {
-  if (IsPlayingNow)
-    return true;
-  else
-    return false;
+  return IsPlayingNow;  
 }
 
 bool DSP::ALSA_object_t::is_device_recording(void) {
-  assert(!"DSP::ALSA_object_t::is_device_recording not implemented yet");
-  return false;
+  return IsRecordingNow;
 }
 
 bool DSP::ALSA_object_t::stop_playback(void) {
-  IsPlayingNow = false;
+  StopPlayback = true;
   return true;
 }
 
 bool DSP::ALSA_object_t::stop_recording(void) {
-  assert(!"DSP::ALSA_object_t::stop_recording not implemented yet");
+  StopRecording = true;
   return true;
 }
 
@@ -817,5 +823,7 @@ void DSP::ALSA_object_t::close_alsa_device(bool do_drain, bool use_log) {
   {
     DSP::log << "ALSA PCM sound closed" << endl;
   }
+  IsDeviceInputOpen = false;
+  IsDeviceOutputOpen = false;
 }
 

@@ -56,6 +56,9 @@ namespace DSP {
         //! CPU architecture
         bool IsLittleEndian;
 
+        bool IsDeviceInputOpen;
+        bool IsDeviceOutputOpen;
+
         //! Has playback already started?
         bool IsPlayingNow;
         bool StopPlayback;
