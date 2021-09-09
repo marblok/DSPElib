@@ -68,7 +68,7 @@ namespace DSP {
         bool IsRecordingNow;
 
         //! just samples
-        snd_pcm_uframes_t frames;
+        snd_pcm_uframes_t audio_inbuffer_size_in_frames; // M.B. more meaningful variable name
 
         //! We always use the non-blocking mode in DSPElib
         bool blocking_mode;
@@ -86,7 +86,7 @@ namespace DSP {
         void get_period_size(snd_pcm_uframes_t &frames, unsigned int &period_time);
         
         //! playback
-        snd_pcm_sframes_t pcm_writei(const void *buffer);
+        snd_pcm_sframes_t pcm_writei(const void *buffer, const snd_pcm_uframes_t &frames); // M.B. this will be more transparent
         
         //! Set SND PCM format depending on no of bytes in channel and CPU endianness
         int set_snd_pcm_format(snd_pcm_hw_params_t *params);

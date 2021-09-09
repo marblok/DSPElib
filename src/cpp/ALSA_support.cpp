@@ -49,7 +49,7 @@ DSP::ALSA_object_t::ALSA_object_t()
   no_of_channels_alsa = 2;
   no_of_bytes_in_channel = 2;
 
-  frames = 8000;
+  audio_inbuffer_size_in_frames = 8000;
   size_b = 32;
 
 }
@@ -193,22 +193,22 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 
     snd_pcm_hw_params_set_rate_near(alsa_handle, params, &sampling_rate_alsa, &dir);
 
-    if (frames <= 0)
-      frames = 8000;
+    if (audio_inbuffer_size_in_frames <= 0)
+      audio_inbuffer_size_in_frames = 8000;
 
-    rc = snd_pcm_hw_params_set_buffer_size(alsa_handle, params, DSP::NoOfAudioOutputBuffers*frames);
+    rc = snd_pcm_hw_params_set_buffer_size(alsa_handle, params, DSP::NoOfAudioOutputBuffers*audio_inbuffer_size_in_frames);
     
-    snd_pcm_uframes_t tmp_frames = frames;
+    snd_pcm_uframes_t tmp_frames = audio_inbuffer_size_in_frames;
 
     DSP::log << "Buffer size set with error code: " << rc << endl;
 
     /*! Set period size to desired number of frames. */
-    snd_pcm_hw_params_set_period_size_near(alsa_handle, params, &frames, &dir);
+    snd_pcm_hw_params_set_period_size_near(alsa_handle, params, &audio_inbuffer_size_in_frames, &dir);
 
-    if (frames != tmp_frames)
+    if (audio_inbuffer_size_in_frames != tmp_frames)
     {
       DSP::log << "Current frames value should be equal: " << tmp_frames << endl;
-      DSP::log << "Frames is not equal to tmp_frames! Frames: " << frames << endl;    
+      DSP::log << "Frames is not equal to tmp_frames! Frames: " << audio_inbuffer_size_in_frames << endl;    
     }
     else
       DSP::log << "Frames has been set correctly." << endl;
@@ -257,8 +257,8 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     snd_pcm_hw_params_get_period_time(hw_params, &val, &dir);
     DSP::log << "period time = " << val << " us" << endl;
 
-    snd_pcm_hw_params_get_period_size(hw_params, &frames, &dir);
-    DSP::log << "period size = " << (int) frames << " frames" << endl;
+    snd_pcm_hw_params_get_period_size(hw_params, &audio_inbuffer_size_in_frames, &dir);
+    DSP::log << "period size = " << (int) audio_inbuffer_size_in_frames << " frames" << endl;
 
     snd_pcm_hw_params_get_buffer_time(hw_params, &val, &dir);
     DSP::log << "buffer time = " << val << " us" << endl;
@@ -330,7 +330,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   // Can be useful:
   // snd_pcm_hw_params_get_period_size(hw_params, &frames, &dir);
   
-   size_b = frames * no_of_channels_alsa * no_of_bytes_in_channel;
+   size_b = audio_inbuffer_size_in_frames * no_of_channels_alsa * no_of_bytes_in_channel;
 
    pcm_buffer.resize(DSP::NoOfAudioOutputBuffers);
 
@@ -546,7 +546,7 @@ long DSP::ALSA_object_t::open_PCM_device_4_output(const int &no_of_channels, int
   no_of_bytes_in_channel = (unsigned int) no_of_bits / 8;
   sampling_rate_alsa = (unsigned int) sampling_rate;
   no_of_channels_alsa = (unsigned int) no_of_channels;
-  frames = (snd_pcm_uframes_t) audio_outbuffer_size;
+  audio_inbuffer_size_in_frames = (snd_pcm_uframes_t) audio_outbuffer_size;
 
   rc = open_alsa_device(SND_PCM_STREAM_PLAYBACK);
 
@@ -567,7 +567,7 @@ long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int 
   no_of_bytes_in_channel = (unsigned int) no_of_bits / 8;
   sampling_rate_alsa = (unsigned int) sampling_rate;
   no_of_channels_alsa = (unsigned int) no_of_channels;
-  frames = (snd_pcm_uframes_t) audio_inbuffer_size;
+  audio_inbuffer_size_in_frames = (snd_pcm_uframes_t) audio_inbuffer_size;
 
   rc = open_alsa_device(SND_PCM_STREAM_CAPTURE);
   
@@ -586,7 +586,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
 {
   snd_pcm_sframes_t rc = -1;
 
-  long buffer_size;
+  snd_pcm_sframes_t buffer_size_in_frames;
 
   while (1)
   {
@@ -613,9 +613,9 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
             }
             else if (no_of_bytes_in_channel == 2)
             {
-                buffers_16bit[NextBufferOutInd][no_of_channels_alsa * n] = INT16_MAX * (int16_t) float_buffer[no_of_channels_alsa * n];
+                buffers_16bit[NextBufferOutInd][no_of_channels_alsa * n] = int16_t(INT16_MAX * float_buffer[no_of_channels_alsa * n]);
                 if (no_of_channels_alsa == 2)
-                  buffers_16bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = INT16_MAX * (int16_t) float_buffer[no_of_channels_alsa * n + 1];
+                  buffers_16bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = int16_t(INT16_MAX * float_buffer[no_of_channels_alsa * n + 1]);
 
             }
             else if (no_of_bytes_in_channel == 3)
@@ -658,39 +658,39 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
       {
         case 1:
           pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_8bit[NextBufferOutInd].data();
-          buffer_size = (long) buffers_8bit.size();
+          buffer_size_in_frames = (long) buffers_8bit.size();
           break;
 
         case 2:
           pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_16bit[NextBufferOutInd].data();
-          buffer_size = (long) buffers_16bit.size();
+          buffer_size_in_frames = (long) buffers_16bit[NextBufferOutInd].size() / no_of_channels_alsa; // buffer_size_in_frames should also be a vector since this value is not always used in this call and might be needed in the future
           break;
     
           case 3:
           pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_32bit[NextBufferOutInd].data();
-          buffer_size = (long) buffers_32bit.size();
+          buffer_size_in_frames = (long) buffers_32bit.size();
           break;
 
         case 4:
           if (IsHigherQualityMode)
           {
             pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_32bit[NextBufferOutInd].data();
-            buffer_size = (long) buffers_32bit.size();
+            buffer_size_in_frames = (long) buffers_32bit.size();
           }
           else
           {
             pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_32bit_f[NextBufferOutInd].data();
-            buffer_size = (long) buffers_32bit_f.size();
+            buffer_size_in_frames = (long) buffers_32bit_f.size();
           }
           break;
 
         case 8:
           pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_64bit[NextBufferOutInd].data();
-          buffer_size = (long) buffers_64bit.size();
+          buffer_size_in_frames = (long) buffers_64bit.size();
           break;
 
         default:
-          buffer_size = (long) size_b;
+          buffer_size_in_frames = (long) size_b;
           break;
       }
 
@@ -701,14 +701,14 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
           // send all data from buffers to soundcard to start playback
           for (unsigned int ind = 0; ind < DSP::NoOfAudioOutputBuffers - 1; ind++) //one spare buffer
           {
-            rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind]);
+            rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind], buffer_size_in_frames);
           }
           IsPlayingNow = true;
         }
       }
       else
       {
-        rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[NextBufferOutInd]);
+        rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[NextBufferOutInd], buffer_size_in_frames);
       }
       NextBufferOutInd++;
       NextBufferOutInd %= DSP::NoOfAudioOutputBuffers;
@@ -724,7 +724,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
   // end of main loop
   }
   
-  return buffer_size;
+  return buffer_size_in_frames;
 }
 
 bool DSP::ALSA_object_t::close_PCM_device_input(void) {
@@ -733,6 +733,7 @@ bool DSP::ALSA_object_t::close_PCM_device_input(void) {
 }
 
 bool DSP::ALSA_object_t::close_PCM_device_output(void) {
+  //! \todo if IsPlayingNow == false first do pcm_writei on all already filled appended buffers (check also in WMM)
   close_alsa_device(true);
   return true;
 }
@@ -765,7 +766,7 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
   return true;
 }
 
-snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer) {
+snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_pcm_uframes_t &frames) {
 
   int rc = -EAGAIN;
   
