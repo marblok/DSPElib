@@ -606,9 +606,9 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
       {
             if (no_of_bytes_in_channel == 1)
             {
-                buffers_8bit[NextBufferOutInd][no_of_channels_alsa * n] = 128 + 127 * (uint8_t) float_buffer[no_of_channels_alsa * n];
+                buffers_8bit[NextBufferOutInd][no_of_channels_alsa * n] = uint8_t(128 + 127 * float_buffer[no_of_channels_alsa * n]);
                   if (no_of_channels_alsa == 2)
-                    buffers_8bit[NextBufferOutInd][no_of_channels_alsa * n + 1] = 128 + 127 * (uint8_t) float_buffer[no_of_channels_alsa * n + 1];
+                    buffers_8bit[NextBufferOutInd][no_of_channels_alsa * n + 1] = uint8_t(128 + 127 * float_buffer[no_of_channels_alsa * n + 1]);
 
             }
             else if (no_of_bytes_in_channel == 2)
@@ -620,18 +620,18 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
             }
             else if (no_of_bytes_in_channel == 3)
             {
-                buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n] = INT32_MAX * (int32_t) float_buffer[no_of_channels_alsa * n];
+                buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n] = int32_t(INT32_MAX * float_buffer[no_of_channels_alsa * n]);
                 if (no_of_channels_alsa == 2)
-                  buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = INT32_MAX * (int32_t) float_buffer[no_of_channels_alsa * n + 1];  
+                  buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = int32_t(INT32_MAX * float_buffer[no_of_channels_alsa * n + 1]);  
 
             }
             else if (no_of_bytes_in_channel == 4)
             {
                 if (IsHigherQualityMode)
                 {
-                    buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n] = INT32_MAX * (int32_t) float_buffer[no_of_channels_alsa * n];
+                    buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n] = int32_t(INT32_MAX * float_buffer[no_of_channels_alsa * n]);
                     if (no_of_channels_alsa == 2)
-                      buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = INT32_MAX * (int32_t) float_buffer[no_of_channels_alsa * n + 1];
+                      buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = int32_t(INT32_MAX * float_buffer[no_of_channels_alsa * n + 1]);
 
                 }
                 else
