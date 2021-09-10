@@ -281,9 +281,9 @@ bool DSP::ALSA_object_t::close_PCM_device_input(void) {
   return true;
 }
 
-bool DSP::ALSA_object_t::close_PCM_device_output(void) {
+bool DSP::ALSA_object_t::close_PCM_device_output(bool do_drain) {
   assert(!"DSP::ALSA_object_t::close_PCM_device_output not implemented yet");
-  close_alsa_device(true);
+  close_alsa_device(do_drain);
   return true;
 }
 

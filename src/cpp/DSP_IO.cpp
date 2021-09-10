@@ -4179,7 +4179,7 @@ DSP::u::AudioOutput::~AudioOutput()
   { // if device was opened successfully
     snd_object.stop_playback();
 
-    snd_object.close_PCM_device_output();
+    snd_object.close_PCM_device_output(true);
 
     // #ifdef WINMMAPI
     //   result = waveOutReset(hWaveOut);
