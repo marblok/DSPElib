@@ -30,7 +30,7 @@ DSP::WMM_object_t::~WMM_object_t()
     close_PCM_device_input();
   }
   if (is_device_output_open) {
-    close_PCM_device_output();
+    close_PCM_device_output(true);
   }
 
 }
@@ -139,7 +139,21 @@ unsigned int DSP::WMM_object_t::select_input_device_by_number(const unsigned int
 
 bool DSP::WMM_object_t::stop_playback(void) {
   StopPlayback = true;
-  //! \TODO can we do more ?
+
+  // if there are still buffers that haven't been yet sent to sound card then do it now
+  if (IsPlayingNow == false)
+  {
+    if (NextBufferOutInd == DSP::NoOfAudioOutputBuffers - 2) //all but one spare buffer are filled up
+    { // send all data from buffers to soundcard to start playback
+      for (unsigned int ind=0; ind < DSP::NoOfAudioOutputBuffers-1; ind++) //one spare buffer
+      {
+        result=waveOutWrite(hWaveOut,
+          &(waveHeaderOut[ind]), sizeof(WAVEHDR));
+        DSP::f::AudioCheckError(result);
+      }
+      IsPlayingNow = true;
+    }
+  }
 
   return true;
 }
@@ -269,7 +283,7 @@ long DSP::WMM_object_t::open_PCM_device_4_output(const int &no_of_channels, int 
   if (is_device_output_open)
   {
     DSP::log << "DSP::WMM_object_t::open_PCM_device_4_output" << DSP::e::LogMode::second << "Device has been already opened: closing device before reopening" << endl;
-    close_PCM_device_output();
+    close_PCM_device_output(false);
   }
 
   switch (no_of_bits)
@@ -390,7 +404,28 @@ bool DSP::WMM_object_t::close_PCM_device_input(void) {
   return true;
 }
 
-bool DSP::WMM_object_t::close_PCM_device_output(void) {
+bool DSP::WMM_object_t::close_PCM_device_output(const bool &do_drain) {
+  stop_playback(); // just to be sure that all prepared buffershave been sent to sound card
+
+  if (do_drain == true) {
+    bool still_playing = true;
+    while (still_playing) {
+      int counter = 0;
+      for (unsigned int ind=0; ind < DSP::NoOfAudioOutputBuffers; ind++) //one spare buffer
+      {
+        if (waveHeaderOut[NextBufferOutInd].dwFlags & WHDR_DONE)
+          counter++;
+      }
+      if (counter == DSP::NoOfAudioOutputBuffers) {
+        still_playing = false;
+      }
+      else {
+        // let system process others and then check again
+        DSP::f::Sleep(0);
+      }
+    }
+  }
+
   result = waveOutReset(hWaveOut);
   DSP::f::AudioCheckError(result);
   

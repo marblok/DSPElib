@@ -83,8 +83,9 @@ namespace DSP {
         //! opens default PCM device for capture and returns selected sampling rate on success or negative error code
         long open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_inbuffer_size = -1);
 
+
         bool close_PCM_device_input(void);
-        bool close_PCM_device_output(void);
+        bool close_PCM_device_output(const bool &do_drain);
 
         bool stop_playback(void);
         bool stop_recording(void);

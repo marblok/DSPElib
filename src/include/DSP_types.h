@@ -573,11 +573,16 @@ namespace DSP {
       //! audio_inbuffer_size is in samples (note that, for example, sample for 16bit stereo is represented by 4bytes)
       virtual long open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_inbuffer_size = -1) = 0;
       virtual bool close_PCM_device_input(void) = 0;
-      virtual bool close_PCM_device_output(void) = 0;
+      //! close sound card output
+      /*! if do_drain == true wait until sound card stops playing 
+       */ 
+      virtual bool close_PCM_device_output(const bool &do_drain) = 0;
 
       //! returns true is the playback is on
       virtual bool is_device_playing(void) = 0;
       //! initializes playback stopping
+      /*! If there are still buffers that haven't been yet sent to sound card then do it now
+       */
       virtual bool stop_playback(void) = 0;
       //! returns true is the sound capture is on
       virtual bool is_device_recording(void) = 0;
