@@ -405,7 +405,6 @@ bool DSP::WMM_object_t::close_PCM_device_input(void) {
 }
 
 bool DSP::WMM_object_t::close_PCM_device_output(const bool &do_drain) {
-  bool DSP::WMM_object_t::close_PCM_device_output(const bool &do_drain) {
   stop_playback(); // just to be sure that all prepared buffershave been sent to sound card
 
   if (do_drain == true) {

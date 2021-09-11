@@ -39,6 +39,8 @@ DSP::ALSA_object_t::ALSA_object_t()
   StopRecording = false;
   IsRecordingNow = false;
 
+  IsBufferPrepared = false;
+
   OutDevNo = 1;
   InDevNo = 1;
 
@@ -592,6 +594,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
   {
     if (rc < 0)
     {
+      IsBufferPrepared = true;
       for (unsigned int m = 0; m < float_buffer.size(); m++)
       {
         if (float_buffer[m] < -1)
@@ -658,39 +661,39 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
       {
         case 1:
           pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_8bit[NextBufferOutInd].data();
-          buffer_size_in_frames = (long) buffers_8bit.size();
+          buffer_size_in_frames = (snd_pcm_sframes_t) buffers_8bit.size();
           break;
 
         case 2:
           pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_16bit[NextBufferOutInd].data();
-          buffer_size_in_frames = (long) buffers_16bit[NextBufferOutInd].size() / no_of_channels_alsa; // buffer_size_in_frames should also be a vector since this value is not always used in this call and might be needed in the future
+          buffer_size_in_frames = (snd_pcm_sframes_t) buffers_16bit[NextBufferOutInd].size() / no_of_channels_alsa; // buffer_size_in_frames should also be a vector since this value is not always used in this call and might be needed in the future
           break;
     
           case 3:
           pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_32bit[NextBufferOutInd].data();
-          buffer_size_in_frames = (long) buffers_32bit.size();
+          buffer_size_in_frames = (snd_pcm_sframes_t) buffers_32bit.size();
           break;
 
         case 4:
           if (IsHigherQualityMode)
           {
             pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_32bit[NextBufferOutInd].data();
-            buffer_size_in_frames = (long) buffers_32bit.size();
+            buffer_size_in_frames = (snd_pcm_sframes_t) buffers_32bit.size();
           }
           else
           {
             pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_32bit_f[NextBufferOutInd].data();
-            buffer_size_in_frames = (long) buffers_32bit_f.size();
+            buffer_size_in_frames = (snd_pcm_sframes_t) buffers_32bit_f.size();
           }
           break;
 
         case 8:
           pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_64bit[NextBufferOutInd].data();
-          buffer_size_in_frames = (long) buffers_64bit.size();
+          buffer_size_in_frames = (snd_pcm_sframes_t) buffers_64bit.size();
           break;
 
         default:
-          buffer_size_in_frames = (long) size_b;
+          buffer_size_in_frames = (snd_pcm_sframes_t) size_b;
           break;
       }
 
@@ -734,6 +737,27 @@ bool DSP::ALSA_object_t::close_PCM_device_input(void) {
 
 bool DSP::ALSA_object_t::close_PCM_device_output(bool do_drain) {
   //! \todo if IsPlayingNow == false first do pcm_writei on all already filled appended buffers (check also in WMM)
+  stop_playback(); // just to be sure that all prepared buffershave been sent to sound card
+
+  if (do_drain == true) {
+    bool still_playing = true;
+    while (still_playing) {
+      int counter = 0;
+      for (unsigned int ind = 0; ind < DSP::NoOfAudioOutputBuffers; ind++) //one spare buffer
+      {
+        if (IsBufferPrepared)
+          counter++;
+      }
+      if (counter == DSP::NoOfAudioOutputBuffers) {
+        still_playing = false;
+      }
+      else {
+        // let system process others and then check again
+        DSP::f::Sleep(0);
+      }
+    }
+  }
+
   close_alsa_device(do_drain);
   return true;
 }
@@ -748,6 +772,23 @@ bool DSP::ALSA_object_t::is_device_recording(void) {
 
 bool DSP::ALSA_object_t::stop_playback(void) {
   StopPlayback = true;
+
+  snd_pcm_sframes_t rc; 
+  snd_pcm_sframes_t buffer_size_in_frames = (snd_pcm_sframes_t) pcm_buffer.size();
+
+  // if there are still buffers that haven't been yet sent to sound card then do it now
+  if (IsPlayingNow == false)
+  {
+    if (NextBufferOutInd == DSP::NoOfAudioOutputBuffers - 2) //all but one spare buffer are filled up
+    { // send all data from buffers to soundcard to start playback
+      for (unsigned int ind = 0; ind < DSP::NoOfAudioOutputBuffers - 1; ind++) //one spare buffer
+      {
+        snd_pcm_sframes_t rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind], buffer_size_in_frames);
+      }
+      IsPlayingNow = true;
+    }
+  }
+
   return true;
 }
 
@@ -777,6 +818,7 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_p
     DSP::f::Sleep(10);
   }
     DSP::log << "Wrote" << endl;
+    IsBufferPrepared = false;
     
     if (rc == -EPIPE)
     {

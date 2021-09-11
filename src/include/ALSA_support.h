@@ -67,6 +67,8 @@ namespace DSP {
         bool StopRecording;
         bool IsRecordingNow;
 
+        bool IsBufferPrepared;
+
         //! just samples
         snd_pcm_uframes_t audio_inbuffer_size_in_frames; // M.B. more meaningful variable name
 
