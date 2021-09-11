@@ -732,9 +732,9 @@ bool DSP::ALSA_object_t::close_PCM_device_input(void) {
   return true;
 }
 
-bool DSP::ALSA_object_t::close_PCM_device_output(void) {
+bool DSP::ALSA_object_t::close_PCM_device_output(bool do_drain) {
   //! \todo if IsPlayingNow == false first do pcm_writei on all already filled appended buffers (check also in WMM)
-  close_alsa_device(true);
+  close_alsa_device(do_drain);
   return true;
 }
 

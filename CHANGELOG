@@ -6,6 +6,9 @@ TODO::
 LAST DONE:
 
 CHANGES:
+- ver. 0.20.009 - <b>2021.09.10</b> Changed: 
+  - Fixed: DSP::WMM_object_t and DSP::SOUND_object_t now send to sound card all pending data and wait for finish before closing
+
 - ver. 0.20.008 - <b>2021.05.16</b> Changed: 
   - Added SOUND_object_t::get_wave_in_raw_buffer for non-callback input operations
   - DSP::u::AudioInput now falls back to non-callback mode if SOUND_object_t doesn't support callbacks

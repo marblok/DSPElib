@@ -106,7 +106,7 @@ namespace DSP {
         
         //! Closes PCM device
         bool close_PCM_device_input(void);
-        bool close_PCM_device_output(void);
+        bool close_PCM_device_output(const bool &do_drain);
 
         //! Returns true is the playback is on
         bool is_device_playing(void);
