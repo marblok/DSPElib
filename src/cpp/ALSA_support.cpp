@@ -706,9 +706,11 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
           {
             rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind], buffer_size_in_frames);
             
-            while (rc > 0 && rc != buffer_size_in_frames)
+            while (rc >= 0 && rc != buffer_size_in_frames)
             {
-              *pcm_buffer[ind] += (uint8_t) (buffer_size_in_frames - rc);
+              snd_pcm_sframes_t current_frames = rc;
+              current_frames *= no_of_bytes_in_channel*no_of_channels_alsa;
+              pcm_buffer[ind] += (uint8_t) current_frames;
               DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind], buffer_size_in_frames - rc);
             }
           }
