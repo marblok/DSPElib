@@ -2772,7 +2772,7 @@ int test_ZPSTC_cw_3()
     }
 
     //ALSA_object.close_alsa_device(true); //snd_pcm_close(alsa_handle);
-    ALSA_object.close_PCM_device_output(); 
+    ALSA_object.close_PCM_device_output(true); 
     //free(buffer);
 
     return 0;
@@ -2939,7 +2939,7 @@ polling:
     ALSA_object.append_playback_buffer(float_signal); // M.B. dopiero to wywołanie spowoduje faktyczne przesłanie danych do karty dźwiękowej
     ALSA_object.append_playback_buffer(float_signal); 
     ALSA_object.append_playback_buffer(float_signal);
-    ALSA_object.close_PCM_device_output(); 
+    ALSA_object.close_PCM_device_output(true); 
 
     return 0;
   } 

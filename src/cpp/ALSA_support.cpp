@@ -73,7 +73,7 @@ DSP::ALSA_object_t::~ALSA_object_t()
   if (IsDeviceOutputOpen)
     close_PCM_device_input();
   if (IsDeviceOutputOpen)
-    close_PCM_device_output();
+    close_PCM_device_output(true);
 
 }
 
@@ -709,7 +709,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
             while (rc >= 0 && rc != buffer_size_in_frames)
             {
               snd_pcm_sframes_t current_frames = rc;
-              current_frames *= no_of_bytes_in_channel*no_of_channels_alsa;
+              current_frames *= no_of_bytes_in_channel * no_of_channels_alsa;
               pcm_buffer[ind] += (uint8_t) current_frames;
               DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind], buffer_size_in_frames - rc);
             }
@@ -744,7 +744,7 @@ bool DSP::ALSA_object_t::close_PCM_device_input(void) {
   return true;
 }
 
-bool DSP::ALSA_object_t::close_PCM_device_output(bool do_drain) {
+bool DSP::ALSA_object_t::close_PCM_device_output(const bool &do_drain) {
   //! \todo if IsPlayingNow == false first do pcm_writei on all already filled appended buffers (check also in WMM)
   stop_playback(); // just to be sure that all prepared buffershave been sent to sound card
 
@@ -829,8 +829,7 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
 
 snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_pcm_uframes_t &frames) {
 
-  int rc = -EAGAIN;
-  snd_pcm_sframes_t err;
+  snd_pcm_sframes_t rc = -EAGAIN;
   
   while (rc == -EAGAIN)
   {
@@ -851,14 +850,12 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_p
     else if (rc < 0)
     {
       DSP::log << "Error from writei: " << snd_strerror(rc) << endl;
-      err = (snd_pcm_sframes_t) rc;
-      return err;
+      return rc;
     }
     else if (rc != (int)frames)
     {
       DSP::log << "short write, write " << rc << " frames" << endl;
-      err = (snd_pcm_sframes_t) rc;
-      return err;
+      return rc;
     }
   
     DSP::log << "The end of the playback" << endl;
