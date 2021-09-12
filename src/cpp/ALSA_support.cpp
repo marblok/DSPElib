@@ -739,20 +739,23 @@ bool DSP::ALSA_object_t::close_PCM_device_output(bool do_drain) {
   //! \todo if IsPlayingNow == false first do pcm_writei on all already filled appended buffers (check also in WMM)
   stop_playback(); // just to be sure that all prepared buffershave been sent to sound card
 
-  if (do_drain == true) {
+  if (do_drain == true)
+  {
     bool still_playing = true;
-    while (still_playing) {
+    while (still_playing)
+    {
       int counter = 0;
       for (unsigned int ind = 0; ind < DSP::NoOfAudioOutputBuffers; ind++) //one spare buffer
       {
         if (IsBufferPrepared)
           counter++;
       }
+
       if (counter == DSP::NoOfAudioOutputBuffers) {
         still_playing = false;
       }
-      else {
-        // let system process others and then check again
+      else 
+      { // let system process others and then check again
         DSP::f::Sleep(0);
       }
     }
@@ -783,9 +786,10 @@ bool DSP::ALSA_object_t::stop_playback(void) {
     { // send all data from buffers to soundcard to start playback
       for (unsigned int ind = 0; ind < DSP::NoOfAudioOutputBuffers - 1; ind++) //one spare buffer
       {
-        snd_pcm_sframes_t rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind], buffer_size_in_frames);
+        rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind], buffer_size_in_frames);
       }
-      IsPlayingNow = true;
+      if (rc > 0)
+        IsPlayingNow = true;
     }
   }
 
