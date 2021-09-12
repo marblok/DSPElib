@@ -705,7 +705,14 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
           for (unsigned int ind = 0; ind < DSP::NoOfAudioOutputBuffers - 1; ind++) //one spare buffer
           {
             rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind], buffer_size_in_frames);
+            
+            while (rc > 0 && rc != buffer_size_in_frames)
+            {
+              *pcm_buffer[ind] += (uint8_t) (buffer_size_in_frames - rc);
+              DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind], buffer_size_in_frames - rc);
+            }
           }
+
           IsPlayingNow = true;
         }
       }
@@ -790,6 +797,13 @@ bool DSP::ALSA_object_t::stop_playback(void) {
       }
       if (rc > 0)
         IsPlayingNow = true;
+      /* necessary?
+      else
+      {
+        DSP::f::Sleep(0);
+        close_PCM_device_output(true);
+      }
+      */
     }
   }
 
@@ -835,11 +849,12 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_p
     {
       DSP::log << "Error from writei: " << snd_strerror(rc) << endl;
       snd_pcm_sframes_t err = (snd_pcm_sframes_t) rc;
-      return rc;
+      return err;
     }
     else if (rc != (int)frames)
     {
       DSP::log << "short write, write " << rc << " frames" << endl;
+      return rc;
     }
   
     DSP::log << "The end of the playback" << endl;
