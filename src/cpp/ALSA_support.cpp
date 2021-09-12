@@ -828,6 +828,7 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
 snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_pcm_uframes_t &frames) {
 
   int rc = -EAGAIN;
+  snd_pcm_sframes_t err;
   
   while (rc == -EAGAIN)
   {
@@ -848,13 +849,14 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_p
     else if (rc < 0)
     {
       DSP::log << "Error from writei: " << snd_strerror(rc) << endl;
-      snd_pcm_sframes_t err = (snd_pcm_sframes_t) rc;
+      err = (snd_pcm_sframes_t) rc;
       return err;
     }
     else if (rc != (int)frames)
     {
       DSP::log << "short write, write " << rc << " frames" << endl;
-      return rc;
+      err = (snd_pcm_sframes_t) rc;
+      return err;
     }
   
     DSP::log << "The end of the playback" << endl;
