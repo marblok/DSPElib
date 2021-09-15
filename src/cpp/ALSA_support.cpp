@@ -334,7 +334,9 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   
    size_b = audio_inbuffer_size_in_frames * no_of_channels_alsa * no_of_bytes_in_channel;
 
+
    pcm_buffer.resize(DSP::NoOfAudioOutputBuffers);
+   pcm_buffer_size_in_frames.resize(DSP::NoOfAudioOutputBuffers);
 
    switch (no_of_bytes_in_channel)
    {
@@ -355,6 +357,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
         {
            buffers_16bit[ind].resize(size_b / no_of_bytes_in_channel);
            pcm_buffer[ind] = (unsigned char *)(buffers_16bit[ind].data());
+           pcm_buffer_size_in_frames[ind] = (snd_pcm_sframes_t) buffers_16bit[ind].size() / no_of_channels_alsa; // buffer_size_in_frames should also be a vector since this value is not always used in this call and might be needed in the future
         }
         break;
 
@@ -657,45 +660,45 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
       }
 
       // set the pointer to the right buffer and store the buffer size
-      switch (no_of_bytes_in_channel)
-      {
-        case 1:
-          pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_8bit[NextBufferOutInd].data();
-          buffer_size_in_frames = (snd_pcm_sframes_t) buffers_8bit.size();
-          break;
+      // switch (no_of_bytes_in_channel)
+      // {
+      //   case 1:
+      //     pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_8bit[NextBufferOutInd].data();
+      //     buffer_size_in_frames = (snd_pcm_sframes_t) buffers_8bit.size();
+      //     break;
 
-        case 2:
-          pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_16bit[NextBufferOutInd].data();
-          buffer_size_in_frames = (snd_pcm_sframes_t) buffers_16bit[NextBufferOutInd].size() / no_of_channels_alsa; // buffer_size_in_frames should also be a vector since this value is not always used in this call and might be needed in the future
-          break;
+      //   case 2:
+      //     pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_16bit[NextBufferOutInd].data();
+      //     buffer_size_in_frames = (snd_pcm_sframes_t) buffers_16bit[NextBufferOutInd].size() / no_of_channels_alsa; // buffer_size_in_frames should also be a vector since this value is not always used in this call and might be needed in the future
+      //     break;
     
-          case 3:
-          pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_32bit[NextBufferOutInd].data();
-          buffer_size_in_frames = (snd_pcm_sframes_t) buffers_32bit.size();
-          break;
+      //     case 3:
+      //     pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_32bit[NextBufferOutInd].data();
+      //     buffer_size_in_frames = (snd_pcm_sframes_t) buffers_32bit.size();
+      //     break;
 
-        case 4:
-          if (IsHigherQualityMode)
-          {
-            pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_32bit[NextBufferOutInd].data();
-            buffer_size_in_frames = (snd_pcm_sframes_t) buffers_32bit.size();
-          }
-          else
-          {
-            pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_32bit_f[NextBufferOutInd].data();
-            buffer_size_in_frames = (snd_pcm_sframes_t) buffers_32bit_f.size();
-          }
-          break;
+      //   case 4:
+      //     if (IsHigherQualityMode)
+      //     {
+      //       pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_32bit[NextBufferOutInd].data();
+      //       buffer_size_in_frames = (snd_pcm_sframes_t) buffers_32bit.size();
+      //     }
+      //     else
+      //     {
+      //       pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_32bit_f[NextBufferOutInd].data();
+      //       buffer_size_in_frames = (snd_pcm_sframes_t) buffers_32bit_f.size();
+      //     }
+      //     break;
 
-        case 8:
-          pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_64bit[NextBufferOutInd].data();
-          buffer_size_in_frames = (snd_pcm_sframes_t) buffers_64bit.size();
-          break;
+      //   case 8:
+      //     pcm_buffer[NextBufferOutInd] = (uint8_t *) buffers_64bit[NextBufferOutInd].data();
+      //     buffer_size_in_frames = (snd_pcm_sframes_t) buffers_64bit.size();
+      //     break;
 
-        default:
-          buffer_size_in_frames = (snd_pcm_sframes_t) size_b;
-          break;
-      }
+      //   default:
+      //     buffer_size_in_frames = (snd_pcm_sframes_t) size_b;
+      //     break;
+      // }
 
       if (IsPlayingNow == false)
       {
@@ -704,14 +707,17 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
           // send all data from buffers to soundcard to start playback
           for (unsigned int ind = 0; ind < DSP::NoOfAudioOutputBuffers - 1; ind++) //one spare buffer
           {
+            buffer_size_in_frames = pcm_buffer_size_in_frames[ind];
             rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind], buffer_size_in_frames);
             
             while (rc >= 0 && rc != buffer_size_in_frames)
             {
-              snd_pcm_sframes_t current_frames = rc;
-              current_frames *= no_of_bytes_in_channel * no_of_channels_alsa;
-              pcm_buffer[ind] += (uint8_t) current_frames;
-              DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind], buffer_size_in_frames - rc);
+              snd_pcm_sframes_t current_frames = rc * no_of_bytes_in_channel * no_of_channels_alsa;
+              // current_frames *= no_of_bytes_in_channel * no_of_channels_alsa;
+              // pcm_buffer[ind] += (uint8_t) current_frames;
+              buffer_size_in_frames -= rc;
+              rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind] + (uint8_t) current_frames, buffer_size_in_frames);
+              DSP::log << "Short write. Current rc = " << rc << "." << endl;
             }
           }
 
@@ -837,30 +843,30 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_p
     DSP::log << "EAGAIN occured. Waiting for free buffer." << endl;
     DSP::f::Sleep(10);
   }
-    DSP::log << "Wrote" << endl;
-    IsBufferPrepared = false;
+  DSP::log << "Wrote" << endl;
+  IsBufferPrepared = false;
     
-    if (rc == -EPIPE)
-    {
-        // EPIPE means underrun
-        DSP::log << "Underrun occurred" << endl;
-        snd_pcm_prepare(alsa_handle);
+  if (rc == -EPIPE)
+  {
+    // EPIPE means underrun
+    DSP::log << "Underrun occurred" << endl;
+    snd_pcm_prepare(alsa_handle);
 
-    }
-    else if (rc < 0)
-    {
-      DSP::log << "Error from writei: " << snd_strerror(rc) << endl;
-      return rc;
-    }
-    else if (rc != (int)frames)
-    {
-      DSP::log << "short write, write " << rc << " frames" << endl;
-      return rc;
-    }
-  
-    DSP::log << "The end of the playback" << endl;
+  }
+  else if (rc < 0)
+  {
+    DSP::log << "Error from writei: " << snd_strerror(rc) << endl;
+    return rc;
+  }
+  else if (rc != (int)frames)
+  {
+    DSP::log << "short write, write " << rc << " frames" << endl;
+    return rc;
+  }
 
-  return 1;
+  DSP::log << "The end of the playback" << endl;
+
+  return rc;
 }
 
 void DSP::ALSA_object_t::close_alsa_device(bool do_drain, bool use_log) {
