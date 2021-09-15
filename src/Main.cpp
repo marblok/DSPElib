@@ -2954,7 +2954,6 @@ int main(int argc, char*argv[])
   #ifdef ALSA_support_H
     DSP::log << "test ALSA" << endl;
     test_ALSA();
-    return 0;
   #endif // ALSA_support_H
 
   DSP::log << "test DSP::log" << endl;
