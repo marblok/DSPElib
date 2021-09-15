@@ -25,7 +25,11 @@ int test_hello(void)
  
   MasterClock=DSP::Clock::CreateMasterClock();
 
+#ifndef INCLUDE_DSPE_EXAMPLES
   DSP::u::WaveInput AudioIn(MasterClock, "DSPElib.wav", ".");
+#else
+  DSP::u::WaveInput AudioIn(MasterClock, "DSPElib.wav", "../examples");
+#endif // INCLUDE_DSPE_EXAMPLES
   Fp = AudioIn.GetSamplingRate();
 
   DSP::u::AudioOutput AudioOut(Fp);
