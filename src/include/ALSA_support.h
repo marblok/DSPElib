@@ -23,7 +23,7 @@ namespace DSP {
         //! handlers
         snd_pcm_t *alsa_handle;
         snd_pcm_hw_params_t *hw_params;
-        // czy zmienic na uint8_t, zeby utrzymac konwencje?
+    
         std::vector<uint8_t *> pcm_buffer;
         std::vector<snd_pcm_sframes_t> pcm_buffer_size_in_frames;
 
@@ -40,16 +40,15 @@ namespace DSP {
         unsigned int no_of_channels_alsa;
         unsigned int no_of_bytes_in_channel;
 
+        /*! It is better to use STD containers - they are more convenient, 
+            and they mean fewer problems with memory leaks.
+        */
         //! buffers depending on samples type
         std::vector<std::vector<uint8_t>> buffers_8bit; 
         std::vector<std::vector<int16_t>> buffers_16bit;
         std::vector<std::vector<int32_t>> buffers_32bit;
         std::vector<std::vector<float>> buffers_32bit_f;
         std::vector<std::vector<double>> buffers_64bit;
-
-        /*! It is better to use STD containers - they are more convenient, 
-            and they mean fewer problems with memory leaks.
-        */
         
         //! samples are integers rather than float values  
         bool IsHigherQualityMode;
