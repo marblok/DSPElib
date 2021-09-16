@@ -662,6 +662,8 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
       {
         if (NextBufferOutInd == DSP::NoOfAudioOutputBuffers - 2) //all but one spare buffer are filled up
         { 
+          snd_pcm_prepare(alsa_handle); // M.B. solves underrun problem after filling ALSA buffer
+
           // send all data from buffers to soundcard to start playback
           for (unsigned int ind = 0; ind < DSP::NoOfAudioOutputBuffers - 1; ind++) //one spare buffer
           {
@@ -678,6 +680,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
           }
 
           IsPlayingNow = true;
+          //DSP::log << "IsPlayingNow set to true" << endl;
         }
 
       }
@@ -744,7 +747,7 @@ bool DSP::ALSA_object_t::stop_playback(void)
   StopPlayback = true;
 
   snd_pcm_sframes_t rc; 
-  snd_pcm_sframes_t buffer_size_in_frames = (snd_pcm_sframes_t) pcm_buffer.size();
+  snd_pcm_sframes_t buffer_size_in_frames = (snd_pcm_sframes_t) pcm_buffer.size(); // M.B. wrong value 
 
   // if there are still buffers that haven't been yet sent to sound card then do it now
   if (IsPlayingNow == false)
@@ -753,7 +756,7 @@ bool DSP::ALSA_object_t::stop_playback(void)
     { // send all data from buffers to soundcard to start playback
       for (unsigned int ind = 0; ind < NextBufferOutInd; ind++) //one spare buffer
       {
-        rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind], buffer_size_in_frames);
+        rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind], buffer_size_in_frames);  // M.B. pcm_writei does not process short write - this code is ok, pcm_writei needs corrections
       }
       if (rc > 0)
         IsPlayingNow = true;
@@ -788,18 +791,20 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_p
   while (rc == -EAGAIN)
   {
     rc = snd_pcm_writei(alsa_handle, buffer, frames);
-    DSP::log << "EAGAIN occured. Waiting for free buffer." << endl;
-    DSP::f::Sleep(10);
+    if (rc == -EAGAIN) { // M.B. otherwise initial write even if it is ok will be logged as failed
+      DSP::log << "EAGAIN occured. Waiting for free buffer." << endl;
+      DSP::f::Sleep(0);
+    }
   }
 
-  DSP::log << "Wrote" << endl;
+  //DSP::log << "Wrote" << endl;
     
   if (rc == -EPIPE)
   {
     // EPIPE means underrun
     DSP::log << "Underrun occurred" << endl;
     snd_pcm_prepare(alsa_handle);
-
+    pcm_writei(buffer, frames); // M.B. write failed - reset and try again; todo: do it internally without recurence 
   }
 
   else if (rc < 0)
@@ -814,7 +819,7 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_p
     return rc;
   }
 
-  DSP::log << "The end of the playback" << endl;
+  // DSP::log << "The end of the playback" << endl;
 
   return rc;
 }
