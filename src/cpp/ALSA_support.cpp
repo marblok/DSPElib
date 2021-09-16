@@ -334,7 +334,6 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   
   size_b = audio_inbuffer_size_in_frames * no_of_channels_alsa * no_of_bytes_in_channel;
 
-
   pcm_buffer.resize(DSP::NoOfAudioOutputBuffers);
   pcm_buffer_size_in_frames.resize(DSP::NoOfAudioOutputBuffers);
 
@@ -433,7 +432,6 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   */
 
   return 1;
-
 }
 
 int DSP::ALSA_object_t::set_snd_pcm_format(snd_pcm_hw_params_t *params)
@@ -539,11 +537,10 @@ int DSP::ALSA_object_t::set_snd_pcm_format(snd_pcm_hw_params_t *params)
   }
 
   return errc;
-
 }
 
-long DSP::ALSA_object_t::open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size) {
-  
+long DSP::ALSA_object_t::open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size)
+{
   int rc;
 
   no_of_bytes_in_channel = (unsigned int) no_of_bits / 8;
@@ -563,12 +560,12 @@ long DSP::ALSA_object_t::open_PCM_device_4_output(const int &no_of_channels, int
   {
     return -1;
   }
-
 }
 
-long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_inbuffer_size) {
-  
+long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_inbuffer_size)
+{
   int rc;
+
   no_of_bytes_in_channel = (unsigned int) no_of_bits / 8;
   sampling_rate_alsa = (unsigned int) sampling_rate;
   no_of_channels_alsa = (unsigned int) no_of_channels;
@@ -674,8 +671,6 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
             while (rc >= 0 && rc != buffer_size_in_frames)
             {
               snd_pcm_sframes_t current_frames = rc * no_of_bytes_in_channel * no_of_channels_alsa;
-              // current_frames *= no_of_bytes_in_channel * no_of_channels_alsa;
-              // pcm_buffer[ind] += (uint8_t) current_frames;
               buffer_size_in_frames -= rc;
               rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind] + (uint8_t) current_frames, buffer_size_in_frames);
               DSP::log << "Short write. Current rc = " << rc << "." << endl;
@@ -684,72 +679,59 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
 
           IsPlayingNow = true;
         }
+
       }
+
       else
       {
         rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[NextBufferOutInd], buffer_size_in_frames);
       }
+
       NextBufferOutInd++;
       NextBufferOutInd %= DSP::NoOfAudioOutputBuffers;
 
       break;
     }
+
     else
     {
       DSP::log << "DSP::ALSA_object_t::append_playback_buffer error code is positive. Nothing to play." << endl;
       DSP::f::Sleep(0);
       IsPlayingNow = false;
     }
-  // end of main loop
+   // end of the main loop
   }
   
   return buffer_size_in_frames;
 }
 
-bool DSP::ALSA_object_t::close_PCM_device_input(void) {
+bool DSP::ALSA_object_t::close_PCM_device_input(void)
+{
   close_alsa_device(true);
   return true;
 }
 
-bool DSP::ALSA_object_t::close_PCM_device_output(const bool &do_drain) {
-  //! \todo if IsPlayingNow == false first do pcm_writei on all already filled appended buffers (check also in WMM)
+bool DSP::ALSA_object_t::close_PCM_device_output(const bool &do_drain)
+{
   stop_playback(); // just to be sure that all prepared buffershave been sent to sound card
 
-  // if (do_drain == true)
-  // {
-  //   bool still_playing = true;
-  //   while (still_playing)
-  //   {
-  //     int counter = 0;
-  //     for (unsigned int ind = 0; ind < DSP::NoOfAudioOutputBuffers; ind++) //one spare buffer
-  //     {
-  //       if (IsBufferPrepared)
-  //         counter++;
-  //     }
-
-  //     if (counter == DSP::NoOfAudioOutputBuffers) {
-  //       still_playing = false;
-  //     }
-  //     else 
-  //     { // let system process others and then check again
-  //       DSP::f::Sleep(0);
-  //     }
-  //   }
-  // }
-
   close_alsa_device(do_drain);
+
   return true;
 }
 
-bool DSP::ALSA_object_t::is_device_playing(void) {
+bool DSP::ALSA_object_t::is_device_playing(void)
+{
   return IsPlayingNow;  
 }
 
-bool DSP::ALSA_object_t::is_device_recording(void) {
+bool DSP::ALSA_object_t::is_device_recording(void)
+{
   return IsRecordingNow;
 }
 
-bool DSP::ALSA_object_t::stop_playback(void) {
+bool DSP::ALSA_object_t::stop_playback(void)
+{
   StopPlayback = true;
 
   snd_pcm_sframes_t rc; 
@@ -772,23 +754,26 @@ bool DSP::ALSA_object_t::stop_playback(void) {
   return true;
 }
 
-bool DSP::ALSA_object_t::stop_recording(void) {
+bool DSP::ALSA_object_t::stop_recording(void)
+{
   StopRecording = true;
   return true;
 }
 
-bool DSP::ALSA_object_t::start_recording(void) {
+bool DSP::ALSA_object_t::start_recording(void)
+{
   assert(!"DSP::ALSA_object_t::stop_recording not implemented yet");
   return true;
 }
 
-bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType, std::vector<char> &wave_in_raw_buffer) {
+bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType, std::vector<char> &wave_in_raw_buffer)
+{
   assert(!"DSP::ALSA_object_t::get_wave_in_raw_buffer not implemented yet");
   return true;
 }
 
-snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_pcm_uframes_t &frames) {
-
+snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_pcm_uframes_t &frames)
+{
   snd_pcm_sframes_t rc = -EAGAIN;
   
   while (rc == -EAGAIN)
@@ -797,8 +782,8 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_p
     DSP::log << "EAGAIN occured. Waiting for free buffer." << endl;
     DSP::f::Sleep(10);
   }
+
   DSP::log << "Wrote" << endl;
-  //IsBufferPrepared = true;
     
   if (rc == -EPIPE)
   {
@@ -807,11 +792,13 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_p
     snd_pcm_prepare(alsa_handle);
 
   }
+
   else if (rc < 0)
   {
     DSP::log << "Error from writei: " << snd_strerror(rc) << endl;
     return rc;
   }
+
   else if (rc != (int)frames)
   {
     DSP::log << "short write, write " << rc << " frames" << endl;
@@ -823,7 +810,8 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_p
   return rc;
 }
 
-void DSP::ALSA_object_t::close_alsa_device(bool do_drain, bool use_log) {
+void DSP::ALSA_object_t::close_alsa_device(bool do_drain, bool use_log)
+{
   if (alsa_handle != NULL) 
   {
     if (do_drain == true)
