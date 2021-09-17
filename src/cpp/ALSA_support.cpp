@@ -641,59 +641,70 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
       }
 
       // Converts samples format to the one suitable for the audio device
-      for (unsigned int n = 0; n < size_b / no_of_bytes_in_channel / no_of_channels_alsa; n++)
+      switch (no_of_bytes_in_channel)
       {
-        if (no_of_bytes_in_channel == 1)
-        {
-          buffers_8bit[NextBufferOutInd][no_of_channels_alsa * n] = uint8_t(128 + 127 * float_buffer[no_of_channels_alsa * n]);
-            if (no_of_channels_alsa == 2)
-              buffers_8bit[NextBufferOutInd][no_of_channels_alsa * n + 1] = uint8_t(128 + 127 * float_buffer[no_of_channels_alsa * n + 1]);
+        case 1:
+          for (unsigned int n = 0; n < size_b / no_of_bytes_in_channel / no_of_channels_alsa; n++)
+          {
+            buffers_8bit[NextBufferOutInd][no_of_channels_alsa * n] = uint8_t(128 + 127 * float_buffer[no_of_channels_alsa * n]);
+              if (no_of_channels_alsa == 2)
+                buffers_8bit[NextBufferOutInd][no_of_channels_alsa * n + 1] = uint8_t(128 + 127 * float_buffer[no_of_channels_alsa * n + 1]);
+          }
+          break;
 
-        }
+        case 2:
+          for (unsigned int n = 0; n < size_b / no_of_bytes_in_channel / no_of_channels_alsa; n++)
+          {
+            buffers_16bit[NextBufferOutInd][no_of_channels_alsa * n] = int16_t(INT16_MAX * float_buffer[no_of_channels_alsa * n]);
+              if (no_of_channels_alsa == 2)
+                buffers_16bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = int16_t(INT16_MAX * float_buffer[no_of_channels_alsa * n + 1]);
+          }
+          break;
 
-        else if (no_of_bytes_in_channel == 2)
-        {
-          buffers_16bit[NextBufferOutInd][no_of_channels_alsa * n] = int16_t(INT16_MAX * float_buffer[no_of_channels_alsa * n]);
-            if (no_of_channels_alsa == 2)
-              buffers_16bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = int16_t(INT16_MAX * float_buffer[no_of_channels_alsa * n + 1]);
-
-        }
-
-        else if (no_of_bytes_in_channel == 3)
-        {
-          buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n] = int32_t(INT32_MAX * float_buffer[no_of_channels_alsa * n]);
-            if (no_of_channels_alsa == 2)
-              buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = int32_t(INT32_MAX * float_buffer[no_of_channels_alsa * n + 1]);  
-
-        }
-
-        else if (no_of_bytes_in_channel == 4)
-        {
-          if (IsHigherQualityMode)
+        case 3:  
+          for (unsigned int n = 0; n < size_b / no_of_bytes_in_channel / no_of_channels_alsa; n++)
           {
             buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n] = int32_t(INT32_MAX * float_buffer[no_of_channels_alsa * n]);
               if (no_of_channels_alsa == 2)
-                buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = int32_t(INT32_MAX * float_buffer[no_of_channels_alsa * n + 1]);
-
+                buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = int32_t(INT32_MAX * float_buffer[no_of_channels_alsa * n + 1]);  
           }
+          break;
 
-          else
+        case 4:
+          for (unsigned int n = 0; n < size_b / no_of_bytes_in_channel / no_of_channels_alsa; n++)
           {
-            buffers_32bit_f[NextBufferOutInd][no_of_channels_alsa * n] = float_buffer[no_of_channels_alsa * n];
-              if (no_of_channels_alsa == 2)
-                buffers_32bit_f[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = float_buffer[no_of_channels_alsa * n + 1];
+            if (IsHigherQualityMode)
+            {
+              buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n] = int32_t(INT32_MAX * float_buffer[no_of_channels_alsa * n]);
+                if (no_of_channels_alsa == 2)
+                  buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = int32_t(INT32_MAX * float_buffer[no_of_channels_alsa * n + 1]);
 
+            }
+
+            else
+            {
+              buffers_32bit_f[NextBufferOutInd][no_of_channels_alsa * n] = float_buffer[no_of_channels_alsa * n];
+                if (no_of_channels_alsa == 2)
+                  buffers_32bit_f[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = float_buffer[no_of_channels_alsa * n + 1];
+
+            }
           }
-        }
+          break;
 
-        else if (no_of_bytes_in_channel == 8)
-        {
-          buffers_64bit[NextBufferOutInd][no_of_channels_alsa * n] = float_buffer[no_of_channels_alsa * n];
-            if (no_of_channels_alsa == 2)
-              buffers_64bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = float_buffer[no_of_channels_alsa * n + 1];
-
-        }      
-       // converting samples ends
+        case 8:  
+          for (unsigned int n = 0; n < size_b / no_of_bytes_in_channel / no_of_channels_alsa; n++)
+          {
+            buffers_64bit[NextBufferOutInd][no_of_channels_alsa * n] = float_buffer[no_of_channels_alsa * n];
+              if (no_of_channels_alsa == 2)
+                buffers_64bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = float_buffer[no_of_channels_alsa * n + 1];
+          
+          }
+          break;
+        
+        default:
+          break;
+      
+        // converting samples ends
       }
 
       if (IsPlayingNow == false)
@@ -918,7 +929,7 @@ void DSP::ALSA_object_t::close_alsa_device(bool do_drain, bool use_log)
       DSP::log << "ALSA PCM sound closed" << endl;
     }
   #endif // AUDIO_DEBUG_MESSAGES_ON
-  
+
   IsDeviceInputOpen = false;
   IsDeviceOutputOpen = false;
 }
