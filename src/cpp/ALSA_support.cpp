@@ -102,38 +102,40 @@ bool DSP::ALSA_object_t::is_output_callback_supported(void)
 
 void DSP::ALSA_object_t::log_driver_data() 
 {
-  int val;
+  #ifdef AUDIO_DEBUG_MESSAGES_ON
 
-  DSP::log << "ALSA library version: " << SND_LIB_VERSION_STR << endl;
+    int val;
 
-  DSP::log << endl;
-  DSP::log << "PCM stream types:" << endl;
-  for (val = 0; val <= SND_PCM_STREAM_LAST; val++)
-    DSP::log << "  " << snd_pcm_stream_name((snd_pcm_stream_t)val) << endl;
+    DSP::log << "ALSA library version: " << SND_LIB_VERSION_STR << endl;
 
-  DSP::log << endl;
-  DSP::log << "PCM access types:" << endl;
-  for (val = 0; val <= SND_PCM_ACCESS_LAST; val++)
-    DSP::log << "  " << snd_pcm_access_name((snd_pcm_access_t)val) << endl;
+    DSP::log << endl;
+    DSP::log << "PCM stream types:" << endl;
+    for (val = 0; val <= SND_PCM_STREAM_LAST; val++)
+      DSP::log << "  " << snd_pcm_stream_name((snd_pcm_stream_t)val) << endl;
 
-  DSP::log << endl;
-  DSP::log << "PCM formats:" << endl;
-  for (val = 0; val <= SND_PCM_FORMAT_LAST; val++)
-    if (snd_pcm_format_name((snd_pcm_format_t)val) != NULL)
-      DSP::log << "  " << snd_pcm_format_name((snd_pcm_format_t)val) <<
-        "(" << snd_pcm_format_description((snd_pcm_format_t)val) << ")" << endl;
+    DSP::log << endl;
+    DSP::log << "PCM access types:" << endl;
+    for (val = 0; val <= SND_PCM_ACCESS_LAST; val++)
+      DSP::log << "  " << snd_pcm_access_name((snd_pcm_access_t)val) << endl;
 
-  DSP::log << endl;
-  DSP::log << "PCM subformats:" << endl;
-  for (val = 0; val <= SND_PCM_SUBFORMAT_LAST; val++)
-    DSP::log << "  " << snd_pcm_subformat_name((snd_pcm_subformat_t)val) <<
-      "(" << snd_pcm_subformat_description((snd_pcm_subformat_t)val) << ")" << endl;
+    DSP::log << endl;
+    DSP::log << "PCM formats:" << endl;
+    for (val = 0; val <= SND_PCM_FORMAT_LAST; val++)
+      if (snd_pcm_format_name((snd_pcm_format_t)val) != NULL)
+        DSP::log << "  " << snd_pcm_format_name((snd_pcm_format_t)val) <<
+          "(" << snd_pcm_format_description((snd_pcm_format_t)val) << ")" << endl;
 
-  DSP::log << endl;
-  DSP::log << "PCM states: " << endl;
-  for (val = 0; val <= SND_PCM_STATE_LAST; val++)
-    DSP::log << "  " << snd_pcm_state_name((snd_pcm_state_t)val) << endl;
+    DSP::log << endl;
+    DSP::log << "PCM subformats:" << endl;
+    for (val = 0; val <= SND_PCM_SUBFORMAT_LAST; val++)
+      DSP::log << "  " << snd_pcm_subformat_name((snd_pcm_subformat_t)val) <<
+        "(" << snd_pcm_subformat_description((snd_pcm_subformat_t)val) << ")" << endl;
 
+    DSP::log << endl;
+    DSP::log << "PCM states: " << endl;
+    for (val = 0; val <= SND_PCM_STATE_LAST; val++)
+      DSP::log << "  " << snd_pcm_state_name((snd_pcm_state_t)val) << endl;
+  #endif // AUDIO_DEBUG_MESSAGES_ON
 }
 
 int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
@@ -154,21 +156,28 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     close_alsa_device();
 
   // ==================================================== //
-  DSP::log << "Opening ALSA device" << endl;
+  #ifdef AUDIO_DEBUG_MESSAGES_ON
+    DSP::log << "Opening ALSA device" << endl;
+  
 
-  //! \TODO Test mode:	Open mode (see SND_PCM_NONBLOCK, SND_PCM_ASYNC)
+    //! \TODO Test mode:	Open mode (see SND_PCM_NONBLOCK, SND_PCM_ASYNC)
     
-  if (stream_type == SND_PCM_STREAM_PLAYBACK)    
-    DSP::log << "Opening PCM device for playback." << endl;
+    if (stream_type == SND_PCM_STREAM_PLAYBACK)    
+      DSP::log << "Opening PCM device for playback." << endl;
     
-  else
-    DSP::log << "Opening PCM device for recording (capture)." << endl;
+    else
+      DSP::log << "Opening PCM device for recording (capture)." << endl;
+
+  #endif // AUDIO_DEBUG_MESSAGES_ON
 
   rc = snd_pcm_open(&alsa_handle, "default", stream_type, SND_PCM_NONBLOCK);
 
   if (rc < 0)
   {
-    DSP::log << "Unable to open pcm device: " << snd_strerror(rc) << endl;
+    #ifdef AUDIO_DEBUG_MESSAGES_ON
+      DSP::log << "Unable to open pcm device: " << snd_strerror(rc) << endl;
+    #endif // AUDIO_DEBUG_MESSAGES_ON
+
     return -1;
   }
 
@@ -185,8 +194,10 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   /*! Interleaved mode */
   snd_pcm_hw_params_set_access(alsa_handle, params, SND_PCM_ACCESS_RW_INTERLEAVED);
 
-  DSP::log << "Setting the SND PCM FORMAT." << endl;
-  DSP::log << "Something less than 0 means an error occurance." << endl;
+  #ifdef AUDIO_DEBUG_MESSAGES_ON
+    DSP::log << "Setting the SND PCM FORMAT." << endl;
+    DSP::log << "Something less than 0 means an error occurance." << endl;
+  #endif // AUDIO_DEBUG_MESSAGES_ON
     
   errc = DSP::ALSA_object_t::set_snd_pcm_format(params);
 
@@ -201,27 +212,33 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     
   snd_pcm_uframes_t tmp_frames = audio_inbuffer_size_in_frames;
 
-  DSP::log << "Buffer size set with error code: " << rc << endl;
+  #ifdef AUDIO_DEBUG_MESSAGES_ON
+    DSP::log << "Buffer size set with error code: " << rc << endl;
+  #endif // AUDIO_DEBUG_MESSAGES_ON
 
   /*! Set period size to desired number of frames. */
   snd_pcm_hw_params_set_period_size_near(alsa_handle, params, &audio_inbuffer_size_in_frames, &dir);
 
-  if (audio_inbuffer_size_in_frames != tmp_frames)
-  {
-    DSP::log << "Current frames value should be equal: " << tmp_frames << endl;
-    DSP::log << "Frames is not equal to tmp_frames! Frames: " << audio_inbuffer_size_in_frames << endl;    
-  }
+  #ifdef AUDIO_DEBUG_MESSAGES_ON
+    if (audio_inbuffer_size_in_frames != tmp_frames)
+    {
+      DSP::log << "Current frames value should be equal: " << tmp_frames << endl;
+      DSP::log << "Frames is not equal to tmp_frames! Frames: " << audio_inbuffer_size_in_frames << endl;    
+    }
 
-  else
-    DSP::log << "Frames has been set correctly." << endl;
+    else
+      DSP::log << "Frames has been set correctly." << endl;
+  #endif // AUDIO_DEBUG_MESSAGES_ON
 
   /* Write the parameters to the driver */
   rc = snd_pcm_hw_params(alsa_handle, params);
 
   if (rc < 0)
   {
-    DSP::log << "Unable to set hw parameters: " << snd_strerror(rc) << endl;
-     
+    #ifdef AUDIO_DEBUG_MESSAGES_ON
+      DSP::log << "Unable to set hw parameters: " << snd_strerror(rc) << endl;
+    #endif // AUDIO_DEBUG_MESSAGES_ON
+
     close_alsa_device();
       
     return -2;
@@ -234,82 +251,84 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   // Display information about the PCM interface.
   // ============================================================= //
   
-  DSP::log << "PCM handle name = '" << snd_pcm_name(alsa_handle) << "'" << endl;
+  #ifdef AUDIO_DEBUG_MESSAGES_ON
+    DSP::log << "PCM handle name = '" << snd_pcm_name(alsa_handle) << "'" << endl;
 
-  DSP::log << "PCM state = " << snd_pcm_state_name(snd_pcm_state(alsa_handle)) << endl;
+    DSP::log << "PCM state = " << snd_pcm_state_name(snd_pcm_state(alsa_handle)) << endl;
 
-  snd_pcm_hw_params_get_access(hw_params, (snd_pcm_access_t *) &val);
-  DSP::log << "access type = " << snd_pcm_access_name((snd_pcm_access_t)val) << endl;
+    snd_pcm_hw_params_get_access(hw_params, (snd_pcm_access_t *) &val);
+    DSP::log << "access type = " << snd_pcm_access_name((snd_pcm_access_t)val) << endl;
 
-  snd_pcm_format_t format;
-  snd_pcm_hw_params_get_format(hw_params, &format);
-  DSP::log << "format = '" << snd_pcm_format_name(format) << "' "
-    << "(" << snd_pcm_format_description(format) << ")" << endl;
+    snd_pcm_format_t format;
 
-  snd_pcm_hw_params_get_subformat(hw_params, (snd_pcm_subformat_t *)&val);
-  DSP::log << "subformat = '" << snd_pcm_subformat_name((snd_pcm_subformat_t)val) << "' "
-    << "(" << snd_pcm_subformat_description((snd_pcm_subformat_t)val) << ")" << endl;
+    snd_pcm_hw_params_get_format(hw_params, &format);
+    DSP::log << "format = '" << snd_pcm_format_name(format) << "' "
+      << "(" << snd_pcm_format_description(format) << ")" << endl;
 
-  snd_pcm_hw_params_get_channels(hw_params, &val);
-  DSP::log << "channels = " << val << endl;
-
-  snd_pcm_hw_params_get_rate(hw_params, &val, &dir);
-  DSP::log << "rate = " << val << " bps" << endl;
-
-  snd_pcm_hw_params_get_period_time(hw_params, &val, &dir);
-  DSP::log << "period time = " << val << " us" << endl;
-
-  snd_pcm_hw_params_get_period_size(hw_params, &audio_inbuffer_size_in_frames, &dir);
-  DSP::log << "period size = " << (int) audio_inbuffer_size_in_frames << " frames" << endl;
-
-  snd_pcm_hw_params_get_buffer_time(hw_params, &val, &dir);
-  DSP::log << "buffer time = " << val << " us" << endl;
-
-  snd_pcm_hw_params_get_buffer_size(hw_params, (snd_pcm_uframes_t *) &val);
-  DSP::log << "buffer size = " << val << " frames" << endl;
-
-  snd_pcm_hw_params_get_periods(hw_params, &val, &dir);
-  DSP::log << "periods per buffer = " << val << " frames" << endl;
-
-  snd_pcm_hw_params_get_rate_numden(hw_params, &val, &val2);
-  DSP::log << "exact rate = " << val << "/" << val2 << " bps" << endl;
-
-  val = snd_pcm_hw_params_get_sbits(hw_params);
-  DSP::log << "significant bits = " << val << endl;
-
-  snd_pcm_hw_params_get_tick_time(hw_params, &val, &dir); // deprecated !!!
-  DSP::log << "tick time = " << val << " us" << endl;
-
-  val = snd_pcm_hw_params_is_batch(hw_params);
-  DSP::log << "is batch = " << val << endl;
-
-  val = snd_pcm_hw_params_is_block_transfer(hw_params);
-  DSP::log << "is block transfer = " << val << endl;
-
-  val = snd_pcm_hw_params_is_double(hw_params);
-  DSP::log << "is double = " << val << endl;
-
-  val = snd_pcm_hw_params_is_half_duplex(hw_params);
-  DSP::log << "is half duplex = " << val << endl;
-
-  val = snd_pcm_hw_params_is_joint_duplex(hw_params);
-  DSP::log <<"is joint duplex = " << val << endl;
-
-  val = snd_pcm_hw_params_can_overrange(hw_params);
-  DSP::log << "can overrange = " << val << endl;
-
-  val = snd_pcm_hw_params_can_mmap_sample_resolution(hw_params);
-  DSP::log << "can mmap = " << val << endl;
-
-  val = snd_pcm_hw_params_can_pause(hw_params);
-  DSP::log << "can pause = " << val << endl;
-
-  val = snd_pcm_hw_params_can_resume(hw_params);
-  DSP::log << "can resume = " << val << endl;
-
-  val = snd_pcm_hw_params_can_sync_start(hw_params);
-  DSP::log << "can sync start = " << val << endl;
+    snd_pcm_hw_params_get_subformat(hw_params, (snd_pcm_subformat_t *)&val);
+    DSP::log << "subformat = '" << snd_pcm_subformat_name((snd_pcm_subformat_t)val) << "' "
+      << "(" << snd_pcm_subformat_description((snd_pcm_subformat_t)val) << ")" << endl;
   
+    snd_pcm_hw_params_get_channels(hw_params, &val);
+    DSP::log << "channels = " << val << endl;
+  
+    snd_pcm_hw_params_get_rate(hw_params, &val, &dir);
+    DSP::log << "rate = " << val << " bps" << endl;
+  
+    snd_pcm_hw_params_get_period_time(hw_params, &val, &dir);
+    DSP::log << "period time = " << val << " us" << endl;
+
+    snd_pcm_hw_params_get_period_size(hw_params, &audio_inbuffer_size_in_frames, &dir);
+    DSP::log << "period size = " << (int) audio_inbuffer_size_in_frames << " frames" << endl;
+
+    snd_pcm_hw_params_get_buffer_time(hw_params, &val, &dir);
+    DSP::log << "buffer time = " << val << " us" << endl;
+
+    snd_pcm_hw_params_get_buffer_size(hw_params, (snd_pcm_uframes_t *) &val);
+    DSP::log << "buffer size = " << val << " frames" << endl;
+
+    snd_pcm_hw_params_get_periods(hw_params, &val, &dir);
+    DSP::log << "periods per buffer = " << val << " frames" << endl;
+
+    snd_pcm_hw_params_get_rate_numden(hw_params, &val, &val2);
+    DSP::log << "exact rate = " << val << "/" << val2 << " bps" << endl;
+
+    val = snd_pcm_hw_params_get_sbits(hw_params);
+    DSP::log << "significant bits = " << val << endl;
+
+    snd_pcm_hw_params_get_tick_time(hw_params, &val, &dir); // deprecated !!!
+    DSP::log << "tick time = " << val << " us" << endl;
+
+    val = snd_pcm_hw_params_is_batch(hw_params);
+    DSP::log << "is batch = " << val << endl;
+
+    val = snd_pcm_hw_params_is_block_transfer(hw_params);
+    DSP::log << "is block transfer = " << val << endl;
+
+    val = snd_pcm_hw_params_is_double(hw_params);
+    DSP::log << "is double = " << val << endl;
+
+    val = snd_pcm_hw_params_is_half_duplex(hw_params);
+    DSP::log << "is half duplex = " << val << endl;
+
+    val = snd_pcm_hw_params_is_joint_duplex(hw_params);
+    DSP::log <<"is joint duplex = " << val << endl;
+
+    val = snd_pcm_hw_params_can_overrange(hw_params);
+    DSP::log << "can overrange = " << val << endl;
+
+    val = snd_pcm_hw_params_can_mmap_sample_resolution(hw_params);
+    DSP::log << "can mmap = " << val << endl;
+
+    val = snd_pcm_hw_params_can_pause(hw_params);
+    DSP::log << "can pause = " << val << endl;
+
+    val = snd_pcm_hw_params_can_resume(hw_params);
+    DSP::log << "can resume = " << val << endl;
+
+    val = snd_pcm_hw_params_can_sync_start(hw_params);
+    DSP::log << "can sync start = " << val << endl;
+  #endif // AUDIO_DEBUG_MESSAGES_ON  
 
   //  snd_pcm_hw_params_free(params);
   //  There are two ways of allocating such structures:
