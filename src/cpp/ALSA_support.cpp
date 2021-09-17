@@ -419,7 +419,10 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
       break;
 
     default:
-      DSP::log << "Unsupported no of bytes in channel" << endl;
+      #ifdef AUDIO_DEBUG_MESSAGES_ON
+        DSP::log << "Unsupported no of bytes in channel" << endl;
+      #endif // AUDIO_DEBUG_MESSAGES_ON
+
       return -1;
   }
 
@@ -429,7 +432,10 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 
     if (rc < 0)
     {
-      DSP::log << "Unable to set blocking mode" << endl;
+      #ifdef AUDIO_DEBUG_MESSAGES_ON
+        DSP::log << "Unable to set blocking mode" << endl;
+      #endif // AUDIO_DEBUG_MESSAGES_ON
+
       return -1;
     }
   }
@@ -439,7 +445,10 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     rc = snd_pcm_nonblock(alsa_handle, 1);
     if (rc < 0)
     {
-      DSP::log << "Unable to set non blocking mode" << endl;
+      #ifdef AUDIO_DEBUG_MESSAGES_ON
+        DSP::log << "Unable to set non blocking mode" << endl;
+      #endif // AUDIO_DEBUG_MESSAGES_ON
+
       return -1;
     }
   }
@@ -462,7 +471,9 @@ int DSP::ALSA_object_t::set_snd_pcm_format(snd_pcm_hw_params_t *params)
     /*! Signed 8-bit format */
     errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_U8);
 
-    DSP::log << "Format set with error code: " << errc << endl;
+    #ifdef AUDIO_DEBUG_MESSAGES_ON
+      DSP::log << "Format set with error code: " << errc << endl;
+    #endif // AUDIO_DEBUG_MESSAGES_ON
   }
 
   else if (no_of_bytes_in_channel == 2)
@@ -479,7 +490,9 @@ int DSP::ALSA_object_t::set_snd_pcm_format(snd_pcm_hw_params_t *params)
       errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_S16_LE);
     }
 
-    DSP::log << "Format set with error code: " << errc << endl;
+    #ifdef AUDIO_DEBUG_MESSAGES_ON
+      DSP::log << "Format set with error code: " << errc << endl;
+    #endif // AUDIO_DEBUG_MESSAGES_ON
   }
 
   else if (no_of_bytes_in_channel == 3) // 32-bits buffer can be used
@@ -498,7 +511,9 @@ int DSP::ALSA_object_t::set_snd_pcm_format(snd_pcm_hw_params_t *params)
 
     IsHigherQualityMode = true;
 
-    DSP::log << "Format set with error code: " << errc << std::endl;
+    #ifdef AUDIO_DEBUG_MESSAGES_ON
+      DSP::log << "Format set with error code: " << errc << std::endl;
+    #endif // AUDIO_DEBUG_MESSAGES_ON
   }
 
   else if (no_of_bytes_in_channel == 4)
@@ -535,7 +550,9 @@ int DSP::ALSA_object_t::set_snd_pcm_format(snd_pcm_hw_params_t *params)
       }
     }
 
-    DSP::log << "Format set with error code: " << errc << endl;
+    #ifdef AUDIO_DEBUG_MESSAGES_ON
+      DSP::log << "Format set with error code: " << errc << endl;
+    #endif // AUDIO_DEBUG_MESSAGES_ON
   }
 
   else if (no_of_bytes_in_channel == 8)
@@ -552,7 +569,9 @@ int DSP::ALSA_object_t::set_snd_pcm_format(snd_pcm_hw_params_t *params)
       errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_FLOAT64_LE);
     }
 
-    DSP::log << "Format set with error code: " << errc << endl;
+    #ifdef AUDIO_DEBUG_MESSAGES_ON
+      DSP::log << "Format set with error code: " << errc << endl;
+    #endif // AUDIO_DEBUG_MESSAGES_ON
   }
 
   return errc;
@@ -694,12 +713,18 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
               snd_pcm_sframes_t current_frames = rc * no_of_bytes_in_channel * no_of_channels_alsa;
               buffer_size_in_frames -= rc;
               rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind] + (uint8_t) current_frames, buffer_size_in_frames);
-              DSP::log << "Short write. Current rc = " << rc << "." << endl;
+
+              #ifdef AUDIO_DEBUG_MESSAGES_ON
+                DSP::log << "Short write. Current rc = " << rc << "." << endl;
+              #endif // AUDIO_DEBUG_MESSAGES_ON
             }
           }
 
           IsPlayingNow = true;
-          //DSP::log << "IsPlayingNow set to true" << endl;
+
+          #ifdef AUDIO_DEBUG_MESSAGES_ON
+            DSP::log << "IsPlayingNow set to true" << endl;
+          #endif // AUDIO_DEBUG_MESSAGES_ON
         }
 
       }
@@ -714,7 +739,10 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
           snd_pcm_sframes_t current_frames = rc * no_of_bytes_in_channel * no_of_channels_alsa;
           buffer_size_in_frames -= rc;
           rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[NextBufferOutInd] + (uint8_t) current_frames, buffer_size_in_frames);
-          DSP::log << "Short write. Current rc = " << rc << "." << endl;
+
+          #ifdef AUDIO_DEBUG_MESSAGES_ON
+            DSP::log << "Short write. Current rc = " << rc << "." << endl;
+          #endif // AUDIO_DEBUG_MESSAGES_ON
         }
       }
 
@@ -726,7 +754,10 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
 
     else
     {
-      DSP::log << "DSP::ALSA_object_t::append_playback_buffer error code is positive. Nothing to play." << endl;
+      #ifdef AUDIO_DEBUG_MESSAGES_ON
+        DSP::log << "DSP::ALSA_object_t::append_playback_buffer error code is positive. Nothing to play." << endl;
+      #endif // AUDIO_DEBUG_MESSAGES_ON
+
       DSP::f::Sleep(0);
       IsPlayingNow = false;
     }
@@ -811,7 +842,11 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_p
   {
     rc = snd_pcm_writei(alsa_handle, buffer, frames);
     if (rc == -EAGAIN) { // M.B. otherwise initial write even if it is ok will be logged as failed
-      DSP::log << "EAGAIN occured. Waiting for free buffer." << endl;
+
+      #ifdef AUDIO_DEBUG_MESSAGES_ON
+        DSP::log << "EAGAIN occured. Waiting for free buffer." << endl;
+      #endif // AUDIO_DEBUG_MESSAGES_ON
+
       DSP::f::Sleep(0);
     }
   }
@@ -820,25 +855,36 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_p
     
   if (rc == -EPIPE)
   {
-    // EPIPE means underrun
-    DSP::log << "Underrun occurred" << endl;
+    #ifdef AUDIO_DEBUG_MESSAGES_ON
+      // EPIPE means underrun
+      DSP::log << "Underrun occurred" << endl;
+    #endif // AUDIO_DEBUG_MESSAGES_ON
+
     snd_pcm_prepare(alsa_handle);
     pcm_writei(buffer, frames); // M.B. write failed - reset and try again; todo: do it internally without recurence 
   }
 
   else if (rc < 0)
   {
-    DSP::log << "Error from writei: " << snd_strerror(rc) << endl;
+    #ifdef AUDIO_DEBUG_MESSAGES_ON
+      DSP::log << "Error from writei: " << snd_strerror(rc) << endl;
+    #endif // AUDIO_DEBUG_MESSAGES_ON
+
     return rc;
   }
 
   else if (rc != (int)frames)
   {
-    DSP::log << "short write, write " << rc << " frames" << endl;
+    #ifdef AUDIO_DEBUG_MESSAGES_ON
+      DSP::log << "short write, write " << rc << " frames" << endl;
+    #endif // AUDIO_DEBUG_MESSAGES_ON
+
     return rc;
   }
 
-  // DSP::log << "The end of the playback" << endl;
+  #ifdef AUDIO_DEBUG_MESSAGES_ON
+    DSP::log << "The end of the playback" << endl;
+  #endif // AUDIO_DEBUG_MESSAGES_ON
 
   return rc;
 }
@@ -852,7 +898,10 @@ void DSP::ALSA_object_t::close_alsa_device(bool do_drain, bool use_log)
       snd_pcm_drain(alsa_handle);
     }
     
-    DSP::log << "Closing PCM device." << endl;
+    #ifdef AUDIO_DEBUG_MESSAGES_ON
+      DSP::log << "Closing PCM device." << endl;
+    #endif // AUDIO_DEBUG_MESSAGES_ON
+
     snd_pcm_close(alsa_handle);
     alsa_handle = NULL;
 
@@ -863,10 +912,13 @@ void DSP::ALSA_object_t::close_alsa_device(bool do_drain, bool use_log)
     }
   }
 
-  if (use_log == true)
-  {
-    DSP::log << "ALSA PCM sound closed" << endl;
-  }
+  #ifdef AUDIO_DEBUG_MESSAGES_ON
+    if (use_log == true)
+    {
+      DSP::log << "ALSA PCM sound closed" << endl;
+    }
+  #endif // AUDIO_DEBUG_MESSAGES_ON
+  
   IsDeviceInputOpen = false;
   IsDeviceOutputOpen = false;
 }
