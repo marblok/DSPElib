@@ -422,8 +422,9 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
       #ifdef AUDIO_DEBUG_MESSAGES_ON
         DSP::log << "Unsupported no of bytes in channel" << endl;
       #endif // AUDIO_DEBUG_MESSAGES_ON
-
+      
       return -1;
+      break;
   }
 
   if (blocking_mode == false)
@@ -466,114 +467,120 @@ int DSP::ALSA_object_t::set_snd_pcm_format(snd_pcm_hw_params_t *params)
 {
   int errc;
   
-  if (no_of_bytes_in_channel == 1)
+  switch (no_of_bytes_in_channel)
   {
-    /*! Signed 8-bit format */
-    errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_U8);
+    case 1:
+      /*! Signed 8-bit format */
+      errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_U8);
 
-    #ifdef AUDIO_DEBUG_MESSAGES_ON
-      DSP::log << "Format set with error code: " << errc << endl;
-    #endif // AUDIO_DEBUG_MESSAGES_ON
-  }
+      #ifdef AUDIO_DEBUG_MESSAGES_ON
+        DSP::log << "Format set with error code: " << errc << endl;
+      #endif // AUDIO_DEBUG_MESSAGES_ON
+      break;
 
-  else if (no_of_bytes_in_channel == 2)
-  {
-    if (IsLittleEndian == false)
-    {
-      /*! Signed 16-bit big-endian format */
-      errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_S16_BE);
-    }
-
-    else
-    {
-      /*! Signed 16-bit little-endian format */
-      errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_S16_LE);
-    }
-
-    #ifdef AUDIO_DEBUG_MESSAGES_ON
-      DSP::log << "Format set with error code: " << errc << endl;
-    #endif // AUDIO_DEBUG_MESSAGES_ON
-  }
-
-  else if (no_of_bytes_in_channel == 3) // 32-bits buffer can be used
-  {
-    if (IsLittleEndian == false)
-    {
-      /*! Signed 24-bit big-endian low three bytes in 32-bit word format */
-      errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_S32_BE);
-    }
-
-    else
-    {
-      /*! Signed 24-bit little-endian low three bytes in 32-bit word format */
-      errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_S32_LE);
-    }
-
-    IsHigherQualityMode = true;
-
-    #ifdef AUDIO_DEBUG_MESSAGES_ON
-      DSP::log << "Format set with error code: " << errc << std::endl;
-    #endif // AUDIO_DEBUG_MESSAGES_ON
-  }
-
-  else if (no_of_bytes_in_channel == 4)
-  {
-    if (IsLittleEndian == false)
-    {
-      /*! Float Little Endian, Range -1.0 to 1.0 */
-      errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_FLOAT_BE);
-
-      IsHigherQualityMode = false; // native
-
-      if(errc < 0)
+    case 2:
+      if (IsLittleEndian == false)
       {
-        /*! Signed 32-bit little-endian format */
+        /*! Signed 16-bit big-endian format */
+        errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_S16_BE);
+      }
+
+      else
+      {
+        /*! Signed 16-bit little-endian format */
+        errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_S16_LE);
+      }
+
+      #ifdef AUDIO_DEBUG_MESSAGES_ON
+        DSP::log << "Format set with error code: " << errc << endl;
+      #endif // AUDIO_DEBUG_MESSAGES_ON
+      break;
+
+    case 3: // 32-bits buffer can be used
+      if (IsLittleEndian == false)
+      {
+        /*! Signed 24-bit big-endian low three bytes in 32-bit word format */
         errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_S32_BE);
-
-        IsHigherQualityMode = true;
       }
-    }
 
-    else
-    {
-      /*! Float Little Endian, Range -1.0 to 1.0 */
-      errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_FLOAT_LE);
-
-      IsHigherQualityMode = false; // native
-
-      if(errc < 0)
+      else
       {
-        /*! Signed 32-bit little-endian format */
+        /*! Signed 24-bit little-endian low three bytes in 32-bit word format */
         errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_S32_LE);
-
-        IsHigherQualityMode = true;
       }
-    }
 
-    #ifdef AUDIO_DEBUG_MESSAGES_ON
-      DSP::log << "Format set with error code: " << errc << endl;
-    #endif // AUDIO_DEBUG_MESSAGES_ON
+      IsHigherQualityMode = true;
+
+      #ifdef AUDIO_DEBUG_MESSAGES_ON
+        DSP::log << "Format set with error code: " << errc << std::endl;
+      #endif // AUDIO_DEBUG_MESSAGES_ON
+      break;
+
+    case 4:
+      if (IsLittleEndian == false)
+      {
+        /*! Float Little Endian, Range -1.0 to 1.0 */
+        errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_FLOAT_BE);
+
+        IsHigherQualityMode = false; // native
+
+        if (errc < 0)
+        {
+          /*! Signed 32-bit little-endian format */
+          errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_S32_BE);
+
+          IsHigherQualityMode = true;
+        }
+      }
+
+      else
+      {
+        /*! Float Little Endian, Range -1.0 to 1.0 */
+        errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_FLOAT_LE);
+
+        IsHigherQualityMode = false; // native
+
+        if(errc < 0)
+        {
+          /*! Signed 32-bit little-endian format */
+          errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_S32_LE);
+
+          IsHigherQualityMode = true;
+        }
+      }
+
+      #ifdef AUDIO_DEBUG_MESSAGES_ON
+        DSP::log << "Format set with error code: " << errc << endl;
+      #endif // AUDIO_DEBUG_MESSAGES_ON
+      break;
+
+    case 8:
+      if (IsLittleEndian == false)
+      {
+        /*! Float Big Endian, Range -1.0 to 1.0 */
+        errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_FLOAT64_BE);
+      }
+
+      else
+      {
+        /*! Float Little Endian, Range -1.0 to 1.0 */
+        errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_FLOAT64_LE);
+      }
+
+      #ifdef AUDIO_DEBUG_MESSAGES_ON
+        DSP::log << "Format set with error code: " << errc << endl;
+      #endif // AUDIO_DEBUG_MESSAGES_ON
+      break;
+    
+    default:
+      #ifdef AUDIO_DEBUG_MESSAGES_ON
+        DSP::log << "Unsupported no of bytes in channel" << endl;
+      #endif // AUDIO_DEBUG_MESSAGES_ON
+      
+      return -1
+      break;
   }
-
-  else if (no_of_bytes_in_channel == 8)
-  {
-    if (IsLittleEndian == false)
-    {
-      /*! Float Big Endian, Range -1.0 to 1.0 */
-      errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_FLOAT64_BE);
-    }
-
-    else
-    {
-      /*! Float Little Endian, Range -1.0 to 1.0 */
-      errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_FLOAT64_LE);
-    }
-
-    #ifdef AUDIO_DEBUG_MESSAGES_ON
-      DSP::log << "Format set with error code: " << errc << endl;
-    #endif // AUDIO_DEBUG_MESSAGES_ON
-  }
-
+  
   return errc;
 }
 
@@ -702,6 +709,9 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
           break;
         
         default:
+          #ifdef AUDIO_DEBUG_MESSAGES_ON
+            DSP::log << "Unsupported no of bytes in channel" << endl;
+          #endif // AUDIO_DEBUG_MESSAGES_ON
           break;
       
         // converting samples ends
@@ -814,7 +824,10 @@ bool DSP::ALSA_object_t::stop_playback(void)
   if (IsPlayingNow == false)
   {
     if (NextBufferOutInd > 0) // anything is in the buffer
-    { // send all data from buffers to soundcard to start playback
+    { 
+      snd_pcm_prepare(alsa_handle);
+
+      // send all data from buffers to soundcard to start playback
       for (unsigned int ind = 0; ind < NextBufferOutInd; ind++) //one spare buffer
       {
         rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind], buffer_size_in_frames);  // M.B. pcm_writei does not process short write - this code is ok, pcm_writei needs corrections
