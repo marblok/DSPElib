@@ -632,7 +632,6 @@ long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int 
 long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
 {
   snd_pcm_sframes_t rc = -1;
-  snd_pcm_sframes_t buffer_size_in_frames;
 
   while (1)
   {
@@ -726,19 +725,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
           // send all data from buffers to soundcard to start playback
           for (unsigned int ind = 0; ind < DSP::NoOfAudioOutputBuffers - 1; ind++) //one spare buffer
           {
-            buffer_size_in_frames = pcm_buffer_size_in_frames[ind];
-            rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind], buffer_size_in_frames);
-            
-            while (rc >= 0 && rc != buffer_size_in_frames)
-            {
-              snd_pcm_sframes_t current_frames = rc * no_of_bytes_in_channel * no_of_channels_alsa;
-              buffer_size_in_frames -= rc;
-              rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind] + (uint8_t) current_frames, buffer_size_in_frames);
-
-              #ifdef AUDIO_DEBUG_MESSAGES_ON
-                DSP::log << "Short write. Current rc = " << rc << "." << endl;
-              #endif // AUDIO_DEBUG_MESSAGES_ON
-            }
+            rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind], pcm_buffer_size_in_frames[ind]);
           }
 
           IsPlayingNow = true;
@@ -747,25 +734,10 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
             DSP::log << "IsPlayingNow set to true" << endl;
           #endif // AUDIO_DEBUG_MESSAGES_ON
         }
-
       }
 
       else
-      {
-        buffer_size_in_frames = pcm_buffer_size_in_frames[NextBufferOutInd];
-        rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[NextBufferOutInd], buffer_size_in_frames);
-
-        while (rc >= 0 && rc != buffer_size_in_frames)
-        {
-          snd_pcm_sframes_t current_frames = rc * no_of_bytes_in_channel * no_of_channels_alsa;
-          buffer_size_in_frames -= rc;
-          rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[NextBufferOutInd] + (uint8_t) current_frames, buffer_size_in_frames);
-
-          #ifdef AUDIO_DEBUG_MESSAGES_ON
-            DSP::log << "Short write. Current rc = " << rc << "." << endl;
-          #endif // AUDIO_DEBUG_MESSAGES_ON
-        }
-      }
+        rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[NextBufferOutInd], pcm_buffer_size_in_frames[NextBufferOutInd]);
 
       NextBufferOutInd++;
       NextBufferOutInd %= DSP::NoOfAudioOutputBuffers;
@@ -785,7 +757,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
    // end of the main loop
   }
   
-  return buffer_size_in_frames;
+  return pcm_buffer_size_in_frames[NextBufferOutInd];
 }
 
 bool DSP::ALSA_object_t::close_PCM_device_input(void)
@@ -860,50 +832,57 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
 
 snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_pcm_uframes_t &frames)
 {
-  snd_pcm_sframes_t rc = -EAGAIN;
+  snd_pcm_sframes_t rc;
+  snd_pcm_sframes_t buffer_size_in_frames = frames;
+  uint8_t* current_buffer = (uint8_t*) buffer;
   
-  while (rc == -EAGAIN)
+  while (buffer_size_in_frames > 0)
   {
-    rc = snd_pcm_writei(alsa_handle, buffer, frames);
-    if (rc == -EAGAIN) { // M.B. otherwise initial write even if it is ok will be logged as failed
-
-      #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "EAGAIN occured. Waiting for free buffer." << endl;
-      #endif // AUDIO_DEBUG_MESSAGES_ON
-
-      DSP::f::Sleep(0);
-    }
-  }
-
-  //DSP::log << "Wrote" << endl;
+    rc = snd_pcm_writei(alsa_handle, current_buffer, buffer_size_in_frames);
     
-  if (rc == -EPIPE)
-  {
-    #ifdef AUDIO_DEBUG_MESSAGES_ON
-      // EPIPE means underrun
-      DSP::log << "Underrun occurred" << endl;
-    #endif // AUDIO_DEBUG_MESSAGES_ON
+    switch (-rc)
+    {
+      case EAGAIN:
+        #ifdef AUDIO_DEBUG_MESSAGES_ON
+          DSP::log << "EAGAIN occured. Waiting for free buffer." << endl;
+        #endif // AUDIO_DEBUG_MESSAGES_ON
 
-    snd_pcm_prepare(alsa_handle);
-    pcm_writei(buffer, frames); // M.B. write failed - reset and try again; todo: do it internally without recurence 
-  }
+        DSP::f::Sleep(0);
+        break;
+    
+      case EPIPE:
+        #ifdef AUDIO_DEBUG_MESSAGES_ON
+          // EPIPE means underrun
+          DSP::log << "Underrun occurred" << endl;
+        #endif // AUDIO_DEBUG_MESSAGES_ON
+        
+        snd_pcm_prepare(alsa_handle);
+        // snd_pcm_sw_params_set_start_threshold() TODO: implement this solution
+        break;
+      
+      default:
+        if (rc > 0)
+        {
+          buffer_size_in_frames -= rc;
+          current_buffer += rc * no_of_channels_alsa * no_of_bytes_in_channel;
 
-  else if (rc < 0)
-  {
-    #ifdef AUDIO_DEBUG_MESSAGES_ON
-      DSP::log << "Error from writei: " << snd_strerror(rc) << endl;
-    #endif // AUDIO_DEBUG_MESSAGES_ON
+          #ifdef AUDIO_DEBUG_MESSAGES_ON
+            DSP::log << "Short write. Current rc = " << rc << "." << endl;
+          #endif // AUDIO_DEBUG_MESSAGES_ON
+        }
 
-    return rc;
-  }
+        else
+        {
+          #ifdef AUDIO_DEBUG_MESSAGES_ON
+            // EPIPE means underrun
+            DSP::log << "Unsupported error." << endl;
+            DSP::log << "Error from writei: " << snd_strerror(rc) << endl;
+          #endif // AUDIO_DEBUG_MESSAGES_ON
 
-  else if (rc != (int)frames)
-  {
-    #ifdef AUDIO_DEBUG_MESSAGES_ON
-      DSP::log << "short write, write " << rc << " frames" << endl;
-    #endif // AUDIO_DEBUG_MESSAGES_ON
-
-    return rc;
+          buffer_size_in_frames = 0;
+        }
+        break;
+    }   
   }
 
   #ifdef AUDIO_DEBUG_MESSAGES_ON
