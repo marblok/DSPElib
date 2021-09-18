@@ -577,10 +577,10 @@ int DSP::ALSA_object_t::set_snd_pcm_format(snd_pcm_hw_params_t *params)
         DSP::log << "Unsupported no of bytes in channel" << endl;
       #endif // AUDIO_DEBUG_MESSAGES_ON
       
-      return -1
+      return -1;
       break;
   }
-  
+
   return errc;
 }
 
