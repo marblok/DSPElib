@@ -637,6 +637,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
   {
     if (rc < 0)
     {
+      // M.B. comment needed
       for (unsigned int m = 0; m < float_buffer.size(); m++)
       {
         if (float_buffer[m] < -1)
@@ -797,12 +798,14 @@ bool DSP::ALSA_object_t::stop_playback(void)
   {
     if (NextBufferOutInd > 0) // anything is in the buffer
     { 
+      // processing was too short so the playback haven't started yet
+      // send data stored in buffers to the sound card before closing the device
       snd_pcm_prepare(alsa_handle);
 
       // send all data from buffers to soundcard to start playback
       for (unsigned int ind = 0; ind < NextBufferOutInd; ind++) //one spare buffer
       {
-        rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind], buffer_size_in_frames);  // M.B. pcm_writei does not process short write - this code is ok, pcm_writei needs corrections
+        rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind], buffer_size_in_frames);  
       }
       if (rc > 0)
         IsPlayingNow = true;
@@ -846,7 +849,7 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_p
         #ifdef AUDIO_DEBUG_MESSAGES_ON
           DSP::log << "EAGAIN occured. Waiting for free buffer." << endl;
         #endif // AUDIO_DEBUG_MESSAGES_ON
-
+        //! \TODO M.B. In the future snd_pcm_status_get_avail / snd_pcm_avail_update could be used to select sleep time
         DSP::f::Sleep(0);
         break;
     
@@ -857,7 +860,7 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_p
         #endif // AUDIO_DEBUG_MESSAGES_ON
         
         snd_pcm_prepare(alsa_handle);
-        // snd_pcm_sw_params_set_start_threshold() TODO: implement this solution
+        //! \TODO snd_pcm_sw_params_set_start_threshold() : implement this solution (consider setting threshold to 1 so the sound playback will start without delay)
         break;
       
       default:
