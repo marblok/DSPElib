@@ -6,6 +6,10 @@ TODO::
 LAST DONE:
 
 CHANGES:
+- ver. 0.20.010 - <b>2021.09.15</b> Changed: 
+  - Fixed: DSP::WMM_object_t::stop_playback fix
+  - Fixed: hello.cpp - using different wav file path if test_echo() is used
+
 - ver. 0.20.009 - <b>2021.09.10</b> Changed: 
   - Fixed: DSP::WMM_object_t and DSP::SOUND_object_t now send to sound card all pending data and wait for finish before closing
 

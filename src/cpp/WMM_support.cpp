@@ -143,9 +143,9 @@ bool DSP::WMM_object_t::stop_playback(void) {
   // if there are still buffers that haven't been yet sent to sound card then do it now
   if (IsPlayingNow == false)
   {
-    if (NextBufferOutInd == DSP::NoOfAudioOutputBuffers - 2) //all but one spare buffer are filled up
+    if (NextBufferOutInd > 0) //all but one spare buffer are filled up
     { // send all data from buffers to soundcard to start playback
-      for (unsigned int ind=0; ind < DSP::NoOfAudioOutputBuffers-1; ind++) //one spare buffer
+      for (unsigned int ind=0; ind < NextBufferOutInd; ind++) //one spare buffer
       {
         result=waveOutWrite(hWaveOut,
           &(waveHeaderOut[ind]), sizeof(WAVEHDR));
