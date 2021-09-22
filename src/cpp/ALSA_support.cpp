@@ -1,7 +1,7 @@
 /*! \file ALSA_support.cpp
  * ALSA support code file
  *
- * \author Marek Blok
+ * \authors Damian Karaś, Marek Blok
  */
 
 #include <ALSA_support.h>
@@ -175,7 +175,6 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   if (rc < 0)
   {
     DSP::log << "Unable to open pcm device: " << snd_strerror(rc) << endl;
-
     return -1;
   }
 
@@ -210,7 +209,8 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     
   snd_pcm_uframes_t requested_audio_inbuffer_size_in_frames = audio_inbuffer_size_in_frames;
 
-  if (rc < 0) {
+  if (rc < 0)
+  {
     DSP::log << "Buffer size set with error code: " << rc << endl;
   }
 
@@ -237,7 +237,6 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     DSP::log << "Closing ALSA device" << endl;
 
     close_alsa_device();
-      
     return -2;
   }
   /*! Make a copy of hardware parameters. */
@@ -417,7 +416,6 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 
     default:
       DSP::log << "Unsupported no of bytes in channel" << endl;
-      
       return -1;
       break;
   }
@@ -428,10 +426,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 
     if (rc < 0)
     {
-      #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "Unable to set blocking mode" << endl;
-      #endif // AUDIO_DEBUG_MESSAGES_ON
-
+      DSP::log << "Unable to set blocking mode" << endl;
       return -1;
     }
   }
@@ -441,10 +436,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     rc = snd_pcm_nonblock(alsa_handle, 1);
     if (rc < 0)
     {
-      #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "Unable to set non blocking mode" << endl;
-      #endif // AUDIO_DEBUG_MESSAGES_ON
-
+      DSP::log << "Unable to set non blocking mode" << endl;
       return -1;
     }
   }
@@ -568,10 +560,7 @@ int DSP::ALSA_object_t::set_snd_pcm_format(snd_pcm_hw_params_t *params)
       break;
     
     default:
-      #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "Unsupported no of bytes in channel" << endl;
-      #endif // AUDIO_DEBUG_MESSAGES_ON
-      
+      DSP::log << "Unsupported no of bytes in channel" << endl;
       return -1;
       break;
   }
@@ -598,6 +587,7 @@ long DSP::ALSA_object_t::open_PCM_device_4_output(const int &no_of_channels, int
   
   else 
   {
+    DSP::log << "Device has not been opened." << endl;
     return -1;
   }
 }
@@ -620,6 +610,7 @@ long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int 
   }  
   else 
   {
+    DSP::log << "Device has not been opened." << endl;
     return -1;
   }
 }
@@ -704,9 +695,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
           break;
         
         default:
-          #ifdef AUDIO_DEBUG_MESSAGES_ON
-            DSP::log << "Unsupported no of bytes in channel" << endl;
-          #endif // AUDIO_DEBUG_MESSAGES_ON
+          DSP::log << "Unsupported no of bytes in channel" << endl;
           break;
       
         // converting samples ends
@@ -913,12 +902,10 @@ void DSP::ALSA_object_t::close_alsa_device(bool do_drain, bool use_log)
     }
   }
 
-  #ifdef AUDIO_DEBUG_MESSAGES_ON
     if (use_log == true)
     {
       DSP::log << "ALSA PCM sound closed" << endl;
     }
-  #endif // AUDIO_DEBUG_MESSAGES_ON
 
   IsDeviceInputOpen = false;
   IsDeviceOutputOpen = false;
