@@ -174,9 +174,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 
   if (rc < 0)
   {
-    #ifdef AUDIO_DEBUG_MESSAGES_ON
-      DSP::log << "Unable to open pcm device: " << snd_strerror(rc) << endl;
-    #endif // AUDIO_DEBUG_MESSAGES_ON
+    DSP::log << "Unable to open pcm device: " << snd_strerror(rc) << endl;
 
     return -1;
   }
@@ -210,19 +208,19 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 
   rc = snd_pcm_hw_params_set_buffer_size(alsa_handle, params, DSP::NoOfAudioOutputBuffers*audio_inbuffer_size_in_frames);
     
-  snd_pcm_uframes_t tmp_frames = audio_inbuffer_size_in_frames;
+  snd_pcm_uframes_t requested_audio_inbuffer_size_in_frames = audio_inbuffer_size_in_frames;
 
-  #ifdef AUDIO_DEBUG_MESSAGES_ON
+  if (rc < 0) {
     DSP::log << "Buffer size set with error code: " << rc << endl;
-  #endif // AUDIO_DEBUG_MESSAGES_ON
+  }
 
   /*! Set period size to desired number of frames. */
   snd_pcm_hw_params_set_period_size_near(alsa_handle, params, &audio_inbuffer_size_in_frames, &dir);
 
   #ifdef AUDIO_DEBUG_MESSAGES_ON
-    if (audio_inbuffer_size_in_frames != tmp_frames)
+    if (audio_inbuffer_size_in_frames != requested_audio_inbuffer_size_in_frames)
     {
-      DSP::log << "Current frames value should be equal: " << tmp_frames << endl;
+      DSP::log << "Current frames value should be equal: " << requested_audio_inbuffer_size_in_frames << endl;
       DSP::log << "Frames is not equal to tmp_frames! Frames: " << audio_inbuffer_size_in_frames << endl;    
     }
 
@@ -235,9 +233,8 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 
   if (rc < 0)
   {
-    #ifdef AUDIO_DEBUG_MESSAGES_ON
-      DSP::log << "Unable to set hw parameters: " << snd_strerror(rc) << endl;
-    #endif // AUDIO_DEBUG_MESSAGES_ON
+    DSP::log << "Unable to set hw parameters: " << snd_strerror(rc) << endl;
+    DSP::log << "Closing ALSA device" << endl;
 
     close_alsa_device();
       
@@ -419,9 +416,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
       break;
 
     default:
-      #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "Unsupported no of bytes in channel" << endl;
-      #endif // AUDIO_DEBUG_MESSAGES_ON
+      DSP::log << "Unsupported no of bytes in channel" << endl;
       
       return -1;
       break;

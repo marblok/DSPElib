@@ -24,7 +24,7 @@ INCLUDES_RLS := -I./src/include -I./src/include/rls
 LIBS := -lasound
 
 # \TODO is DEVCPP ok or is it unnecessary
-DFLAGS         = -DLINUX -DDEVCPP -DINCLUDE_DSPE_EXAMPLES
+DFLAGS         = -DLINUX -DDEVCPP -DINCLUDE_DSPE_EXAMPLES -DAUDIO_DEBUG_MESSAGES_ON
 CFLAGS_release = $(comflag) -std=c++0x -O3 -Wall -c -fmessage-length=0 -fno-strict-aliasing 
 CFLAGS_debug   = $(comflag) -std=c++0x -O0 -g3 -Wall -c -fmessage-length=0 -W -Wshadow -Wconversion -fstrict-aliasing -fmax-errors=5
 # -U__STRICT_ANSI__ jest potrzebne do kompilacji debug_new.cpp, je�eli pomin�� ten plik to mo�na r�wnie� wyrzuci� t� opcj�

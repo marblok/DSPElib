@@ -1,4 +1,5 @@
-TODO::
+TODO:
+  - test socket support on Linux (test examples as there are have been noticed some problems with bind)
   ? DSP::Clock_ptr => migrate to std::shared_ptr
   !!! Add TELEsound and PiAPS_sound projects to GitLab and start addaptation to new library version
 
