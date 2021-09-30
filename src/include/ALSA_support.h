@@ -1,7 +1,7 @@
 /*! \file ALSA_support.h
  * ALSA support header file
  *
- * \author Marek Blok
+ * \authors Damian Karaś, Marek Blok
  */
 //---------------------------------------------------------------------------
 #ifndef ALSA_support_H
