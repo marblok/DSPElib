@@ -569,8 +569,14 @@ namespace DSP {
       virtual unsigned int select_output_device_by_number(const unsigned int &device_number=UINT_MAX) = 0;
 
       //! audio_outbuffer_size is in samples (note that, for example, sample for 16bit stereo is represented by 4bytes)
+      /*! On success returns actual sampling rate of the opened device 
+       *  On fail returen -1; 
+       */
       virtual long open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size = -1) = 0;
       //! audio_inbuffer_size is in samples (note that, for example, sample for 16bit stereo is represented by 4bytes)
+      /*! On success returns actual sampling rate of the opened device.
+       *  On fail returen -1; 
+       */
       virtual long open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_inbuffer_size = -1) = 0;
       virtual bool close_PCM_device_input(void) = 0;
       //! close sound card output
@@ -642,7 +648,7 @@ namespace DSP {
        * 
        * The callback function will be called by the SOUND_object when new sound card's output buffer can processed.
        * The callback function has to return true when it filled the buffer with samples or false when there is not enought data.
-       * On false the SOUND_object most probably will discard the buffer. Nevertheless it can try to call the callback again.
+       * On false the SOUND_object most probably will discard the buffer. Nevertheless it can try (actually it should) to call the callback again.
        * \TODO revise the concept when the there will be a SOUND_object_t derivative that uses this approach.
        * \note Needs addaptation of DSP::u::AudioOutput class.
        */

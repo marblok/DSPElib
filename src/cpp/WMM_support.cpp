@@ -269,7 +269,7 @@ long DSP::WMM_object_t::open_PCM_device_4_input(const int &no_of_channels, int n
     IsRecordingNow = false;
     NextBufferInInd = 0;
 
-    return 1; //! \TODO check this also for output
+    return sampling_rate; 
   }
 
   // error creating audio object
@@ -353,6 +353,8 @@ long DSP::WMM_object_t::open_PCM_device_4_output(const int &no_of_channels, int 
       DSP::f::AudioCheckError(result);
       waveHeaderOut[ind].dwFlags= WHDR_DONE; // WHDR_BEGINLOOP | WHDR_ENDLOOP;
     }
+
+    return sampling_rate;
   }
   else
   { //error while creating audio output
@@ -361,7 +363,7 @@ long DSP::WMM_object_t::open_PCM_device_4_output(const int &no_of_channels, int 
     WaveOutBufferLen = 0;
   }
 
-  return sampling_rate;
+  return -1;
 }
 
 bool DSP::WMM_object_t::close_PCM_device_input(void) {
