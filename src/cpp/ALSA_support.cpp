@@ -18,10 +18,10 @@ DSP::ALSA_object_t::ALSA_object_t()
   alsa_handle = NULL;
   hw_params = NULL;
 
-  std::string endianess;
-  endianess = system("lscpu | grep \"Byte Order\" | egrep -o 'Little Endian|Big Endian'");
+  std::string endianness;
+  endianness = system("lscpu | grep \"Byte Order\" | egrep -o 'Little Endian|Big Endian'");
 
-  if (endianess == "Big Endian")
+  if (endianness == "Big Endian")
     IsLittleEndian = false;
   else
     IsLittleEndian = true;
@@ -904,7 +904,7 @@ void DSP::ALSA_object_t::close_alsa_device(bool do_drain, bool use_log)
 
     if (use_log == true)
     {
-      DSP::log << "ALSA PCM sound closed" << endl;
+      DSP::log << "ALSA PCM sound closed." << endl;
     }
 
   IsDeviceInputOpen = false;
