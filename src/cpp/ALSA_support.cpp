@@ -65,6 +65,7 @@ DSP::ALSA_object_t::~ALSA_object_t()
   buffers_8bit.clear();
   buffers_16bit.clear();
   buffers_32bit.clear();
+  buffers_32bit_f.clear();
   buffers_64bit.clear();
   pcm_buffer.clear();
   pcm_buffer_size_in_frames.clear();
