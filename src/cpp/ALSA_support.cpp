@@ -350,75 +350,149 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   
   size_b = audio_inbuffer_size_in_frames * no_of_channels_alsa * no_of_bytes_in_channel;
 
-  pcm_buffer.resize(DSP::NoOfAudioOutputBuffers);
-  pcm_buffer_size_in_frames.resize(DSP::NoOfAudioOutputBuffers);
-
-  switch (no_of_bytes_in_channel)
+  if (stream_type == SND_PCM_STREAM_PLAYBACK)
   {
-    case 1:
-      buffers_8bit.resize(DSP::NoOfAudioOutputBuffers);
-
-      for(unsigned int ind = 0; ind < DSP::NoOfAudioOutputBuffers; ind++)
-      {
-        buffers_8bit[ind].resize(size_b / no_of_bytes_in_channel);
-        pcm_buffer[ind] = (uint8_t *)(buffers_8bit[ind].data());
-        pcm_buffer_size_in_frames[ind] = (snd_pcm_sframes_t) buffers_8bit[ind].size() / no_of_channels_alsa;
-      }
-      break;
-
-     case 2:
-      buffers_16bit.resize(DSP::NoOfAudioOutputBuffers);
-
-      for(unsigned int ind = 0; ind < DSP::NoOfAudioOutputBuffers; ind++)
-      {
-        buffers_16bit[ind].resize(size_b / no_of_bytes_in_channel);
-        pcm_buffer[ind] = (uint8_t *)(buffers_16bit[ind].data());
-        pcm_buffer_size_in_frames[ind] = (snd_pcm_sframes_t) buffers_16bit[ind].size() / no_of_channels_alsa; // buffer_size_in_frames should also be a vector since this value is not always used in this call and might be needed in the future
-      }
-      break;
-
-    case 3:
-    case 4:
-      if (IsHigherQualityMode)
-      {
-        buffers_32bit.resize(DSP::NoOfAudioOutputBuffers);
+    pcm_buffer.resize(DSP::NoOfAudioOutputBuffers);
+    pcm_buffer_size_in_frames.resize(DSP::NoOfAudioOutputBuffers);
+    switch (no_of_bytes_in_channel)
+    {
+      case 1:
+        buffers_8bit.resize(DSP::NoOfAudioOutputBuffers);
 
         for(unsigned int ind = 0; ind < DSP::NoOfAudioOutputBuffers; ind++)
         {
-          buffers_32bit[ind].resize(size_b / no_of_bytes_in_channel);
-          pcm_buffer[ind] = (uint8_t *)(buffers_32bit[ind].data());
-          pcm_buffer_size_in_frames[ind] = (snd_pcm_sframes_t) buffers_32bit[ind].size() / no_of_channels_alsa;
+          buffers_8bit[ind].resize(size_b / no_of_bytes_in_channel);
+          pcm_buffer[ind] = (uint8_t *)(buffers_8bit[ind].data());
+          pcm_buffer_size_in_frames[ind] = (snd_pcm_sframes_t) buffers_8bit[ind].size() / no_of_channels_alsa;
         }
-      }
+        break;
+
+      case 2:
+        buffers_16bit.resize(DSP::NoOfAudioOutputBuffers);
+
+        for(unsigned int ind = 0; ind < DSP::NoOfAudioOutputBuffers; ind++)
+        {
+          buffers_16bit[ind].resize(size_b / no_of_bytes_in_channel);
+          pcm_buffer[ind] = (uint8_t *)(buffers_16bit[ind].data());
+          pcm_buffer_size_in_frames[ind] = (snd_pcm_sframes_t) buffers_16bit[ind].size() / no_of_channels_alsa; // buffer_size_in_frames should also be a vector since this value is not always used in this call and might be needed in the future
+        }
+        break;
+
+      case 3:
+      case 4:
+        if (IsHigherQualityMode)
+        {
+          buffers_32bit.resize(DSP::NoOfAudioOutputBuffers);
+
+          for(unsigned int ind = 0; ind < DSP::NoOfAudioOutputBuffers; ind++)
+          {
+            buffers_32bit[ind].resize(size_b / no_of_bytes_in_channel);
+            pcm_buffer[ind] = (uint8_t *)(buffers_32bit[ind].data());
+            pcm_buffer_size_in_frames[ind] = (snd_pcm_sframes_t) buffers_32bit[ind].size() / no_of_channels_alsa;
+          }
+        }
  
-      else //! native mode
-      {
-        buffers_32bit_f.resize(DSP::NoOfAudioOutputBuffers);
+        else //! native mode
+        {
+          buffers_32bit_f.resize(DSP::NoOfAudioOutputBuffers);
+
+          for(unsigned int ind = 0; ind < DSP::NoOfAudioOutputBuffers; ind++)
+          {
+            buffers_32bit_f[ind].resize(size_b / no_of_bytes_in_channel);
+            pcm_buffer[ind] = (uint8_t *)(buffers_32bit_f[ind].data());
+            pcm_buffer_size_in_frames[ind] = (snd_pcm_sframes_t) buffers_32bit_f[ind].size() / no_of_channels_alsa;
+          }
+        }
+        break;
+
+      case 8:
+        buffers_64bit.resize(DSP::NoOfAudioOutputBuffers);
 
         for(unsigned int ind = 0; ind < DSP::NoOfAudioOutputBuffers; ind++)
         {
-          buffers_32bit_f[ind].resize(size_b / no_of_bytes_in_channel);
-          pcm_buffer[ind] = (uint8_t *)(buffers_32bit_f[ind].data());
-          pcm_buffer_size_in_frames[ind] = (snd_pcm_sframes_t) buffers_32bit_f[ind].size() / no_of_channels_alsa;
+          buffers_64bit[ind].resize(size_b / no_of_bytes_in_channel);
+          pcm_buffer[ind] = (uint8_t *)(buffers_64bit[ind].data());
+          pcm_buffer_size_in_frames[ind] = (snd_pcm_sframes_t) buffers_64bit[ind].size() / no_of_channels_alsa;
         }
-      }
-      break;
+        break;
 
-    case 8:
-      buffers_64bit.resize(DSP::NoOfAudioOutputBuffers);
+      default:
+        DSP::log << "Unsupported no of bytes in channel" << endl;
+        return -1;
+        break;
+    }
+  }
+  else // (stream_type == SND_PCM_STREAM_CAPTURE)
+  {
+    pcm_buffer.resize(DSP::NoOfAudioInputBuffers);
+    pcm_buffer_size_in_frames.resize(DSP::NoOfAudioInputBuffers);
+        switch (no_of_bytes_in_channel)
+    {
+      case 1:
+        buffers_8bit.resize(DSP::NoOfAudioInputBuffers);
 
-      for(unsigned int ind = 0; ind < DSP::NoOfAudioOutputBuffers; ind++)
-      {
-        buffers_64bit[ind].resize(size_b / no_of_bytes_in_channel);
-        pcm_buffer[ind] = (uint8_t *)(buffers_64bit[ind].data());
-        pcm_buffer_size_in_frames[ind] = (snd_pcm_sframes_t) buffers_64bit[ind].size() / no_of_channels_alsa;
-      }
-      break;
+        for(unsigned int ind = 0; ind < DSP::NoOfAudioInputBuffers; ind++)
+        {
+          buffers_8bit[ind].resize(size_b / no_of_bytes_in_channel);
+          pcm_buffer[ind] = (uint8_t *)(buffers_8bit[ind].data());
+          pcm_buffer_size_in_frames[ind] = (snd_pcm_sframes_t) buffers_8bit[ind].size() / no_of_channels_alsa;
+        }
+        break;
 
-    default:
-      DSP::log << "Unsupported no of bytes in channel" << endl;
-      return -1;
-      break;
+      case 2:
+        buffers_16bit.resize(DSP::NoOfAudioInputBuffers);
+
+        for(unsigned int ind = 0; ind < DSP::NoOfAudioInputBuffers; ind++)
+        {
+          buffers_16bit[ind].resize(size_b / no_of_bytes_in_channel);
+          pcm_buffer[ind] = (uint8_t *)(buffers_16bit[ind].data());
+          pcm_buffer_size_in_frames[ind] = (snd_pcm_sframes_t) buffers_16bit[ind].size() / no_of_channels_alsa; // buffer_size_in_frames should also be a vector since this value is not always used in this call and might be needed in the future
+        }
+        break;
+
+      case 3:
+      case 4:
+        if (IsHigherQualityMode)
+        {
+          buffers_32bit.resize(DSP::NoOfAudioInputBuffers);
+
+          for(unsigned int ind = 0; ind < DSP::NoOfAudioInputBuffers; ind++)
+          {
+            buffers_32bit[ind].resize(size_b / no_of_bytes_in_channel);
+            pcm_buffer[ind] = (uint8_t *)(buffers_32bit[ind].data());
+            pcm_buffer_size_in_frames[ind] = (snd_pcm_sframes_t) buffers_32bit[ind].size() / no_of_channels_alsa;
+          }
+        }
+ 
+        else //! native mode
+        {
+          buffers_32bit_f.resize(DSP::NoOfAudioInputBuffers);
+
+          for(unsigned int ind = 0; ind < DSP::NoOfAudioInputBuffers; ind++)
+          {
+            buffers_32bit_f[ind].resize(size_b / no_of_bytes_in_channel);
+            pcm_buffer[ind] = (uint8_t *)(buffers_32bit_f[ind].data());
+            pcm_buffer_size_in_frames[ind] = (snd_pcm_sframes_t) buffers_32bit_f[ind].size() / no_of_channels_alsa;
+          }
+        }
+        break;
+
+      case 8:
+        buffers_64bit.resize(DSP::NoOfAudioInputBuffers);
+
+        for(unsigned int ind = 0; ind < DSP::NoOfAudioInputBuffers; ind++)
+        {
+          buffers_64bit[ind].resize(size_b / no_of_bytes_in_channel);
+          pcm_buffer[ind] = (uint8_t *)(buffers_64bit[ind].data());
+          pcm_buffer_size_in_frames[ind] = (snd_pcm_sframes_t) buffers_64bit[ind].size() / no_of_channels_alsa;
+        }
+        break;
+
+      default:
+        DSP::log << "Unsupported no of bytes in channel" << endl;
+        return -1;
+        break;
+    }
   }
 
   if (blocking_mode == false)
@@ -435,6 +509,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   else
   {
     rc = snd_pcm_nonblock(alsa_handle, 1);
+
     if (rc < 0)
     {
       DSP::log << "Unable to set non blocking mode" << endl;

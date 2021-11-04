@@ -79,9 +79,9 @@ namespace DSP {
 
         /***************************************************/
         /****************AUDIO INPUT TEST*******************/
-        DSP::e::SampleType InSampleType;
-        static void CALLBACK waveInProc(HWAVEIN hwi, UINT uMsg, uint32_t dwInstance, uint32_t dwParam1, uint32_t dwParam2);
-        std::vector<std::vector<int8_t>> input_buffers;
+        //DSP::e::SampleType InSampleType;
+        //static void CALLBACK waveInProc(HWAVEIN hwi, UINT uMsg, uint32_t dwInstance, uint32_t dwParam1, uint32_t dwParam2);
+        //std::vector<std::vector<int8_t>> input_buffers;
         /**********************END**************************/
         /***************************************************/
 
