@@ -583,7 +583,7 @@ long DSP::ALSA_object_t::open_PCM_device_4_output(const int &no_of_channels, int
   if(rc > 0)
   { 
     IsDeviceOutputOpen = true;
-    return sampling_rate;
+    return sampling_rate_alsa;
   }
   
   else 
@@ -607,7 +607,7 @@ long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int 
   if(rc > 0)
   { 
     IsDeviceInputOpen = true;
-    return sampling_rate;
+    return sampling_rate_alsa;
   }  
   else 
   {
