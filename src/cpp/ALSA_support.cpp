@@ -648,9 +648,9 @@ long DSP::ALSA_object_t::open_PCM_device_4_output(const int &no_of_channels, int
 {
   int rc;
 
+  no_of_channels_alsa = (unsigned int) no_of_channels;
   no_of_bytes_in_channel = (unsigned int) no_of_bits / 8;
   sampling_rate_alsa = (unsigned int) sampling_rate;
-  no_of_channels_alsa = (unsigned int) no_of_channels;
   audio_inbuffer_size_in_frames = (snd_pcm_uframes_t) audio_outbuffer_size;
 
   rc = open_alsa_device(SND_PCM_STREAM_PLAYBACK);
@@ -658,7 +658,7 @@ long DSP::ALSA_object_t::open_PCM_device_4_output(const int &no_of_channels, int
   if(rc > 0)
   { 
     IsDeviceOutputOpen = true;
-    return sampling_rate_alsa;
+    return (long) sampling_rate_alsa;
   }
   
   else 
@@ -672,9 +672,9 @@ long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int 
 {
   int rc;
 
+  no_of_channels_alsa = (unsigned int) no_of_channels;
   no_of_bytes_in_channel = (unsigned int) no_of_bits / 8;
   sampling_rate_alsa = (unsigned int) sampling_rate;
-  no_of_channels_alsa = (unsigned int) no_of_channels;
   audio_inbuffer_size_in_frames = (snd_pcm_uframes_t) audio_inbuffer_size;
 
   rc = open_alsa_device(SND_PCM_STREAM_CAPTURE);
@@ -682,7 +682,7 @@ long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int 
   if(rc > 0)
   { 
     IsDeviceInputOpen = true;
-    return sampling_rate_alsa;
+    return (long) sampling_rate_alsa;
   }  
   else 
   {
