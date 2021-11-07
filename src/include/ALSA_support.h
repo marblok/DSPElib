@@ -34,6 +34,7 @@ namespace DSP {
 
         //! keeping track of which buffer is currently being filled
         unsigned int NextBufferOutInd;
+        unsigned int NextBufferInInd;
 
         //! variables holding values ​​from the external interface
         unsigned int sampling_rate_alsa;
@@ -75,6 +76,14 @@ namespace DSP {
         
         //! buffer capacity
         int size_b;
+
+        /***************************************************/
+        /****************AUDIO INPUT TEST*******************/
+        //DSP::e::SampleType InSampleType;
+        //static void CALLBACK waveInProc(HWAVEIN hwi, UINT uMsg, uint32_t dwInstance, uint32_t dwParam1, uint32_t dwParam2);
+        //std::vector<std::vector<int8_t>> input_buffers;
+        /**********************END**************************/
+        /***************************************************/
 
         /*! Open default PCM device and return 1 on success or negative error code
             stream_type = SND_PCM_STREAM_PLAYBACK or SND_PCM_STREAM_CAPTURE
