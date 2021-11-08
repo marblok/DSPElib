@@ -43,6 +43,7 @@ DSP::ALSA_object_t::ALSA_object_t()
   InDevNo = 1;
 
   NextBufferOutInd = 0;
+  NextBufferInInd = 0;
 
   /* 44100 bits/second sampling rate (CD quality) */
   sampling_rate_alsa = 44100;
@@ -663,7 +664,7 @@ long DSP::ALSA_object_t::open_PCM_device_4_output(const int &no_of_channels, int
   
   else 
   {
-    DSP::log << "Device has not been opened." << endl;
+    DSP::log << "Device has not been opened. Error code: " << rc << endl;
     return -1;
   }
 }
@@ -686,7 +687,7 @@ long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int 
   }  
   else 
   {
-    DSP::log << "Device has not been opened." << endl;
+    DSP::log << "Device has not been opened. Error code: " << rc << endl;
     return -1;
   }
 }
