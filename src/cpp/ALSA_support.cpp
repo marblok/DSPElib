@@ -216,7 +216,8 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 
   if (rc < 0)
   {
-    DSP::log << "Buffer size set with error code: " << rc << endl;
+    DSP::log << "Unable to set a buffer size with error code: " << rc << endl;
+    return -5;
   }
 
   /*! Set period size to desired number of frames. */
