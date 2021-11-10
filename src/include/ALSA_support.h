@@ -70,20 +70,12 @@ namespace DSP {
 
         //! just samples
         snd_pcm_uframes_t audio_inbuffer_size_in_frames; // M.B. more meaningful variable name
-
+        
         //! We always use the non-blocking mode in DSPElib
         bool blocking_mode;
         
         //! buffer capacity
         int size_b;
-
-        /***************************************************/
-        /****************AUDIO INPUT TEST*******************/
-        //DSP::e::SampleType InSampleType;
-        //static void CALLBACK waveInProc(HWAVEIN hwi, UINT uMsg, uint32_t dwInstance, uint32_t dwParam1, uint32_t dwParam2);
-        //std::vector<std::vector<int8_t>> input_buffers;
-        /**********************END**************************/
-        /***************************************************/
 
         /*! Open default PCM device and return 1 on success or negative error code
             stream_type = SND_PCM_STREAM_PLAYBACK or SND_PCM_STREAM_CAPTURE

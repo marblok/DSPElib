@@ -144,7 +144,6 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 { 
   //! Errors controller
   int rc;
-  //! Errors controller
   int errc;
   
   snd_pcm_hw_params_t *params;
@@ -161,7 +160,6 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   #ifdef AUDIO_DEBUG_MESSAGES_ON
     DSP::log << "Opening ALSA device" << endl;
   
-
     //! \TODO Test mode:	Open mode (see SND_PCM_NONBLOCK, SND_PCM_ASYNC)
     
     if (stream_type == SND_PCM_STREAM_PLAYBACK)    
@@ -199,6 +197,11 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   #endif // AUDIO_DEBUG_MESSAGES_ON
     
   errc = DSP::ALSA_object_t::set_snd_pcm_format(params);
+
+  if (errc < 0)
+  {
+    return -4;
+  }
 
   snd_pcm_hw_params_set_channels(alsa_handle, params, no_of_channels_alsa);
 
