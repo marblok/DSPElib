@@ -423,7 +423,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 
       default:
         DSP::log << "Unsupported no of bytes in channel" << endl;
-        return -1;
+        return -6;
         break;
     }
   }
@@ -495,7 +495,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 
       default:
         DSP::log << "Unsupported no of bytes in channel" << endl;
-        return -1;
+        return -6;
         break;
     }
   }
@@ -507,7 +507,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     if (rc < 0)
     {
       DSP::log << "Unable to set blocking mode" << endl;
-      return -1;
+      return -7;
     }
   }
 
@@ -518,7 +518,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     if (rc < 0)
     {
       DSP::log << "Unable to set non blocking mode" << endl;
-      return -1;
+      return -8;
     }
   }
 
