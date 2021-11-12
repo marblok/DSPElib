@@ -72,7 +72,7 @@ namespace DSP {
         snd_pcm_uframes_t audio_inbuffer_size_in_frames; // M.B. more meaningful variable name
         
         //! We always use the non-blocking mode in DSPElib
-        bool blocking_mode;
+        bool non_blocking_mode;
         
         //! buffer capacity
         int size_b;

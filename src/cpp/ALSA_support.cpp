@@ -28,7 +28,7 @@ DSP::ALSA_object_t::ALSA_object_t()
 
   IsHigherQualityMode = false;
 
-  blocking_mode = false;
+  non_blocking_mode = true;
 
   IsDeviceInputOpen = false;
   IsDeviceOutputOpen = false;
@@ -500,7 +500,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     }
   }
 
-  if (blocking_mode == false)
+  if (non_blocking_mode == false)
   {
     rc = snd_pcm_nonblock(alsa_handle, 0);
 
