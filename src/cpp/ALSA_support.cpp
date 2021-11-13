@@ -905,7 +905,7 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_p
     {
       case EAGAIN:
         #ifdef AUDIO_DEBUG_MESSAGES_ON
-          DSP::log << "EAGAIN occured. Waiting for free buffer." << endl;
+          DSP::log << "EAGAIN occurred. Waiting for a free buffer." << endl;
         #endif // AUDIO_DEBUG_MESSAGES_ON
         //! \TODO M.B. In the future snd_pcm_status_get_avail / snd_pcm_avail_update could be used to select sleep time
         DSP::f::Sleep(0);
@@ -963,7 +963,7 @@ void DSP::ALSA_object_t::close_alsa_device(bool do_drain, bool use_log)
     }
     
     #ifdef AUDIO_DEBUG_MESSAGES_ON
-      DSP::log << "Closing PCM device." << endl;
+      DSP::log << "Closing the PCM device." << endl;
     #endif // AUDIO_DEBUG_MESSAGES_ON
 
     snd_pcm_close(alsa_handle);
