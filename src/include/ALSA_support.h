@@ -20,11 +20,14 @@ namespace DSP {
     
     class ALSA_object_t : public DSP::SOUND_object_t {
     private:
-        //! handlers
+        //! PCM device handler
         snd_pcm_t *alsa_handle;
+        //! copy of set configuration space handler 
         snd_pcm_hw_params_t *hw_params;
-    
+
+        //! stores pointers to audio buffers
         std::vector<uint8_t *> pcm_buffer;
+        //! stores size of audio buffers
         std::vector<snd_pcm_sframes_t> pcm_buffer_size_in_frames;
 
         //! output device number used in next open operations
@@ -32,13 +35,16 @@ namespace DSP {
         //! input device number used in next open operations 
         unsigned int InDevNo;
 
-        //! keeping track of which buffer is currently being filled
+        //! keeping track of which outbuffer is currently being filled
         unsigned int NextBufferOutInd;
+        //! keeping track of which inbuffer is currently being filled
         unsigned int NextBufferInInd;
 
-        //! variables holding values ​​from the external interface
+        //! sampling rate
         unsigned int sampling_rate_alsa;
+        //! number of channels
         unsigned int no_of_channels_alsa;
+        //! number of bytes in channel
         unsigned int no_of_bytes_in_channel;
 
         /*! It is better to use STD containers - they are more convenient, 
