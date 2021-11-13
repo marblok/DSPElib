@@ -71,7 +71,7 @@ DSP::ALSA_object_t::~ALSA_object_t()
   pcm_buffer.clear();
   pcm_buffer_size_in_frames.clear();
 
-  if (IsDeviceOutputOpen)
+  if (IsDeviceInputOpen)
     close_PCM_device_input();
   if (IsDeviceOutputOpen)
     close_PCM_device_output(true);
@@ -142,15 +142,16 @@ void DSP::ALSA_object_t::log_driver_data()
 
 int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 { 
-  //! Errors controller
+  //! Errors controller in API ALSA functions
   int rc;
+  //! Errors controller in set_snd_pcm_format() function
   int errc;
   
   snd_pcm_hw_params_t *params;
 
   //! For logging
   unsigned int val, val2;
-  //! For logging
+  //! Auxiliary variable in API ALSA functions
   int dir;
 
   if (alsa_handle != NULL)
@@ -199,9 +200,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   errc = DSP::ALSA_object_t::set_snd_pcm_format(params);
 
   if (errc < 0)
-  {
     return -4;
-  }
 
   snd_pcm_hw_params_set_channels(alsa_handle, params, no_of_channels_alsa);
 
@@ -379,7 +378,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
         {
           buffers_16bit[ind].resize(size_b / no_of_bytes_in_channel);
           pcm_buffer[ind] = (uint8_t *)(buffers_16bit[ind].data());
-          pcm_buffer_size_in_frames[ind] = (snd_pcm_sframes_t) buffers_16bit[ind].size() / no_of_channels_alsa; // buffer_size_in_frames should also be a vector since this value is not always used in this call and might be needed in the future
+          pcm_buffer_size_in_frames[ind] = (snd_pcm_sframes_t) buffers_16bit[ind].size() / no_of_channels_alsa;
         }
         break;
 
@@ -451,7 +450,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
         {
           buffers_16bit[ind].resize(size_b / no_of_bytes_in_channel);
           pcm_buffer[ind] = (uint8_t *)(buffers_16bit[ind].data());
-          pcm_buffer_size_in_frames[ind] = (snd_pcm_sframes_t) buffers_16bit[ind].size() / no_of_channels_alsa; // buffer_size_in_frames should also be a vector since this value is not always used in this call and might be needed in the future
+          pcm_buffer_size_in_frames[ind] = (snd_pcm_sframes_t) buffers_16bit[ind].size() / no_of_channels_alsa;
         }
         break;
 
@@ -521,12 +520,6 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
       return -8;
     }
   }
-
-  /*
-    rc = snd_pcm_readi(alsa_handle, pcm_buffer, frames);
-    DSP::log << "Read" << endl;
-  
-  */
 
   return 1;
 }
@@ -704,7 +697,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
   {
     if (rc < 0)
     {
-      // M.B. comment needed
+      // Regulation of sample values in case of exceeding the range [-1, 1]
       for (unsigned int m = 0; m < float_buffer.size(); m++)
       {
         if (float_buffer[m] < -1)
@@ -731,7 +724,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
           {
             buffers_16bit[NextBufferOutInd][no_of_channels_alsa * n] = int16_t(INT16_MAX * float_buffer[no_of_channels_alsa * n]);
               if (no_of_channels_alsa == 2)
-                buffers_16bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = int16_t(INT16_MAX * float_buffer[no_of_channels_alsa * n + 1]);
+                buffers_16bit[NextBufferOutInd][no_of_channels_alsa * n + 1] = int16_t(INT16_MAX * float_buffer[no_of_channels_alsa * n + 1]);
           }
           break;
 
@@ -740,7 +733,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
           {
             buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n] = int32_t(INT32_MAX * float_buffer[no_of_channels_alsa * n]);
               if (no_of_channels_alsa == 2)
-                buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = int32_t(INT32_MAX * float_buffer[no_of_channels_alsa * n + 1]);  
+                buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n + 1] = int32_t(INT32_MAX * float_buffer[no_of_channels_alsa * n + 1]);  
           }
           break;
 
@@ -751,7 +744,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
             {
               buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n] = int32_t(INT32_MAX * float_buffer[no_of_channels_alsa * n]);
                 if (no_of_channels_alsa == 2)
-                  buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = int32_t(INT32_MAX * float_buffer[no_of_channels_alsa * n + 1]);
+                  buffers_32bit[NextBufferOutInd][no_of_channels_alsa * n + 1] = int32_t(INT32_MAX * float_buffer[no_of_channels_alsa * n + 1]);
 
             }
 
@@ -759,7 +752,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
             {
               buffers_32bit_f[NextBufferOutInd][no_of_channels_alsa * n] = float_buffer[no_of_channels_alsa * n];
                 if (no_of_channels_alsa == 2)
-                  buffers_32bit_f[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = float_buffer[no_of_channels_alsa * n + 1];
+                  buffers_32bit_f[NextBufferOutInd][no_of_channels_alsa * n + 1] = float_buffer[no_of_channels_alsa * n + 1];
 
             }
           }
@@ -770,7 +763,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
           {
             buffers_64bit[NextBufferOutInd][no_of_channels_alsa * n] = float_buffer[no_of_channels_alsa * n];
               if (no_of_channels_alsa == 2)
-                buffers_64bit[NextBufferOutInd][no_of_channels_alsa * n + 1 ] = float_buffer[no_of_channels_alsa * n + 1];
+                buffers_64bit[NextBufferOutInd][no_of_channels_alsa * n + 1] = float_buffer[no_of_channels_alsa * n + 1];
           
           }
           break;
@@ -786,7 +779,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
       {
         if (NextBufferOutInd == DSP::NoOfAudioOutputBuffers - 2) //all but one spare buffer are filled up
         { 
-          snd_pcm_prepare(alsa_handle); // M.B. solves underrun problem after filling ALSA buffer
+          snd_pcm_prepare(alsa_handle); // solves underrun problem after filling ALSA buffer
 
           // send all data from buffers to soundcard to start playback
           for (unsigned int ind = 0; ind < DSP::NoOfAudioOutputBuffers - 1; ind++) //one spare buffer
