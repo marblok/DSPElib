@@ -1,4 +1,5 @@
 TODO::
+  SOUND_support_t::get_wave_in_raw_buffer - zastąpić metodą zawierającą konwersję typu, ew. rozbudować konwersję w DSP::u::AudioInput
   ? DSP::Clock_ptr => migrate to std::shared_ptr
   !!! Add TELEsound and PiAPS_sound projects to GitLab and start addaptation to new library version
 
