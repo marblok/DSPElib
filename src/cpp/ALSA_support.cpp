@@ -883,14 +883,12 @@ bool DSP::ALSA_object_t::stop_recording(void)
 
 bool DSP::ALSA_object_t::start_recording(void)
 {
-  assert(!"DSP::ALSA_object_t::stop_recording not implemented yet");
+  IsRecordingNow = true;
   return true;
 }
 
 bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType, std::vector<char> &wave_in_raw_buffer)
 {
-  //assert(!"DSP::ALSA_object_t::get_wave_in_raw_buffer not implemented yet");
-
   InSampleTypeALSA = InSampleType; // DSP::e::SampleType::ST_uchar should be given
 
   snd_pcm_sframes_t rc;
