@@ -891,7 +891,7 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
 {
   assert(!"DSP::ALSA_object_t::get_wave_in_raw_buffer not implemented yet");
 
-  InSampleTypeALSA = InSampleType;
+  InSampleTypeALSA = InSampleType; // DSP::e::SampleType::ST_uchar should be given
 
   snd_pcm_sframes_t rc;
   // one spare buffer
@@ -910,7 +910,7 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
         
           snd_pcm_prepare(alsa_handle);
           break;
-          
+
         case EAGAIN:
 
           #ifdef AUDIO_DEBUG_MESSAGES_ON
