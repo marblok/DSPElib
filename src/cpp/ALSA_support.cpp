@@ -894,52 +894,55 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
   InSampleTypeALSA = InSampleType;
 
   snd_pcm_sframes_t rc;
-    // one spare buffer
-    for (unsigned int ind = 0; ind < DSP::NoOfAudioInputBuffers - 1; ind++)
-    {
+  // one spare buffer
+  for (unsigned int ind = 0; ind < DSP::NoOfAudioInputBuffers - 1; ind++)
+   {
       rc = snd_pcm_readi(alsa_handle, pcm_buffer[ind], pcm_buffer_size_in_frames[ind]);
 
       switch (-rc)
       {
-      case EPIPE:
+        case EPIPE:
         
-        #ifdef AUDIO_DEBUG_MESSAGES_ON
-          // EPIPE means underrun
-          DSP::log << "Underrun occurred" << endl;
-        #endif // AUDIO_DEBUG_MESSAGES_ON
+          #ifdef AUDIO_DEBUG_MESSAGES_ON
+            // EPIPE means underrun
+            DSP::log << "Underrun occurred" << endl;
+          #endif // AUDIO_DEBUG_MESSAGES_ON
         
-        snd_pcm_prepare(alsa_handle);
-        break;
-      case EAGAIN:
+          snd_pcm_prepare(alsa_handle);
+          break;
+          
+        case EAGAIN:
 
-        #ifdef AUDIO_DEBUG_MESSAGES_ON
-          DSP::log << "EAGAIN occurred. Waiting for a free buffer." << endl;
-        #endif // AUDIO_DEBUG_MESSAGES_ON
+          #ifdef AUDIO_DEBUG_MESSAGES_ON
+            DSP::log << "EAGAIN occurred. Waiting for a free buffer." << endl;
+          #endif // AUDIO_DEBUG_MESSAGES_ON
         
-        DSP::f::Sleep(0);
-        break;
+          DSP::f::Sleep(0);
+          break;
       
-      default:
-        if (rc > 0)
-          {
-            pcm_buffer_size_in_frames[ind] -= rc;
-            pcm_buffer[ind] += rc * no_of_channels_alsa * no_of_bytes_in_channel;
+        default:
+          if (rc > 0)
+            {
+              pcm_buffer_size_in_frames[ind] -= rc;
+              pcm_buffer[ind] += rc * no_of_channels_alsa * no_of_bytes_in_channel;
 
-            #ifdef AUDIO_DEBUG_MESSAGES_ON
-              DSP::log << "Short read. Current rc = " << rc << "." << endl;
-            #endif // AUDIO_DEBUG_MESSAGES_ON
-          }
+              #ifdef AUDIO_DEBUG_MESSAGES_ON
+                DSP::log << "Short read. Current rc = " << rc << "." << endl;
+              #endif // AUDIO_DEBUG_MESSAGES_ON
 
-          else
-          {
-            #ifdef AUDIO_DEBUG_MESSAGES_ON
-              // EPIPE means underrun
-              DSP::log << "Unsupported error." << endl;
-              DSP::log << "Error from readi: " << snd_strerror(rc) << endl;
-            #endif // AUDIO_DEBUG_MESSAGES_ON
+              wave_in_raw_buffer.push_back(pcm_buffer[ind]);
+            }
 
-            pcm_buffer_size_in_frames[ind] = 0;
-          }
+            else
+            {
+              #ifdef AUDIO_DEBUG_MESSAGES_ON
+                // EPIPE means underrun
+                DSP::log << "Unsupported error." << endl;
+                DSP::log << "Error from readi: " << snd_strerror(rc) << endl;
+              #endif // AUDIO_DEBUG_MESSAGES_ON
+
+              pcm_buffer_size_in_frames[ind] = 0;
+            }
           break;
       }
     }
