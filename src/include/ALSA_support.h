@@ -97,6 +97,9 @@ namespace DSP {
         
         //! playback
         snd_pcm_sframes_t pcm_writei(const void *buffer, const snd_pcm_uframes_t &frames); // M.B. this will be more transparent
+
+        //! recording
+        //snd_pcm_sframes_t DSP::ALSA_object_t::pcm_readi(const void *buffer, const snd_pcm_uframes_t &frames)
         
         //! Set SND PCM format depending on no of bytes in channel and CPU endianness
         int set_snd_pcm_format(snd_pcm_hw_params_t *params);
