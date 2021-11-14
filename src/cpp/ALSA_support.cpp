@@ -894,6 +894,8 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
   InSampleTypeALSA = InSampleType; // DSP::e::SampleType::ST_uchar should be given
 
   snd_pcm_sframes_t rc;
+  wave_in_raw_buffer.resize(NoOfAudioInputBuffers);
+
   // one spare buffer
   for (unsigned int ind = 0; ind < DSP::NoOfAudioInputBuffers - 1; ind++)
    {
@@ -930,8 +932,7 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
                 DSP::log << "Short read. Current rc = " << rc << "." << endl;
               #endif // AUDIO_DEBUG_MESSAGES_ON
 
-              wave_in_raw_buffer.resize(NoOfAudioInputBuffers);
-              wave_in_raw_buffer.data() = pcm_buffer[ind];
+              wave_in_raw_buffer.push_back(*pcm_buffer[ind]);
             }
 
             else
