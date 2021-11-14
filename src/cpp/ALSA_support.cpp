@@ -432,7 +432,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   {
     pcm_buffer.resize(DSP::NoOfAudioInputBuffers);
     pcm_buffer_size_in_frames.resize(DSP::NoOfAudioInputBuffers);
-        switch (no_of_bytes_in_channel)
+    switch (no_of_bytes_in_channel)
     {
       case 1:
         buffers_8bit.resize(DSP::NoOfAudioInputBuffers);
@@ -889,7 +889,7 @@ bool DSP::ALSA_object_t::start_recording(void)
 
 bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType, std::vector<char> &wave_in_raw_buffer)
 {
-  assert(!"DSP::ALSA_object_t::get_wave_in_raw_buffer not implemented yet");
+  //assert(!"DSP::ALSA_object_t::get_wave_in_raw_buffer not implemented yet");
 
   InSampleTypeALSA = InSampleType; // DSP::e::SampleType::ST_uchar should be given
 
@@ -930,7 +930,8 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
                 DSP::log << "Short read. Current rc = " << rc << "." << endl;
               #endif // AUDIO_DEBUG_MESSAGES_ON
 
-              wave_in_raw_buffer.push_back(pcm_buffer[ind]);
+              wave_in_raw_buffer.resize(NoOfAudioInputBuffers);
+              wave_in_raw_buffer.data() = pcm_buffer[ind];
             }
 
             else
