@@ -76,6 +76,9 @@ namespace DSP {
 
         //! just samples
         snd_pcm_uframes_t audio_inbuffer_size_in_frames; // M.B. more meaningful variable name
+
+        //! Type of samples in WaveInBuffers
+        DSP::e::SampleType InSampleTypeALSA;
         
         //! We always use the non-blocking mode in DSPElib
         bool non_blocking_mode;

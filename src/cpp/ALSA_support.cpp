@@ -94,7 +94,7 @@ unsigned int DSP::ALSA_object_t::select_output_device_by_number(const unsigned i
 
 bool DSP::ALSA_object_t::is_input_callback_supported(void) 
 {
-  return true;
+  return false;
 }
 
 bool DSP::ALSA_object_t::is_output_callback_supported(void) 
@@ -106,6 +106,7 @@ void DSP::ALSA_object_t::log_driver_data()
 {
   #ifdef AUDIO_DEBUG_MESSAGES_ON
 
+    //! For logging
     int val;
 
     DSP::log << "ALSA library version: " << SND_LIB_VERSION_STR << endl;
@@ -146,7 +147,8 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   int rc;
   //! Errors controller in set_snd_pcm_format() function
   int errc;
-  
+
+  //! Local configuration space handler 
   snd_pcm_hw_params_t *params;
 
   //! For logging
@@ -888,6 +890,11 @@ bool DSP::ALSA_object_t::start_recording(void)
 bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType, std::vector<char> &wave_in_raw_buffer)
 {
   assert(!"DSP::ALSA_object_t::get_wave_in_raw_buffer not implemented yet");
+
+  InSampleTypeALSA = InSampleType;
+
+  snd_pcm_sframes_t rc;
+
   return true;
 }
 
