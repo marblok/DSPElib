@@ -677,6 +677,20 @@ long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int 
   sampling_rate_alsa = (unsigned int) sampling_rate;
   audio_inbuffer_size_in_frames = (snd_pcm_uframes_t) audio_inbuffer_size;
 
+  switch (no_of_bytes_in_channel)
+  {
+    case 1:
+      InSampleTypeALSA = DSP::e::SampleType::ST_uchar;
+      break;
+    case 2:
+      InSampleTypeALSA = DSP::e::SampleType::ST_short;
+      break;
+    default:
+      InSampleTypeALSA = DSP::e::SampleType::ST_short;
+      no_of_bytes_in_channel = 2;
+      break;
+  }
+
   rc = open_alsa_device(SND_PCM_STREAM_CAPTURE);
   
   if(rc > 0)
@@ -889,7 +903,7 @@ bool DSP::ALSA_object_t::start_recording(void)
 
 bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType, std::vector<char> &wave_in_raw_buffer)
 {
-  InSampleTypeALSA = InSampleType; // DSP::e::SampleType::ST_uchar should be given
+  InSampleType = this->InSampleTypeALSA;
 
   snd_pcm_sframes_t rc;
   wave_in_raw_buffer.resize(NoOfAudioInputBuffers);
