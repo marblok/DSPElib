@@ -499,6 +499,37 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
         return -6;
         break;
     }
+
+    switch (no_of_bytes_in_channel)
+    {
+      case 1:
+        InSampleTypeALSA = DSP::e::SampleType::ST_uchar;
+        break;
+
+      case 2:
+        InSampleTypeALSA = DSP::e::SampleType::ST_short;
+        break;
+
+      case 3:
+        InSampleTypeALSA = DSP::e::SampleType::ST_int;
+        break;
+    
+      case 4:
+        if (IsHigherQualityMode)
+          InSampleTypeALSA = DSP::e::SampleType::ST_int;
+        else
+          InSampleTypeALSA = DSP::e::SampleType::ST_float;
+        break;
+
+      case 8:
+        InSampleTypeALSA = DSP::e::SampleType::ST_double;
+        break;
+
+      default:
+        DSP::log << "Unsupported no of bytes in channel" << endl;
+        return -9;
+        break;
+    }
   }
 
   if (non_blocking_mode == false)
@@ -676,20 +707,6 @@ long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int 
   no_of_bytes_in_channel = (unsigned int) no_of_bits / 8;
   sampling_rate_alsa = (unsigned int) sampling_rate;
   audio_inbuffer_size_in_frames = (snd_pcm_uframes_t) audio_inbuffer_size;
-
-  switch (no_of_bytes_in_channel)
-  {
-    case 1:
-      InSampleTypeALSA = DSP::e::SampleType::ST_uchar;
-      break;
-    case 2:
-      InSampleTypeALSA = DSP::e::SampleType::ST_short;
-      break;
-    default:
-      InSampleTypeALSA = DSP::e::SampleType::ST_short;
-      no_of_bytes_in_channel = 2;
-      break;
-  }
 
   rc = open_alsa_device(SND_PCM_STREAM_CAPTURE);
   
