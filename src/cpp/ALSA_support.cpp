@@ -319,17 +319,8 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     snd_pcm_hw_params_get_period_time(hw_params, &val, &dir);
     DSP::log << "period time = " << val << " us" << endl;
 
-    if (stream_type == SND_PCM_STREAM_PLAYBACK)
-    {
-      snd_pcm_hw_params_get_period_size(hw_params, &audio_outbuffer_size_in_frames, &dir);
-      DSP::log << "period size = " << audio_outbuffer_size_in_frames << " frames" << endl;
-    }
-
-    else // stream_type == SND_PCM_STREAM_CAPTURE
-    {
-      snd_pcm_hw_params_get_period_size(hw_params, &audio_inbuffer_size_in_frames, &dir);
-      DSP::log << "period size = " << audio_inbuffer_size_in_frames << " frames" << endl;
-    }
+    snd_pcm_hw_params_get_period_size(hw_params, (snd_pcm_uframes_t *)&val, &dir);
+    DSP::log << "period size = " << audio_outbuffer_size_in_frames << " frames" << endl;
 
     snd_pcm_hw_params_get_buffer_time(hw_params, &val, &dir);
     DSP::log << "buffer time = " << val << " us" << endl;
