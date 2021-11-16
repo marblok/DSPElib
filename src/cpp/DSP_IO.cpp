@@ -4453,11 +4453,14 @@ bool DSP::u::AudioInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
   // If there are free buffers check whether the sound card has any audio data already available
   if (DSP_THIS->snd_object.get_input_callback_object() == NULL) {
     // callbacks are not used thus audio data has to be obtained directly from snd_object
-    if (DSP_THIS->GetNoOfFreeBuffers() > 0) {
+    while (DSP_THIS->GetNoOfFreeBuffers() > 0) {
       DSP::e::SampleType InSampleType;
       std::vector<char> wave_in_raw_buffer;
       if (DSP_THIS->snd_object.get_wave_in_raw_buffer(InSampleType, wave_in_raw_buffer)) {
         DSP_THIS->SOUND_object_callback(InSampleType, wave_in_raw_buffer);
+      }
+      else {
+        break;
       }
     }
   }
