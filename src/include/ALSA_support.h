@@ -50,12 +50,15 @@ namespace DSP {
         /*! It is better to use STD containers - they are more convenient, 
             and they mean fewer problems with memory leaks.
         */
-        //! buffers depending on samples type
+        //! outbuffers depending on samples type
         std::vector<std::vector<uint8_t>> buffers_8bit; 
         std::vector<std::vector<int16_t>> buffers_16bit;
         std::vector<std::vector<int32_t>> buffers_32bit;
         std::vector<std::vector<float>> buffers_32bit_f;
         std::vector<std::vector<double>> buffers_64bit;
+
+        //! inbuffer
+        std::vector<int8_t> capture_buffer;
         
         //! samples are integers rather than float values  
         bool IsHigherQualityMode;
@@ -75,7 +78,8 @@ namespace DSP {
         bool IsRecordingNow;
 
         //! just samples
-        snd_pcm_uframes_t audio_inbuffer_size_in_frames; // M.B. more meaningful variable name
+        snd_pcm_uframes_t audio_inbuffer_size_in_frames;
+        snd_pcm_uframes_t audio_outbuffer_size_in_frames;
 
         //! Type of samples in WaveInBuffers
         DSP::e::SampleType InSampleTypeALSA;
