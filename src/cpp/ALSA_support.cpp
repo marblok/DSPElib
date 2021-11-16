@@ -320,7 +320,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     DSP::log << "period time = " << val << " us" << endl;
 
     snd_pcm_hw_params_get_period_size(hw_params, (snd_pcm_uframes_t *)&val, &dir);
-    DSP::log << "period size = " << audio_outbuffer_size_in_frames << " frames" << endl;
+    DSP::log << "period size = " << val << " frames" << endl;
 
     snd_pcm_hw_params_get_buffer_time(hw_params, &val, &dir);
     DSP::log << "buffer time = " << val << " us" << endl;
