@@ -2977,7 +2977,8 @@ int main(int argc, char*argv[])
   DSP::log << DSP::e::LogMode::Error << "Finished test_hello" << endl;
 
   DSP::log << "Starting test_sound_input" << endl;
-  test_sound_input();
+  bool use_audio_output = false;
+  test_sound_input(use_audio_output);
   DSP::log << DSP::e::LogMode::Error << "Finished test_sound_input" << endl;
 
 #endif // INCLUDE_DSPE_EXAMPLES

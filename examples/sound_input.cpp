@@ -7,11 +7,14 @@
 
 #ifndef INCLUDE_DSPE_EXAMPLES
 int main(void)
+{
+  bool use_audio_output = true;
 #else
 #include "DSPE_examples.h"
-int test_sound_input(void)
-#endif // INCLUDE_DSPE_EXAMPLES
+int test_sound_input(bool use_audio_output)
 {
+#endif // INCLUDE_DSPE_EXAMPLES
+
   DSP::Clock_ptr MasterClock, AudioInClock;
   string tekst;
   int temp;
@@ -33,9 +36,13 @@ int test_sound_input(void)
 
   Fp = WaveIn.GetSamplingRate();
 
-  DSP::u::AudioOutput AudioOut(Fp);
+  std::shared_ptr<DSP::Block> AudioOut = nullptr;
+  if (use_audio_output == true)
+    AudioOut.reset(new DSP::u::AudioOutput(Fp));
+  else
+    AudioOut.reset(new DSP::u::Vacuum(1U));
 
-  WaveIn.Output("out") >> AudioOut.Input("in");
+  WaveIn.Output("out") >> AudioOut->Input("in");
 
   Fp2 = 8000;
   long Fp_gcd = DSP::f::gcd(Fp, Fp2);
@@ -56,8 +63,9 @@ int test_sound_input(void)
     DSP::log << "MAIN" << DSP::e::LogMode::second << temp << endl;
     temp++;
   }
-  while (WaveIn.GetBytesRead() != 0);
+  while ((temp <= 8) || (WaveIn.GetBytesRead() != 0));
 
+  AudioOut.reset();
   DSP::Clock::FreeClocks();
   DSP::log << DSP::e::LogMode::Error << "MAIN" << DSP::e::LogMode::second << "end" << endl;
 
