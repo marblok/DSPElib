@@ -967,6 +967,7 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
       }
     }
   }
+  return false;
 }
 
 snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_pcm_uframes_t &frames)

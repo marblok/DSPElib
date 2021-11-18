@@ -25,7 +25,12 @@ int test_sound_input(void)
  
   MasterClock=DSP::Clock::CreateMasterClock();
 
+#ifndef INCLUDE_DSPE_EXAMPLES
   DSP::u::WaveInput WaveIn(MasterClock, "DSPElib.wav", ".");
+#else
+  DSP::u::WaveInput WaveIn(MasterClock, "DSPElib.wav", "../examples");
+#endif // INCLUDE_DSPE_EXAMPLES
+
   Fp = WaveIn.GetSamplingRate();
 
   DSP::u::AudioOutput AudioOut(Fp);
@@ -35,7 +40,7 @@ int test_sound_input(void)
   Fp2 = 8000;
   long Fp_gcd = DSP::f::gcd(Fp, Fp2);
   AudioInClock=DSP::Clock::GetClock(MasterClock, Fp2 / Fp_gcd, Fp / Fp_gcd);
-  DSP::u::AudioInput AudioIn(AudioInClock, 8000, 1);
+  DSP::u::AudioInput AudioIn(AudioInClock, Fp2, 1);
   DSP::u::FileOutput WaveOut("captured_sample.wav",DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp2);
 
   AudioIn.Output("out") >> WaveOut.Input("in");
