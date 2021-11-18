@@ -37,8 +37,6 @@ namespace DSP {
 
         //! keeping track of which outbuffer is currently being filled
         unsigned int NextBufferOutInd;
-        //! keeping track of which inbuffer is currently being filled
-        unsigned int NextBufferInInd;
 
         //! sampling rate
         unsigned int sampling_rate_alsa;

@@ -43,7 +43,6 @@ DSP::ALSA_object_t::ALSA_object_t()
   InDevNo = 1;
 
   NextBufferOutInd = 0;
-  NextBufferInInd = 0;
 
   /* 44100 bits/second sampling rate (CD quality) */
   sampling_rate_alsa = 44100;
@@ -69,6 +68,9 @@ DSP::ALSA_object_t::~ALSA_object_t()
   buffers_32bit.clear();
   buffers_32bit_f.clear();
   buffers_64bit.clear();
+
+  capture_buffer.clear();
+
   pcm_buffer.clear();
   pcm_buffer_size_in_frames.clear();
 
@@ -149,7 +151,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   //! Errors controller in set_snd_pcm_format() function
   int errc;
 
-  //! Local configuration space handler 
+  //! Local configuration space handler
   snd_pcm_hw_params_t *params;
 
   //! For logging
@@ -166,7 +168,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   
     //! \TODO Test mode:	Open mode (see SND_PCM_NONBLOCK, SND_PCM_ASYNC)
     
-    if (stream_type == SND_PCM_STREAM_PLAYBACK)    
+    if (stream_type == SND_PCM_STREAM_PLAYBACK)
       DSP::log << "Opening PCM device for playback." << endl;
     
     else
@@ -396,6 +398,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   {
     pcm_buffer.resize(DSP::NoOfAudioOutputBuffers);
     pcm_buffer_size_in_frames.resize(DSP::NoOfAudioOutputBuffers);
+
     switch (no_of_bytes_in_channel)
     {
       case 1:
@@ -900,63 +903,70 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
   InSampleType = this->InSampleTypeALSA;
 
   snd_pcm_sframes_t rc;
-  wave_in_raw_buffer.resize(NoOfAudioInputBuffers);
 
-  // one spare buffer
-  for (unsigned int ind = 0; ind < DSP::NoOfAudioInputBuffers - 1; ind++)
+  for (unsigned int ind = 0; ind < pcm_buffer.size(); ind++)
    {
+      while (pcm_buffer_size_in_frames[ind])
+      {
+     
       rc = snd_pcm_readi(alsa_handle, pcm_buffer[ind], pcm_buffer_size_in_frames[ind]);
 
-      switch (-rc)
-      {
-        case EPIPE:
+        switch (-rc)
+        {
+          case EPIPE:
         
-          #ifdef AUDIO_DEBUG_MESSAGES_ON
-            // EPIPE means underrun
-            DSP::log << "Underrun occurred" << endl;
-          #endif // AUDIO_DEBUG_MESSAGES_ON
+            #ifdef AUDIO_DEBUG_MESSAGES_ON
+              // EPIPE means underrun
+              DSP::log << "Underrun occurred" << endl;
+            #endif // AUDIO_DEBUG_MESSAGES_ON
         
-          snd_pcm_prepare(alsa_handle);
-          break;
+            snd_pcm_prepare(alsa_handle);
+            break;
 
-        case EAGAIN:
+          case EAGAIN:
 
-          #ifdef AUDIO_DEBUG_MESSAGES_ON
-            DSP::log << "EAGAIN occurred. Waiting for a free buffer." << endl;
-          #endif // AUDIO_DEBUG_MESSAGES_ON
+            #ifdef AUDIO_DEBUG_MESSAGES_ON
+              DSP::log << "EAGAIN occurred. Waiting for a free buffer." << endl;
+            #endif // AUDIO_DEBUG_MESSAGES_ON
         
-          DSP::f::Sleep(0);
-          break;
+            DSP::f::Sleep(0);
+            break;
       
-        default:
-          if (rc > 0)
-            {
-              pcm_buffer_size_in_frames[ind] -= rc;
-              pcm_buffer[ind] += rc * no_of_channels_alsa * no_of_bytes_in_channel;
+          default:
+            if (rc > 0)
+              {
+                pcm_buffer_size_in_frames[ind] -= rc;
+                pcm_buffer[ind] += rc * no_of_channels_alsa * no_of_bytes_in_channel;
 
-              #ifdef AUDIO_DEBUG_MESSAGES_ON
-                DSP::log << "Short read. Current rc = " << rc << "." << endl;
-              #endif // AUDIO_DEBUG_MESSAGES_ON
+                #ifdef AUDIO_DEBUG_MESSAGES_ON
+                  DSP::log << "Short read. Current rc = " << rc << "." << endl;
+                #endif // AUDIO_DEBUG_MESSAGES_ON
 
-              wave_in_raw_buffer.push_back(*pcm_buffer[ind]);
-            }
+                if (pcm_buffer_size_in_frames[ind] == 0)
+                {
+                  std::swap(wave_in_raw_buffer, capture_buffer);
+                  DSP::log << "Inbuffer is full." << endl;
 
-            else
-            {
-              #ifdef AUDIO_DEBUG_MESSAGES_ON
-                // EPIPE means underrun
-                DSP::log << "Unsupported error." << endl;
-                DSP::log << "Error from readi: " << snd_strerror(rc) << endl;
-              #endif // AUDIO_DEBUG_MESSAGES_ON
+                  return true;
+                }
 
-              pcm_buffer_size_in_frames[ind] = 0;
-              return false;
-            }
-          break;
+              }
+
+              else
+              {
+                #ifdef AUDIO_DEBUG_MESSAGES_ON
+                  // EPIPE means underrun
+                  DSP::log << "Unsupported error." << endl;
+                  DSP::log << "Error from readi: " << snd_strerror(rc) << endl;
+                #endif // AUDIO_DEBUG_MESSAGES_ON
+
+                pcm_buffer_size_in_frames[ind] = 0;
+                return false;
+              }
+            break;
+        }
       }
     }
-
-  return true;
 }
 
 snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_pcm_uframes_t &frames)
@@ -1020,15 +1030,6 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_p
 
   return rc;
 }
-
-/*
-snd_pcm_sframes_t DSP::ALSA_object_t::pcm_readi(const void *buffer, const snd_pcm_uframes_t &frames)
-{
-  snd_pcm_sframes_t rc;
-
-  return rc;
-}
-*/
 
 void DSP::ALSA_object_t::close_alsa_device(bool do_drain, bool use_log)
 {
