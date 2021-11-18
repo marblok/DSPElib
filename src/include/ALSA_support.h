@@ -56,7 +56,7 @@ namespace DSP {
         std::vector<std::vector<double>> buffers_64bit;
 
         //! inbuffer
-        std::vector<uint8_t> capture_buffer;
+        std::vector<char> capture_buffer;
         
         //! samples are integers rather than float values  
         bool IsHigherQualityMode;
