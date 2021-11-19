@@ -904,8 +904,6 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
 
   snd_pcm_sframes_t rc;
 
-  wave_in_raw_buffer.resize(capture_buffer.size());
-
   for (unsigned int ind = 0; ind < pcm_buffer.size(); ind++)
   {
     while (pcm_buffer_size_in_frames[ind])
@@ -945,8 +943,15 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
 
             if (pcm_buffer_size_in_frames[ind] == 0)
             {
+              wave_in_raw_buffer.resize(capture_buffer.size());
               std::swap(wave_in_raw_buffer, capture_buffer);
-              DSP::log << "Inbuffer is full." << endl;
+              
+              #ifdef AUDIO_DEBUG_MESSAGES_ON
+                DSP::log << "Inbuffer is full." << endl;
+              #endif // AUDIO_DEBUG_MESSAGES_ON
+
+              pcm_buffer[ind] = (uint8_t *)(capture_buffer.data());
+              pcm_buffer_size_in_frames[ind] = (snd_pcm_sframes_t) capture_buffer.size() / no_of_bytes_in_channel / no_of_channels_alsa;
 
               return true;
             }
