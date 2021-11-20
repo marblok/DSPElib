@@ -45,7 +45,8 @@ namespace DSP {
         //! number of bytes in channel
         unsigned int no_of_bytes_in_channel;
 
-        /*! It is better to use STD containers - they are more convenient, 
+        /*! 
+            It is better to use STD containers - they are more convenient, 
             and they mean fewer problems with memory leaks.
         */
         //! outbuffers depending on samples type
@@ -58,28 +59,33 @@ namespace DSP {
         //! inbuffer
         std::vector<char> capture_buffer;
         
-        //! samples are integers rather than float values  
+        //! samples have integer values instead of float ones  
         bool IsHigherQualityMode;
         
-        //! CPU architecture
+        //! CPU architecture - endianness
         bool IsLittleEndian;
-
+        
+        //! Is PCM device openned for recording?
         bool IsDeviceInputOpen;
+        //! Is PCM device openned for playback?
         bool IsDeviceOutputOpen;
 
         //! Has playback already started?
         bool IsPlayingNow;
+        //! Is playback stopped?
         bool StopPlayback;
 
         //! Has recording already started?
         bool StopRecording;
+        //! Has recording already started?
         bool IsRecordingNow;
 
-        //! just samples
+        //! audio inbuffer size in samples
         snd_pcm_uframes_t audio_inbuffer_size_in_frames;
+        //! audio outbuffer size in samples
         snd_pcm_uframes_t audio_outbuffer_size_in_frames;
 
-        //! Type of samples in WaveInBuffers
+        //! type of samples in WaveInBuffers
         DSP::e::SampleType InSampleTypeALSA;
         
         //! We always use the non-blocking mode in DSPElib
@@ -93,15 +99,13 @@ namespace DSP {
             the rest of the parameters are set in the class
         */ 
         int open_alsa_device(snd_pcm_stream_t stream_type);
+        //! Close opened PCM device
         void close_alsa_device(bool do_drain = false, bool use_log = false);
 
-        void get_period_size(snd_pcm_uframes_t &frames, unsigned int &period_time);
+        //void get_period_size(snd_pcm_uframes_t &frames, unsigned int &period_time);
         
         //! playback
         snd_pcm_sframes_t pcm_writei(const void *buffer, const snd_pcm_uframes_t &frames); // M.B. this will be more transparent
-
-        //! recording
-        //snd_pcm_sframes_t DSP::ALSA_object_t::pcm_readi(const void *buffer, const snd_pcm_uframes_t &frames)
         
         //! Set SND PCM format depending on no of bytes in channel and CPU endianness
         int set_snd_pcm_format(snd_pcm_hw_params_t *params);
@@ -111,16 +115,19 @@ namespace DSP {
         //! Log basic ALSA information
         void log_driver_data();
 
-        //! Select the desired device from the interface
+        //! Select the desired device from the interface for recording
         unsigned int select_input_device_by_number(const unsigned int &device_number=UINT_MAX);
+        //! Select the desired device from the interface for playback
         unsigned int select_output_device_by_number(const unsigned int &device_number=UINT_MAX);
 
-        //! Deciding wheter PCM device is opening for playback or capture
+        //! Open PCM device for playback
         long open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size = -1);
+        //! Open PCM device for recording
         long open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_inbuffer_size = -1);
         
-        //! Closes PCM device
+        //! Closes PCM device from recording
         bool close_PCM_device_input(void);
+        //! Closes PCM device from playback
         bool close_PCM_device_output(const bool &do_drain);
 
         //! Returns true is the playback is on
@@ -150,8 +157,9 @@ namespace DSP {
         //! Returns false if callbacks are not supported of playback
         bool is_output_callback_supported(void);
 
-        //! object constructor and destructor
+        //! ALSA_obcject_t class constructor
         ALSA_object_t();
+        //! ALSA_obcject_t class destructor
         ~ALSA_object_t();
     };
 
