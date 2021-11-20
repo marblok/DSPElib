@@ -52,7 +52,6 @@ DSP::ALSA_object_t::ALSA_object_t()
   audio_inbuffer_size_in_frames = 8000;
   audio_outbuffer_size_in_frames = 8000;
   size_b = 32;
-
 }
 
 DSP::ALSA_object_t::~ALSA_object_t()
@@ -78,7 +77,6 @@ DSP::ALSA_object_t::~ALSA_object_t()
     close_PCM_device_input();
   if (IsDeviceOutputOpen)
     close_PCM_device_output(true);
-
 }
 
 unsigned int DSP::ALSA_object_t::select_input_device_by_number(const unsigned int &device_number)
@@ -162,7 +160,6 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   if (alsa_handle != NULL)
     close_alsa_device();
 
-  // ==================================================== //
   #ifdef AUDIO_DEBUG_MESSAGES_ON
     DSP::log << "Opening ALSA device" << endl;
   
