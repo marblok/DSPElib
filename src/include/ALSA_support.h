@@ -65,9 +65,9 @@ namespace DSP {
         //! CPU architecture - endianness
         bool IsLittleEndian;
         
-        //! Is PCM device openned for recording?
+        //! Is the PCM device opened for recording?
         bool IsDeviceInputOpen;
-        //! Is PCM device openned for playback?
+        //! Is the PCM device opened for playback?
         bool IsDeviceOutputOpen;
 
         //! Has playback already started?

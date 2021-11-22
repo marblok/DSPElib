@@ -859,7 +859,7 @@ bool DSP::ALSA_object_t::stop_playback(void)
   StopPlayback = true;
 
   snd_pcm_sframes_t rc; 
-  snd_pcm_sframes_t buffer_size_in_frames = (snd_pcm_sframes_t) pcm_buffer.size(); // M.B. wrong value 
+  snd_pcm_sframes_t buffer_size_in_frames;
 
   // if there are still buffers that haven't been yet sent to sound card then do it now
   if (IsPlayingNow == false)
@@ -873,7 +873,8 @@ bool DSP::ALSA_object_t::stop_playback(void)
       // send all data from buffers to soundcard to start playback
       for (unsigned int ind = 0; ind < NextBufferOutInd; ind++) //one spare buffer
       {
-        rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind], buffer_size_in_frames);  
+        buffer_size_in_frames = pcm_buffer_size_in_frames[ind];
+        rc = DSP::ALSA_object_t::pcm_writei(pcm_buffer[ind], buffer_size_in_frames);
       }
       if (rc > 0)
         IsPlayingNow = true;
