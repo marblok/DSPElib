@@ -139,7 +139,7 @@ unsigned int DSP::WMM_object_t::select_input_device_by_number(const unsigned int
 
 bool DSP::WMM_object_t::stop_playback(void) {
   StopPlayback = true;
-  
+
   // if there are still buffers that haven't been yet sent to sound card then do it now
   if (IsPlayingNow == false)
   {
@@ -269,7 +269,7 @@ long DSP::WMM_object_t::open_PCM_device_4_input(const int &no_of_channels, int n
     IsRecordingNow = false;
     NextBufferInInd = 0;
 
-    return 1; //! \TODO check this also for output
+    return sampling_rate; 
   }
 
   // error creating audio object
@@ -353,6 +353,8 @@ long DSP::WMM_object_t::open_PCM_device_4_output(const int &no_of_channels, int 
       DSP::f::AudioCheckError(result);
       waveHeaderOut[ind].dwFlags= WHDR_DONE; // WHDR_BEGINLOOP | WHDR_ENDLOOP;
     }
+
+    return sampling_rate;
   }
   else
   { //error while creating audio output
@@ -361,7 +363,7 @@ long DSP::WMM_object_t::open_PCM_device_4_output(const int &no_of_channels, int 
     WaveOutBufferLen = 0;
   }
 
-  return sampling_rate;
+  return -1;
 }
 
 bool DSP::WMM_object_t::close_PCM_device_input(void) {
@@ -614,7 +616,7 @@ long DSP::WMM_object_t::append_playback_buffer(DSP::Float_vector &float_buffer) 
       if (IsPlayingNow == false)
       {
         if (NextBufferOutInd == DSP::NoOfAudioOutputBuffers - 2) //all but one spare buffer are filled up
-        {
+        { // send all data from buffers to soundcard to start playback
           for (ind=0; ind < DSP::NoOfAudioOutputBuffers-1; ind++) //one spare buffer
           { // send all data from buffers to soundcard to start playback
             result=waveOutWrite(hWaveOut,

@@ -857,7 +857,6 @@ string DSP::lib_version_string();
  *   -# DSP::f::BER4BPSK()
  *   -# DSP::f::SER4QPSK()
  *   -# DSP::f::PSK_SNR_estimator()
- *   -# DSP::f::PSK_SNR_estimator2()
  *   .
  *
  */

@@ -642,7 +642,7 @@ namespace DSP {
        * 
        * The callback function will be called by the SOUND_object when new sound card's output buffer can processed.
        * The callback function has to return true when it filled the buffer with samples or false when there is not enought data.
-       * On false the SOUND_object most probably will discard the buffer. Nevertheless it can try to call the callback again.
+       * On false the SOUND_object most probably will discard the buffer. Nevertheless it can try (actually it should) to call the callback again.
        * \TODO revise the concept when the there will be a SOUND_object_t derivative that uses this approach.
        * \note Needs addaptation of DSP::u::AudioOutput class.
        */
