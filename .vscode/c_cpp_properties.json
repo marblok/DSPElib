@@ -4,7 +4,7 @@
         {
             "name": "Windows64-Release",
             "includePath": [
-                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/",
                 "${workspaceFolder}/src/include",
                 "${workspaceFolder}/src/include/rls"
             ],
@@ -20,7 +20,7 @@
         {
             "name": "Windows32-Release",
             "includePath": [
-                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/",
                 "${workspaceFolder}/src/include",
                 "${workspaceFolder}/src/include/rls"
             ],
@@ -36,7 +36,7 @@
         {
             "name": "Windows32-Debug",
             "includePath": [
-                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/",
                 "${workspaceFolder}/src/include",
                 "${workspaceFolder}/src/include/dbg"
             ],
@@ -53,7 +53,7 @@
         {
             "name": "Windows64-Debug",
             "includePath": [
-                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/",
                 "${workspaceFolder}/src/include",
                 "${workspaceFolder}/src/include/dbg"
             ],
@@ -108,7 +108,8 @@
             "defines": [
                 "LINUX",
                 "__DEBUG__=1",
-                "INCLUDE_DSPE_EXAMPLES"
+                "INCLUDE_DSPE_EXAMPLES",
+                "AUDIO_DEBUG_MESSAGES_ON"
             ],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c11",

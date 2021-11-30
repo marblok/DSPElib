@@ -3995,6 +3995,28 @@ bool DSP::u::AudioInput::SOUND_object_callback(const DSP::e::SampleType &InSampl
     DSP::Float_ptr Sample;
     unsigned int ind;
 
+#ifdef __DEBUG__
+    switch (InSampleType) {
+      case DSP::e::SampleType::ST_short: {
+          if (InBufferLen != wave_in_raw_buffer.size() / sizeof(short)) {
+            DSP::log << "DSP::u::AudioInput::SOUND_object_callback" << DSP::e::LogMode::second << "incorrect wave_in_raw_buffer size: " <<
+              wave_in_raw_buffer.size()  << " instead of " << InBufferLen * sizeof(short) << endl;
+          }
+        }
+        break;
+      case DSP::e::SampleType::ST_uchar: {
+          if (InBufferLen != wave_in_raw_buffer.size() / sizeof(uint8_t)) {
+            DSP::log << "DSP::u::AudioInput::SOUND_object_callback" << DSP::e::LogMode::second << "incorrect wave_in_raw_buffer size: " <<
+              wave_in_raw_buffer.size()  << " instead of " << InBufferLen * sizeof(uint8_t) << endl;
+          }
+        }
+        break;
+      default:
+        DSP::log << "DSP::u::AudioInput::SOUND_object_callback" << DSP::e::LogMode::second << "Unsupported Current->InSampleType" << endl;
+        break;
+    }
+#endif // __DEBUG__
+
     //  reading sound card input buffer
     Sample=InBuffers[EmptyBufferIndex].data();
     // ************************************************** //
@@ -4028,7 +4050,7 @@ bool DSP::u::AudioInput::SOUND_object_callback(const DSP::e::SampleType &InSampl
 
       default:
     #ifdef __DEBUG__
-        DSP::log << "DSP::u::AudioInput::waveInProc_short" << DSP::e::LogMode::second << "Unsupported Current->InSampleType" << endl;
+        DSP::log << "DSP::u::AudioInput::SOUND_object_callback" << DSP::e::LogMode::second << "Unsupported Current->InSampleType" << endl;
     #endif
         break;
     }
