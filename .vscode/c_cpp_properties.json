@@ -4,7 +4,7 @@
         {
             "name": "Windows64-Release",
             "includePath": [
-                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/",
                 "${workspaceFolder}/src/include",
                 "${workspaceFolder}/src/include/rls"
             ],
@@ -12,7 +12,7 @@
                 "WIN32",
                 "__DEBUG__=0"
             ],
-            "compilerPath": "gcc.exe",
+            //"compilerPath": "gcc.exe",
             "cStandard": "c11",
             "cppStandard": "c++11",
             "intelliSenseMode": "gcc-x64"
@@ -20,7 +20,7 @@
         {
             "name": "Windows32-Release",
             "includePath": [
-                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/",
                 "${workspaceFolder}/src/include",
                 "${workspaceFolder}/src/include/rls"
             ],
@@ -28,7 +28,7 @@
                 "WIN32",
                 "__DEBUG__=0"
             ],
-            "compilerPath": "gcc.exe",
+            //"compilerPath": "gcc.exe",
             "cStandard": "c11",
             "cppStandard": "c++11",
             "intelliSenseMode": "gcc-x64"
@@ -36,7 +36,7 @@
         {
             "name": "Windows32-Debug",
             "includePath": [
-                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/",
                 "${workspaceFolder}/src/include",
                 "${workspaceFolder}/src/include/dbg"
             ],
@@ -45,7 +45,7 @@
                 "__DEBUG__=1",
                 "INCLUDE_DSPE_EXAMPLES"
             ],
-            "compilerPath": "gcc.exe",
+            //"compilerPath": "gcc.exe",
             "cStandard": "c11",
             "cppStandard": "c++11",
             "intelliSenseMode": "gcc-x64"
@@ -53,7 +53,7 @@
         {
             "name": "Windows64-Debug",
             "includePath": [
-                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/",
                 "${workspaceFolder}/src/include",
                 "${workspaceFolder}/src/include/dbg"
             ],
@@ -62,7 +62,7 @@
                 "__DEBUG__=1",
                 "INCLUDE_DSPE_EXAMPLES"
             ],
-            "compilerPath": "gcc.exe",
+            //"compilerPath": "gcc.exe",
             "cStandard": "c11",
             "cppStandard": "c++11",
             "intelliSenseMode": "gcc-x64"
@@ -108,7 +108,8 @@
             "defines": [
                 "LINUX",
                 "__DEBUG__=1",
-                "INCLUDE_DSPE_EXAMPLES"
+                "INCLUDE_DSPE_EXAMPLES",
+                "AUDIO_DEBUG_MESSAGES_ON"
             ],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c11",

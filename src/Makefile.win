@@ -4,7 +4,8 @@ CC=g++
 # comflag = -m32
 # comflag = -m64
 comflag = $(COMFLAG)
-com_ver = MinGW-W64_8.1.0
+#com_ver = MinGW-W64_8.1.0
+com_ver = $(shell $(CC) -dumpmachine)-gcc_$(shell $(CC) -dumpversion)
 
 # INSTALL_DIR_ROOT = e:/Eclipse_Mars/workspace/_DSPE_lib_minGW_
 # INSTALL_DIR_ROOT = ./_DSPE_lib_minGW_

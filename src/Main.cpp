@@ -2772,7 +2772,7 @@ int test_ZPSTC_cw_3()
     }
 
     //ALSA_object.close_alsa_device(true); //snd_pcm_close(alsa_handle);
-    ALSA_object.close_PCM_device_output(); 
+    ALSA_object.close_PCM_device_output(true); 
     //free(buffer);
 
     return 0;
@@ -2917,18 +2917,29 @@ polling:
     ALSA_object.log_driver_data();
 
     unsigned int Fs = 44100;
-    int rs = ALSA_object.open_PCM_device_4_output(2, 16, Fs);
-    if (rs == 1) {
-      ALSA_object.close_PCM_device_output();
-    }
 
-
-    vector<int16_t> signal = test_record();
+        //vector<int16_t> signal = test_record();
     DSP::Float_vector float_signal;
-    for (auto ind=0; ind < signal.size(); ind++) {
-      float_signal[ind] = signal[ind];
+    float_signal.resize(2*Fs);
+    // for (auto ind=0; ind < float_signal.size(); ind++) {
+    //   float_signal[ind] = sin(6000.0 / Fs * ind);
+    // }
+
+    const int no_of_channels = 2;
+    for (auto ind=0; ind < float_signal.size()/no_of_channels; ind++) {
+      //float_signal[no_of_channels*ind]   = sin(6000.0 / Fs * ind); // M.B. można usłyszeć nieciągłość fazy na łączeniach poszczególnych segmentów
+      float_signal[no_of_channels*ind]   = sin(2*DSP::M_PIf * 1000.0 / Fs * ind); // M.B. brak nieciągłość fazy na łączeniach poszczególnych segmentów
+      float_signal[no_of_channels*ind+1] = 0;
     }
-    test_playback(float_signal);
+
+    int rs = ALSA_object.open_PCM_device_4_output(no_of_channels, 16, Fs, float_signal.size()/no_of_channels);
+
+    //test_playback(float_signal);
+    ALSA_object.append_playback_buffer(float_signal); // M.B. tutaj tylko rpzekazujemy dane do ALSA_object, ale jeszcze nie trafiają do karty dźwiękowej
+    ALSA_object.append_playback_buffer(float_signal); // M.B. dopiero to wywołanie spowoduje faktyczne przesłanie danych do karty dźwiękowej
+    ALSA_object.append_playback_buffer(float_signal); 
+    ALSA_object.append_playback_buffer(float_signal);
+    ALSA_object.close_PCM_device_output(true); 
 
     return 0;
   } 
@@ -2943,7 +2954,6 @@ int main(int argc, char*argv[])
   #ifdef ALSA_support_H
     DSP::log << "test ALSA" << endl;
     test_ALSA();
-    return 0;
   #endif // ALSA_support_H
 
   DSP::log << "test DSP::log" << endl;
@@ -2961,13 +2971,16 @@ int main(int argc, char*argv[])
   DSP::log << DSP::e::LogMode::pause << "Finished SolveMatrix test" << endl;
 
 #ifdef INCLUDE_DSPE_EXAMPLES
-  DSP::log << "Starting test_sound_input" << endl;
-  test_sound_input();
-  DSP::log << DSP::e::LogMode::Error << "Finished test_sound_input" << endl;
-
+  
   DSP::log << "Starting test_hello" << endl;
   test_hello();
   DSP::log << DSP::e::LogMode::Error << "Finished test_hello" << endl;
+
+  DSP::log << "Starting test_sound_input" << endl;
+  bool use_audio_output = false;
+  test_sound_input(use_audio_output);
+  DSP::log << DSP::e::LogMode::Error << "Finished test_sound_input" << endl;
+
 #endif // INCLUDE_DSPE_EXAMPLES
 
   DSP::log << "Starting SymbolMapper test" << endl;
