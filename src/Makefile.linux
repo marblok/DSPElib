@@ -6,7 +6,8 @@ CC=g++
 #comflag = -m32
 # comflag = -m64
 comflag = $(COMFLAG)
-com_ver = $(shell gcc -dumpmachine)-gcc_$(shell gcc -dumpversion)
+#com_ver = $(shell gcc -dumpmachine)-gcc_$(shell gcc -dumpversion)
+com_ver = $(shell $(CC) -dumpmachine)-gcc_$(shell $(CC) -dumpversion)
 
 INSTALL_DIR_ROOT = ../_DSPE_lib_linux_
 

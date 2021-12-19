@@ -12,7 +12,7 @@
                 "WIN32",
                 "__DEBUG__=0"
             ],
-            "compilerPath": "gcc.exe",
+            //"compilerPath": "gcc.exe",
             "cStandard": "c11",
             "cppStandard": "c++11",
             "intelliSenseMode": "gcc-x64"
@@ -28,7 +28,7 @@
                 "WIN32",
                 "__DEBUG__=0"
             ],
-            "compilerPath": "gcc.exe",
+            //"compilerPath": "gcc.exe",
             "cStandard": "c11",
             "cppStandard": "c++11",
             "intelliSenseMode": "gcc-x64"
@@ -45,7 +45,7 @@
                 "__DEBUG__=1",
                 "INCLUDE_DSPE_EXAMPLES"
             ],
-            "compilerPath": "gcc.exe",
+            //"compilerPath": "gcc.exe",
             "cStandard": "c11",
             "cppStandard": "c++11",
             "intelliSenseMode": "gcc-x64"
@@ -62,7 +62,7 @@
                 "__DEBUG__=1",
                 "INCLUDE_DSPE_EXAMPLES"
             ],
-            "compilerPath": "gcc.exe",
+            //"compilerPath": "gcc.exe",
             "cStandard": "c11",
             "cppStandard": "c++11",
             "intelliSenseMode": "gcc-x64"

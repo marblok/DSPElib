@@ -16,6 +16,12 @@
             "presentation": {
                 "echo": true
             },
+            "windows": {
+                "options": {
+                    "cwd": "${workspaceFolder}",
+                    "env": {"PATH":"c:/msys64/usr/bin;c:/msys64/mingw64/bin/;${env:PATH}"}
+                }, 
+            },
             "problemMatcher": "$gcc"
         },
         {
@@ -25,6 +31,12 @@
             "group": "build",
             "presentation": {
                 "echo": true
+            },
+            "windows": {
+                "options": {
+                    "cwd": "${workspaceFolder}",
+                    "env": {"PATH":"c:/msys64/usr/bin;c:/msys64/mingw64/bin/;${env:PATH}"}
+                }, 
             },
             "problemMatcher": "$gcc"
         },
@@ -36,12 +48,35 @@
             "presentation": {
                 "echo": true
             },
+            "windows": {
+                "options": {
+                    "cwd": "${workspaceFolder}",
+                    "env": {"PATH":"c:/msys64/usr/bin;c:/msys64/mingw64/bin/;${env:PATH}"}
+                }, 
+            },
             "problemMatcher": "$gcc"
         },
         {
-            "label": "build examples Windows",
+            "label": "Build examples Windows",
             "type": "shell",
-            "command": "make -f examples/makefile Mbit=64 SRC_DIR=examples DSPELIB_DIR_ROOT=../_DSPE_lib_minGW_/MinGW-W64_8.1.0",
+            //"command": "make -f examples/makefile Mbit=64 SRC_DIR=examples DSPELIB_DIR_ROOT=../_DSPE_lib_minGW_/MinGW-W64_8.1.0",
+            "command": "make -f examples/makefile Mbit=64 SRC_DIR=examples",
+            "group": "build",
+            "presentation": {
+                "echo": true
+            },
+            //"options": {"cwd" : "./examples"},
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {"PATH":"c:/msys64/usr/bin;c:/msys64/mingw64/bin/;${env:PATH}"}
+            }, 
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Build examples Linux",
+            "type": "shell",
+            //"command": "make -f examples/makefile-m64.linux Mbit=64 SRC_DIR=examples DSPELIB_DIR_ROOT=../_DSPE_lib_linux_/x86_64-linux-gnu-gcc_9",
+            "command": "make -f examples/makefile-m64.linux Mbit=64 SRC_DIR=examples",
             "group": "build",
             "presentation": {
                 "echo": true
@@ -50,29 +85,21 @@
             "problemMatcher": "$gcc"
         },
         {
-            "label": "build examples Linux",
-            "type": "shell",
-            "command": "make -f examples/makefile-m64.linux Mbit=64 SRC_DIR=examples DSPELIB_DIR_ROOT=../_DSPE_lib_linux_/x86_64-linux-gnu-gcc_9",
-            "group": "build",
-            "presentation": {
-                "echo": true
-            },
-            //"options": {"cwd" : "./examples"},
-            "problemMatcher": "$gcc"
-        },
-        {
-            "label": "clean examples Windows",
+            "label": "Clean examples Windows",
             "type": "shell",
             "command": "make clean -f examples/makefile SRC_DIR=examples ",
             "group": "build",
             "presentation": {
                 "echo": true
             },
-            //"options": {"cwd" : "./examples"},
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {"PATH":"c:/msys64/usr/bin;c:/msys64/mingw64/bin/;${env:PATH}"}
+            }, 
             "problemMatcher": "$gcc"
         },
         {
-            "label": "clean examples Linux",
+            "label": "Clean examples Linux",
             "type": "shell",
             "command": "make clean -f examples/makefile-m64.linux SRC_DIR=examples ",
             "group": "build",
