@@ -1,5 +1,6 @@
 # wersja dla kompilatora 64-bitowego (tdm-gcc 4.8.1): dodatkowa flaga -m64 
 CC = g++
+com_ver = $(shell $(CC) -dumpmachine)-gcc_$(shell $(CC) -dumpversion)
 
 ifndef TYPE
 	TYPE = dbg
@@ -9,8 +10,8 @@ endif
 ifndef SRC_DIR
 	SRC_DIR = .
 endif
-ifndef SRC_DIR
-	DSPELIB_DIR_ROOT = ../../_DSPE_lib_linux_/x86_64-linux-gnu-gcc_9
+ifndef DSPELIB_DIR_ROOT
+	DSPELIB_DIR_ROOT = ../_DSPE_lib_linux_/$(com_ver)
 endif
 
 ifndef Mbit

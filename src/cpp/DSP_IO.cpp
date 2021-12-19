@@ -656,11 +656,11 @@ bool DSP::u::FileInput::CloseFile(void)
 //! needed to get function DSP::u::FileInput::GetHeader instances into library
 void dummy_GetHeader(void)
 {
-  DSP::u::FileInput *temp = NULL;
+  DSP::u::FileInput temp(NULL, "");
 
-  temp->GetHeader<DSP::T_TAPE_header>();
-  temp->GetHeader<DSP::T_FLT_header>();
-  temp->GetHeader<DSP::T_WAVEchunk>();
+  temp.GetHeader<DSP::T_TAPE_header>();
+  temp.GetHeader<DSP::T_FLT_header>();
+  temp.GetHeader<DSP::T_WAVEchunk>();
 }
 
 template <class T>

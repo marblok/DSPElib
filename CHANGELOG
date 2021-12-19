@@ -7,6 +7,9 @@ TODO:
 LAST DONE:
 
 CHANGES:
+- ver. 0.20.010 - <b>2021.12.19</b> Changed: 
+  - Wiki for VSCode updated
+  - tasks.json and makefiles updates and fixes
 - ver. 0.20.010 - <b>2021.09.15</b> Changed: 
   - Fixed: DSP::WMM_object_t::stop_playback fix
   - Fixed: hello.cpp - using different wav file path if test_echo() is used

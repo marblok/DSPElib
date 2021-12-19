@@ -1,5 +1,6 @@
 # For 32-bit compilation use Mbit = 32 
 CC = g++
+com_ver = $(shell $(CC) -dumpmachine)-gcc_$(shell $(CC) -dumpversion)
 
 ifndef TYPE
 	TYPE = dbg
@@ -9,8 +10,8 @@ endif
 ifndef SRC_DIR
 	SRC_DIR = .
 endif
-ifndef SRC_DIR
-	DSPELIB_DIR_ROOT = ../../_DSPE_lib_minGW_/MinGW-W64_8.1.0
+ifndef DSPELIB_DIR_ROOT
+	DSPELIB_DIR_ROOT = ../_DSPE_lib_minGW_/$(com_ver)
 endif
 
 ifndef Mbit
@@ -51,17 +52,17 @@ multirate.exe: multirate.o
 	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/multirate.o" -o"$(SRC_DIR)/multirate.exe" $(LINKER_FLAGS) -lDSPE -lwinmm
 
 callbacks.o: $(SRC_DIR)/callbacks.cpp
-	$(CC) -DWIN32 -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" -c "$(SRC_DIR)/callbacks.cpp" -o "$(SRC_DIR)/callbacks.o"
+	$(CC) -DWIN32 -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/callbacks.cpp" -o "$(SRC_DIR)/callbacks.o"
 callbacks.exe: callbacks.o
 	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/callbacks.o" -o"$(SRC_DIR)/callbacks.exe" $(LINKER_FLAGS) -lDSPE -lwinmm 
 
 socket_server.o: $(SRC_DIR)/socket_server.cpp
-	$(CC) -DWIN32 -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" -c "$(SRC_DIR)/socket_server.cpp" -o "$(SRC_DIR)/socket_server.o"
+	$(CC) -DWIN32 -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/socket_server.cpp" -o "$(SRC_DIR)/socket_server.o"
 socket_server.exe: socket_server.o
 	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/socket_server.o" -o"$(SRC_DIR)/socket_server.exe" $(LINKER_FLAGS) -lDSPE -lwinmm -lDSPEsockets -lws2_32 
 
 socket_client.o: $(SRC_DIR)/socket_client.cpp
-	$(CC) -DWIN32 -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" -c "$(SRC_DIR)/socket_client.cpp" -o "$(SRC_DIR)/socket_client.o"
+	$(CC) -DWIN32 -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/socket_client.cpp" -o "$(SRC_DIR)/socket_client.o"
 socket_client.exe: socket_client.o
 	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/socket_client.o" -o"$(SRC_DIR)/socket_client.exe" $(LINKER_FLAGS) -lDSPE -lwinmm -lDSPEsockets -lws2_32 
 
