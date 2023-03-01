@@ -8,6 +8,8 @@ TODO::
 LAST DONE:
 
 CHANGES:
+- ver. 0.20.011 - <b>2022.03.01</b> Changed: 
+  - DOT: changed record shape into HTML shape with HTML-like labels to avoid flat edge errors
 - ver. 0.20.010 - <b>2021.12.19</b> Changed: 
   - Wiki for VSCode updated
   - tasks.json and makefiles updates and fixes

@@ -11,8 +11,8 @@
 
 #define DSP_VER_MAJOR 0
 #define DSP_VER_MINOR 20
-#define DSP_VER_BUILD 10 // !!! without zeroes before, else this will be treated as octal number
-#define DSP_VER_YEAR  2021
+#define DSP_VER_BUILD 11 // !!! without zeroes before, else this will be treated as octal number
+#define DSP_VER_YEAR  2023
 #define DSP_VER       DSP_VER_MAJOR.DSP_VER_MINOR.DSP_VER_BUILD
 
 //#define WINVER 0x0A00

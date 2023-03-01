@@ -21,8 +21,12 @@ const vector<string> DSP::DOT_colors =
 
 
 #ifdef __DEBUG__
-  string DSP::u::Splitter::GetComponentNodeParams_DOTfile()
+  string DSP::u::Splitter::GetComponentNodeParams_DOTfile(void) {
+    GetComponentNodeParams_DOTfile();
+  }
+  string DSP::u::Splitter::GetComponentNodeParams_DOTfile(const string &leading_space)
   {
+    UNUSED_ARGUMENT(leading_space);
     return "[shape=point]";
   }
 
@@ -221,6 +225,10 @@ string DSP::Component::GetComponentName_DOTfile()
   return text_buffer;
 }
 
+string DSP::Component::GetComponentNodeParams_DOTfile(void) {
+  return GetComponentNodeParams_DOTfile("");
+}
+
 // Returns component node parameters used in DOTfile
 /*
  *    -# generate string segment (internal buffer - ?? size selection)
@@ -228,7 +236,7 @@ string DSP::Component::GetComponentName_DOTfile()
  *    -# copy string segment into output buffer.
  *    .
  */
-string DSP::Component::GetComponentNodeParams_DOTfile()
+string DSP::Component::GetComponentNodeParams_DOTfile(const string &leading_space)
 {
   string tempName;
   unsigned int ind;
@@ -241,29 +249,55 @@ string DSP::Component::GetComponentNodeParams_DOTfile()
   if (tempName.length() == 0)
     tempName = "NONAME";
 
-  /*
-  mixed_2 [label="{{<in0> in0 | <in> in1 | DDScos | {<out0> out0 | <out1> out1}}"];
+  /* Old
+  mixed_2 [label="{{<in0> in0 | <in1> in1 | DDScos | {<out0> out0 | <out1> out1}}"];
   mixed_2[shape=record,color=red];
   clock_003D6808 -> mixed_2:clock [style=dotted, constraint=false, color=red];
   */
 
-  text_buffer << "[label=\"{";
+  // https://graphviz.org/doc/info/shapes.html
+  /* 
+  mixed_2 [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+        <TR><TD PORT="in1">in1</TD><TD PORT="in2">in2</TD></TR>
+        <TR><TD>DDScos</TD></TR>
+        <TR><TD PORT="out1">out1</TD><TD PORT="out2">out2</TD></TR>
+        </TABLE>>, shape=plain];
+  */
+  unsigned long tmp_no_of_inputs = 1, tmp_no_of_outputs = 1;
+  if (Convert2Block() != NULL) {
+    tmp_no_of_inputs = Convert2Block()->NoOfInputs;
+    // text_buffer << "# tmp_no_of_inputs=" << tmp_no_of_inputs << std::endl;
+    if (tmp_no_of_inputs == 0) tmp_no_of_inputs = 1;
+    tmp_no_of_outputs = Convert2Block()->NoOfOutputs;
+    // text_buffer << "# tmp_no_of_outputs=" << tmp_no_of_outputs << std::endl;
+    if (tmp_no_of_outputs == 0) tmp_no_of_outputs = 1;
+  }
+  // text_buffer << "# tmp_no_of_inputs=" << tmp_no_of_inputs << ", tmp_no_of_outputs=" << tmp_no_of_outputs << std::endl;
+  unsigned long gcd = DSP::f::gcd(tmp_no_of_inputs, tmp_no_of_outputs);
+  unsigned long no_of_html_columns = (tmp_no_of_inputs * tmp_no_of_outputs) / gcd;
+  // text_buffer << "# gcd=" << gcd << ", no_of_html_columns=" << no_of_html_columns << std::endl;
+  unsigned long no_of_columns_per_input = no_of_html_columns / tmp_no_of_inputs;
+  unsigned long no_of_columns_per_output = no_of_html_columns / tmp_no_of_outputs;
+  // text_buffer << "# no_of_columns_per_input=" << no_of_columns_per_input << ", no_of_columns_per_output=" << no_of_columns_per_output << std::endl;
+
+  text_buffer << "[label=<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\">" << std::endl;
 
   if (Convert2Block() != NULL)
   {
     if (Convert2Block()->NoOfInputs > 0)
     {
-      text_buffer << "{";
+      text_buffer << leading_space << "  " << "<TR>"; // \t - TAB
 
       for (ind =0; ind < Convert2Block()->NoOfInputs; ind++)
       {
-        if (ind == 0)
-          text_buffer << "<in" << ind << "> ";
-        else
-          text_buffer << " | <in" << ind << "> ";
+        // if (ind == 0)
+        //   text_buffer << "<in" << ind << "> ";
+        // else
+        //   text_buffer << " | <in" << ind << "> ";
+        text_buffer << "<TD COLSPAN=\"" << no_of_columns_per_input << "\" PORT=\"in" << ind+1 << "\"><FONT POINT-SIZE=\"8.0\">in" << ind+1 << "</FONT></TD>";
       }
 
-      text_buffer << "} | ";
+      text_buffer << "</TR>" << std::endl;
     }
   }
 
@@ -273,13 +307,22 @@ string DSP::Component::GetComponentNodeParams_DOTfile()
   {
     switch (tempName[ind])
     {
-      case ' ':
       case '<':
+        internal_text += "&lt;";
+        break;
       case '>':
+        internal_text += "&gt;";
+        break;
+      case '"':
+        internal_text += "&quot;";
+        break;
+      case '&':
+        internal_text += "&amp;";
+        break;
+      case ' ':
       case '{':
       case '}':
       case '|':
-      case '"':
         internal_text += '\\';
         internal_text += tempName[ind];
         break;
@@ -288,24 +331,25 @@ string DSP::Component::GetComponentNodeParams_DOTfile()
         break;
     }
   }
-  text_buffer << internal_text;
+  text_buffer << leading_space << "  " << "<TR><TD COLSPAN=\"" << no_of_html_columns << "\">" << internal_text << "</TD></TR>" << std::endl;
 
 
   if (NoOfOutputs > 0)
   {
-    text_buffer << " | {";
+    text_buffer << leading_space << "  " << "<TR>"; // \t - TAB
 
     for (ind =0; ind < NoOfOutputs; ind++)
     {
-      if (ind == 0)
-        text_buffer << "<out" << ind << "> ";
-      else
-        text_buffer << " | <out" << ind << "> ";
+      // if (ind == 0)
+      //   text_buffer << "<out" << ind << "> ";
+      // else
+      //   text_buffer << " | <out" << ind << "> ";
+      text_buffer << "<TD COLSPAN=\"" << no_of_columns_per_output << "\" PORT=\"out" << ind+1 << "\"><FONT POINT-SIZE=\"8.0\">out" << ind+1 << "</FONT></TD>";
     }
 
-    text_buffer << "}";
+    text_buffer << "</TR>" << std::endl;
   }
-  text_buffer << "}\",shape=record";
+  text_buffer << leading_space << "  " << "</TABLE>>, shape=plain";
 
   if (Convert2ClockTrigger() != NULL)
   {
@@ -374,7 +418,7 @@ void DSP::Component::ComponentEdgesToDOTfile(std::ofstream &dot_plik, const stri
             for (ind_sep = 0; ind_sep < space_sep; ind_sep++)
               dot_plik << ' ';
             if (UsePorts_DOTfile() == true)
-              dot_plik << this_name << ":out" << ind << " -> ";
+              dot_plik << this_name << ":out" << ind + 1 << " -> ";
             else
               dot_plik << this_name << " -> ";
 
@@ -382,7 +426,7 @@ void DSP::Component::ComponentEdgesToDOTfile(std::ofstream &dot_plik, const stri
 
             if (current_macro->UsePorts_DOTfile() == true)
             {
-              dot_plik <<  that_name << ":in" << macro_input_no;
+              dot_plik <<  that_name << ":in" << macro_input_no + 1;
             }
             else
               dot_plik <<  that_name;
@@ -407,7 +451,7 @@ void DSP::Component::ComponentEdgesToDOTfile(std::ofstream &dot_plik, const stri
         for (ind_sep = 0; ind_sep < space_sep; ind_sep++)
           dot_plik << ' ';
         if (UsePorts_DOTfile() == true)
-          dot_plik << this_name << ":out" << ind << " -> ";
+          dot_plik << this_name << ":out" << ind + 1  << " -> ";
         else
           dot_plik << this_name << " -> ";
 
@@ -415,7 +459,7 @@ void DSP::Component::ComponentEdgesToDOTfile(std::ofstream &dot_plik, const stri
         that_name = OutputBlocks[ind]->GetComponentName_DOTfile();
 
         if (OutputBlocks[ind]->UsePorts_DOTfile() == true)
-          dot_plik <<  that_name << ":in" << OutputBlocks_InputNo[ind];
+          dot_plik <<  that_name << ":in" << OutputBlocks_InputNo[ind] + 1;
         else
           dot_plik <<  that_name;
 
@@ -446,7 +490,7 @@ void DSP::Component::ComponentEdgesToDOTfile(std::ofstream &dot_plik, const stri
           for (ind_sep = 0; ind_sep < space_sep; ind_sep++)
             dot_plik << ' ';
           stringstream ss;
-          ss << this_name << "_const_in" << ind
+          ss << this_name << "_const_in" << ind + 1
              << " [shape=none,label="
              << fixed << setprecision(3) << temp_block->ConstantInputValues[ind] << "];";
           dot_plik << ss.str() << std::endl;
@@ -455,11 +499,11 @@ void DSP::Component::ComponentEdgesToDOTfile(std::ofstream &dot_plik, const stri
             dot_plik << ' ';
           ss.clear(); ss.str("");
           if (UsePorts_DOTfile() == true) {
-            ss << this_name << "_const_in" << ind
-               << " -> " << this_name << ":in" << ind << " ";
+            ss << this_name << "_const_in" << ind + 1
+               << " -> " << this_name << ":in" << ind + 1 << " ";
           }
           else {
-            ss << this_name << "_const_in" << ind << " -> " << this_name << " ";
+            ss << this_name << "_const_in" << ind + 1 << " -> " << this_name << " ";
           }
           ss << DSP::Component::GetComponentEdgeParams_DOTfile(ind);
           dot_plik << ss.str() << ";" << std::endl;
@@ -533,7 +577,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
     // Save info for current component
     // Bloczki(1).unique_index = 12; % unique number identifying object == integer part of Bloczki(ind).output_blocks
     this_name = GetComponentName_DOTfile();
-    temp_name = GetComponentNodeParams_DOTfile();
+    temp_name = GetComponentNodeParams_DOTfile("    ");
     dot_plik << "    " << this_name << " " << temp_name << ";" << std::endl;
 
     if (clock_ptr != NULL)
@@ -684,9 +728,9 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
       for (ind =0; ind < NoOfInputs; ind++)
       {
         if (ind == 0)
-          params_ss << "<in" << ind << "> ";
+          params_ss << "<in" << ind + 1 << "> ";
         else
-          params_ss << " | <in" << ind << "> ";
+          params_ss << " | <in" << ind + 1 << "> ";
        }
       params_ss << "} | ";
     }
@@ -696,9 +740,19 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
     {
       switch (tempName[ind])
       {
-        case ' ':
         case '<':
+          label += "&lt;";
+          break;
         case '>':
+          label += "&gt;";
+          break;
+        case '"':
+          label += "&quot;";
+          break;
+        case '&':
+          label += "&amp;";
+          break;
+        case ' ':
         case '{':
         case '}':
         case '|':
@@ -718,9 +772,9 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
       for (ind =0; ind < NoOfOutputs; ind++)
       {
         if (ind == 0)
-          params_ss << "<out" << ind << "> ";
+          params_ss << "<out" << ind + 1 << "> ";
         else
-          params_ss << " | <out" << ind << "> ";
+          params_ss << " | <out" << ind + 1 << "> ";
       }
       params_ss << "}";
     }
@@ -752,9 +806,19 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
     {
       switch (tempName[ind])
       {
-        case ' ':
         case '<':
+          label += "&lt;";
+          break;
         case '>':
+          label += "&gt;";
+          break;
+        case '"':
+          label += "&quot;";
+          break;
+        case '&':
+          label += "&amp;";
+          break;
+        case ' ':
         case '{':
         case '}':
         case '|':
@@ -775,9 +839,9 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
       for (ind =0; ind < MacroInput_block->NoOfOutputs; ind++)
       {
         if (ind == 0)
-          params_ss <<  "<out" << ind << "> ";
+          params_ss <<  "<out" << ind + 1 << "> ";
         else
-          params_ss << " | <out" << ind << "> ";
+          params_ss << " | <out" << ind + 1 << "> ";
       }
       params_ss << "}";
     }
@@ -811,9 +875,9 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
       for (ind =0; ind < MacroOutput_block->NoOfInputs; ind++)
       {
         if (ind == 0)
-          text_buffer << "<in" << ind << "> ";
+          text_buffer << "<in" << ind + 1 << "> ";
         else
-          text_buffer << " | <in" << ind << "> ";
+          text_buffer << " | <in" << ind + 1 << "> ";
        }
        text_buffer << "} | ";
     }
@@ -823,9 +887,19 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
     {
       switch (tempName[ind])
       {
-        case ' ':
         case '<':
+          label += "&lt;";
+          break;
         case '>':
+          label += "&gt;";
+          break;
+        case '"':
+          label += "&quot;";
+          break;
+        case '&':
+          label += "&amp;";
+          break;
+        case ' ':
         case '{':
         case '}':
         case '|':
@@ -878,7 +952,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
         for (ind_sep = 0; ind_sep < space_sep; ind_sep++)
           dot_plik << ' ';
         if (UsePorts_DOTfile() == true)
-          dot_plik << macro_name << ":out" << ind << " -> ";
+          dot_plik << macro_name << ":out" << ind + 1 << " -> ";
         else
           dot_plik << macro_name << " -> ";
 
@@ -921,7 +995,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
           if (current_macro->UsePorts_DOTfile() == true)
           {
             output_block_input_no = current_macro->GetMacroInputNo(output_block, output_block_input_no);
-            dot_plik <<  that_name << ":in" << output_block_input_no;
+            dot_plik <<  that_name << ":in" << output_block_input_no + 1;
           }
           else
             dot_plik <<  that_name;
@@ -932,7 +1006,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
           that_name = output_block->GetComponentName_DOTfile();
 
           if (output_block->UsePorts_DOTfile() == true)
-            dot_plik <<  that_name << ":in" << output_block_input_no;
+            dot_plik <<  that_name << ":in" << output_block_input_no + 1;
           else
             dot_plik <<  that_name;
         }
@@ -971,10 +1045,10 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
             dot_plik << ' ';
           text_buffer.clear(); text_buffer.str("");
           if (UsePorts_DOTfile() == true)
-            text_buffer << macro_name << "_const_in" << ind
-                        << " -> "<< macro_name << ":in" << ind << " ";
+            text_buffer << macro_name << "_const_in" << ind + 1
+                        << " -> "<< macro_name << ":in" << ind + 1 << " ";
           else
-            text_buffer << macro_name << "_const_in" << ind << " -> " << macro_name << " ";
+            text_buffer << macro_name << "_const_in" << ind + 1 << " -> " << macro_name << " ";
           text_buffer << GetMacroEdgeParams_DOTfile(ind);
           dot_plik << text_buffer.str() << ";" << std::endl;
 
@@ -1067,7 +1141,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
           for (ind_sep = 0; ind_sep < space_sep; ind_sep++)
             dot_plik << ' ';
           if (UsePorts_DOTfile() == true)
-            dot_plik << macro_input_name << ":out" << ind << " -> ";
+            dot_plik << macro_input_name << ":out" << ind + 1 << " -> ";
           else
             dot_plik << macro_input_name << " -> ";
 
@@ -1101,7 +1175,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
             that_name = output_block->GetComponentName_DOTfile();
 
             if (output_block->UsePorts_DOTfile() == true)
-              dot_plik <<  that_name << ":in" << output_block_input_no;
+              dot_plik <<  that_name << ":in" << output_block_input_no + 1;
             else
               dot_plik <<  that_name;
           }
@@ -1110,7 +1184,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
             that_name = output_block->DOT_DrawAsMacro(DrawnMacro)->GetMacroName_DOTfile();
 
             if (output_block->UsePorts_DOTfile() == true)
-              dot_plik <<  that_name << ":in" << ind; // just to macro input
+              dot_plik <<  that_name << ":in" << ind + 1; // just to macro input
             else
               dot_plik <<  that_name;
           }
@@ -1153,7 +1227,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
           for (ind_sep = 0; ind_sep < space_sep; ind_sep++)
             dot_plik << ' ';
           text_buffer.clear(); text_buffer.str("");
-          text_buffer << macro_output_name << "_const_in" << ind << " [shape=none,label="
+          text_buffer << macro_output_name << "_const_in" << ind + 1 << " [shape=none,label="
                       << fixed << setprecision(3) << MacroOutput_block->ConstantInputValues[ind] << "];",
           dot_plik << text_buffer.str() << std::endl;
 
@@ -1161,10 +1235,10 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
             dot_plik << ' ';
           text_buffer.clear(); text_buffer.str("");
           if (UsePorts_DOTfile() == true)
-            text_buffer << macro_output_name << "_const_in" << ind
-                        << " -> " << macro_output_name << ":in" << ind << " ";
+            text_buffer << macro_output_name << "_const_in" << ind + 1
+                        << " -> " << macro_output_name << ":in" << ind + 1 << " ";
           else
-            text_buffer << macro_output_name << "_const_in" << ind << " -> " << macro_output_name << " ";
+            text_buffer << macro_output_name << "_const_in" << ind + 1 << " -> " << macro_output_name << " ";
           text_buffer << GetMacroEdgeParams_DOTfile(ind);
           dot_plik << text_buffer.str() << ";" << std::endl;
 
@@ -1234,12 +1308,12 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
           for (ind_sep = 0; ind_sep < space_sep; ind_sep++)
             dot_plik << ' ';
           if (input_block->UsePorts_DOTfile() == true)
-            dot_plik << that_name << ":out" << input_block_output_no << " -> ";
+            dot_plik << that_name << ":out" << input_block_output_no + 1 << " -> ";
           else
             dot_plik << that_name << " -> ";
 
           if (UsePorts_DOTfile() == true)
-            dot_plik <<  macro_output_name << ":in" << ind;
+            dot_plik <<  macro_output_name << ":in" << ind + 1;
           else
             dot_plik <<  macro_output_name;
 
@@ -1504,17 +1578,17 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
     {
       stringstream ss;
       //dot_plik << "  subgraph cluster_CLOCKS {" << std::endl;
-      ss << "    subgraph cluster_clock_group_" << ClocksList[0]->MasterClockIndex << " {";
+      ss << "  subgraph cluster_clock_group_" << ClocksList[0]->MasterClockIndex << " {";
       dot_plik << ss.str() << std::endl;
 
       ss.clear(); ss.str("");
       if (ClocksList[0] == MasterClocks[ClocksList[0]->MasterClockIndex]) {
-        ss  << "      clock_" << ClocksList[0]
+        ss  << "    clock_" << ClocksList[0]
             << " [shape=box,peripheries=2,label = \"cycle length=" << ClocksList[0]->cycle_length
             << "\",color=" << DOT_colors[0] << "];";
       }
       else {
-        ss  << "      clock_" << ClocksList[0]
+        ss  << "    clock_" << ClocksList[0]
             <<" [shape=box,label = \"cycle length=" << ClocksList[0]->cycle_length
             << "\",color=" << DOT_colors[0] << "];";
       }
@@ -1526,41 +1600,41 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
         {
           ss.clear(); ss.str("");
           if (ClocksList[ind] == MasterClocks[ClocksList[ind]->MasterClockIndex]) {
-            ss << "      clock_" << ClocksList[ind]
+            ss << "    clock_" << ClocksList[ind]
                << " [shape=box,peripheries=2,label = \"cycle length=" << ClocksList[ind]->cycle_length
                << "\",color=" << DOT_colors[ClocksList[ind]->MasterClockIndex % DOT_colors.size()] << "];";
           }
           else {
-            ss << "      clock_" << ClocksList[ind]
+            ss << "    clock_" << ClocksList[ind]
                << " [shape=box,label = \"cycle length=" << ClocksList[ind]->cycle_length
                << "\",color=" << DOT_colors[ClocksList[ind]->MasterClockIndex % DOT_colors.size()] << "];";
           }
           dot_plik << ss.str() << std::endl;
 
           ss.clear(); ss.str("");
-          ss << "      clock_" << ClocksList[ind-1]
+          ss << "    clock_" << ClocksList[ind-1]
              << " -> clock_" << ClocksList[ind] << ";";
           dot_plik << ss.str() << std::endl;
         }
         else
         {
           ss.clear(); ss.str("");
-          ss << "      label = \"Clocks group #" << ClocksList[ind-1]->MasterClockIndex << "\";";
+          ss << "    label = \"Clocks group #" << ClocksList[ind-1]->MasterClockIndex << "\";";
           dot_plik << ss.str() << std::endl;
           dot_plik << "    }" << std::endl;
 
           ss.clear(); ss.str("");
-          ss << "    subgraph cluster_clock_group_" << ClocksList[ind]->MasterClockIndex << " {";
+          ss << "  subgraph cluster_clock_group_" << ClocksList[ind]->MasterClockIndex << " {";
           dot_plik << ss.str() << std::endl;
 
           ss.clear(); ss.str("");
           if (ClocksList[ind] == MasterClocks[ClocksList[ind]->MasterClockIndex]) {
-            ss << "      clock_" << ClocksList[ind]
+            ss << "    clock_" << ClocksList[ind]
                << " [shape=box,peripheries=2,label = \"cycle length=" << ClocksList[ind]->cycle_length
                << "\",color=" << DOT_colors[ClocksList[ind]->MasterClockIndex % DOT_colors.size()] << "];";
           }
           else {
-            ss << "      clock_" << ClocksList[ind]
+            ss << "    clock_" << ClocksList[ind]
                << " [shape=box,label = \"cycle length=" << ClocksList[ind]->cycle_length
                << "\",color=" << DOT_colors[ClocksList[ind]->MasterClockIndex % DOT_colors.size()] << "];";
           }
@@ -1570,9 +1644,9 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
         //ClocksList[ind]->M;
       }
       ss.clear(); ss.str("");
-      ss << "      label = \"Clocks group #" << ClocksList[ClocksList.size()-1]->MasterClockIndex << "\";";
+      ss << "    label = \"Clocks group #" << ClocksList[ClocksList.size()-1]->MasterClockIndex << "\";";
       dot_plik << ss.str() << std::endl;
-      dot_plik << "    }" << std::endl;
+      dot_plik << "  }" << std::endl;
       //dot_plik << "    label=\"Algorithm clocks\";" << std::endl;
       //dot_plik << "  }" << std::endl;
     }

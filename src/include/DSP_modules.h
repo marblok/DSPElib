@@ -1003,7 +1003,9 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
       */
       virtual string GetComponentEdgeParams_DOTfile(const unsigned int &output_index = 0U);
       //! Returns component node parameters used in DOTfile
-      virtual string GetComponentNodeParams_DOTfile();
+      virtual string GetComponentNodeParams_DOTfile(const string &leading_space);
+      //! Returns component node parameters used in DOTfile
+      virtual string GetComponentNodeParams_DOTfile(void);
       //! Returns true if ports should be used for edges
       virtual bool UsePorts_DOTfile(void);
       //! Writes component edges to file
@@ -1020,7 +1022,7 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
             vector<bool> &UsedClocksTable, vector<DSP::Clock_ptr> &ClocksList,
             DSP::Macro_ptr DrawnMacro = NULL,
             DSP::Clock_ptr clock_ptr = NULL);
-  #endif
+    #endif
 
   /****************************/
   /* Notifications support    */
@@ -1187,7 +1189,8 @@ class DSP::Clock_trigger
   //  friend void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
       //bool *ComponentDoneTable, long max_components_number,
       //DSP::Clock_ptr clock_ptr);
-    friend string DSP::Component::GetComponentNodeParams_DOTfile();
+    friend string DSP::Component::GetComponentNodeParams_DOTfile(const string &leading_space);
+    friend string DSP::Component::GetComponentNodeParams_DOTfile(void);
   #endif
 
   protected:
@@ -2023,7 +2026,8 @@ class DSP::u::Splitter : public DSP::Block
   #ifdef __DEBUG__
     private:
       bool UsePorts_DOTfile(void);
-      string GetComponentNodeParams_DOTfile();
+      string GetComponentNodeParams_DOTfile(const string &leading_space);
+      string GetComponentNodeParams_DOTfile(void);
       string GetComponentEdgeParams_DOTfile(const unsigned int &output_index);
   #endif
 

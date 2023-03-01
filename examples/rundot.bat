@@ -1,4 +1,4 @@
-path = "c:\Program Files (x86)\Graphviz2.38\bin\";%path%
+path = "d:\Program Files\Graphviz\bin\";%path%
 
 dot -Tgif macro_DDS.dot -omacro_DDS.gif
 dot -Tgif macro_unwraped.dot -omacro_unwraped.gif
