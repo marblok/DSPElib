@@ -236,7 +236,7 @@ string DSP::Component::GetComponentNodeParams_DOTfile(void) {
  *    -# copy string segment into output buffer.
  *    .
  */
-string DSP::Component::GetComponentNodeParams_DOTfile(const string &leading_space)
+string DSP::Component::GetHtmlNodeLabel_DOTfile(const unsigned long &no_of_inputs, const unsigned long &no_of_outputs, const string &node_name, const string &leading_space)
 {
   string tempName;
   unsigned int ind;
@@ -245,7 +245,7 @@ string DSP::Component::GetComponentNodeParams_DOTfile(const string &leading_spac
   //! length of the output text (including trailing zero)
   stringstream text_buffer;
 
-  tempName = GetName();
+  tempName = node_name;
   if (tempName.length() == 0)
     tempName = "NONAME";
 
@@ -255,50 +255,27 @@ string DSP::Component::GetComponentNodeParams_DOTfile(const string &leading_spac
   clock_003D6808 -> mixed_2:clock [style=dotted, constraint=false, color=red];
   */
 
-  // https://graphviz.org/doc/info/shapes.html
-  /* 
-  mixed_2 [label=<<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
-        <TR><TD PORT="in1">in1</TD><TD PORT="in2">in2</TD></TR>
-        <TR><TD>DDScos</TD></TR>
-        <TR><TD PORT="out1">out1</TD><TD PORT="out2">out2</TD></TR>
-        </TABLE>>, shape=plain];
-  */
-  unsigned long tmp_no_of_inputs = 1, tmp_no_of_outputs = 1;
-  if (Convert2Block() != NULL) {
-    tmp_no_of_inputs = Convert2Block()->NoOfInputs;
-    // text_buffer << "# tmp_no_of_inputs=" << tmp_no_of_inputs << std::endl;
-    if (tmp_no_of_inputs == 0) tmp_no_of_inputs = 1;
-    tmp_no_of_outputs = Convert2Block()->NoOfOutputs;
-    // text_buffer << "# tmp_no_of_outputs=" << tmp_no_of_outputs << std::endl;
-    if (tmp_no_of_outputs == 0) tmp_no_of_outputs = 1;
-  }
-  // text_buffer << "# tmp_no_of_inputs=" << tmp_no_of_inputs << ", tmp_no_of_outputs=" << tmp_no_of_outputs << std::endl;
+  unsigned long tmp_no_of_inputs = no_of_inputs, tmp_no_of_outputs = no_of_outputs;
+  if (tmp_no_of_inputs == 0) tmp_no_of_inputs = 1;
+  if (tmp_no_of_outputs == 0) tmp_no_of_outputs = 1;
   unsigned long gcd = DSP::f::gcd(tmp_no_of_inputs, tmp_no_of_outputs);
   unsigned long no_of_html_columns = (tmp_no_of_inputs * tmp_no_of_outputs) / gcd;
-  // text_buffer << "# gcd=" << gcd << ", no_of_html_columns=" << no_of_html_columns << std::endl;
   unsigned long no_of_columns_per_input = no_of_html_columns / tmp_no_of_inputs;
   unsigned long no_of_columns_per_output = no_of_html_columns / tmp_no_of_outputs;
-  // text_buffer << "# no_of_columns_per_input=" << no_of_columns_per_input << ", no_of_columns_per_output=" << no_of_columns_per_output << std::endl;
 
-  text_buffer << "[label=<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\">" << std::endl;
+  // https://graphviz.org/doc/info/shapes.html
+  text_buffer << "label=<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\">" << std::endl;
 
-  if (Convert2Block() != NULL)
+  if (no_of_inputs > 0)
   {
-    if (Convert2Block()->NoOfInputs > 0)
+    text_buffer << leading_space << "  " << "<TR>"; // \t - TAB
+
+    for (ind =0; ind < no_of_inputs; ind++)
     {
-      text_buffer << leading_space << "  " << "<TR>"; // \t - TAB
-
-      for (ind =0; ind < Convert2Block()->NoOfInputs; ind++)
-      {
-        // if (ind == 0)
-        //   text_buffer << "<in" << ind << "> ";
-        // else
-        //   text_buffer << " | <in" << ind << "> ";
-        text_buffer << "<TD COLSPAN=\"" << no_of_columns_per_input << "\" PORT=\"in" << ind+1 << "\"><FONT POINT-SIZE=\"8.0\">in" << ind+1 << "</FONT></TD>";
-      }
-
-      text_buffer << "</TR>" << std::endl;
+      text_buffer << "<TD COLSPAN=\"" << no_of_columns_per_input << "\" PORT=\"in" << ind+1 << "\"><FONT POINT-SIZE=\"8.0\">in" << ind+1 << "</FONT></TD>";
     }
+
+    text_buffer << "</TR>" << std::endl;
   }
 
   // prepare label
@@ -334,11 +311,11 @@ string DSP::Component::GetComponentNodeParams_DOTfile(const string &leading_spac
   text_buffer << leading_space << "  " << "<TR><TD COLSPAN=\"" << no_of_html_columns << "\">" << internal_text << "</TD></TR>" << std::endl;
 
 
-  if (NoOfOutputs > 0)
+  if (no_of_outputs > 0)
   {
     text_buffer << leading_space << "  " << "<TR>"; // \t - TAB
 
-    for (ind =0; ind < NoOfOutputs; ind++)
+    for (ind =0; ind < no_of_outputs; ind++)
     {
       // if (ind == 0)
       //   text_buffer << "<out" << ind << "> ";
@@ -350,6 +327,38 @@ string DSP::Component::GetComponentNodeParams_DOTfile(const string &leading_spac
     text_buffer << "</TR>" << std::endl;
   }
   text_buffer << leading_space << "  " << "</TABLE>>, shape=plain";
+
+  return text_buffer.str();
+}
+
+// Returns component node parameters used in DOTfile
+/*
+ *    -# generate string segment (internal buffer - ?? size selection)
+ *    -# check if it will fit into the output buffer
+ *    -# copy string segment into output buffer.
+ *    .
+ */
+string DSP::Component::GetComponentNodeParams_DOTfile(const string &leading_space)
+{
+  string tempName;
+  //! pointer to an internal text buffer
+  string internal_text;
+  //! length of the output text (including trailing zero)
+  stringstream text_buffer;
+
+  tempName = GetName();
+  if (tempName.length() == 0)
+    tempName = "NONAME";
+
+  unsigned long tmp_no_of_inputs = 0;
+  if (Convert2Block() != NULL) {
+    tmp_no_of_inputs = Convert2Block()->NoOfInputs;
+  }
+  unsigned long tmp_no_of_outputs = NoOfOutputs;
+
+  text_buffer << "[";
+  
+  text_buffer  << GetHtmlNodeLabel_DOTfile(tmp_no_of_inputs, tmp_no_of_outputs, GetName(), leading_space);
 
   if (Convert2ClockTrigger() != NULL)
   {
@@ -1359,7 +1368,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
       // draw macro input
       component_name = MacroInput_block->GetComponentName_DOTfile();
 
-      dot_plik << "    " << component_name << " " << GetMacroInputNodeParams_DOTfile() << ";" << std::endl;
+      dot_plik << "  " << component_name << " " << GetMacroInputNodeParams_DOTfile() << ";" << std::endl;
 
       MacroInputEdgesToDOTfile(dot_plik, component_name, DrawnMacro);
 

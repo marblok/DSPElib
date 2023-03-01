@@ -1002,6 +1002,11 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
       /*! output_index - index of the rendered output
       */
       virtual string GetComponentEdgeParams_DOTfile(const unsigned int &output_index = 0U);
+
+      /*! generates component HMTL label and shape for DOT
+       */
+      static string GetHtmlNodeLabel_DOTfile(const unsigned long &no_of_inputs, const unsigned long &no_of_outputs, const string &node_name, const string &leading_space);
+
       //! Returns component node parameters used in DOTfile
       virtual string GetComponentNodeParams_DOTfile(const string &leading_space);
       //! Returns component node parameters used in DOTfile
