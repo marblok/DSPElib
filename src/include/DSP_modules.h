@@ -1005,7 +1005,7 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
 
       /*! generates component HMTL label and shape for DOT
        */
-      static string GetHtmlNodeLabel_DOTfile(const unsigned long &no_of_inputs, const unsigned long &no_of_outputs, const string &node_name, const string &leading_space);
+      static string GetHtmlNodeLabel_DOTfile(const unsigned long &no_of_inputs, const unsigned long &no_of_outputs, const string &node_name, const string &leading_space, const unsigned int &border_width);
 
       //! Returns component node parameters used in DOTfile
       virtual string GetComponentNodeParams_DOTfile(const string &leading_space);
@@ -1759,6 +1759,8 @@ class DSP::Macro : public virtual DSP::name
   #ifdef __DEBUG__
     friend void DSP::Component::ComponentEdgesToDOTfile(std::ofstream &, const string &,
                       vector<bool> &, vector<DSP::Macro_ptr> &, DSP::Macro_ptr, unsigned int);
+    friend string DSP::Component::GetHtmlNodeLabel_DOTfile(const unsigned long &, const unsigned long &, 
+                      const string &, const string &, const unsigned int &);
   #endif
 
   private:

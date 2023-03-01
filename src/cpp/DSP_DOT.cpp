@@ -22,7 +22,7 @@ const vector<string> DSP::DOT_colors =
 
 #ifdef __DEBUG__
   string DSP::u::Splitter::GetComponentNodeParams_DOTfile(void) {
-    GetComponentNodeParams_DOTfile();
+    return GetComponentNodeParams_DOTfile();
   }
   string DSP::u::Splitter::GetComponentNodeParams_DOTfile(const string &leading_space)
   {
@@ -236,7 +236,7 @@ string DSP::Component::GetComponentNodeParams_DOTfile(void) {
  *    -# copy string segment into output buffer.
  *    .
  */
-string DSP::Component::GetHtmlNodeLabel_DOTfile(const unsigned long &no_of_inputs, const unsigned long &no_of_outputs, const string &node_name, const string &leading_space)
+string DSP::Component::GetHtmlNodeLabel_DOTfile(const unsigned long &no_of_inputs, const unsigned long &no_of_outputs, const string &node_name, const string &leading_space, const unsigned int &border_width)
 {
   string tempName;
   unsigned int ind;
@@ -264,7 +264,7 @@ string DSP::Component::GetHtmlNodeLabel_DOTfile(const unsigned long &no_of_input
   unsigned long no_of_columns_per_output = no_of_html_columns / tmp_no_of_outputs;
 
   // https://graphviz.org/doc/info/shapes.html
-  text_buffer << "label=<<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\">" << std::endl;
+  text_buffer << "label=<<TABLE BORDER=\"" << border_width << "\" CELLBORDER=\"1\" CELLSPACING=\"0\">" << std::endl;
 
   if (no_of_inputs > 0)
   {
@@ -358,7 +358,7 @@ string DSP::Component::GetComponentNodeParams_DOTfile(const string &leading_spac
 
   text_buffer << "[";
   
-  text_buffer  << GetHtmlNodeLabel_DOTfile(tmp_no_of_inputs, tmp_no_of_outputs, GetName(), leading_space);
+  text_buffer  << GetHtmlNodeLabel_DOTfile(tmp_no_of_inputs, tmp_no_of_outputs, GetName(), leading_space, 0);
 
   if (Convert2ClockTrigger() != NULL)
   {
@@ -716,211 +716,42 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
   // Returns macro node parames used in DOTfile
   string DSP::Macro::GetMacroNodeParams_DOTfile()
   {
-    stringstream params_ss;
-    string tempName;
-    string label;
-    unsigned int ind;
+    stringstream text_buffer;
 
-    tempName = GetName();
-    if (tempName.length() == 0)
-      tempName = "NONAME";
+    text_buffer  << "[";
 
-    /*
-    mixed_2 [label="{{<in0> in0 | <in> in1 | DDScos | {<out0> out0 | <out1> out1}}"];
-    mixed_2[shape=record,color=red];
-    */
-    params_ss << "[label=\"{";
+    string leading_space = "  ";
+    text_buffer  << DSP::Component::GetHtmlNodeLabel_DOTfile(NoOfInputs, NoOfOutputs, GetName(), leading_space, 3);
 
-    if (NoOfInputs > 0)
-    {
-      params_ss << "{";
-      for (ind =0; ind < NoOfInputs; ind++)
-      {
-        if (ind == 0)
-          params_ss << "<in" << ind + 1 << "> ";
-        else
-          params_ss << " | <in" << ind + 1 << "> ";
-       }
-      params_ss << "} | ";
-    }
-    // prepare label
-    label = "";
-    for (ind = 0; ind < tempName.length(); ind++)
-    {
-      switch (tempName[ind])
-      {
-        case '<':
-          label += "&lt;";
-          break;
-        case '>':
-          label += "&gt;";
-          break;
-        case '"':
-          label += "&quot;";
-          break;
-        case '&':
-          label += "&amp;";
-          break;
-        case ' ':
-        case '{':
-        case '}':
-        case '|':
-          label += '\\';
-          label += tempName[ind];
-          break;
-        default:
-          label += tempName[ind];
-          break;
-      }
-    }
-    params_ss << label;
+    text_buffer << ", color=blue]"; // shape=record, penwidth=4.0]";
 
-    if (NoOfOutputs > 0)
-    {
-      params_ss << " | {";
-      for (ind =0; ind < NoOfOutputs; ind++)
-      {
-        if (ind == 0)
-          params_ss << "<out" << ind + 1 << "> ";
-        else
-          params_ss << " | <out" << ind + 1 << "> ";
-      }
-      params_ss << "}";
-    }
-    params_ss << "}\",shape=record,penwidth=4.0]";
-
-    return params_ss.str();
+    return text_buffer.str();
   }
 
   string DSP::Macro::GetMacroInputNodeParams_DOTfile()
   {
-    stringstream params_ss;
-    string tempName;
-    string label;
-    unsigned int ind;
+    stringstream text_buffer;
 
-    tempName = MacroInput_block->GetName();
-    if (tempName.length() == 0)
-      tempName = "NONAME";
+    text_buffer  << "[";
 
-    /*
-    mixed_2 [label="{{<in0> in0 | <in> in1 | DDScos | {<out0> out0 | <out1> out1}}"];
-    mixed_2[shape=record,color=red];
-    */
-    params_ss << "[label=\"{";
+    string leading_space = "  ";
+    text_buffer  << DSP::Component::GetHtmlNodeLabel_DOTfile(0, MacroInput_block->NoOfOutputs, MacroInput_block->GetName(), leading_space, 3);
 
-    // prepare label
-    label = "";
-    for (ind = 0; ind < tempName.length(); ind++)
-    {
-      switch (tempName[ind])
-      {
-        case '<':
-          label += "&lt;";
-          break;
-        case '>':
-          label += "&gt;";
-          break;
-        case '"':
-          label += "&quot;";
-          break;
-        case '&':
-          label += "&amp;";
-          break;
-        case ' ':
-        case '{':
-        case '}':
-        case '|':
-          label += '\\';
-          label += tempName[ind];
-          break;
-        default:
-          label += tempName[ind];
-          break;
-      }
-    }
-    params_ss << label;
+    text_buffer << ", color=blue]"; // shape=record, penwidth=4.0]";
 
-    //MacroInput->NoOfOutputs == NoOfInputs
-    if (MacroInput_block->NoOfOutputs > 0)
-    {
-      params_ss << " | {";
-      for (ind =0; ind < MacroInput_block->NoOfOutputs; ind++)
-      {
-        if (ind == 0)
-          params_ss <<  "<out" << ind + 1 << "> ";
-        else
-          params_ss << " | <out" << ind + 1 << "> ";
-      }
-      params_ss << "}";
-    }
-    params_ss << "}\",shape=record,penwidth=4.0]";
-
-    return params_ss.str();
+    return text_buffer.str();
   }
 
   string DSP::Macro::GetMacroOutputNodeParams_DOTfile()
   {
     stringstream text_buffer;
-    string tempName;
-    string temp_text;
-    string label;
-    unsigned int ind;
 
-    tempName = MacroOutput_block->GetName();
-    if (tempName.length() == 0)
-      tempName = "NONAME";
+    text_buffer  << "[";
 
-    /*
-    mixed_2 [label="{{<in0> in0 | <in> in1 | DDScos | {<out0> out0 | <out1> out1}}"];
-    mixed_2[shape=record,color=red];
-    */
-    text_buffer << "[label=\"{";
+    string leading_space = "  ";
+    text_buffer  << DSP::Component::GetHtmlNodeLabel_DOTfile(MacroOutput_block->NoOfInputs, 0, MacroOutput_block->GetName(), leading_space, 3);
 
-    // NoOfOutputs == MacroOutput->NoOfInputs
-    if (MacroOutput_block->NoOfInputs > 0)
-    {
-      text_buffer << "{";
-      for (ind =0; ind < MacroOutput_block->NoOfInputs; ind++)
-      {
-        if (ind == 0)
-          text_buffer << "<in" << ind + 1 << "> ";
-        else
-          text_buffer << " | <in" << ind + 1 << "> ";
-       }
-       text_buffer << "} | ";
-    }
-    // prepare label
-    label = "";
-    for (ind = 0; ind < tempName.length(); ind++)
-    {
-      switch (tempName[ind])
-      {
-        case '<':
-          label += "&lt;";
-          break;
-        case '>':
-          label += "&gt;";
-          break;
-        case '"':
-          label += "&quot;";
-          break;
-        case '&':
-          label += "&amp;";
-          break;
-        case ' ':
-        case '{':
-        case '}':
-        case '|':
-          label += '\\';
-          label += tempName[ind];
-          break;
-        default:
-          label += tempName[ind];
-          break;
-      }
-    }
-    text_buffer << label << "}\",shape=record,penwidth=4.0]";
+    text_buffer << ", color=blue]"; // shape=record, penwidth=4.0]";
 
     return text_buffer.str();
   }
@@ -1354,10 +1185,10 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
       ///////////////////////////////
       macro_name = GetMacroName_DOTfile();
 
-      dot_plik << "    " << macro_name << " " << GetMacroNodeParams_DOTfile() << ";" << std::endl;
+      dot_plik << "  " << macro_name << " " << GetMacroNodeParams_DOTfile() << ";" << std::endl;
 
       ///////////////////////////////
-      // Zdefiniuj po��czenia wychodz�ce
+      // Define connections
       ///////////////////////////////
       MacroEdgesToDOTfile(dot_plik, macro_name, DrawnMacro);
     }
@@ -1375,7 +1206,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
       // draw macro output
       component_name = MacroOutput_block->GetComponentName_DOTfile();
 
-      dot_plik << "    " << component_name << " " << GetMacroOutputNodeParams_DOTfile() << ";" << std::endl;
+      dot_plik << "  " << component_name << " " << GetMacroOutputNodeParams_DOTfile() << ";" << std::endl;
 
       MacroOutputEdgesToDOTfile(dot_plik, component_name, DrawnMacro);
     }
