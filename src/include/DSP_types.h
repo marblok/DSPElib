@@ -135,19 +135,20 @@ namespace DSP {
   const long double M_PIx2_prec = 6.28318530718058647692528676656;
 
   // and DSP::Float precision
-  const DSP::Float M_Ef         = DSP::Float(M_E);
-  const DSP::Float M_LOG2Ef     = DSP::Float(M_LOG2E);
-  const DSP::Float M_LOG10Ef    = DSP::Float(M_LOG10E);
-  const DSP::Float M_LN2f       = DSP::Float(M_LN2);
-  const DSP::Float M_LN10f      = DSP::Float(M_LN10);
-  const DSP::Float M_PIf        = DSP::Float(M_PI);
-  const DSP::Float M_PI_2f      = DSP::Float(M_PI_2);
-  const DSP::Float M_PI_4f      = DSP::Float(M_PI_4);
-  const DSP::Float M_1_PIf      = DSP::Float(M_1_PI);
-  const DSP::Float M_2_PIf      = DSP::Float(M_2_PI);
-  const DSP::Float M_2_SQRTPIf  = DSP::Float(M_2_SQRTPI);
-  const DSP::Float M_SQRT2f     = DSP::Float(M_SQRT2);
-  const DSP::Float M_SQRT1_2f   = DSP::Float(M_SQRT1_2);
+  // M_Ef and similar conflitc with _GNU_SOURCE & __USE_GNU defines
+  const DSP::Float M_E_f         = DSP::Float(M_E);
+  const DSP::Float M_LOG2E_f     = DSP::Float(M_LOG2E);
+  const DSP::Float M_LOG10E_f    = DSP::Float(M_LOG10E);
+  const DSP::Float M_LN2_f       = DSP::Float(M_LN2);
+  const DSP::Float M_LN10_f      = DSP::Float(M_LN10);
+  const DSP::Float M_PI_f        = DSP::Float(M_PI);
+  const DSP::Float M_PI_2_f      = DSP::Float(M_PI_2);
+  const DSP::Float M_PI_4_f      = DSP::Float(M_PI_4);
+  const DSP::Float M_1_PI_f      = DSP::Float(M_1_PI);
+  const DSP::Float M_2_PI_f      = DSP::Float(M_2_PI);
+  const DSP::Float M_2_SQRTPI_f  = DSP::Float(M_2_SQRTPI);
+  const DSP::Float M_SQRT2_f     = DSP::Float(M_SQRT2);
+  const DSP::Float M_SQRT1_2_f   = DSP::Float(M_SQRT1_2);
 
   const DSP::Float M_PIx2 = DSP::Float(M_PIx2_prec);
   const DSP::Float M_PIx1 = DSP::Float(M_PIx1_prec);

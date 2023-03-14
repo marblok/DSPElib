@@ -2928,7 +2928,7 @@ polling:
     const int no_of_channels = 2;
     for (auto ind=0; ind < float_signal.size()/no_of_channels; ind++) {
       //float_signal[no_of_channels*ind]   = sin(6000.0 / Fs * ind); // M.B. można usłyszeć nieciągłość fazy na łączeniach poszczególnych segmentów
-      float_signal[no_of_channels*ind]   = sin(2*DSP::M_PIf * 1000.0 / Fs * ind); // M.B. brak nieciągłość fazy na łączeniach poszczególnych segmentów
+      float_signal[no_of_channels*ind]   = sin(2*DSP::M_PI_f * 1000.0 / Fs * ind); // M.B. brak nieciągłość fazy na łączeniach poszczególnych segmentów
       float_signal[no_of_channels*ind+1] = 0;
     }
 
