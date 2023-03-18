@@ -991,10 +991,10 @@ class DSP::u::InputBuffer : public DSP::Source
                      unsigned int CallbackIdentifier=0);
     ~InputBuffer(void);
 
-    //! copies source_size bytes from the source buffer to block's internal buffer
+    //! copies source_size bytes from the source buffer to block's internal buffer (resets buffer position if reset_buffer == true)
     /*! Fixed <b>2005.03.17</b> Error in buffer size checking for multiple channels
      */
-    void WriteBuffer(void *source, long int source_size, DSP::e::SampleType source_DataType=DSP::e::SampleType::ST_float);
+    void WriteBuffer(void *source, const long int &source_size, const bool &reset_buffer = true, const DSP::e::SampleType &source_DataType=DSP::e::SampleType::ST_float);
 };
 
 //! Block providing output to the memory buffer

@@ -4706,11 +4706,17 @@ void DSP::u::InputBuffer::Notify(DSP::Clock_ptr clock)
 // copies source_size bytes from the source buffer
 // to block's internal buffer (the rest is set to zero
 void DSP::u::InputBuffer::WriteBuffer(void *source,
-  long int source_size, DSP::e::SampleType source_DataType)
+  const long int &source_size, const bool &reset_buffer, const DSP::e::SampleType &source_DataType)
 {
   int InputSampleSize;
   long int NoOfSourceSamples;
   int ind;
+
+  if (reset_buffer == true) {
+    BufferIndex = 0;
+  }
+
+  //! \TODO add option to append writen data at current position or add method AppendBuffer
 
   switch (source_DataType)
   {

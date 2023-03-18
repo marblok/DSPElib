@@ -8,6 +8,8 @@ TODO::
 LAST DONE:
 
 CHANGES:
+- ver. 0.20.015 - <b>2022.03.18</b> Changed: 
+  - DSP::u::InputBuffer: added reset_buffer to WriteBuffer so buffer output will start from newly added data
 - ver. 0.20.014 - <b>2023.03.014/b> Changed: 
   - DSP::M_Ef and simmilar constants changed to DSP::M_E_f and simmilar; because of conflitcs with defines when _GNU_SOURCE is defined
 - ver. 0.20.011 - <b>2022.03.01</b> Changed: 
