@@ -471,7 +471,7 @@ bool DSP::f::MakeDir(const string& dir_name, const string& parent_dir)
 		if (_dir_exists == false)
 		{
 #ifdef __DEBUG__
-			DSP::log << DSP::e::LogMode::Error << "DSP::f::MakeDir", "Parent directory does not exist");
+			DSP::log << DSP::e::LogMode::Error << "DSP::f::MakeDir" << DSP::e::LogMode::second << "Parent directory does not exist" << endl;
 #endif
 			return false;
 		}
@@ -482,7 +482,7 @@ bool DSP::f::MakeDir(const string& dir_name, const string& parent_dir)
 	if (_mkdir(full_name.c_str()) != 0)
 	{
 #ifdef __DEBUG__
-		DSP::log << DSP::e::LogMode::Error << "DSP::f::MakeDir", "Could not create directory");
+		DSP::log << DSP::e::LogMode::Error << "DSP::f::MakeDir" << DSP::e::LogMode::second << "Could not create directory" << endl;
 #endif
 		return false;
 	}
