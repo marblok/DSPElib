@@ -19,6 +19,12 @@ const vector<string> DSP::DOT_colors =
     "chocolate4", "blueviolet", "deeppink1", "goldenrod1"
 };
 
+const vector<string> DSP::DOT_edge_colors =
+{
+    "royalblue2", "red", "green3", "turquoise2", "yellow3",
+    "chocolate4", "blueviolet", "deeppink1", "goldenrod1"
+};
+
 
 #ifdef __DEBUG__
   string DSP::u::Splitter::GetComponentNodeParams_DOTfile(void) {
@@ -56,7 +62,7 @@ const vector<string> DSP::DOT_colors =
     //ind2 = FindOutputIndex_by_InputIndex(ind2);
 
     if (ind2 <= DSP::MaxOutputIndex)
-      text_buffer << "[color=" << DOT_colors[ind2 % DOT_colors.size()] << "]";
+      text_buffer << "[color=" << DOT_edge_colors[ind2 % DOT_edge_colors.size()] << "]";
     else
       text_buffer << "[color=black]";
     return text_buffer.str();
@@ -374,7 +380,7 @@ string DSP::Component::GetComponentNodeParams_DOTfile(const string &leading_spac
 string DSP::Component::GetComponentEdgeParams_DOTfile(const unsigned int &output_index)
 {
   stringstream text_buffer;
-  text_buffer << "[color=" << DOT_colors[output_index % DOT_colors.size()] << "]";
+  text_buffer << "[color=" << DOT_edge_colors[output_index % DOT_edge_colors.size()] << "]";
   return text_buffer.str();
 }
 
@@ -759,7 +765,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
   string DSP::Macro::GetMacroEdgeParams_DOTfile(const unsigned int &output_index)
   {
     stringstream text_buffer;
-    text_buffer << "[color=" << DOT_colors[output_index % DOT_colors.size()] << "]";
+    text_buffer << "[color=" << DOT_edge_colors[output_index % DOT_edge_colors.size()] << "]";
     return text_buffer.str();
   }
 

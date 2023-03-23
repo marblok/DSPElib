@@ -15,6 +15,7 @@
 namespace DSP {
        //! DOT colors table
        extern const std::vector<std::string> DOT_colors;
+       extern const std::vector<std::string> DOT_edge_colors;
        
        //! DSPElib sub-namespace for enums definitions
        namespace e {

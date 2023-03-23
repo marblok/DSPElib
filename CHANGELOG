@@ -8,6 +8,9 @@ TODO::
 LAST DONE:
 
 CHANGES:
+- ver. 0.20.016 - <b>2022.03.23</b> Changed: 
+  - DSP::DOT_edge_colors: added separate colors table for edges which starts from blue color and then red.
+    In most multiedge blocks first edge is for real part (blue) and second for imaginary part (red).
 - ver. 0.20.015 - <b>2022.03.18</b> Changed: 
   - DSP::u::InputBuffer: added reset_buffer to WriteBuffer so buffer output will start from newly added data
 - ver. 0.20.014 - <b>2023.03.014/b> Changed: 

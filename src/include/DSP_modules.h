@@ -727,6 +727,7 @@ class DSP::name
 #ifdef __DEBUG__
   namespace DSP {
     extern const vector<string> DOT_colors;
+    extern const vector<string> DOT_edge_colors;
   }
 #endif
 
