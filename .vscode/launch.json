@@ -16,6 +16,7 @@
             "externalConsole": false,
             "MIMode": "gdb",
 //            "miDebuggerPath": "d:/CodeBlocks_20_03/MinGW/bin/gdb.exe",
+            "miDebuggerPath": "c:/msys64/usr/bin/gdb.exe",
             "setupCommands": [
                 {
                     "description": "Włącz formatowanie kodu dla gdb",
