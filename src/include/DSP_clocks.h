@@ -370,7 +370,7 @@ class DSP::Clock
     private:
       //!Saves components information to m-file
       /*! For all components linked with this clock info is stored
-       *  in dot-file format. Called from DSP::Clock::SchemeToMfile
+       *  in dot-file format. Called from DSP::Clock::SchemeToDOTfile
        */
       bool ClockComponentsToDOTfile(std::ofstream &m_plik,
               vector<bool> &ComponentDoneTable, long max_components_number,

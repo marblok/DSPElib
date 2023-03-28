@@ -77,3 +77,5 @@ src/Debug/**
 src/Release/**
 examples/Debug/**
 examples/Release/**
+Debug/**
+Release/**

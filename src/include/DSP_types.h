@@ -192,7 +192,7 @@ namespace DSP {
 
   //! Pointer to the buffer callback function
   /*! void func(unsigned int NoOfInputs,
-  *            unsigned int NoOfOutputs, DSP::Float_ptr OutputSamples,
+  *            unsigned int NoOfOutputs, DSP::Float_vector &OutputSamples,
   *            DSP::void_ptr *UserDataPtr, unsigned int UserDefinedIdentifier,
   *            DSP::Component_ptr Caller)
   *
