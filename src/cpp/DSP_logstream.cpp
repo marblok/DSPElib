@@ -145,7 +145,7 @@ namespace DSP
         void Message(bool IsError, const string &source, const string &message = "");
      };
 
-    logstream::logstream(void)
+    logstream::logstream(void) : std::ostream(this)
     {
        init_logstream();
     // test:

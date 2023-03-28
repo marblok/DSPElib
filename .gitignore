@@ -72,3 +72,8 @@ examples/DSP_sound_input
 examples/captured_sample.wav
 examples/sound_input.dot
 examples/sound_input.gif
+.vs/**
+src/Debug/**
+src/Release/**
+examples/Debug/**
+examples/Release/**

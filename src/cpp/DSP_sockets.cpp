@@ -189,7 +189,7 @@ bool DSP::Socket::InitServer_ListenSocket(const string & address_with_port)
     }
 
     // Setup the TCP listening socket
-    iResult = bind( ListenSocket,
+    iResult = ::bind( ListenSocket,
         result->ai_addr, (int)result->ai_addrlen);
     if (DSP::Socket::is_socket_error(iResult))
     {

@@ -8,6 +8,8 @@ TODO::
 LAST DONE:
 
 CHANGES:
+- ver. 0.20.017 - <b>2022.03.28</b> Changed: 
+  - Initital intergration for Visual Studio 2019 support
 - ver. 0.20.016 - <b>2022.03.23</b> Changed: 
   - DSP::DOT_edge_colors: added separate colors table for edges which starts from blue color and then red.
     In most multiedge blocks first edge is for real part (blue) and second for imaginary part (red).
