@@ -167,9 +167,9 @@ string DSP::lib_version_string();
 
 /*! \mainpage Digital Signal Processing Engine Documentation
  *
- *  <b>Digital Signal Processing Engine</b> 2005-2021
+ *  <b>Digital Signal Processing Engine</b> 2005-2023
  *
- *  This project is licensed under GNU Lesser General Public License v2.1. 
+ *  This project is licensed under GNU Lesser General Public License ver. 3
  *  \ref lib_license
  *
  * \section lib_lic_author Engine author
