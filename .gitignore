@@ -9,6 +9,7 @@ examples/asynchronous.o
 examples/callbacks.exe
 examples/callbacks.o
 examples/echo.exe
+examples/echo_dbg.exe
 examples/echo.o
 examples/hello.exe
 examples/hello.o
@@ -79,3 +80,9 @@ examples/Debug/**
 examples/Release/**
 Debug/**
 Release/**
+examples/*.txt
+examples/*.flt
+examples/*.dot
+examples/DSPElib_examples.exe
+examples/DSPElib_examples_dbg.exe
+
