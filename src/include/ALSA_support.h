@@ -13,7 +13,7 @@
 /* All of the ALSA library API is defined in this header */
 #include <alsa/asoundlib.h>
 #include <vector>
-#include <cmath>
+// #include <cmath>
 #include <DSP_types.h> // for types
 
 namespace DSP {

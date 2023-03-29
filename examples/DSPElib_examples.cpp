@@ -343,7 +343,7 @@ int test_1(int argc, char* argv[])
 
   DSP::Clock_ptr MasterClock, Fp1Zegar;
   MasterClock = NULL;
-  string InputName = "test.wav";
+  string InputName = "DSPElib.wav";
   string OutputName = "output.flt";
   //  DSP::u::WaveInput WaveInput(InputName, ".", 1);
   DSP::u::FileInput WaveInput(MasterClock, InputName, 1, DSP::e::SampleType::ST_float);
@@ -1512,7 +1512,6 @@ int test_4()
 int test_5()
 {
   DSP::Clock_ptr MasterClock;
-  char tekst[1024];
   long int Fp;
 
   Fp = 44100; //96000; //192000; //32000; //11025; //22050; //44100;
@@ -1813,7 +1812,7 @@ int No_of_samples = 0;
 void FFTout_clbk(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP::Float_vector &OutputSamples, DSP::void_ptr* UserDataPtr, unsigned int UserDefinedIdentifier, DSP::Component_ptr Caller)
 {
   DSP::u::OutputBuffer* dsp_buffer;
-  int counter;
+  unsigned int counter;
   dsp_buffer = (DSP::u::OutputBuffer*)Caller->Convert2Block();
 
   if (NoOfInputs == DSP::Callback_Init)
@@ -1833,6 +1832,10 @@ void FFTout_clbk(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP::Float_v
     buffer_size, // read all samples
     -1,  // full reset
     DSP::e::SampleType::ST_float); // write to read_buffer in float format
+
+  if (counter < NoOfOutputs) {
+    DSP::log << "FFTout_clbk" << DSP::e::LogMode::second << "counter(" << counter << ") < NoOfOutputs(" << NoOfOutputs << ")" << endl;
+  }
 
 // output real samples
   for (unsigned int ind = 0; ind < NoOfOutputs; ind++)
@@ -2033,7 +2036,7 @@ int test_11(int argn, char* args[])
 
   long int Fp2, F_symb;
   DSP::LoadCoef coef_info;
-  int N_rc, N2;
+  int N_rc;
   //unsigned int L;
   DSP::Float_vector h_rc;
   char text[16];
@@ -2097,7 +2100,7 @@ int test_11(int argn, char* args[])
   // filtry polifazowe
   vector <DSP::u::FIR*> H_g(K);
 
-  for (int ind = 0; ind < K; ind++)
+  for (unsigned int ind = 0; ind < K; ind++)
   {
     H_g[ind] = new DSP::u::FIR(h_rc, (K - 1) - ind, K);
 
@@ -2109,11 +2112,11 @@ int test_11(int argn, char* args[])
   }
 
   vector<DSP::u::Vacuum*>Discard(K - 3);
-  int channel1, channel2, channel3;
+  unsigned int channel1, channel2, channel3;
   channel1 = 8; channel2 = 10; channel3 = 13;
   //  channel1 = 1; channel2 = 31; channel3 = 32;
   int current = 0;
-  for (int ind = 1; ind <= K; ind++)
+  for (unsigned int ind = 1; ind <= K; ind++)
   {
     if ((ind != channel1) && (ind != channel2) && (ind != channel3))
     {
@@ -2202,12 +2205,12 @@ int test_11(int argn, char* args[])
   }
 
   /*************************************************************/
-  for (int ind = 0; ind < K; ind++)
+  for (unsigned int ind = 0; ind < K; ind++)
   {
     if (H_g[ind] != NULL)
       delete H_g[ind];
   }
-  for (int ind = 0; ind < K - 3; ind++)
+  for (unsigned int ind = 0; ind < K - 3; ind++)
     delete Discard[ind];
 
   delete fft;
@@ -2267,7 +2270,6 @@ void BufferCallback(unsigned int NoOfInputs, unsigned int NoOfOutputs, DSP::Floa
 int test_12(void)
 {
   DSP::Clock_ptr MasterClock, BufferClock, MuxClock, DemuxClock;
-  char tekst[1024];
   int temp;
   long int Fp;
   int callback_type;
@@ -2734,15 +2736,19 @@ int main(int argc, char* argv[])
     test_SolveMatrix_prec(i);
   }
   //! \TODO test DSP::f::LPF_LS
-  DSP::log << DSP::e::LogMode::Error << "Finished SolveMatrix test" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished SolveMatrix test" << endl << endl;
 
   DSP::log << "Starting SymbolMapper test" << endl;
   test_SymbolMapper();
-  DSP::log << DSP::e::LogMode::Error << "Finished SymbolMapper test" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished SymbolMapper test" << endl << endl;
 
   DSP::log << "Starting test_ZPSTC_cw_3" << endl;
-  test_ZPSTC_cw_3();
-  DSP::log << DSP::e::LogMode::Error << "Finished test_ZPSTC_cw_3" << endl;
+  if (test_ZPSTC_cw_3() < 0) {
+    DSP::log << DSP::e::LogMode::Error << "Failed test_ZPSTC_cw_3" << endl << endl;
+  }
+  else {
+    DSP::log << DSP::e::LogMode::pause << "Finished test_ZPSTC_cw_3" << endl << endl;
+  }
 
   //DSP::log << "Starting test_hello");
   //test_hello();
@@ -2750,51 +2756,51 @@ int main(int argc, char* argv[])
 
   DSP::log << "Starting test_1" << endl;
   test_1(argc, argv);
-  DSP::log << DSP::e::LogMode::Error << "Finished test_1" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_1" << endl << endl;
 
   DSP::log << "Starting test_2" << endl;
   test_2();
-  DSP::log << DSP::e::LogMode::Error << "Finished test_2" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_2" << endl << endl;
 
   DSP::log << "Starting test_3" << endl;
   test_3();
-  DSP::log << DSP::e::LogMode::Error << "Finished test_3" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_3" << endl << endl;
 
   DSP::log << "Starting test_4" << endl;
   test_4();
-  DSP::log << DSP::e::LogMode::Error << "Finished test_4" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_4" << endl << endl;
 
   DSP::log << "Starting test_5" << endl;
   test_5();
-  DSP::log << DSP::e::LogMode::Error << "Finished test_5" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_5" << endl << endl;
 
   DSP::log << "Starting test_6" << endl;
   test_6();
-  DSP::log << DSP::e::LogMode::Error << "Finished test_6" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_6" << endl << endl;
 
   DSP::log << "Starting test_7" << endl;
   test_7();
-  DSP::log << DSP::e::LogMode::Error << "Finished test_7" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_7" << endl << endl;
 
   DSP::log << "Starting test_8" << endl;
   test_8();
-  DSP::log << DSP::e::LogMode::Error << "Finished test_8" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_8" << endl << endl;
 
   DSP::log << "Starting test_9" << endl;
   test_9();
-  DSP::log << DSP::e::LogMode::Error << "Finished test_9" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_9" << endl << endl;
 
   DSP::log << "Starting test_10" << endl;
   test_10(argc, argv);
-  DSP::log << DSP::e::LogMode::Error << "Finished test_10" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_10" << endl << endl;
 
   DSP::log << "Starting test_11" << endl;
   test_11(argc, argv);
-  DSP::log << DSP::e::LogMode::Error << "Finished test_11" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_11" << endl << endl;
 
   DSP::log << "Starting test_12" << endl;
   test_12();
-  DSP::log << DSP::e::LogMode::Error << "Finished test_12" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_12" << endl << endl;
 }
 
 

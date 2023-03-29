@@ -8,6 +8,8 @@ TODO::
 LAST DONE:
 
 CHANGES:
+- ver. 0.20.018 - <b>2022.03.29</b> Changed: 
+  - Full support for Visual Studio 2019 (DSPE_lib.sln) for 32 and 64-bit architectures
 - ver. 0.20.017 - <b>2022.03.28</b> Changed: 
   - Initital intergration for Visual Studio 2019 support
 - ver. 0.20.016 - <b>2022.03.23</b> Changed: 

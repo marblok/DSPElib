@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{00E43F8A-C081-44B7-9279-C9A454D1B5BD}</ProjectGuid>
+    <ProjectGuid>{639D5F8E-119E-491D-93E1-A9252EC2891A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>echo</RootNamespace>
+    <RootNamespace>macro_example</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -179,7 +179,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="echo.cpp" />
+    <ClCompile Include="macro_example.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\DSPElib.vcxproj">

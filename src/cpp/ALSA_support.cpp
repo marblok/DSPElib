@@ -6,7 +6,7 @@
 
 #include <ALSA_support.h>
 #include <vector>
-#include <cmath>
+// #include <cmath>
 #include <DSP_lib.h> // for logging 
 
 // ============================================================= //

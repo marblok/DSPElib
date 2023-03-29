@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{00E43F8A-C081-44B7-9279-C9A454D1B5BD}</ProjectGuid>
+    <ProjectGuid>{757C7359-DDD5-4D8D-B043-71E31D9356AF}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>echo</RootNamespace>
+    <RootNamespace>asynchronous</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -179,7 +179,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="echo.cpp" />
+    <ClCompile Include="asynchronous.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\DSPElib.vcxproj">

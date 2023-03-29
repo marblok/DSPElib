@@ -26,9 +26,7 @@ else #rls
 endif
 
 
-SRCS = hello.cpp
-
-all: hello.exe echo.exe sound_input.exe multirate.exe callbacks.exe socket_server.exe socket_client.exe socket_server_2.exe socket_client_2.exe macro_example.exe asynchronous.exe asynchronous_CT.exe
+all: hello.exe echo.exe sound_input.exe multirate.exe callbacks.exe socket_server.exe socket_client.exe socket_server_2.exe socket_client_2.exe macro_example.exe asynchronous.exe asynchronous_CT.exe DSPElib_examples.exe
 #all: echo.exe  
 
 hello.o: $(SRC_DIR)/hello.cpp
@@ -92,6 +90,11 @@ asynchronous_CT.o: $(SRC_DIR)/asynchronous.cpp
 asynchronous_CT.exe: asynchronous_CT.o
 	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/asynchronous_CT.o" -o"$(SRC_DIR)/asynchronous_CT.exe" $(LINKER_FLAGS) -lDSPE -lwinmm 
 
+DSPElib_examples.o: $(SRC_DIR)/DSPElib_examples.cpp
+	$(CC) -DWIN32 -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/DSPElib_examples.cpp" -o "$(SRC_DIR)/DSPElib_examples.o"
+DSPElib_examples.exe: DSPElib_examples.o
+	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/DSPElib_examples.o" -o"$(SRC_DIR)/DSPElib_examples.exe" $(LINKER_FLAGS) -lDSPE -lwinmm 
+
 clean:
 	rm -f $(SRC_DIR)/hello.exe $(SRC_DIR)/hello.o 
 	rm -f $(SRC_DIR)/echo.exe $(SRC_DIR)/echo.o 
@@ -105,6 +108,7 @@ clean:
 	rm -f $(SRC_DIR)/socket_server_2.exe $(SRC_DIR)/socket_server_2.o 
 	rm -f $(SRC_DIR)/socket_client_2.exe $(SRC_DIR)/socket_client_2.o
 	rm -f $(SRC_DIR)/macro_example.exe $(SRC_DIR)/macro_example.o
+	rm -f $(SRC_DIR)/DSPElib_examples.exe $(SRC_DIR)/DSPElib_examples.o
 	rm -f $(SRC_DIR)/*.log
 	rm -f $(SRC_DIR)/matlab/*.coef
 	rm -f $(SRC_DIR)/multirate.wav
@@ -114,3 +118,5 @@ clean:
 	rm -f $(SRC_DIR)/captured_sample.wav
 	rm -f $(SRC_DIR)/*.dot
 	rm -f $(SRC_DIR)/*.gif
+	rm -f $(SRC_DIR)/*.flt
+	rm -f $(SRC_DIR)/*.txt

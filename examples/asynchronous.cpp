@@ -39,13 +39,15 @@ int main(void)
   gain.Output("out") >> sum.Input("in1");
 
   #ifdef use_clock_trigger
+    DSP::log << endl << "Using clock trigger for clock activation" << endl << endl;
     DSP::u::ClockTrigger CT(MasterClock, SignalActivatedClock);
     DSP::u::SampleSelector sampler(MasterClock, SignalActivatedClock, false);
 
     sum.Output("out") >> CT.Input("act");
     sampler.Output("out") >> hold.Input("in");
   #else
-    DSP::u::SampleSelector sampler(MasterClock, SignalActivatedClock, true);
+  DSP::log << endl << "Directly using SampleSelector for clock activation" << endl << endl;
+  DSP::u::SampleSelector sampler(MasterClock, SignalActivatedClock, true);
 
     sum.Output("out") >> sampler.Input("act");
     sampler.Output("out") >> hold.Input("in");

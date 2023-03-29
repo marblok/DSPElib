@@ -7,6 +7,10 @@
 #define DSP_types_H
 
 #ifndef _USE_MATH_DEFINES
+  #ifdef _CMATH_
+    #error cmath already loaded without _USE_MATH_DEFINES defined
+  #endif
+
   #define  _USE_MATH_DEFINES
 #endif
 #include <cmath>
