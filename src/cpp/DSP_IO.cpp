@@ -273,10 +273,10 @@ void DSP::u::Vacuum::Init(bool AreInputsComplex, unsigned int NoOfInputs_in)
   vector <unsigned int> all_indexes;
   for (ind=0; ind<NoOfInputs_in; ind++)
   {
-    all_indexes.push_back(ind);
-
     if (AreInputsComplex == false)
     {
+      all_indexes.push_back(ind);
+
       temp = "in" + to_string(ind+1);
       DefineInput(temp, ind);
       temp = "in" + to_string(ind+1) + ".re";
@@ -284,8 +284,12 @@ void DSP::u::Vacuum::Init(bool AreInputsComplex, unsigned int NoOfInputs_in)
     }
     else
     {
+      all_indexes.push_back(2*ind);
+      all_indexes.push_back(2*ind+1);
+  
       temp = "in" + to_string(ind+1);
       DefineInput(temp, 2*ind, 2*ind+1);
+  
       temp = "in" + to_string(ind+1) + ".re";
       DefineInput(temp, 2*ind);
       temp = "in" + to_string(ind+1) + ".im";

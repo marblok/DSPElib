@@ -8,6 +8,8 @@ TODO::
 LAST DONE:
 
 CHANGES:
+- ver. 0.20.019 - <b>2022.03.30</b> Fixed: 
+  - DSP::u::Vacuum fix for AreInputsComplex = true: not all input lines were grouped in input "in"
 - ver. 0.20.018 - <b>2022.03.29</b> Changed: 
   - Full support for Visual Studio 2019 (DSPE_lib.sln) for 32 and 64-bit architectures
 - ver. 0.20.017 - <b>2022.03.28</b> Changed: 
