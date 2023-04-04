@@ -8,6 +8,8 @@ TODO::
 LAST DONE:
 
 CHANGES:
+- ver. 0.20.021 - <b>2022.04.04</b> Added: 
+  - DSP::u::SymbolMapper - experimental support for QAM for even bits_per_symbol (Gray ordering) 
 - ver. 0.20.020 - <b>2022.04.04</b> Fixed: 
   - DSP::u::SymbolMapper - fixed support for phase rotation of DSP::e::ModulationType::ASK constelation 
 - ver. 0.20.019 - <b>2022.03.30</b> Fixed: 

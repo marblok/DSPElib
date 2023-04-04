@@ -1817,7 +1817,7 @@ unsigned int getConstellation(
       break;
 
     case DSP::e::ModulationType::ASK: {
-      constellation.resize(M);
+        constellation.resize(M);
         for (unsigned int n=0; n < M; n++) {
           constellation[n].re = static_cast<DSP::Float>(n)/static_cast<DSP::Float>(M-1);
           constellation[n].im = 0;
@@ -1830,6 +1830,38 @@ unsigned int getConstellation(
         }
         else {
           is_real = true;
+        }
+      }
+      break;
+
+    case DSP::e::ModulationType::QAM: {
+        //  to convert number into gray, take the number and perform XOR after shifting the number 1 bit to the right.
+        // x_gray = x ^ (x >> 1);
+        DSP::Float component_offset = (sqrt(DSP::Float(M))-1);
+        if ((bits_per_symbol % 2) == 0) {
+          unsigned int mask = 0x00;
+          for (unsigned int ind = 0; ind < bits_per_symbol/2; ind++) {
+            mask <<= 1;
+            mask += 1; 
+          }
+          constellation.resize(M);
+          for (unsigned int n=0; n < M; n++) {
+            unsigned int x_gray = n ^ (n >> 1);
+            unsigned int i = x_gray & mask;
+            unsigned int q = (x_gray >> (bits_per_symbol/2));
+            q = q & mask;
+            constellation[n] = DSP::Complex(DSP::Float(i) - component_offset, DSP::Float(q) - component_offset);
+          }
+          if (constellation_phase_offset != 0.0) {
+            for (unsigned int ind=0; ind < M; ind++) {
+              constellation[ind] = constellation[ind] * DSP::Complex(cos(constellation_phase_offset), sin(constellation_phase_offset));
+            }
+          }
+          is_real = false;
+        }
+        else {
+          //! \TODO for odd bits_per_symbol generate QAM constellation for bits_per_symbol+1 and next remove half of the symbols with larger magnitude ???
+          DSP::log << DSP::e::LogMode::Error << "getConstellation" << DSP::e::LogMode::second << "Unsupported modulation QAM bits_per_symbol value " << endl;
         }
       }
       break;
