@@ -7,7 +7,9 @@
 #ifndef DSP_TEESTREAM_H
 #define DSP_TEESTREAM_H
 
+  //#include <iostream>
   #include <ostream>
+  #include <fstream>
   #include <memory>
   #include <mutex>
 

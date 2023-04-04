@@ -2,12 +2,14 @@ TODO::
   SOUND_support_t::get_wave_in_raw_buffer - zastąpić metodą zawierającą konwersję typu, ew. rozbudować konwersję w DSP::u::AudioInput
   - test socket support on Linux (test examples as there are have been noticed some problems with bind)
   ? DSP::Clock_ptr => migrate to std::shared_ptr
-  !!! Add TELEsound and PiAPS_sound projects to GitLab and start addaptation to new library version
+  !!! Add PiAPS_sound projects to GitLab and start addaptation to new library version
 
   unsigned long SamplingRate // -1 => 0
 LAST DONE:
 
 CHANGES:
+- ver. 0.20.020 - <b>2022.04.04</b> Fixed: 
+  - DSP::u::SymbolMapper - fixed support for phase rotation of DSP::e::ModulationType::ASK constelation 
 - ver. 0.20.019 - <b>2022.03.30</b> Fixed: 
   - DSP::u::Vacuum fix for AreInputsComplex = true: not all input lines were grouped in input "in"
 - ver. 0.20.018 - <b>2022.03.29</b> Changed: 

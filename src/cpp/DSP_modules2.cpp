@@ -1822,7 +1822,15 @@ unsigned int getConstellation(
           constellation[n].re = static_cast<DSP::Float>(n)/static_cast<DSP::Float>(M-1);
           constellation[n].im = 0;
         }
-        is_real = true;
+        if (constellation_phase_offset != 0.0) {
+          for (unsigned int ind=0; ind < M; ind++) {
+            constellation[ind] = constellation[ind] * DSP::Complex(cos(constellation_phase_offset), sin(constellation_phase_offset));
+          }
+          is_real = false;
+        }
+        else {
+          is_real = true;
+        }
       }
       break;
 
