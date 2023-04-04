@@ -1837,7 +1837,7 @@ unsigned int getConstellation(
     case DSP::e::ModulationType::QAM: {
         //  to convert number into gray, take the number and perform XOR after shifting the number 1 bit to the right.
         // x_gray = x ^ (x >> 1);
-        DSP::Float component_offset = (sqrt(DSP::Float(M))-1);
+        DSP::Float component_offset = (sqrt(DSP::Float(M))-1)/2;
         if ((bits_per_symbol % 2) == 0) {
           unsigned int mask = 0x00;
           for (unsigned int ind = 0; ind < bits_per_symbol/2; ind++) {
