@@ -57,7 +57,11 @@ class TAudioMixer
 #endif // WIN32
 
   public:
+    //! returns number of currently available WaveIn devices or -1 if not supported in current configuration
+    static long GetNoOfWaveInDevices(void);
     static string GetWaveInDevName(UINT DevNo=WAVE_MAPPER );
+    //! returns number of currently available WaveOut devices or -1 if not supported in current configuration
+    static long GetNoOfWaveOutDevices(void);
     static string GetWaveOutDevName(UINT DevNo=WAVE_MAPPER );
 
     bool MixerSupported;

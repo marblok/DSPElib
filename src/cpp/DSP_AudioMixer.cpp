@@ -24,6 +24,13 @@ const string TAudioMixer::PCMwaveFileName= "PCM wave file";
   std::vector<WAVEOUTCAPS> TAudioMixer::WaveOutCaps;
 #endif // WIN32
 
+long TAudioMixer::GetNoOfWaveInDevices(void) {
+#ifdef WIN32
+  return long(waveInGetNumDevs());
+#endif
+  return -1;
+}
+
 string TAudioMixer::GetWaveInDevName(UINT DevNo)
 {
 #ifdef WIN32
@@ -55,6 +62,13 @@ string TAudioMixer::GetWaveInDevName(UINT DevNo)
   (void)DevNo; // unused
 #endif // WIN32
   return "";
+}
+
+long TAudioMixer::GetNoOfWaveOutDevices(void) {
+#ifdef WIN32
+  return long(waveOutGetNumDevs());
+#endif
+  return -1;
 }
 
 string TAudioMixer::GetWaveOutDevName(UINT DevNo)
