@@ -1929,7 +1929,7 @@ int test_9()
 
   // *********************************** //
   int SamplesInSegment = 512;
-  __int64 NoOfSamplesProcessed = 0;
+  int64_t NoOfSamplesProcessed = 0;
   // 10 seconds
   const long long MAX_SAMPLES_TO_PROCESS = (long long)10 * Fp1;
   while (NoOfSamplesProcessed < MAX_SAMPLES_TO_PROCESS)
@@ -1994,7 +1994,7 @@ int test_10(int argn, char* args[])
 
   // *********************************** //
   int SamplesInSegment = 512;
-  __int64 NoOfSamplesProcessed = 0;
+  int64_t NoOfSamplesProcessed = 0;
   // 10 seconds
 //  const long long MAX_SAMPLES_TO_PROCESS = 1*F_p
   while (NoOfSamplesProcessed < 10000)
@@ -2175,7 +2175,7 @@ int test_11(int argn, char* args[])
 
   // *********************************** //
   int SamplesInSegment = 512;
-  __int64 NoOfSamplesProcessed = 0;
+  int64_t NoOfSamplesProcessed = 0;
   // 10 seconds
   const long long MAX_SAMPLES_TO_PROCESS = (long long)(1 * Fp2);
   while (NoOfSamplesProcessed < MAX_SAMPLES_TO_PROCESS)
@@ -2690,7 +2690,7 @@ int test_ZPSTC_cw_3()
 
   // *********************************** //
   int SamplesInSegment = 4 * 512;
-  __int64 NoOfSamplesProcessed = 0;
+  int64_t NoOfSamplesProcessed = 0;
   // 10 seconds
   const long long MAX_SAMPLES_TO_PROCESS = (long long)10 * Fp1;
   while (NoOfSamplesProcessed < MAX_SAMPLES_TO_PROCESS)
