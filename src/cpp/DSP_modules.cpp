@@ -37,7 +37,7 @@ DSP::name::name(void)
   #endif
 }
 
-DSP::name::name(const string &Name)
+DSP::name::name(const std::string &Name)
 {
   UNUSED_RELEASE_ARGUMENT(Name);
 
@@ -46,7 +46,7 @@ DSP::name::name(const string &Name)
   #endif
 }
 
-void DSP::name::SetName(const string &Name, bool Append)
+void DSP::name::SetName(const std::string &Name, bool Append)
 {
   #ifndef __DEBUG__
     UNUSED_ARGUMENT(Name);
@@ -63,7 +63,7 @@ void DSP::name::SetName(const string &Name, bool Append)
   #endif
 }
 
-string DSP::name::GetName()
+std::string DSP::name::GetName()
 {
   #ifdef __DEBUG__
     return ObjectName;
@@ -260,7 +260,7 @@ DSP::Component::~Component(void)
   {
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DSP::Component::~DSP::Component" << DSP::e::LogMode::second
-        << "Notifications have not been correctly unregistered for component: >>" << GetName() << "<<" << endl;
+        << "Notifications have not been correctly unregistered for component: >>" << GetName() << "<<" << std::endl;
     #endif
     NotificationClocks.clear();
   }
@@ -291,13 +291,13 @@ DSP::Component::~Component(void)
 DSP::output DSP::output::_null(true);
 
 //! read output name
-const string &DSP::output::get_name(void) const {
+const std::string &DSP::output::get_name(void) const {
   return _name;
 }
 //! set output name
-void DSP::output::set_name(const string &name) {
+void DSP::output::set_name(const std::string &name) {
   if (_is_null == true) {
-    DSP::log << DSP::e::LogMode::Error << "DSP::output::set_name" << DSP::e::LogMode::second << "Attempt to set name to null output object" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::output::set_name" << DSP::e::LogMode::second << "Attempt to set name to null output object" << std::endl;
     return;
   }
   _name = name;
@@ -324,13 +324,13 @@ DSP::output::~output(void)
 DSP::input DSP::input::_null(true);
 
 //! read input name
-const string &DSP::input::get_name(void) const {
+const std::string &DSP::input::get_name(void) const {
   return _name;
 }
 //! set input name
-void DSP::input::set_name(const string &name) {
+void DSP::input::set_name(const std::string &name) {
   if (_is_null == true) {
-    DSP::log << DSP::e::LogMode::Error << "DSP::input::set_name" << DSP::e::LogMode::second << "Attempt to set name to null input object" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::input::set_name" << DSP::e::LogMode::second << "Attempt to set name to null input object" << std::endl;
     return;
   }
   _name = name;
@@ -363,7 +363,7 @@ bool operator<<( const DSP::input &input, const DSP::output  &output) {
   return DSP::_connect_class::connect(output, input);
 }
 
-bool DSP::Component::UndefineOutput(const string &Name)
+bool DSP::Component::UndefineOutput(const std::string &Name)
 {
   unsigned int ind;
   bool done;
@@ -398,14 +398,14 @@ bool DSP::Component::UndefineOutput(const string &Name)
   if (done == false)
   {
     DSP::log << "UndefineOutput" << DSP::e::LogMode::second
-      << "Name >" << Name << "< was not defined for block: >" << GetName() << "<" << endl;
+      << "Name >" << Name << "< was not defined for block: >" << GetName() << "<" << std::endl;
   }
 #endif
 
   return done;
 }
 
-bool DSP::Component::DefineOutput(const string &Name, const unsigned int &OutputNo)
+bool DSP::Component::DefineOutput(const std::string &Name, const unsigned int &OutputNo)
 {
   unsigned int ind;
 
@@ -413,7 +413,7 @@ bool DSP::Component::DefineOutput(const string &Name, const unsigned int &Output
   {
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DefineOutput" << DSP::e::LogMode::second
-         << "Output number out too large for block: >" << GetName() << "<" << endl;
+         << "Output number out too large for block: >" << GetName() << "<" << std::endl;
     #endif
     return false;
   }
@@ -425,8 +425,8 @@ bool DSP::Component::DefineOutput(const string &Name, const unsigned int &Output
     {
       #ifdef __DEBUG__
         DSP::log << "DefineOutput" << DSP::e::LogMode::second
-           << "Name >" << Name << "< already defined for block: >" << GetName() << "<" << endl;
-        DSP::log << "            " << DSP::e::LogMode::second << "Name will be deleted before redefining" << endl;
+           << "Name >" << Name << "< already defined for block: >" << GetName() << "<" << std::endl;
+        DSP::log << "            " << DSP::e::LogMode::second << "Name will be deleted before redefining" << std::endl;
       #endif
 
       UndefineOutput(Name);
@@ -437,7 +437,7 @@ bool DSP::Component::DefineOutput(const string &Name, const unsigned int &Output
   tempOut.component=this;
   if (Name.length() == 0)
   {
-    tempOut.set_name(to_string(DefinedOutputs.size()));
+    tempOut.set_name(std::to_string(DefinedOutputs.size()));
   }
   else
   {
@@ -452,7 +452,7 @@ bool DSP::Component::DefineOutput(const string &Name, const unsigned int &Output
   return true;
 }
 
-bool DSP::Component::DefineOutput(const string &Name,
+bool DSP::Component::DefineOutput(const std::string &Name,
     const unsigned int &OutputNo_re, const unsigned int &OutputNo_im)
 {
   unsigned int ind;
@@ -461,7 +461,7 @@ bool DSP::Component::DefineOutput(const string &Name,
   {
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DefineOutput" << DSP::e::LogMode::second
-        << "Output number (realis) out too large for block: " << GetName() << endl;
+        << "Output number (realis) out too large for block: " << GetName() << std::endl;
     #endif
     return false;
   }
@@ -469,7 +469,7 @@ bool DSP::Component::DefineOutput(const string &Name,
   {
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DefineOutput" << DSP::e::LogMode::second
-        << "Output number (imaginaris) out too large for block: " << GetName() << endl;
+        << "Output number (imaginaris) out too large for block: " << GetName() << std::endl;
     #endif
     return false;
   }
@@ -481,8 +481,8 @@ bool DSP::Component::DefineOutput(const string &Name,
     {
       #ifdef __DEBUG__
         DSP::log << "DefineOutput" << DSP::e::LogMode::second
-          << "Name >" << Name << "< already defined for block: >" << GetName() << "<" << endl;
-        DSP::log << "            " << DSP::e::LogMode::second << "Name will be deleted before redefining" << endl;
+          << "Name >" << Name << "< already defined for block: >" << GetName() << "<" << std::endl;
+        DSP::log << "            " << DSP::e::LogMode::second << "Name will be deleted before redefining" << std::endl;
       #endif
 
       UndefineOutput(Name);
@@ -493,7 +493,7 @@ bool DSP::Component::DefineOutput(const string &Name,
   tempOut.component=this;
   if (Name.length() == 0)
   {
-    tempOut.set_name(to_string(DefinedOutputs.size()));
+    tempOut.set_name(std::to_string(DefinedOutputs.size()));
   }
   else
   {
@@ -509,7 +509,7 @@ bool DSP::Component::DefineOutput(const string &Name,
   return true;
 }
 
-bool DSP::Component::DefineOutput(const string &Name, const vector<unsigned int> &Outputs)
+bool DSP::Component::DefineOutput(const std::string &Name, const std::vector<unsigned int> &Outputs)
 {
   unsigned int ind;
 
@@ -518,7 +518,7 @@ bool DSP::Component::DefineOutput(const string &Name, const vector<unsigned int>
     {
       #ifdef __DEBUG__
         DSP::log << DSP::e::LogMode::Error << "DefineOutput" << DSP::e::LogMode::second
-          << "Output number (" << ind << ") out too large for block: " << GetName() << endl;
+          << "Output number (" << ind << ") out too large for block: " << GetName() << std::endl;
       #endif
       return false;
     }
@@ -529,10 +529,10 @@ bool DSP::Component::DefineOutput(const string &Name, const vector<unsigned int>
     if (Name.compare(DefinedOutputs[ind].get_name()) == 0)
     {
       #ifdef __DEBUG__
-        stringstream tekst;
+        std::stringstream tekst;
         DSP::log << "DefineOutput" << DSP::e::LogMode::second
-          << "Name >" << Name << "< already defined for block: >" << GetName() << "<" << endl;
-        DSP::log << "            "  << DSP::e::LogMode::second << "Name will be deleted before redefining" << endl;
+          << "Name >" << Name << "< already defined for block: >" << GetName() << "<" << std::endl;
+        DSP::log << "            "  << DSP::e::LogMode::second << "Name will be deleted before redefining" << std::endl;
       #endif
 
       UndefineOutput(Name);
@@ -543,7 +543,7 @@ bool DSP::Component::DefineOutput(const string &Name, const vector<unsigned int>
   tempOut.component=this;
   if (Name.length() == 0)
   {
-    tempOut.set_name(to_string(DefinedOutputs.size()));
+    tempOut.set_name(std::to_string(DefinedOutputs.size()));
   }
   else
   {
@@ -559,7 +559,7 @@ bool DSP::Component::DefineOutput(const string &Name, const vector<unsigned int>
   return true;
 }
 
-bool DSP::Block::UndefineInput(const string &Name)
+bool DSP::Block::UndefineInput(const std::string &Name)
 {
   unsigned int ind;
   bool done;
@@ -592,14 +592,14 @@ bool DSP::Block::UndefineInput(const string &Name)
   if (done == false)
   {
     DSP::log << "UndefineInput" << DSP::e::LogMode::second
-      << "Name >" << Name << "< was not defined for block: >" << GetName() << "<" << endl;
+      << "Name >" << Name << "< was not defined for block: >" << GetName() << "<" << std::endl;
   }
 #endif
 
   return done;
 }
 
-bool DSP::Block::DefineInput(const string &Name, const unsigned int &InputNo)
+bool DSP::Block::DefineInput(const std::string &Name, const unsigned int &InputNo)
 {
   unsigned int ind;
 
@@ -607,7 +607,7 @@ bool DSP::Block::DefineInput(const string &Name, const unsigned int &InputNo)
   {
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DefineInput(\""+Name+"\")" << DSP::e::LogMode::second
-        << "Input number:" << InputNo << ", too large for block: " << GetName() << endl;
+        << "Input number:" << InputNo << ", too large for block: " << GetName() << std::endl;
     #endif
     return false;
   }
@@ -619,8 +619,8 @@ bool DSP::Block::DefineInput(const string &Name, const unsigned int &InputNo)
     {
       #ifdef __DEBUG__
         DSP::log << "DefineInput" << DSP::e::LogMode::second
-          << "Name >" << Name << "< already defined for block: >" << GetName() << "<" << endl;
-        DSP::log << "           " << DSP::e::LogMode::second << "Name will be deleted before redefining" << endl;
+          << "Name >" << Name << "< already defined for block: >" << GetName() << "<" << std::endl;
+        DSP::log << "           " << DSP::e::LogMode::second << "Name will be deleted before redefining" << std::endl;
       #endif
 
       UndefineInput(Name);
@@ -631,7 +631,7 @@ bool DSP::Block::DefineInput(const string &Name, const unsigned int &InputNo)
   tempIn.component=this;
   if (Name.length() == 0)
   {
-    tempIn.set_name(to_string(DefinedInputs.size()));
+    tempIn.set_name(std::to_string(DefinedInputs.size()));
   }
   else
   {
@@ -646,7 +646,7 @@ bool DSP::Block::DefineInput(const string &Name, const unsigned int &InputNo)
   return true;
 }
 
-bool DSP::Block::DefineInput(const string &Name,
+bool DSP::Block::DefineInput(const std::string &Name,
     const unsigned int &InputNo_re, const unsigned int &InputNo_im)
 {
   unsigned int ind;
@@ -655,7 +655,7 @@ bool DSP::Block::DefineInput(const string &Name,
   {
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DefineInput(\"" << Name << "\")" << DSP::e::LogMode::second
-        << "Input number:" << InputNo_re << ", (realis) too large for block: " << GetName() << endl;
+        << "Input number:" << InputNo_re << ", (realis) too large for block: " << GetName() << std::endl;
     #endif
     return false;
   }
@@ -663,7 +663,7 @@ bool DSP::Block::DefineInput(const string &Name,
   {
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DefineInput(\"" << Name << "\")" << DSP::e::LogMode::second
-        << "Input number " << InputNo_re << " (imaginaris) too large for block: " << GetName() << endl;
+        << "Input number " << InputNo_re << " (imaginaris) too large for block: " << GetName() << std::endl;
     #endif
     return false;
   }
@@ -675,8 +675,8 @@ bool DSP::Block::DefineInput(const string &Name,
     {
       #ifdef __DEBUG__
         DSP::log << "DefineInput" << DSP::e::LogMode::second
-          << "Name >" << Name << "< already defined for block: >" << GetName() << "<" << endl;
-        DSP::log << "           " << DSP::e::LogMode::second << "Name will be deleted before redefining" << endl;
+          << "Name >" << Name << "< already defined for block: >" << GetName() << "<" << std::endl;
+        DSP::log << "           " << DSP::e::LogMode::second << "Name will be deleted before redefining" << std::endl;
       #endif
 
       UndefineInput(Name);
@@ -687,7 +687,7 @@ bool DSP::Block::DefineInput(const string &Name,
   tempIn.component=this;
   if (Name.length() == 0)
   {
-    tempIn.set_name(to_string(DefinedInputs.size()));
+    tempIn.set_name(std::to_string(DefinedInputs.size()));
   }
   else
   {
@@ -703,8 +703,8 @@ bool DSP::Block::DefineInput(const string &Name,
   return true;
 }
 
-bool DSP::Block::DefineInput(const string &Name,
-    const vector<unsigned int> &Inputs)
+bool DSP::Block::DefineInput(const std::string &Name,
+    const std::vector<unsigned int> &Inputs)
 {
   unsigned int ind;
 
@@ -713,7 +713,7 @@ bool DSP::Block::DefineInput(const string &Name,
     {
       #ifdef __DEBUG__
         DSP::log << DSP::e::LogMode::Error << "DefineInput(\"" << Name << "\")" << DSP::e::LogMode::second
-          << "Input number:" << ind << ", too large for block: " << GetName() << endl;
+          << "Input number:" << ind << ", too large for block: " << GetName() << std::endl;
       #endif
       return false;
     }
@@ -725,8 +725,8 @@ bool DSP::Block::DefineInput(const string &Name,
     {
       #ifdef __DEBUG__
         DSP::log << "DefineInput" << DSP::e::LogMode::second
-          << "Name >" << Name << "< already defined for block: >" << GetName() << "<" << endl;
-        DSP::log << "           " << DSP::e::LogMode::second << "Name will be deleted before redefining" << endl;
+          << "Name >" << Name << "< already defined for block: >" << GetName() << "<" << std::endl;
+        DSP::log << "           " << DSP::e::LogMode::second << "Name will be deleted before redefining" << std::endl;
       #endif
 
       UndefineInput(Name);
@@ -737,7 +737,7 @@ bool DSP::Block::DefineInput(const string &Name,
   tempIn.component=this;
   if (Name.length() == 0)
   {
-    tempIn.set_name(to_string(DefinedInputs.size()));
+    tempIn.set_name(std::to_string(DefinedInputs.size()));
   }
   else
   {
@@ -753,7 +753,7 @@ bool DSP::Block::DefineInput(const string &Name,
   return true;
 }
 
-DSP::output &DSP::Component::Output(const string &Name)
+DSP::output &DSP::Component::Output(const std::string &Name)
 {
   unsigned int ind;
 
@@ -765,31 +765,31 @@ DSP::output &DSP::Component::Output(const string &Name)
 
   #ifdef __DEBUG__
     DSP::log << DSP::e::LogMode::Error << "DSP::Component::Output" << DSP::e::LogMode::second
-      << "Block<" << this->GetName() << "> has no output named <" << Name << ">" << endl;
-    DSP::log << "DSP::Component::Output" << DSP::e::LogMode::second << "Available output names:" << endl;
+      << "Block<" << this->GetName() << "> has no output named <" << Name << ">" << std::endl;
+    DSP::log << "DSP::Component::Output" << DSP::e::LogMode::second << "Available output names:" << std::endl;
     for (ind=0; ind<DefinedOutputs.size(); ind++)
     {
       DSP::log << "DSP::Component::Output" << DSP::e::LogMode::second
-        << "   \"" << DefinedOutputs[ind].get_name() << "\"" << endl;
+        << "   \"" << DefinedOutputs[ind].get_name() << "\"" << std::endl;
     }
     DSP::log << DSP::e::LogMode::Error << "DSP::Component::Output" << DSP::e::LogMode::second
-      << "Use one of defined outputs or define new one using DSP::Component::DefineOutput function" << endl;
+      << "Use one of defined outputs or define new one using DSP::Component::DefineOutput function" << std::endl;
   #endif
   return DSP::output::null();
 }
 
-DSP::input &DSP::Component::Input(const string &Name)
+DSP::input &DSP::Component::Input(const std::string &Name)
 {
   UNUSED_ARGUMENT(Name);
 
   #ifdef __DEBUG__
     DSP::log << DSP::e::LogMode::Error << "DSP::Block::Input";
-    DSP::log << DSP::e::LogMode::second << "Block<" << this->GetName() << "> should not have Input() method called." << endl;
+    DSP::log << DSP::e::LogMode::second << "Block<" << this->GetName() << "> should not have Input() method called." << std::endl;
   #endif
   return DSP::input::null();
 }
 
-DSP::input &DSP::Block::Input(const string &Name)
+DSP::input &DSP::Block::Input(const std::string &Name)
 {
   unsigned int ind;
 
@@ -801,15 +801,15 @@ DSP::input &DSP::Block::Input(const string &Name)
 
   #ifdef __DEBUG__
     DSP::log << "DSP::Block::Input" << DSP::e::LogMode::second
-      << "Block<" << this->GetName() << "> has no input named <" << Name << ">" << endl;
-    DSP::log << "DSP::Block::Input" << DSP::e::LogMode::second << "Available input names:" << endl;
+      << "Block<" << this->GetName() << "> has no input named <" << Name << ">" << std::endl;
+    DSP::log << "DSP::Block::Input" << DSP::e::LogMode::second << "Available input names:" << std::endl;
     for (ind=0; ind<DefinedInputs.size(); ind++)
     {
       DSP::log << "DSP::Block::Input" << DSP::e::LogMode::second
-        << "   \"" << DefinedInputs[ind].get_name() << "\"" << endl;
+        << "   \"" << DefinedInputs[ind].get_name() << "\"" << std::endl;
     }
     DSP::log << DSP::e::LogMode::Error << "DSP::Block::Input" << DSP::e::LogMode::second
-      << "Use one of defined inputs or define new one using DSP::Block::DefineInput function" << endl;
+      << "Use one of defined inputs or define new one using DSP::Block::DefineInput function" << std::endl;
   #endif
   return DSP::input::null();
 }
@@ -832,7 +832,7 @@ bool DSP::_connect_class::connect(const DSP::output &output, const DSP::input &i
   if (output.is_null() || input.is_null())
   {
     #ifdef __DEBUG__
-      stringstream tekst;
+      std::stringstream tekst;
       if (output.is_null() && input.is_null())
         tekst << "NULL output -> NULL input";
       if (output.is_null() && (!input.is_null()))
@@ -846,8 +846,8 @@ bool DSP::_connect_class::connect(const DSP::output &output, const DSP::input &i
               << ", output:" << output.get_name() << "(" << output.Outputs.size() << ") -> NULL input";
       }
 
-      DSP::log << "DSP::_connect_class::connect"  << DSP::e::LogMode::second << tekst.str() << endl;
-      DSP::log << DSP::e::LogMode::Error << "DSP::_connect_class::connect"  << DSP::e::LogMode::second << "At least one of the input parameters is NULL" << endl;
+      DSP::log << "DSP::_connect_class::connect"  << DSP::e::LogMode::second << tekst.str() << std::endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::_connect_class::connect"  << DSP::e::LogMode::second << "At least one of the input parameters is NULL" << std::endl;
     #endif
     return false;
   }
@@ -860,7 +860,7 @@ bool DSP::_connect_class::connect(const DSP::output &output, const DSP::input &i
         << "> has output <" << output.get_name()
         << "> with different number of output lines (=" << output.Outputs.size()
         << ") from block <" << input.component->GetName()
-        << "> input <" << input.get_name() << "> (=" << input.Inputs.size() << ")" << endl;
+        << "> input <" << input.get_name() << "> (=" << input.Inputs.size() << ")" << std::endl;
     #endif
     return false;
   }
@@ -914,7 +914,7 @@ bool DSP::_connect_class::splitconnect(const DSP::output &output, const DSP::inp
         << "< has output >" << output.get_name()
         << "< with different number of output lines (" << output.Outputs.size()
         << ") from block >" << input.component->GetName()
-        << "< output >" << input.get_name() << "< (" << input.Inputs.size() << ")" << endl;
+        << "< output >" << input.get_name() << "< (" << input.Inputs.size() << ")" << std::endl;
     #endif
     return false;
   }
@@ -1580,7 +1580,7 @@ void DSP::Component::UnregisterComponent(void)
     else
     {
       DSP::log << DSP::e::LogMode::Error << "UnregisterComponent" << DSP::e::LogMode::second
-        << "WARNING: trying unregister component (" << this->GetName() << ") which is not in the ComponentsTable." << endl;
+        << "WARNING: trying unregister component (" << this->GetName() << ") which is not in the ComponentsTable." << std::endl;
     }
   #endif
 
@@ -1647,7 +1647,7 @@ unsigned int DSP::Block::GetNoOfInputs(void)
 /* Indicates given input as constant value (no coutput can
  * be connected to it)
  */
-bool DSP::Block::SetConstInput(const string &InputName, DSP::Float value)
+bool DSP::Block::SetConstInput(const std::string &InputName, DSP::Float value)
 //bool DSP::Block::SetConstInput(int InputNo, DSP::Float value)
 {
   unsigned int ind;
@@ -1657,7 +1657,7 @@ bool DSP::Block::SetConstInput(const string &InputName, DSP::Float value)
   {
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DSP::Block::SetConstInput" << DSP::e::LogMode::second
-        << "Block >>" << GetName() << "<< doesn't support constant inputs !!!" << endl;
+        << "Block >>" << GetName() << "<< doesn't support constant inputs !!!" << std::endl;
     #endif
     return false;
   }
@@ -1703,7 +1703,7 @@ bool DSP::Block::SetConstInput(const string &InputName, DSP::Float value)
  * InputNo+1 -> imag_value
  * (no coutput can be connected to it)
  */
-bool DSP::Block::SetConstInput(const string &InputName, DSP::Float real_value, DSP::Float imag_value)
+bool DSP::Block::SetConstInput(const std::string &InputName, DSP::Float real_value, DSP::Float imag_value)
 {
   unsigned int ind;
   unsigned int InputNo;
@@ -1712,7 +1712,7 @@ bool DSP::Block::SetConstInput(const string &InputName, DSP::Float real_value, D
   {
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DSP::Block::SetConstInput" << DSP::e::LogMode::second
-        << "Block >>" << GetName() << "<< doesn't support for constant inputs !!!" << endl;
+        << "Block >>" << GetName() << "<< doesn't support for constant inputs !!!" << std::endl;
     #endif
     return false;
   }
@@ -1905,7 +1905,7 @@ void DSP::Source::RegisterOutputClock(DSP::Clock_ptr OutputClock, unsigned int o
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DSP::Source::RegisterOutputClock" << DSP::e::LogMode::second
         << "Attempt to register source <" << GetName()
-        << "> to NULL clock (output_index = " << output_index  << ")" << endl;
+        << "> to NULL clock (output_index = " << output_index  << ")" << std::endl;
     #endif
     return;
   }
@@ -1913,7 +1913,7 @@ void DSP::Source::RegisterOutputClock(DSP::Clock_ptr OutputClock, unsigned int o
   {
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DSP::Source::RegisterOutputClock" << DSP::e::LogMode::second
-        << "Attempt to register source output with index out of range = " << output_index << endl;
+        << "Attempt to register source output with index out of range = " << output_index << std::endl;
     #endif
     return;
   }
@@ -1944,7 +1944,7 @@ void DSP::Component::RegisterForNotification(DSP::Clock_ptr NotifyClock)
   {
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DSP::Source::RegisterClockForNotification" << DSP::e::LogMode::second
-        << "Attempt to register source <" << GetName() << "> to NULL clock" << endl;
+        << "Attempt to register source <" << GetName() << "> to NULL clock" << std::endl;
     #endif
     return;
   }
@@ -1976,7 +1976,7 @@ bool DSP::Component::SetOutput(unsigned int OutputNo, DSP::Component_ptr compone
       DSP::log << DSP::e::LogMode::Error << "DSP::Component::SetOutput" << DSP::e::LogMode::second
         << "Can't connect output (" << GetName() << ":" << OutputNo
         << ") to input (" << component->GetName() << ":" << InputNo << "). "
-           "Such an output doesn't exist - too large output number." << endl;
+           "Such an output doesn't exist - too large output number." << std::endl;
     #endif
     return false;
   }
@@ -1984,7 +1984,7 @@ bool DSP::Component::SetOutput(unsigned int OutputNo, DSP::Component_ptr compone
   if (component == NULL)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error << "DSP::Component::SetOutput" << DSP::e::LogMode::second << "Can't connect to input. Output block not specified (NULL)." << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Component::SetOutput" << DSP::e::LogMode::second << "Can't connect to input. Output block not specified (NULL)." << std::endl;
     #endif
     return false;
   }
@@ -1993,7 +1993,7 @@ bool DSP::Component::SetOutput(unsigned int OutputNo, DSP::Component_ptr compone
   if (tempBlock == NULL)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error << "DSP::Component::SetOutput" << DSP::e::LogMode::second << "Can't connect to input. Output component is the source (no inputs)." << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Component::SetOutput" << DSP::e::LogMode::second << "Can't connect to input. Output component is the source (no inputs)." << std::endl;
     #endif
     return false;
   }
@@ -2005,7 +2005,7 @@ bool DSP::Component::SetOutput(unsigned int OutputNo, DSP::Component_ptr compone
         << "Can't connect output (" << component->GetName() << ":" << InputNo
         << ") to input (" << GetName() << ":"<< OutputNo
         << "). Input (" << component->GetName() << ":" << InputNo
-        << ") does not exist - too large input number." << endl;
+        << ") does not exist - too large input number." << std::endl;
     #endif
     return false;
   }
@@ -2022,7 +2022,7 @@ bool DSP::Component::SetOutput(unsigned int OutputNo, DSP::Component_ptr compone
             << "Can't connect output (" << GetName() << ":" << OutputNo
             << ") to input(DSP::u::Copy) (" << component->GetName() << ":" << InputNo
             << "). DSP::u::Copy Output (" << tempCopy->GetName() << ":" << InputNo
-            << ") is already connected to (" << output_block->GetName() << ":" << output_block_input_no << ")." << endl;
+            << ") is already connected to (" << output_block->GetName() << ":" << output_block_input_no << ")." << std::endl;
         #endif
       }
     }
@@ -2034,7 +2034,7 @@ bool DSP::Component::SetOutput(unsigned int OutputNo, DSP::Component_ptr compone
           << ") to input (" << component->GetName() << ":" << InputNo
           << "). Output (" << GetName() << ":" << OutputNo
           << ") is already connected to ("
-          << OutputBlocks[OutputNo]->GetName() << ":" << OutputBlocks_InputNo[OutputNo] << ")." << endl;
+          << OutputBlocks[OutputNo]->GetName() << ":" << OutputBlocks_InputNo[OutputNo] << ")." << std::endl;
       #endif
       return false;
     }
@@ -2046,7 +2046,7 @@ bool DSP::Component::SetOutput(unsigned int OutputNo, DSP::Component_ptr compone
       DSP::log << DSP::e::LogMode::Error << "DSP::Component::SetOutput" << DSP::e::LogMode::second
         << "Cant't connect output (" << GetName() << ":" << OutputNo
         << ") to input (" << component->GetName() << ":" << InputNo << "). "
-           "Destination component has no inputs!" << endl;
+           "Destination component has no inputs!" << std::endl;
     #endif
     return false;
   }
@@ -2058,7 +2058,7 @@ bool DSP::Component::SetOutput(unsigned int OutputNo, DSP::Component_ptr compone
         << "Cant't connect output (" << GetName() << ":" << OutputNo
         << ") to input (" << component->GetName() << ":" << InputNo
         << "). Something is already connected to input ("
-        << component->GetName() << ":" << InputNo << ")." << endl;
+        << component->GetName() << ":" << InputNo << ")." << std::endl;
     #endif
     return false;
   }
@@ -2078,7 +2078,7 @@ bool DSP::Component::SetOutput(unsigned int OutputNo, DSP::Component_ptr compone
       {
         #ifdef __DEBUG__
           DSP::log << DSP::e::LogMode::Error << "DSP::Component::SetOutput" << DSP::e::LogMode::second
-            << "GetCopyInput(" << tempCopy->GetName() << ":" << InputNo << ") failed!" << endl;
+            << "GetCopyInput(" << tempCopy->GetName() << ":" << InputNo << ") failed!" << std::endl;
         #endif
         return false;
       }
@@ -2099,7 +2099,7 @@ bool DSP::Component::SetOutput(unsigned int OutputNo, DSP::Component_ptr compone
       {
         #ifdef __DEBUG__
           DSP::log << DSP::e::LogMode::Error << "DSP::Component::SetOutput" << DSP::e::LogMode::second
-            << "GetCopyOutput(" << tempCopy->GetName() << ":" << OutputNo << ") failed!" << endl;
+            << "GetCopyOutput(" << tempCopy->GetName() << ":" << OutputNo << ") failed!" << std::endl;
         #endif
         return false;
       }
@@ -2133,7 +2133,7 @@ bool DSP::Block::ClearInput(unsigned int InputNo)
   {
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DSP::Block::ClearInput" << DSP::e::LogMode::second
-        << "ClearInput: Input (" << GetName() << ":" << InputNo << ") must have already been cleared !!!" << endl;
+        << "ClearInput: Input (" << GetName() << ":" << InputNo << ") must have already been cleared !!!" << std::endl;
     #endif
   }
   else
@@ -2233,7 +2233,7 @@ DSP::Clock_ptr DSP::clock_groups::FindClock4Input(const std::string &group_name,
   if (L == 0)
   {
     DSP::log << DSP::e::LogMode::Error << "DSP::clock_groups::FindClock4Input" << DSP::e::LogMode::second
-      << "there is no clocks' groups relation defined for given reference group and input index" << endl;
+      << "there is no clocks' groups relation defined for given reference group and input index" << std::endl;
     return NULL;
   }
 
@@ -2273,7 +2273,7 @@ DSP::Clock_ptr DSP::clock_groups::FindClock4Output(const std::string &group_name
   if (L == 0)
   {
     DSP::log << DSP::e::LogMode::Error << "DSP::clock_groups::FindClock4Input" << DSP::e::LogMode::second
-      << "there is no clocks' groups relation defined for given reference group and input index" << endl;
+      << "there is no clocks' groups relation defined for given reference group and input index" << std::endl;
     return reference_clock;
   }
 
@@ -2475,7 +2475,7 @@ void DSP::Block::SetBlockInputClock(unsigned int InputNo, DSP::Clock_ptr InputCl
   { // create group "all" containing all blocks' inputs and outputs
 #ifdef __DEBUG__
     DSP::log << "DSP::Block::SetBlockInputClock" << DSP::e::LogMode::second
-      << "creating clock group >>all<< for block " << GetName() << endl;
+      << "creating clock group >>all<< for block " << GetName() << std::endl;
 #endif // __DEBUG__
     if (NoOfInputs > 0)
     {
@@ -2538,7 +2538,7 @@ void DSP::Block::SetBlockInputClock(unsigned int InputNo, DSP::Clock_ptr InputCl
     #ifdef __DEBUG__
       if (InputClocks[InputNo] != NULL)
       {
-        DSP::log << DSP::e::LogMode::Error << "Input clock has been already set" << endl;
+        DSP::log << DSP::e::LogMode::Error << "Input clock has been already set" << std::endl;
       }
     #endif // __DEBUG__
 
@@ -2553,7 +2553,7 @@ void DSP::Block::SetBlockInputClock(unsigned int InputNo, DSP::Clock_ptr InputCl
 #ifdef __DEBUG__
       if (ClockGroups.groups[reference_input_group_name].GroupClock  != InputClock)
       {
-        DSP::log << DSP::e::LogMode::Error << GetName() << DSP::e::LogMode::second << "Group clock has been already set to different value." << endl;
+        DSP::log << DSP::e::LogMode::Error << GetName() << DSP::e::LogMode::second << "Group clock has been already set to different value." << std::endl;
       }
 #endif
     }
@@ -2589,7 +2589,7 @@ void DSP::Block::SetBlockInputClock(unsigned int InputNo, DSP::Clock_ptr InputCl
           else
           {
             DSP::log << "DSP::Block::SetBlockInputClock" << DSP::e::LogMode::second
-              << "In block <" << GetName() << "> There is no group defined for input number " << ind << endl;
+              << "In block <" << GetName() << "> There is no group defined for input number " << ind << std::endl;
             tmp_InputClock = InputClock;
           }
         }
@@ -2604,7 +2604,7 @@ void DSP::Block::SetBlockInputClock(unsigned int InputNo, DSP::Clock_ptr InputCl
       {
         DSP::log << DSP::e::LogMode::Error << "SetBlockInputClock" << DSP::e::LogMode::second
           << "Input clocks mismatch in block (" << GetName()
-          << ") possibly at input (" << InputNo << ")" << endl;
+          << ") possibly at input (" << InputNo << ")" << std::endl;
       }
     #endif
 
@@ -2624,7 +2624,7 @@ void DSP::Block::SetBlockInputClock(unsigned int InputNo, DSP::Clock_ptr InputCl
           else
           {
             DSP::log << "DSP::Block::SetBlockInputClock" << DSP::e::LogMode::second
-              << "In block <" << GetName() << "> There is no group defined for output number " << ind << endl;
+              << "In block <" << GetName() << "> There is no group defined for output number " << ind << std::endl;
             tmp_OutputClock = InputClock;
           }
 
@@ -2640,7 +2640,7 @@ void DSP::Block::SetBlockInputClock(unsigned int InputNo, DSP::Clock_ptr InputCl
                   DSP::log << DSP::e::LogMode::Error << "SetBlockInputClock" << DSP::e::LogMode::second
                     << "Input clock differs from output clock for ("
                     << GetName() << ":" << ind << ") probably at input ("
-                    << InputNo << ")!!!" << endl;
+                    << InputNo << ")!!!" << std::endl;
                 #endif
               }
               else
@@ -2679,7 +2679,7 @@ void DSP::Block::SetBlockInputClock(unsigned int InputNo, DSP::Clock_ptr InputCl
                      " >> Master clock index: " << tmp_OutputClock->MasterClockIndex
                   << "; Output clock cycle_length based on input clock: " << tmp_OutputClock->cycle_length << "\n"
                      " >> Master clock index: " << OutputClocks[0]->MasterClockIndex
-                  << "; Actual output clock cycle_length: " << OutputClocks[0]->cycle_length << endl;
+                  << "; Actual output clock cycle_length: " << OutputClocks[0]->cycle_length << std::endl;
               #endif
             }
             else
@@ -2741,7 +2741,7 @@ bool DSP::Block::IsInputAvailable(unsigned int InputNo)
         #ifdef __DEBUG__
           DSP::log << DSP::e::LogMode::Error << "IsInputAvailable" << DSP::e::LogMode::second
             << "tried to connect to constant input ("
-            << this->GetName() << ":" << InputNo << ")" << endl;
+            << this->GetName() << ":" << InputNo << ")" << std::endl;
         #endif
         return false;
       }
@@ -2755,7 +2755,7 @@ bool DSP::Block::IsInputAvailable(unsigned int InputNo)
         DSP::log << DSP::e::LogMode::Error << "IsInputAvailable" << DSP::e::LogMode::second
           << "There is output (" << tempComponent->GetName()
           << ":" << tempNo << ") already connected to this input ("
-          << this->GetName() << ":" << InputNo << ")" << endl;
+          << this->GetName() << ":" << InputNo << ")" << std::endl;
       #endif
       return false;
     }
@@ -2995,7 +2995,7 @@ bool DSP::Block::GetMultirateFactorsFromClocks(
       if (ClocksShouldBeSynchronous == true)
       {
         DSP::log << DSP::e::LogMode::Error << "DSP::Block::GetMultirateFactorsFromClocks" << DSP::e::LogMode::second
-          << "Detected asynchronous clock in component >>" << GetName() << "<< !!!" << endl;
+          << "Detected asynchronous clock in component >>" << GetName() << "<< !!!" << std::endl;
       }
     #endif
   }
@@ -3044,8 +3044,8 @@ DSP::u::LoopDelay::LoopDelay(DSP::Clock_ptr ParentClock, unsigned int delay, uns
   : DSP::Block(), DSP::Source()
 {
   unsigned int ind;
-  string temp;
-  vector<unsigned int> indexes;
+  std::string temp;
+  std::vector<unsigned int> indexes;
 
   SetName("LoopDelay", false);
 
@@ -3066,9 +3066,9 @@ DSP::u::LoopDelay::LoopDelay(DSP::Clock_ptr ParentClock, unsigned int delay, uns
   indexes.resize(NoOfInputs);
   for (ind=0; ind<NoOfInputs; ind++)
   {
-    temp = "in" + to_string(ind+1);
+    temp = "in" + std::to_string(ind+1);
     DefineInput(temp, ind);
-    temp = "out" + to_string(ind+1);
+    temp = "out" + std::to_string(ind+1);
     DefineOutput(temp, ind);
 
     indexes[ind] = ind;
@@ -3118,11 +3118,11 @@ DSP::u::LoopDelay::LoopDelay(DSP::Clock_ptr ParentClock, unsigned int delay, uns
   }
 }
 
-bool DSP::u::LoopDelay::SetState(const string &InputName, DSP::Float state_buffer_value)
+bool DSP::u::LoopDelay::SetState(const std::string &InputName, DSP::Float state_buffer_value)
 {
   return SetState(InputName, 1, &state_buffer_value);
 }
-bool DSP::u::LoopDelay::SetState(const string &InputName, unsigned int size, DSP::Float_ptr state_buffer)
+bool DSP::u::LoopDelay::SetState(const std::string &InputName, unsigned int size, DSP::Float_ptr state_buffer)
 {
   unsigned int InputNo;
 
@@ -3144,7 +3144,7 @@ bool DSP::u::LoopDelay::SetState(const string &InputName, unsigned int size, DSP
       {
         #ifdef __DEBUG__
           DSP::log << DSP::e::LogMode::Error << "DSP::u::LoopDelay::SetState" << DSP::e::LogMode::second
-            << "Block >>" << GetName() << "<<  - state buffer == NULL" << endl;
+            << "Block >>" << GetName() << "<<  - state buffer == NULL" << std::endl;
         #endif
         return false;
       }
@@ -3153,7 +3153,7 @@ bool DSP::u::LoopDelay::SetState(const string &InputName, unsigned int size, DSP
     {
       #ifdef __DEBUG__
         DSP::log << DSP::e::LogMode::Error << "DSP::u::LoopDelay::SetState" << DSP::e::LogMode::second
-          << "Block >>" << GetName() << "<<  - wrong state buffer size: " << size  << " instead of " << Delay[InputNo] << endl;
+          << "Block >>" << GetName() << "<<  - wrong state buffer size: " << size  << " instead of " << Delay[InputNo] << std::endl;
       #endif
       return false;
     }
@@ -3164,7 +3164,7 @@ bool DSP::u::LoopDelay::SetState(const string &InputName, unsigned int size, DSP
     {
       #ifdef __DEBUG__
         DSP::log << DSP::e::LogMode::Error << "DSP::u::LoopDelay::SetState" << DSP::e::LogMode::second
-          << "Block >>" << GetName() << "<< doesn't support input >>" << InputName << "<< !!!" << endl;
+          << "Block >>" << GetName() << "<< doesn't support input >>" << InputName << "<< !!!" << std::endl;
       #endif
       return false;
     }
@@ -3314,8 +3314,8 @@ bool DSP::u::LoopDelay::OutputExecute_multi(OUTPUT_EXECUTE_ARGS)
 DSP::u::Delay::Delay(unsigned int delay_in, unsigned int InputsNo, bool IsBufferCyclic) : DSP::Block()
 {
   unsigned int ind;
-  string temp;
-  vector<unsigned int> indexes;
+  std::string temp;
+  std::vector<unsigned int> indexes;
 
   if (IsBufferCyclic == true)
     SetName("Delay(cyclic)", false);
@@ -3339,9 +3339,9 @@ DSP::u::Delay::Delay(unsigned int delay_in, unsigned int InputsNo, bool IsBuffer
   indexes.resize(NoOfInputs);
   for (ind=0; ind<NoOfInputs; ind++)
   {
-    temp = "in" + to_string(ind+1);
+    temp = "in" + std::to_string(ind+1);
     DefineInput(temp, ind);
-    temp = "out" + to_string(ind+1);
+    temp = "out" + std::to_string(ind+1);
     DefineOutput(temp, ind);
 
     indexes[ind] = ind;
@@ -3618,7 +3618,7 @@ DSP::u::Addition::~Addition(void)
 // Standard initialisation
 void DSP::u::Addition::Init(unsigned int NoOfRealInputs_in, unsigned int NoOfComplexInputs_in, bool ForceCplxOutput)
 {
-  string temp;
+  std::string temp;
   unsigned int ind;
 
   SetName("Addition", false);
@@ -3640,27 +3640,27 @@ void DSP::u::Addition::Init(unsigned int NoOfRealInputs_in, unsigned int NoOfCom
   SetNoOfInputs(NoOfRealInputs_in, NoOfComplexInputs_in, true);
   for (ind=0; ind<NoOfRealInputs_in; ind++)
   {
-    temp = "real_in" + to_string(ind+1);
+    temp = "real_in" + std::to_string(ind+1);
     DefineInput(temp, ind);
-    temp = "in" + to_string(ind+1);
+    temp = "in" + std::to_string(ind+1);
     DefineInput(temp, ind);
-    temp = "in" + to_string(ind+1) + ".re";
+    temp = "in" + std::to_string(ind+1) + ".re";
     DefineInput(temp, ind);
   }
   for (ind=0; ind<NoOfComplexInputs_in; ind++)
   {
-    temp = "cplx_in" + to_string(ind+1);
+    temp = "cplx_in" + std::to_string(ind+1);
     DefineInput(temp, NoOfRealInputs_in+ind*2, NoOfRealInputs_in+ind*2+1);
-    temp = "in" + to_string(NoOfRealInputs_in+ind+1);
+    temp = "in" + std::to_string(NoOfRealInputs_in+ind+1);
     DefineInput(temp, NoOfRealInputs_in+ind*2, NoOfRealInputs_in+ind*2+1);
 
-    temp = "cplx_in" + to_string(ind+1) + ".re";
+    temp = "cplx_in" + std::to_string(ind+1) + ".re";
     DefineInput(temp, NoOfRealInputs_in+ind*2);
-    temp = "cplx_in" + to_string(ind+1) + ".im";
+    temp = "cplx_in" + std::to_string(ind+1) + ".im";
     DefineInput(temp, NoOfRealInputs_in+ind*2+1);
-    temp = "in" + to_string(NoOfRealInputs_in+ind+1) + ".re";
+    temp = "in" + std::to_string(NoOfRealInputs_in+ind+1) + ".re";
     DefineInput(temp, NoOfRealInputs_in+ind*2);
-    temp = "in" + to_string(NoOfRealInputs_in+ind+1) + ".im";
+    temp = "in" + std::to_string(NoOfRealInputs_in+ind+1) + ".im";
     DefineInput(temp, NoOfRealInputs_in+ind*2+1);
   }
 
@@ -3885,7 +3885,7 @@ void DSP::u::Addition::RecalculateInitials(void)
 DSP::u::Multiplication::Multiplication(unsigned int NoOfRealInputs_in, unsigned int NoOfComplexInputs_in)
   : DSP::Block()
 {
-  string temp;
+  std::string temp;
   unsigned int ind;
 
   SetName("Multiplication", false);
@@ -3906,29 +3906,29 @@ DSP::u::Multiplication::Multiplication(unsigned int NoOfRealInputs_in, unsigned 
   SetNoOfInputs(NoOfRealInputs_in, NoOfComplexInputs_in, true);
   for (ind=0; ind<NoOfRealInputs_in; ind++)
   {
-    temp = "real_in" + to_string(ind+1);
+    temp = "real_in" + std::to_string(ind+1);
     DefineInput(temp, ind);
-    temp = "in" + to_string(ind+1);
+    temp = "in" + std::to_string(ind+1);
     DefineInput(temp, ind);
-    temp = "in" + to_string(ind+1) + ".re";
+    temp = "in" + std::to_string(ind+1) + ".re";
     DefineInput(temp, ind);
   }
   for (ind=0; ind<NoOfComplexInputs_in; ind++)
   {
-    temp = "cplx_in" + to_string(ind+1);
+    temp = "cplx_in" + std::to_string(ind+1);
     DefineInput(temp, NoOfRealInputs_in+ind*2, NoOfRealInputs_in+ind*2+1);
 
-    temp = "in" + to_string(NoOfRealInputs_in+ind+1);
+    temp = "in" + std::to_string(NoOfRealInputs_in+ind+1);
     DefineInput(temp, NoOfRealInputs_in+ind*2, NoOfRealInputs_in+ind*2+1);
 
 
-    temp = "cplx_in" + to_string(ind+1) + ".re";
+    temp = "cplx_in" + std::to_string(ind+1) + ".re";
     DefineInput(temp, NoOfRealInputs_in+ind*2);
-    temp = "cplx_in" + to_string(ind+1)+ ".im";
+    temp = "cplx_in" + std::to_string(ind+1)+ ".im";
     DefineInput(temp, NoOfRealInputs_in+ind*2+1);
-    temp = "in" + to_string(NoOfRealInputs_in+ind+1) + ".re";
+    temp = "in" + std::to_string(NoOfRealInputs_in+ind+1) + ".re";
     DefineInput(temp, NoOfRealInputs_in+ind*2);
-    temp = "in" + to_string(NoOfRealInputs_in+ind+1) + ".im";
+    temp = "in" + std::to_string(NoOfRealInputs_in+ind+1) + ".im";
     DefineInput(temp, NoOfRealInputs_in+ind*2+1);
   }
 
@@ -4041,7 +4041,7 @@ void DSP::u::Multiplication::InputExecute(INPUT_EXECUTE_ARGS)
 DSP::u::RealMultiplication::RealMultiplication(unsigned int NoOfRealInputs_in)
   : DSP::Block()
 {
-  string temp;
+  std::string temp;
   unsigned int ind;
 
   SetName("Real multiplication", false);
@@ -4051,9 +4051,9 @@ DSP::u::RealMultiplication::RealMultiplication(unsigned int NoOfRealInputs_in)
   SetNoOfInputs(NoOfRealInputs_in, 0, true);
   for (ind=0; ind<NoOfRealInputs_in; ind++)
   {
-    temp = "in" + to_string(ind+1);
+    temp = "in" + std::to_string(ind+1);
     DefineInput(temp, ind);
-    temp = "real_in" + to_string(ind+1);
+    temp = "real_in" + std::to_string(ind+1);
     DefineInput(temp, ind);
   }
 
@@ -4116,9 +4116,9 @@ void DSP::u::RealMultiplication::InputExecute(INPUT_EXECUTE_ARGS)
 DSP::u::Amplifier::Amplifier(DSP::Float alfa, unsigned int NoOfInputs_in, bool AreInputsComplex)
   : DSP::Block()
 {
-  vector <unsigned int> indexes;
+  std::vector <unsigned int> indexes;
   //unsigned int ind;
-  string temp;
+  std::string temp;
 
   IsGainComplex = false;
   SetName("Amplifier", false);
@@ -4139,17 +4139,17 @@ DSP::u::Amplifier::Amplifier(DSP::Float alfa, unsigned int NoOfInputs_in, bool A
     }
     for (ind=0; ind<NoOfInputs_in; ind++)
     {
-      temp = "in" + to_string(ind+1);
+      temp = "in" + std::to_string(ind+1);
       DefineInput(temp, 2*ind, 2*ind+1);
-      temp = "in" + to_string(ind+1) + ".re";
+      temp = "in" + std::to_string(ind+1) + ".re";
       DefineInput(temp, 2*ind);
-      temp = "in" + to_string(ind+1) + ".im";
+      temp = "in" + std::to_string(ind+1) + ".im";
       DefineInput(temp, 2*ind+1);
-      temp = "out" + to_string(ind+1);
+      temp = "out" + std::to_string(ind+1);
       DefineOutput(temp, 2*ind, 2*ind+1);
-      temp = "out" + to_string(ind+1) + ".re";
+      temp = "out" + std::to_string(ind+1) + ".re";
       DefineOutput(temp, 2*ind);
-      temp = "out" + to_string(ind+1) + ".im";
+      temp = "out" + std::to_string(ind+1) + ".im";
       DefineOutput(temp, 2*ind+1);
     }
   }
@@ -4167,13 +4167,13 @@ DSP::u::Amplifier::Amplifier(DSP::Float alfa, unsigned int NoOfInputs_in, bool A
     }
     for (ind=0; ind<NoOfInputs_in; ind++)
     {
-      temp = "in" + to_string(ind+1);
+      temp = "in" + std::to_string(ind+1);
       DefineInput(temp, ind);
-      temp = "in" + to_string(ind+1) + ".re";
+      temp = "in" + std::to_string(ind+1) + ".re";
       DefineInput(temp, ind);
-      temp = "out" + to_string(ind+1);
+      temp = "out" + std::to_string(ind+1);
       DefineOutput(temp, ind);
-      temp = "out" + to_string(ind+1) + ".re";
+      temp = "out" + std::to_string(ind+1) + ".re";
       DefineOutput(temp, ind);
     }
   }
@@ -4201,9 +4201,9 @@ DSP::u::Amplifier::Amplifier(DSP::Float alfa, unsigned int NoOfInputs_in, bool A
   DSP::u::Amplifier::Amplifier(DSP::Complex alfa, unsigned int NoOfInputs_in, bool AreInputsComplex)
     : DSP::Block()
   {
-    vector <unsigned int> indexes;
+    std::vector <unsigned int> indexes;
     //unsigned int ind;
-    string temp;
+    std::string temp;
 
     SetName("Amplifier", false);
 
@@ -4220,16 +4220,16 @@ DSP::u::Amplifier::Amplifier(DSP::Float alfa, unsigned int NoOfInputs_in, bool A
       DefineOutput("out.im", 1);
       for (ind=0; ind<NoOfInputs_in; ind++)
       {
-        temp = "in" + to_string(ind+1);
+        temp = "in" + std::to_string(ind+1);
         DefineInput(temp, ind);
-        temp = "in" + to_string(ind+1) + ".re";
+        temp = "in" + std::to_string(ind+1) + ".re";
         DefineInput(temp, ind);
 
-        temp = "out" + to_string(ind+1);
+        temp = "out" + std::to_string(ind+1);
         DefineOutput(temp, 2*ind, 2*ind+1);
-        temp = "out" + to_string(ind+1) + ".re";
+        temp = "out" + std::to_string(ind+1) + ".re";
         DefineOutput(temp, 2*ind);
-        temp = "out" + to_string(ind+1) + ".im";
+        temp = "out" + std::to_string(ind+1) + ".im";
         DefineOutput(temp, 2*ind+1);
       }
     }
@@ -4246,18 +4246,18 @@ DSP::u::Amplifier::Amplifier(DSP::Float alfa, unsigned int NoOfInputs_in, bool A
       DefineOutput("out.im", 1);
       for (ind=0; ind<NoOfInputs_in; ind++)
       {
-        temp = "in" + to_string(ind+1);
+        temp = "in" + std::to_string(ind+1);
         DefineInput(temp, 2*ind, 2*ind+1);
-        temp = "in" + to_string(ind+1) + ".re";
+        temp = "in" + std::to_string(ind+1) + ".re";
         DefineInput(temp, 2*ind);
-        temp = "in" + to_string(ind+1) + ".im";
+        temp = "in" + std::to_string(ind+1) + ".im";
         DefineInput(temp, 2*ind+1);
 
-        temp = "out" + to_string(ind+1);
+        temp = "out" + std::to_string(ind+1);
         DefineOutput(temp, 2*ind, 2*ind+1);
-        temp = "out" + to_string(ind+1) + ".re";
+        temp = "out" + std::to_string(ind+1) + ".re";
         DefineOutput(temp, 2*ind);
-        temp = "out" + to_string(ind+1) + ".im";
+        temp = "out" + std::to_string(ind+1) + ".im";
         DefineOutput(temp, 2*ind+1);
       }
     }
@@ -4314,7 +4314,7 @@ void DSP::u::Amplifier::SetGain(DSP::Complex gain)
   else
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error << "DSP::u::Amplifier::SetGain" << DSP::e::LogMode::second << "Attemt to set complex gain factor for block with real gain factor" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::Amplifier::SetGain" << DSP::e::LogMode::second << "Attemt to set complex gain factor for block with real gain factor" << std::endl;
     #endif
     Coeficient=gain.re;
   }
@@ -4474,7 +4474,7 @@ DSP::u::Power::Power(bool IsComplex, int factor)
     {
       factor = 0;
       #ifdef __DEBUG__
-        DSP::log << DSP::e::LogMode::Error << "DSP::u::Power::Power(true,int)" << DSP::e::LogMode::second << "negative power factor not allowed" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::u::Power::Power(true,int)" << DSP::e::LogMode::second << "negative power factor not allowed" << std::endl;
       #endif
     }
 
@@ -4548,7 +4548,7 @@ DSP::u::Power::Power(bool IsComplex, DSP::Float factor)
     ClockGroups.AddOutputs2Group("all", 0, NoOfOutputs-1);
 
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error << "DSP::u::Power::Power(true,DSP::Float)" << DSP::e::LogMode::second << "real power factor for complex input is not allowed" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::Power::Power(true,DSP::Float)" << DSP::e::LogMode::second << "real power factor for complex input is not allowed" << std::endl;
     #endif
 
     IntFactor = (int)factor;
@@ -4656,7 +4656,7 @@ void DSP::u::Power::InputExecute_PowerReal_real(INPUT_EXECUTE_ARGS)
 // splits one input to several outputs
 DSP::u::Splitter::Splitter(unsigned int No) : DSP::Block()
 {
-  string temp;
+  std::string temp;
   unsigned int ind;
 
   SetName("Splitter", false);
@@ -4665,9 +4665,9 @@ DSP::u::Splitter::Splitter(unsigned int No) : DSP::Block()
   SetNoOfInputs(1,false);
   for (ind=0; ind<No; ind++)
   {
-    temp = "out" + to_string(ind+1);
+    temp = "out" + std::to_string(ind+1);
     DefineOutput(temp, ind);
-    temp = "out" + to_string(ind+1) + ".re";
+    temp = "out" + std::to_string(ind+1) + ".re";
     DefineOutput(temp, ind);
   }
   DefineInput("in", 0);
@@ -4683,7 +4683,7 @@ DSP::u::Splitter::Splitter(bool IsInputComplex, unsigned int No)
   : DSP::Block()
 {
   unsigned int ind;
-  string temp;
+  std::string temp;
 
   SetName("Splitter", false);
 
@@ -4693,11 +4693,11 @@ DSP::u::Splitter::Splitter(bool IsInputComplex, unsigned int No)
     SetNoOfInputs(2,false);
     for (ind=0; ind<No; ind++)
     {
-      temp = "out" + to_string(ind+1);
+      temp = "out" + std::to_string(ind+1);
       DefineOutput(temp, 2*ind, 2*ind+1);
-      temp = "out" + to_string(ind+1) + ".re";
+      temp = "out" + std::to_string(ind+1) + ".re";
       DefineOutput(temp, 2*ind);
-      temp = "out" + to_string(ind+1) + ".im";
+      temp = "out" + std::to_string(ind+1) + ".im";
       DefineOutput(temp, 2*ind+1);
     }
     DefineInput("in.re", 0);
@@ -4710,9 +4710,9 @@ DSP::u::Splitter::Splitter(bool IsInputComplex, unsigned int No)
     SetNoOfInputs(1,false);
     for (ind=0; ind<No; ind++)
     {
-      temp = "out" + to_string(ind+1);
+      temp = "out" + std::to_string(ind+1);
       DefineOutput(temp, ind);
-      temp = "out" + to_string(ind+1) + ".re";
+      temp = "out" + std::to_string(ind+1) + ".re";
       DefineOutput(temp, ind);
     }
     DefineInput("in.re", 0);
@@ -4774,7 +4774,7 @@ void DSP::u::Switch::Init(bool IsInputComplex,
     unsigned int InputsNo, unsigned int OutputsNo)
 {
   unsigned int ind;
-  string temp;
+  std::string temp;
 
   SetName("Switch", false);
 
@@ -4835,16 +4835,16 @@ void DSP::u::Switch::Init(bool IsInputComplex,
   {
     for (ind=0; ind<InputsNo; ind++)
     {
-      temp = "in" + to_string(ind+1);
+      temp = "in" + std::to_string(ind+1);
       DefineOutput(temp, ind);
-      temp = "in" + to_string(ind+1) + ".re";
+      temp = "in" + std::to_string(ind+1) + ".re";
       DefineOutput(temp, ind);
     }
     for (ind=0; ind<OutputsNo; ind++)
     {
-      temp = "out" + to_string(ind+1);
+      temp = "out" + std::to_string(ind+1);
       DefineOutput(temp, ind);
-      temp = "out" + to_string(ind+1) + ".re";
+      temp = "out" + std::to_string(ind+1) + ".re";
       DefineOutput(temp, ind);
     }
   }
@@ -4852,20 +4852,20 @@ void DSP::u::Switch::Init(bool IsInputComplex,
   {
     for (ind=0; ind<InputsNo; ind++)
     {
-      temp = "in" + to_string(ind+1);
+      temp = "in" + std::to_string(ind+1);
       DefineOutput(temp, 2*ind, 2*ind+1);
-      temp = "in" + to_string(ind+1) + ".re";
+      temp = "in" + std::to_string(ind+1) + ".re";
       DefineOutput(temp, 2*ind);
-      temp = "in" + to_string(ind+1) + ".im";
+      temp = "in" + std::to_string(ind+1) + ".im";
       DefineOutput(temp, 2*ind+1);
     }
     for (ind=0; ind<OutputsNo; ind++)
     {
-      temp = "out" + to_string(ind+1);
+      temp = "out" + std::to_string(ind+1);
       DefineOutput(temp, 2*ind, 2*ind+1);
-      temp = "out" + to_string(ind+1) + ".re";
+      temp = "out" + std::to_string(ind+1) + ".re";
       DefineOutput(temp, 2*ind);
-      temp = "out" + to_string(ind+1) + ".im";
+      temp = "out" + std::to_string(ind+1) + ".im";
       DefineOutput(temp, 2*ind+1);
     }
   }
@@ -4968,8 +4968,8 @@ DSP::u::RawDecimator::RawDecimator(DSP::Clock_ptr ParentClock,
   : DSP::Block(), DSP::Source()
 {
   unsigned int ind;
-  vector <unsigned int> inds;
-  string temp;
+  std::vector <unsigned int> inds;
+  std::string temp;
 
 
   SetName("Raw decimator", false);
@@ -4980,9 +4980,9 @@ DSP::u::RawDecimator::RawDecimator(DSP::Clock_ptr ParentClock,
   inds.resize(InputsNo);
   for (ind=0; ind<InputsNo; ind++)
   {
-    temp = "in" + to_string(ind+1);
+    temp = "in" + std::to_string(ind+1);
     DefineInput(temp, ind);
-    temp = "out" + to_string(ind+1);
+    temp = "out" + std::to_string(ind+1);
     DefineOutput(temp, ind);
     inds[ind]=ind;
   }
@@ -5007,7 +5007,7 @@ DSP::u::RawDecimator::RawDecimator(DSP::Clock_ptr ParentClock,
   }
   else
   {
-    DSP::log << DSP::e::LogMode::Error << "DSP::u::RawDecimator" << DSP::e::LogMode::second << "Undefined ParentClock" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::u::RawDecimator" << DSP::e::LogMode::second << "Undefined ParentClock" << std::endl;
     return;
   }
 
@@ -5132,7 +5132,7 @@ void DSP::u::Zeroinserter::Init(bool IsInputComplex, DSP::Clock_ptr ParentClock,
   else
   {
     // OutputClocks[0]=DSP::Clock::GetClock(L, 1);
-    DSP::log << DSP::e::LogMode::Error << "DSP::u::Zeroinserter" << DSP::e::LogMode::second << "Undefined ParentClock" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::u::Zeroinserter" << DSP::e::LogMode::second << "Undefined ParentClock" << std::endl;
     return;
   }
 
@@ -5363,9 +5363,9 @@ DSP::u::Const::Const(DSP::Clock_ptr ParentClock,
     unsigned int NoOfOutputs_in, DSP::Float_ptr values)
   : DSP::Source()
 {
-  string tekst;
+  std::string tekst;
   unsigned int ind;
-  vector <unsigned int> temp_int;
+  std::vector <unsigned int> temp_int;
 
   SetName("Const", false);
 
@@ -5373,9 +5373,9 @@ DSP::u::Const::Const(DSP::Clock_ptr ParentClock,
   temp_int.resize(NoOfOutputs_in);
   for (ind = 0; ind < NoOfOutputs_in; ind++)
   {
-    tekst = "out" + to_string(ind+1);
+    tekst = "out" + std::to_string(ind+1);
     DefineOutput(tekst, ind);
-    tekst = "out" + to_string(ind+1) + ".re";
+    tekst = "out" + std::to_string(ind+1) + ".re";
     DefineOutput(tekst, ind);
 
     temp_int[ind] = ind;
@@ -5399,9 +5399,9 @@ DSP::u::Const::Const(DSP::Clock_ptr ParentClock,
     unsigned int NoOfOutputs_in, DSP::Complex_ptr values)
   : DSP::Source()
 {
-  string tekst;
+  std::string tekst;
   unsigned int ind;
-  vector <unsigned int> temp_int;
+  std::vector <unsigned int> temp_int;
 
   SetName("Const", false);
 
@@ -5409,11 +5409,11 @@ DSP::u::Const::Const(DSP::Clock_ptr ParentClock,
   temp_int.resize(2*NoOfOutputs_in);
   for (ind = 0; ind < NoOfOutputs_in; ind++)
   {
-    tekst = "out" + to_string(ind+1);
+    tekst = "out" + std::to_string(ind+1);
     DefineOutput(tekst, 2*ind, 2*ind+1);
-    tekst = "out" + to_string(ind+1) + ".re";
+    tekst = "out" + std::to_string(ind+1) + ".re";
     DefineOutput(tekst, 2*ind);
-    tekst = "out" + to_string(ind+1) + ".im";
+    tekst = "out" + std::to_string(ind+1) + ".im";
     DefineOutput(tekst, 2*ind+1);
 
     temp_int[ind] = ind;
@@ -6078,7 +6078,7 @@ void DSP::u::FIR::Init(bool IsInputComplex, bool AreCoeficientsComplex,
   {
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DSP::u::FIR::Init" << DSP::e::LogMode::second
-        << "n0 (=" << n0 << ") must be in range <0, N_in-1>" << endl;
+        << "n0 (=" << n0 << ") must be in range <0, N_in-1>" << std::endl;
     #endif
     n0 = 0;
   }
@@ -6086,7 +6086,7 @@ void DSP::u::FIR::Init(bool IsInputComplex, bool AreCoeficientsComplex,
   {
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DSP::u::FIR::Init" << DSP::e::LogMode::second
-        << "M (=" << M << ") must be in range > 0" << endl;
+        << "M (=" << M << ") must be in range > 0" << std::endl;
     #endif
     M = 1;
   }
@@ -6110,7 +6110,7 @@ void DSP::u::FIR::Init(bool IsInputComplex, bool AreCoeficientsComplex,
   {
     L_step = 1;
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error << "DSP::u::FIR::Init" << DSP::e::LogMode::second << "L must be >= 1" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::FIR::Init" << DSP::e::LogMode::second << "L must be >= 1" << std::endl;
     #endif
   }
 
@@ -6209,7 +6209,7 @@ void DSP::u::FIR::Init(bool IsInputComplex, bool AreCoeficientsComplex,
     else
     {
       #ifdef __DEBUG__
-        DSP::log << DSP::e::LogMode::Error << "DSP::u::FIR:Init" << DSP::e::LogMode::second << "unsupported shaping filter mode" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::u::FIR:Init" << DSP::e::LogMode::second << "unsupported shaping filter mode" << std::endl;
       #endif
     }
   }
@@ -6877,7 +6877,7 @@ bool DSP::u::IIR::SetCoefs(DSP::Float_vector &a_in,
   if (required_FilterOrder > FilterOrder)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error << "DSP::u::IIR::SetCoefs<DSP::Float_vector>" << DSP::e::LogMode::second << "Too many coefficients for current filter order" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::IIR::SetCoefs<DSP::Float_vector>" << DSP::e::LogMode::second << "Too many coefficients for current filter order" << std::endl;
     #endif
     return false;
   }
@@ -6923,7 +6923,7 @@ bool DSP::u::IIR::SetCoefs(DSP::Complex_vector &a_in,
   if (required_FilterOrder > FilterOrder)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error << "DSP::u::IIR::SetCoefs<DSP::Complex_vector>" << DSP::e::LogMode::second << "Too many coefficients for current filter order" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::IIR::SetCoefs<DSP::Complex_vector>" << DSP::e::LogMode::second << "Too many coefficients for current filter order" << std::endl;
     #endif
     return false;
   }
@@ -7674,7 +7674,7 @@ void DSP::u::DDScos::SetAngularFrequency(DSP::Float omega)
   }
 #ifdef __DEBUG__
   else
-    DSP::log << "DSP::u::DDScos::SetAngularFrequency" << DSP::e::LogMode::second << "Cannot change frequency - associated with input" << endl;
+    DSP::log << "DSP::u::DDScos::SetAngularFrequency" << DSP::e::LogMode::second << "Cannot change frequency - associated with input" << std::endl;
 #endif
 }
 
@@ -7687,7 +7687,7 @@ void DSP::u::DDScos::SetAmplitude(DSP::Float amplitude)
   }
 #ifdef __DEBUG__
   else
-    DSP::log << "DSP::u::DDScos::SetAmplitude" << DSP::e::LogMode::second << "Cannot change amplitude - associated with input" << endl;
+    DSP::log << "DSP::u::DDScos::SetAmplitude" << DSP::e::LogMode::second << "Cannot change amplitude - associated with input" << std::endl;
 #endif
 }
 
@@ -7819,7 +7819,7 @@ void DSP::u::SamplingRateConversion::Init(bool IsInputComplex,
   else
   {
     // OutputClocks[0]=DSP::Clock::GetClock(L, M);
-    DSP::log << DSP::e::LogMode::Error << "DSP::u::SamplingRateConversion" << DSP::e::LogMode::second << "Undefined ParentClock" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::u::SamplingRateConversion" << DSP::e::LogMode::second << "Undefined ParentClock" << std::endl;
     return;
   }
 
@@ -7891,7 +7891,7 @@ void DSP::u::SamplingRateConversion::Init(bool IsInputComplex,
   else
   {
     // OutputClocks[0]=DSP::Clock::GetClock(L, M);
-    DSP::log << DSP::e::LogMode::Error << "DSP::u::SamplingRateConversion" << DSP::e::LogMode::second << "Undefined ParentClock" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::u::SamplingRateConversion" << DSP::e::LogMode::second << "Undefined ParentClock" << std::endl;
     return;
   }
 
@@ -8345,7 +8345,7 @@ void DSP::u::Angle::InputExecute(INPUT_EXECUTE_ARGS)
 DSP::u::Maximum::Maximum(unsigned int NumberOfInputs)
   : DSP::Block()
 {
-  string temp;
+  std::string temp;
   unsigned int ind;
 
   SetName("Maximum", false);
@@ -8353,7 +8353,7 @@ DSP::u::Maximum::Maximum(unsigned int NumberOfInputs)
   SetNoOfInputs(NumberOfInputs, false);
   for (ind=0; ind<NumberOfInputs; ind++)
   {
-    temp = "in" + to_string(ind+1);
+    temp = "in" + std::to_string(ind+1);
     DefineInput(temp, ind);
   }
 
@@ -8434,7 +8434,7 @@ void DSP::u::Selector::Init(bool AreInputsComplex,
     unsigned int NumberOfInputs, int IndexOffset)
 {
   unsigned int ind;
-  string temp;
+  std::string temp;
 
   if (AreInputsComplex==true)
   {
@@ -8442,11 +8442,11 @@ void DSP::u::Selector::Init(bool AreInputsComplex,
     DefineInput("ind", 0);
     for (ind=0; ind<NumberOfInputs; ind++)
     {
-      temp = "in" + to_string(1+ind);
+      temp = "in" + std::to_string(1+ind);
       DefineInput(temp, 1+2*ind, 2+2*ind);
-      temp = "in" + to_string(1+ind) + ".re";
+      temp = "in" + std::to_string(1+ind) + ".re";
       DefineInput(temp, 1+2*ind);
-      temp = "in" + to_string(1+ind) + ".im";
+      temp = "in" + std::to_string(1+ind) + ".im";
       DefineInput(temp, 2+2*ind);
     }
     SetNoOfOutputs(2);
@@ -8460,9 +8460,9 @@ void DSP::u::Selector::Init(bool AreInputsComplex,
     DefineInput("ind", 0);
     for (ind=0; ind<NumberOfInputs; ind++)
     {
-      temp = "in" + to_string(1+ind);
+      temp = "in" + std::to_string(1+ind);
       DefineInput(temp, 1+ind);
-      temp = "in" + to_string(1+ind) + ".re";
+      temp = "in" + std::to_string(1+ind) + ".re";
       DefineInput(temp, 1+ind);
     }
     SetNoOfOutputs(1);
@@ -8732,8 +8732,8 @@ DSP::u::MyFunction::MyFunction(unsigned int NumberOfInputs, unsigned int NumberO
   : DSP::Block()
 {
   unsigned int ind;
-  string temp;
-  vector <unsigned int> indexes;
+  std::string temp;
+  std::vector <unsigned int> indexes;
 
   SetName("MyFunction", false);
 
@@ -8746,7 +8746,7 @@ DSP::u::MyFunction::MyFunction(unsigned int NumberOfInputs, unsigned int NumberO
   indexes.resize(NoOfInputs);
   for (ind=0; ind<NoOfInputs; ind++)
   {
-    temp = "in" + to_string(1+ind);
+    temp = "in" + std::to_string(1+ind);
     DefineInput(temp, ind);
     indexes[ind] = ind;
   }
@@ -8757,7 +8757,7 @@ DSP::u::MyFunction::MyFunction(unsigned int NumberOfInputs, unsigned int NumberO
   indexes.resize(NoOfOutputs);
   for (ind=0; ind<NoOfOutputs; ind++)
   {
-    temp = "out" + to_string(1+ind);
+    temp = "out" + std::to_string(1+ind);
     DefineOutput(temp, ind);
     indexes[ind] = ind;
   }
@@ -8866,8 +8866,8 @@ void DSP::u::SampleSelector::Init(DSP::Clock_ptr ParentClock,
                           unsigned int NumberOfInputs)
 {
   unsigned int ind;
-  vector <unsigned int> indexes;
-  string temp;
+  std::vector <unsigned int> indexes;
+  std::string temp;
 
   SetName("SampleSelector", false);
 
@@ -8897,9 +8897,9 @@ void DSP::u::SampleSelector::Init(DSP::Clock_ptr ParentClock,
   indexes.resize(NoOfOutputs);
   for (ind=0; ind<NoOfOutputs; ind++)
   {
-    temp = "in" + to_string(ind+1);
+    temp = "in" + std::to_string(ind+1);
     DefineInput(temp, ind);
-    temp = "out" + to_string(ind+1);
+    temp = "out" + std::to_string(ind+1);
     DefineOutput(temp, ind);
 
     indexes[ind] = ind;
@@ -8930,10 +8930,10 @@ void DSP::u::SampleSelector::Init(DSP::Clock_ptr ParentClock,
   else
   {
     if (ActivateOutputClock == false)
-      DSP::log << "DSP::u::SampleSelector" << DSP::e::LogMode::second << "Warning: undefined OutputClock" << endl;
+      DSP::log << "DSP::u::SampleSelector" << DSP::e::LogMode::second << "Warning: undefined OutputClock" << std::endl;
     else
     {
-      DSP::log << DSP::e::LogMode::Error << "DSP::u::SampleSelector" << DSP::e::LogMode::second << "undefined OutputClock" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::SampleSelector" << DSP::e::LogMode::second << "undefined OutputClock" << std::endl;
       return;
     }
   }
@@ -8955,7 +8955,7 @@ void DSP::u::SampleSelector::Init(DSP::Clock_ptr ParentClock,
       #ifdef __DEBUG__
       if (ParentClock == NULL)
       {
-        DSP::log << DSP::e::LogMode::Error << "DSP::u::SampleSelector" << DSP::e::LogMode::second << "undefined ParentClock" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::u::SampleSelector" << DSP::e::LogMode::second << "undefined ParentClock" << std::endl;
         return;
       }
       #endif
@@ -8971,13 +8971,13 @@ void DSP::u::SampleSelector::Init(DSP::Clock_ptr ParentClock,
     if (ParentClock == NULL)
     {
       #ifdef __DEBUG__
-        DSP::log << DSP::e::LogMode::Error << "DSP::u::SampleSelector" << DSP::e::LogMode::second << "undefined ParentClock" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::u::SampleSelector" << DSP::e::LogMode::second << "undefined ParentClock" << std::endl;
       #endif
       return;
     }
     #ifdef __DEBUG__
       if (ParentClock->GetMasterClockIndex() == OutputClock->GetMasterClockIndex())
-        DSP::log << "DSP::u::SampleSelector" << DSP::e::LogMode::second << "ParentClock and OutputClock have the same MasterClock" << endl;
+        DSP::log << "DSP::u::SampleSelector" << DSP::e::LogMode::second << "ParentClock and OutputClock have the same MasterClock" << std::endl;
     #endif
     MasterClockIndex = ParentClock->GetMasterClockIndex();
     SignalActivatedClock = OutputClock;
@@ -9093,8 +9093,8 @@ DSP::u::Hold::Hold(DSP::Clock_ptr InputClock, DSP::Clock_ptr OutputClock,
                    bool UseZeros, unsigned int NumberOfInputs)
   : DSP::Block(), DSP::Source()
 {
-  vector <unsigned int> indexes;
-  string temp;
+  std::vector <unsigned int> indexes;
+  std::string temp;
 
   SetName("Hold", false);
 
@@ -9110,9 +9110,9 @@ DSP::u::Hold::Hold(DSP::Clock_ptr InputClock, DSP::Clock_ptr OutputClock,
   indexes.resize(NumberOfInputs);
   for (unsigned int ind=0; ind<NumberOfInputs; ind++)
   {
-    temp = "in" + to_string(ind+1);
+    temp = "in" + std::to_string(ind+1);
     DefineInput(temp, ind);
-    temp = "out" + to_string(ind+1);
+    temp = "out" + std::to_string(ind+1);
     DefineOutput(temp, ind);
 
     indexes[ind] = ind;
@@ -9136,7 +9136,7 @@ DSP::u::Hold::Hold(DSP::Clock_ptr InputClock, DSP::Clock_ptr OutputClock,
 
   if (InputClock == NULL)
   {
-    DSP::log << DSP::e::LogMode::Error << "DSP::u::Hold" << DSP::e::LogMode::second << "Undefined InputClock (AutoUpdate not implemented yet)" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::u::Hold" << DSP::e::LogMode::second << "Undefined InputClock (AutoUpdate not implemented yet)" << std::endl;
     return;
   }
   else
@@ -9144,7 +9144,7 @@ DSP::u::Hold::Hold(DSP::Clock_ptr InputClock, DSP::Clock_ptr OutputClock,
     if (InputClock->GetMasterClockIndex() == OutputClock->GetMasterClockIndex())
     {
       #ifdef __DEBUG__
-        DSP::log << "DSP::u::Hold::Hold" << DSP::e::LogMode::second << "WARNING: InputClock and OutputClock have the same MasterClock" << endl;
+        DSP::log << "DSP::u::Hold::Hold" << DSP::e::LogMode::second << "WARNING: InputClock and OutputClock have the same MasterClock" << std::endl;
       #endif
       RegisterForNotification(InputClock);
     }
@@ -9223,7 +9223,7 @@ bool DSP::u::Hold::OutputExecute(OUTPUT_EXECUTE_ARGS)
     #ifdef __DEBUG__
       if (clock == ((DSP::u::Hold *)source)->InputClocks[0])
       {
-        DSP::log << "DSP::u::Hold::Execute(DSP::Clock_ptr clock)" << DSP::e::LogMode::second << "WARNING: InputClock expected !!!" << endl;
+        DSP::log << "DSP::u::Hold::Execute(DSP::Clock_ptr clock)" << DSP::e::LogMode::second << "WARNING: InputClock expected !!!" << std::endl;
       }
     #endif
     return true;
@@ -9269,8 +9269,8 @@ DSP::u::Demultiplexer::Demultiplexer(bool IsComplex, unsigned int OutputsNo)
    * the output clock for error detection purpose
    */
   unsigned int ind;
-  vector <unsigned int> indexes;
-  string temp;
+  std::vector <unsigned int> indexes;
+  std::string temp;
 
   SetName("Demultiplexer", false);
   if (OutputsNo < 2)
@@ -9293,9 +9293,9 @@ DSP::u::Demultiplexer::Demultiplexer(bool IsComplex, unsigned int OutputsNo)
     DefineInput("in.re", 0);
     for (ind=0; ind<OutputsNo; ind++)
     {
-      temp = "out" + to_string(ind+1);
+      temp = "out" + std::to_string(ind+1);
       DefineOutput(temp, ind);
-      temp = "out" + to_string(ind+1) + ".re";
+      temp = "out" + std::to_string(ind+1) + ".re";
       DefineOutput(temp, ind);
     }
   }
@@ -9306,11 +9306,11 @@ DSP::u::Demultiplexer::Demultiplexer(bool IsComplex, unsigned int OutputsNo)
     DefineInput("in.im", 1);
     for (ind=0; ind<OutputsNo; ind++)
     {
-      temp = "out" + to_string(ind+1);
+      temp = "out" + std::to_string(ind+1);
       DefineOutput(temp, 2*ind, 2*ind+1);
-      temp = "out" + to_string(ind+1) + ".re";
+      temp = "out" + std::to_string(ind+1) + ".re";
       DefineOutput(temp, 2*ind);
-      temp = "out" + to_string(ind+1) + ".im";
+      temp = "out" + std::to_string(ind+1) + ".im";
       DefineOutput(temp, 2*ind+1);
     }
   }
@@ -9399,8 +9399,8 @@ DSP::u::Multiplexer::Multiplexer(DSP::Clock_ptr ParentClock,
   : DSP::Block(), DSP::Source()
 {
   unsigned int ind;
-  vector <unsigned int> indexes;
-  string temp;
+  std::vector <unsigned int> indexes;
+  std::string temp;
 
   SetName("Multiplexer", false);
 
@@ -9416,9 +9416,9 @@ DSP::u::Multiplexer::Multiplexer(DSP::Clock_ptr ParentClock,
     DefineOutput("out.re", 0);
     for (ind=0; ind<InputsNo; ind++)
     {
-      temp = "in" + to_string(ind+1);
+      temp = "in" + std::to_string(ind+1);
       DefineInput(temp, ind);
-      temp = "in" + to_string(ind+1) + ".re";
+      temp = "in" + std::to_string(ind+1) + ".re";
       DefineInput(temp, ind);
     }
   }
@@ -9432,11 +9432,11 @@ DSP::u::Multiplexer::Multiplexer(DSP::Clock_ptr ParentClock,
     DefineOutput("out.im", 1);
     for (ind=0; ind<InputsNo; ind++)
     {
-      temp = "in" + to_string(ind+1);
+      temp = "in" + std::to_string(ind+1);
       DefineInput(temp, 2*ind, 2*ind+1);
-      temp = "in" + to_string(ind+1) + ".re";
+      temp = "in" + std::to_string(ind+1) + ".re";
       DefineInput(temp, 2*ind);
-      temp = "in" + to_string(ind+1) + ".im";
+      temp = "in" + std::to_string(ind+1) + ".im";
       DefineInput(temp, 2*ind+1);
     }
   }
@@ -9462,7 +9462,7 @@ DSP::u::Multiplexer::Multiplexer(DSP::Clock_ptr ParentClock,
   else
   {
     // OutputClocks[0]=DSP::Clock::GetClock(L, 1);
-    DSP::log << DSP::e::LogMode::Error << "DSP::u::Multiplexer" << DSP::e::LogMode::second << "Undefined ParentClock" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::u::Multiplexer" << DSP::e::LogMode::second << "Undefined ParentClock" << std::endl;
     return;
   }
 
@@ -9968,7 +9968,7 @@ void DSP::u::CrossSwitch::InputExecute(INPUT_EXECUTE_ARGS)
    #ifdef __DEBUG__
     default:
       DSP::log << DSP::e::LogMode::Error << "DSP::u::CrossSwitch::Execute" << DSP::e::LogMode::second
-        << "Unexpected state for block: >" << ((DSP::u::CrossSwitch *)block)->GetName() << "<" << endl;
+        << "Unexpected state for block: >" << ((DSP::u::CrossSwitch *)block)->GetName() << "<" << std::endl;
       break;
    #endif
   }
@@ -9997,7 +9997,7 @@ DSP::u::Differator::Differator(int NoOfInputs_in, bool IsInputComplex)
   : DSP::Block()
 {
   int ind;
-  string tekst;
+  std::string tekst;
 
   SetName("Differator", false);
 
@@ -10012,14 +10012,14 @@ DSP::u::Differator::Differator(int NoOfInputs_in, bool IsInputComplex)
     DefineOutput("out.re", 0);
     for (ind=0; ind < NoOfInputs_in; ind++)
     {
-      tekst = "in" + to_string(ind+1);
+      tekst = "in" + std::to_string(ind+1);
       DefineInput(tekst, ind);
-      tekst = "in" + to_string(ind+1) + ".re";
+      tekst = "in" + std::to_string(ind+1) + ".re";
       DefineInput(tekst, ind);
 
-      tekst = "out" + to_string(ind+1);
+      tekst = "out" + std::to_string(ind+1);
       DefineOutput(tekst, ind);
-      tekst = "out" + to_string(ind+1) + ".re";
+      tekst = "out" + std::to_string(ind+1) + ".re";
       DefineOutput(tekst, ind);
     }
   }
@@ -10036,18 +10036,18 @@ DSP::u::Differator::Differator(int NoOfInputs_in, bool IsInputComplex)
     DefineOutput("out.im", 1);
     for (ind=0; ind < NoOfInputs_in; ind++)
     {
-      tekst = "in" + to_string(ind+1);
+      tekst = "in" + std::to_string(ind+1);
       DefineInput(tekst, ind*2, ind*2+1);
-      tekst = "in" + to_string(ind+1) + ".re";
+      tekst = "in" + std::to_string(ind+1) + ".re";
       DefineInput(tekst, ind*2);
-      tekst = "in" + to_string(ind+1) + ".im";
+      tekst = "in" + std::to_string(ind+1) + ".im";
       DefineInput(tekst, ind*2+1);
 
-      tekst = "out" + to_string(ind+1);
+      tekst = "out" + std::to_string(ind+1);
       DefineOutput(tekst, ind*2, ind*2+1);
-      tekst = "out" + to_string(ind+1) + ".re";
+      tekst = "out" + std::to_string(ind+1) + ".re";
       DefineOutput(tekst, ind*2);
-      tekst = "out" + to_string(ind+1) + ".im";
+      tekst = "out" + std::to_string(ind+1) + ".im";
       DefineOutput(tekst, ind*2+1);
     }
   }
@@ -10089,7 +10089,7 @@ void DSP::u::Differator::SetInitialState(const DSP::Float_vector &State_init)
   {
     #ifdef __DEBUG__
     DSP::log << DSP::e::LogMode::Error << "DSP::u::Differator::SetInitialState" << DSP::e::LogMode::second
-      << "ABORDING: length(" << State_init.size() << ") > size of internal state(" << NoOfInputs << ")" << endl;
+      << "ABORDING: length(" << State_init.size() << ") > size of internal state(" << NoOfInputs << ")" << std::endl;
     #endif
     return;
   }
@@ -10097,7 +10097,7 @@ void DSP::u::Differator::SetInitialState(const DSP::Float_vector &State_init)
   {
     #ifdef __DEBUG__
     DSP::log << "DSP::u::Differator::SetInitialState" << DSP::e::LogMode::second
-      << "length(" << State_init.size() << ") < size of internal state(" << NoOfInputs << ")" << endl;
+      << "length(" << State_init.size() << ") < size of internal state(" << NoOfInputs << ")" << std::endl;
     #endif
   }
 
@@ -10168,7 +10168,7 @@ DSP::u::Accumulator::Accumulator(DSP::Float lambda_in, int NoOfInputs_in, bool I
 void DSP::u::Accumulator::Init(int NoOfInputs_in, DSP::Float lambda_in, bool IsInputComplex)
 {
   int ind;
-  string tekst;
+  std::string tekst;
 
   SetName("Accumulator", false);
 
@@ -10183,14 +10183,14 @@ void DSP::u::Accumulator::Init(int NoOfInputs_in, DSP::Float lambda_in, bool IsI
     DefineOutput("out.re", 0);
     for (ind=0; ind < NoOfInputs_in; ind++)
     {
-      tekst = "in" + to_string(ind+1);
+      tekst = "in" + std::to_string(ind+1);
       DefineInput(tekst, ind);
-      tekst = "in" + to_string(ind+1) + ".re";
+      tekst = "in" + std::to_string(ind+1) + ".re";
       DefineInput(tekst, ind);
 
-      tekst = "out" + to_string(ind+1);
+      tekst = "out" + std::to_string(ind+1);
       DefineOutput(tekst, ind);
-      tekst = "out" + to_string(ind+1) + ".re";
+      tekst = "out" + std::to_string(ind+1) + ".re";
       DefineOutput(tekst, ind);
     }
   }
@@ -10207,18 +10207,18 @@ void DSP::u::Accumulator::Init(int NoOfInputs_in, DSP::Float lambda_in, bool IsI
     DefineOutput("out.im", 1);
     for (ind=0; ind < NoOfInputs_in; ind++)
     {
-      tekst = "in" + to_string(ind+1);
+      tekst = "in" + std::to_string(ind+1);
       DefineInput(tekst, ind*2, ind*2+1);
-      tekst = "in" + to_string(ind+1) + ".re";
+      tekst = "in" + std::to_string(ind+1) + ".re";
       DefineInput(tekst, ind*2);
-      tekst = "in" + to_string(ind+1) + ".im";
+      tekst = "in" + std::to_string(ind+1) + ".im";
       DefineInput(tekst, ind*2+1);
 
-      tekst = "out" + to_string(ind+1);
+      tekst = "out" + std::to_string(ind+1);
       DefineOutput(tekst, ind*2, ind*2+1);
-      tekst = "out" + to_string(ind+1) + ".re";
+      tekst = "out" + std::to_string(ind+1) + ".re";
       DefineOutput(tekst, ind*2);
-      tekst = "out" + to_string(ind+1) + ".im";
+      tekst = "out" + std::to_string(ind+1) + ".im";
       DefineOutput(tekst, ind*2+1);
     }
   }
@@ -10261,7 +10261,7 @@ void DSP::u::Accumulator::SetInitialState(const DSP::Float_vector &State_init)
   {
     #ifdef __DEBUG__
     DSP::log << DSP::e::LogMode::Error << "DSP::u::Accumulator::SetInitialState"<< DSP::e::LogMode::second
-      << "ABORTING: length(" << State_init.size() << ") > size of internal state(" << NoOfInputs << ")" << endl;
+      << "ABORTING: length(" << State_init.size() << ") > size of internal state(" << NoOfInputs << ")" << std::endl;
     #endif
     return;
   }
@@ -10269,7 +10269,7 @@ void DSP::u::Accumulator::SetInitialState(const DSP::Float_vector &State_init)
   {
     #ifdef __DEBUG__
     DSP::log << "DSP::u::Accumulator::SetInitialState" << DSP::e::LogMode::second
-      << "length(" << State_init.size() << ") < size of internal state(" << NoOfInputs << ")" << endl;
+      << "length(" << State_init.size() << ") < size of internal state(" << NoOfInputs << ")" << std::endl;
     #endif
   }
 
@@ -10337,17 +10337,17 @@ DSP::u::ClockTrigger::ClockTrigger(DSP::Clock_ptr ParentClock, DSP::Clock_ptr Si
   #ifdef __DEBUG__
     if (ParentClock == NULL)
     {
-      DSP::log << DSP::e::LogMode::Error << "DSP::u::ClockTrigger::ClockTrigger" << DSP::e::LogMode::second << "ParentClock is NULL" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::ClockTrigger::ClockTrigger" << DSP::e::LogMode::second << "ParentClock is NULL" << std::endl;
       return;
     }
     if (SignalActivatedClock_in == NULL)
     {
-      DSP::log << DSP::e::LogMode::Error << "DSP::u::ClockTrigger::ClockTrigger" << DSP::e::LogMode::second << "SignalActivatedClock is NULL" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::ClockTrigger::ClockTrigger" << DSP::e::LogMode::second << "SignalActivatedClock is NULL" << std::endl;
       return;
     }
     if (NoOfCycles_in <= 0)
     {
-      DSP::log << "DSP::u::ClockTrigger::ClockTrigger" << DSP::e::LogMode::second << "NoOfCycles <= 0 - \"act\" signal determines number of cycles of activated clock" << endl;
+      DSP::log << "DSP::u::ClockTrigger::ClockTrigger" << DSP::e::LogMode::second << "NoOfCycles <= 0 - \"act\" signal determines number of cycles of activated clock" << std::endl;
     }
   #endif
   MasterClockIndex = ParentClock->GetMasterClockIndex();
@@ -10376,7 +10376,7 @@ void DSP::u::ClockTrigger::InputExecute(INPUT_EXECUTE_ARGS)
     #ifdef __DEBUG__
       if (THIS->InputClocks[0]->GetMasterClockIndex() != THIS->MasterClockIndex)
       {
-        DSP::log << DSP::e::LogMode::Error << "DSP::u::ClockTrigger::Execute" << DSP::e::LogMode::second << "Declared MasterClock and actual MasterClock are different" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::u::ClockTrigger::Execute" << DSP::e::LogMode::second << "Declared MasterClock and actual MasterClock are different" << std::endl;
       }
     #endif
     DSP::Clock::AddSignalActivatedClock(
@@ -10397,7 +10397,7 @@ void DSP::u::ClockTrigger::InputExecute_multivalue(INPUT_EXECUTE_ARGS)
     #ifdef __DEBUG__
       if (THIS->InputClocks[0]->GetMasterClockIndex() != THIS->MasterClockIndex)
       {
-        DSP::log << DSP::e::LogMode::Error << "DSP::u::ClockTrigger::Execute" << DSP::e::LogMode::second << "Declared MasterClock and actual MasterClock are different" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::u::ClockTrigger::Execute" << DSP::e::LogMode::second << "Declared MasterClock and actual MasterClock are different" << std::endl;
       }
     #endif
     DSP::Clock::AddSignalActivatedClock(
@@ -10446,7 +10446,7 @@ void DSP::Component::ListComponents(void)
   #ifdef __DEBUG__
     for (int ind = 0; ind < NoOfComponentsInTable; ind++)
     {
-      DSP::log << ComponentsTable[ind]->GetName() << endl;
+      DSP::log << ComponentsTable[ind]->GetName() << std::endl;
     }
   #endif
 }
@@ -10476,7 +10476,7 @@ void DSP::Component::ListComponents(DSP::Clock_ptr InputClock)
               if (ComponentsTable[ind]->Convert2Block()->IsConstantInput[ind2] == false)
               {
                 if (ComponentsTable[ind]->Convert2Block()->InputClocks[ind2] == InputClock)
-                  DSP::log << "  >>block" << DSP::e::LogMode::second << ComponentsTable[ind]->GetName() << endl;
+                  DSP::log << "  >>block" << DSP::e::LogMode::second << ComponentsTable[ind]->GetName() << std::endl;
                 break;
               }
             }
@@ -10485,7 +10485,7 @@ void DSP::Component::ListComponents(DSP::Clock_ptr InputClock)
           {
             //! \bug problem if inputs work with different clocks
             if (ComponentsTable[ind]->Convert2Block()->InputClocks[0] == InputClock)
-              DSP::log << "  >>block" << DSP::e::LogMode::second << ComponentsTable[ind]->GetName() << endl;
+              DSP::log << "  >>block" << DSP::e::LogMode::second << ComponentsTable[ind]->GetName() << std::endl;
           }
         }
       }
@@ -10499,9 +10499,9 @@ void DSP::Component::ListOfAllComponents(bool list_outputs)
 
   #ifdef __DEBUG__
     DSP::Block_ptr temp;
-    string tekst;
+    std::string tekst;
 
-    DSP::log << "  Number of components" << DSP::e::LogMode::second << (NoOfComponentsInTable - 1) << endl;
+    DSP::log << "  Number of components" << DSP::e::LogMode::second << (NoOfComponentsInTable - 1) << std::endl;
 
     for (int ind = 0; ind < NoOfComponentsInTable; ind++)
     {
@@ -10512,24 +10512,24 @@ void DSP::Component::ListOfAllComponents(bool list_outputs)
         {
           if (temp->IsAutoSplit == true)
           {
-            DSP::log << setw(3) << ind << ":  >>auto(inputs=" << temp->NoOfInputs << ",outputs=" << temp->NoOfOutputs << ")"
-              << DSP::e::LogMode::second << temp->GetName() << endl;
+            DSP::log << std::setw(3) << ind << ":  >>auto(inputs=" << temp->NoOfInputs << ",outputs=" << temp->NoOfOutputs << ")"
+              << DSP::e::LogMode::second << temp->GetName() << std::endl;
           }
           else
           {
             if (temp->Convert2Copy() != NULL)
             {
-              DSP::log << setw(3) << ind << ":  >>copy(inputs=" << temp->NoOfInputs << ",outputs=" << temp->NoOfOutputs << ")"
-                << DSP::e::LogMode::second << temp->GetName() << endl;
+              DSP::log << std::setw(3) << ind << ":  >>copy(inputs=" << temp->NoOfInputs << ",outputs=" << temp->NoOfOutputs << ")"
+                << DSP::e::LogMode::second << temp->GetName() << std::endl;
             }
             else
             {
-              DSP::log << setw(3) << ind << ":  >>block(inputs=" << temp->NoOfInputs << ",outputs=" << temp->NoOfOutputs << ")"
-                << DSP::e::LogMode::second << temp->GetName() << endl;
+              DSP::log << std::setw(3) << ind << ":  >>block(inputs=" << temp->NoOfInputs << ",outputs=" << temp->NoOfOutputs << ")"
+                << DSP::e::LogMode::second << temp->GetName() << std::endl;
             }
           }
           {
-            stringstream ss;
+            std::stringstream ss;
             if (temp->InputClocks[0] == NULL)
             {
               ss << "<" << static_cast<void*>(ComponentsTable[ind]) << "> = " << static_cast<void*>(temp->InputClocks[0])
@@ -10540,7 +10540,7 @@ void DSP::Component::ListOfAllComponents(bool list_outputs)
               ss << "<" << static_cast<void*>(ComponentsTable[ind]) << "> = " << static_cast<void*>(temp->InputClocks[0])
                   << "; Master Clock index = " << (int)(temp->InputClocks[0]->GetMasterClockIndex());
             }
-            DSP::log << "    InputClocks[0]" << DSP::e::LogMode::second << ss.str() << endl;
+            DSP::log << "    InputClocks[0]" << DSP::e::LogMode::second << ss.str() << std::endl;
           }
         }
       }
@@ -10548,11 +10548,11 @@ void DSP::Component::ListOfAllComponents(bool list_outputs)
         if (ComponentsTable[ind]->Convert2Block() == NULL)
         {
           {
-            DSP::log << setw(3) << ind << ":  >>source(outputs=" << ComponentsTable[ind]->Convert2Source()->NoOfOutputs << ")"
-              << DSP::e::LogMode::second << ComponentsTable[ind]->GetName() << endl;
+            DSP::log << std::setw(3) << ind << ":  >>source(outputs=" << ComponentsTable[ind]->Convert2Source()->NoOfOutputs << ")"
+              << DSP::e::LogMode::second << ComponentsTable[ind]->GetName() << std::endl;
           }
           {
-            stringstream ss;
+            std::stringstream ss;
             if (ComponentsTable[ind]->Convert2Source()->OutputClocks[0] == NULL)
             {
               ss << " = " << static_cast<void*>(ComponentsTable[ind]->Convert2Source()->OutputClocks[0])
@@ -10563,7 +10563,7 @@ void DSP::Component::ListOfAllComponents(bool list_outputs)
               ss << " = " << static_cast<void*>(ComponentsTable[ind]->Convert2Source()->OutputClocks[0])
                  << "; Master Clock index = " << (int)(ComponentsTable[ind]->Convert2Source()->OutputClocks[0]->GetMasterClockIndex());
             }
-            DSP::log << "    OutputClocks[0]" << DSP::e::LogMode::second << ss.str() << endl;
+            DSP::log << "    OutputClocks[0]" << DSP::e::LogMode::second << ss.str() << std::endl;
           }
         }
         else
@@ -10571,29 +10571,29 @@ void DSP::Component::ListOfAllComponents(bool list_outputs)
           {
             temp = ComponentsTable[ind]->Convert2Block();
 
-            DSP::log << setw(3) << ind << ":  >>mixed(inputs=" << temp->NoOfInputs << ",outputs=" << temp->NoOfOutputs << ")"
-              << DSP::e::LogMode::second << temp->GetName() << endl;
+            DSP::log << std::setw(3) << ind << ":  >>mixed(inputs=" << temp->NoOfInputs << ",outputs=" << temp->NoOfOutputs << ")"
+              << DSP::e::LogMode::second << temp->GetName() << std::endl;
           }
           if (temp->NoOfInputs > 0)
           {
             if (temp->InputClocks[0] == NULL)
             {
-              stringstream ss;
+              std::stringstream ss;
               ss << " = " << static_cast<void*>(temp->InputClocks[0])
                   << "; Master Clock index = ?";
               tekst = ss.str();
             }
             else
             {
-              stringstream ss;
+              std::stringstream ss;
               ss << " = " << static_cast<void*>(temp->InputClocks[0])
                   << "; Master Clock index = " << (int)(temp->InputClocks[0]->GetMasterClockIndex());
               tekst = ss.str();
             }
-            DSP::log << "    InputClocks[0]" << DSP::e::LogMode::second << tekst << endl;
+            DSP::log << "    InputClocks[0]" << DSP::e::LogMode::second << tekst << std::endl;
           }
           if (temp->NoOfOutputs > 0) {
-            stringstream ss;
+            std::stringstream ss;
             if (ComponentsTable[ind]->Convert2Source()->OutputClocks[0] == NULL)
             {
               ss << "<" << static_cast<void*>(ComponentsTable[ind]) << "> = " << static_cast<void*>(ComponentsTable[ind]->Convert2Source()->OutputClocks[0])
@@ -10604,10 +10604,10 @@ void DSP::Component::ListOfAllComponents(bool list_outputs)
               ss << "<" << static_cast<void*>(ComponentsTable[ind]) << "> = " << static_cast<void*>(ComponentsTable[ind]->Convert2Source()->OutputClocks[0])
                   << "; Master Clock index = " << (int)((int)(ComponentsTable[ind]->Convert2Source()->OutputClocks[0]->GetMasterClockIndex()));
             }
-            DSP::log << "    OutputClocks[0]" << DSP::e::LogMode::second << ss.str() << endl;
+            DSP::log << "    OutputClocks[0]" << DSP::e::LogMode::second << ss.str() << std::endl;
           }
           else {
-            DSP::log << "    OutputClocks[0]" << DSP::e::LogMode::second << "undefined (NoOfOutputs == 0)!" << endl;
+            DSP::log << "    OutputClocks[0]" << DSP::e::LogMode::second << "undefined (NoOfOutputs == 0)!" << std::endl;
           }
         }
 
@@ -10615,15 +10615,15 @@ void DSP::Component::ListOfAllComponents(bool list_outputs)
       {
         for (unsigned int ind2 = 0; ind2 < ComponentsTable[ind]->NoOfOutputs; ind2++)
         {
-          DSP::log  << "out" << setw(3) << ind2 << " ==>  <" << static_cast<void*>(ComponentsTable[ind]->OutputBlocks[ind2])
-            << ">[" << setw(3) << ComponentsTable[ind]->OutputBlocks_InputNo[ind2] << "]"
+          DSP::log  << "out" << std::setw(3) << ind2 << " ==>  <" << static_cast<void*>(ComponentsTable[ind]->OutputBlocks[ind2])
+            << ">[" << std::setw(3) << ComponentsTable[ind]->OutputBlocks_InputNo[ind2] << "]"
             << DSP::e::LogMode::second
-            << ComponentsTable[ind]->OutputBlocks[ind2]->GetName() << endl;
+            << ComponentsTable[ind]->OutputBlocks[ind2]->GetName() << std::endl;
         }
       }
     }
     if (NoOfComponentsInTable > 1)
-      DSP::log << endl;
+      DSP::log << std::endl;
   #endif
 }
 
@@ -10636,7 +10636,7 @@ void DSP::Component::CheckInputsOfAllComponents(void)
     unsigned int NoOfCopyBlocks;
     unsigned int NoOfAutoSplitBlocks;
 
-    DSP::log << "DSP::Component::CheckInputsOfAllComponents" << DSP::e::LogMode::second << "Start" << endl;
+    DSP::log << "DSP::Component::CheckInputsOfAllComponents" << DSP::e::LogMode::second << "Start" << std::endl;
 
     NoOfCopyBlocks = 0; NoOfAutoSplitBlocks = 0;
     for (int ind = 0; ind < NoOfComponentsInTable; ind++)
@@ -10653,10 +10653,10 @@ void DSP::Component::CheckInputsOfAllComponents(void)
         {
           if ((temp->NoOfInputsConnected + temp->InitialNoOfInputsProcessed) != temp->NoOfInputs)
           {
-            DSP::log << "  >>block (" << ComponentsTable[ind]->GetName() << "): NoOfInputsConnected + InitialNoOfInputsProcessed != NoOfInputs" << endl;
-            DSP::log << "    NoOfInputs = " << temp->NoOfInputs << endl;
-            DSP::log << "    NoOfInputsConnected = " << temp->NoOfInputsConnected << endl;
-            DSP::log << DSP::e::LogMode::Error << "    InitialNoOfInputsProcessed = " << temp->InitialNoOfInputsProcessed << endl;
+            DSP::log << "  >>block (" << ComponentsTable[ind]->GetName() << "): NoOfInputsConnected + InitialNoOfInputsProcessed != NoOfInputs" << std::endl;
+            DSP::log << "    NoOfInputs = " << temp->NoOfInputs << std::endl;
+            DSP::log << "    NoOfInputsConnected = " << temp->NoOfInputsConnected << std::endl;
+            DSP::log << DSP::e::LogMode::Error << "    InitialNoOfInputsProcessed = " << temp->InitialNoOfInputsProcessed << std::endl;
           }
         }
 
@@ -10665,7 +10665,7 @@ void DSP::Component::CheckInputsOfAllComponents(void)
           if (IsOutputConnectedToThisInput(temp, ind2, tempBlock, tempNo) == false)
           {
             DSP::log << DSP::e::LogMode::Error << "   Block >>" << temp->GetName() << "<< input "
-                  << setw(2) << setfill('0') << ind2 << " UNCONNECTED" << endl;
+                  << std::setw(2) << std::setfill('0') << ind2 << " UNCONNECTED" << std::endl;
           }
           else
           {
@@ -10674,9 +10674,9 @@ void DSP::Component::CheckInputsOfAllComponents(void)
               if ((temp->Convert2Copy() == NULL) && (tempBlock->Convert2Copy() != NULL))
               { // Copy ==> Copy chains are ignored
                 DSP::log << DSP::e::LogMode::Error << "   Block >>" << temp->GetName()
-                      << "<< input " << setw(2) << setfill('0') << ind2
+                      << "<< input " << std::setw(2) << std::setfill('0') << ind2
                       << " connected only to DSP::u::Copy >>" << tempBlock->GetName()
-                      << "<< input " << setw(2) << setfill('0') << tempNo << endl;
+                      << "<< input " << std::setw(2) << std::setfill('0') << tempNo << std::endl;
               }
             }
           }
@@ -10688,12 +10688,12 @@ void DSP::Component::CheckInputsOfAllComponents(void)
 
     DSP::log << "  Number of checked components" << DSP::e::LogMode::second
       << (NoOfComponentsInTable - 1) << " (" << NoOfCopyBlocks
-      << " copy blocks & " << NoOfAutoSplitBlocks << " autosplitters)" << endl;
+      << " copy blocks & " << NoOfAutoSplitBlocks << " autosplitters)" << std::endl;
 
     if (NoOfComponentsInTable > 1)
-      DSP::log << endl;
+      DSP::log << std::endl;
 
-    DSP::log << "DSP::Component::CheckInputsOfAllComponents" << DSP::e::LogMode::second << "End" << endl;
+    DSP::log << "DSP::Component::CheckInputsOfAllComponents" << DSP::e::LogMode::second << "End" << std::endl;
 
   #endif
 }
@@ -10704,7 +10704,7 @@ void DSP::Component::CheckInputsOfAllComponents(void)
 DSP::u::Copy::Copy(unsigned int NoOfInputs_in)
   : DSP::Block()
 {
-  vector <unsigned int> indexes;
+  std::vector <unsigned int> indexes;
   unsigned int ind;
 
   SetName("Copy", false);
@@ -10935,7 +10935,7 @@ bool DSP::u::Copy::SetCopyInput(unsigned int InputNo, DSP::Component_ptr block, 
 
 #ifdef __DEBUG__
     if (current->NoOfInputsConnected > current->NoOfInputs)
-      DSP::log << DSP::e::LogMode::Error << "DSP::u::Copy::SetCopyInput" << DSP::e::LogMode::second << "NoOfInputsConnected > NoOfInputs" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::Copy::SetCopyInput" << DSP::e::LogMode::second << "NoOfInputsConnected > NoOfInputs" << std::endl;
 #endif
 
     // return true if there is output block connected already
@@ -11018,7 +11018,7 @@ void DSP::MacroStack::RemoveMacroFromStack(DSP::Macro_ptr macro)
   {
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DSP::MacroStack::RemoveMacroFromStack" << DSP::e::LogMode::second
-        << "Stack empty. No macro:>>" << macro->GetName() << "<< on the list!" << endl;
+        << "Stack empty. No macro:>>" << macro->GetName() << "<< on the list!" << std::endl;
     #endif
     return;
   }
@@ -11042,15 +11042,15 @@ void DSP::MacroStack::RemoveMacroFromStack(DSP::Macro_ptr macro)
   #ifdef __DEBUG__
   else
   {
-    DSP::log << "DSP::MacroStack::RemoveMacroFromStack" << DSP::e::LogMode::second << "Current macro stack:" << endl;
+    DSP::log << "DSP::MacroStack::RemoveMacroFromStack" << DSP::e::LogMode::second << "Current macro stack:" << std::endl;
     for (unsigned int ind = 0; ind < Length; ind++)
     {
-      DSP::log << "  >>" << DSP::e::LogMode::second << Stack[ind]->GetName() << endl;
+      DSP::log << "  >>" << DSP::e::LogMode::second << Stack[ind]->GetName() << std::endl;
     }
-    DSP::log << endl;
+    DSP::log << std::endl;
 
     DSP::log << DSP::e::LogMode::Error << "DSP::MacroStack::RemoveMacroFromStack" << DSP::e::LogMode::second
-      << "Macro:>>" << macro->GetName() << "<< not found at the bottom of the stack!" << endl;
+      << "Macro:>>" << macro->GetName() << "<< not found at the bottom of the stack!" << std::endl;
   }
   #endif
 }
@@ -11064,7 +11064,7 @@ unsigned int DSP::MacroStack::GetCurrentMacroStack(DSP::Macro_ptr *&MacrosStack)
   return Length;
 }
 
-unsigned int DSP::MacroStack::GetCurrentMacroList(vector<DSP::Macro_ptr> &MacrosList)
+unsigned int DSP::MacroStack::GetCurrentMacroList(std::vector<DSP::Macro_ptr> &MacrosList)
 {
   MacrosList.resize(ListLength);
   //! \TODO convert DSP::MacroStack::List into vector and copy vectors instead of using memcpy
@@ -11099,7 +11099,7 @@ void DSP::MacroStack::RemoveMacroFromList(DSP::Macro_ptr macro)
   {
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DSP::MacroStack::RemoveMacroFromList" << DSP::e::LogMode::second
-        << "List empty. No macro:>>" << macro->GetName() << "<< on the list!" << endl;
+        << "List empty. No macro:>>" << macro->GetName() << "<< on the list!" << std::endl;
     #endif
     return;
   }
@@ -11132,21 +11132,21 @@ void DSP::MacroStack::RemoveMacroFromList(DSP::Macro_ptr macro)
 #ifdef __DEBUG__
   if (ind >= ListLength)
   {
-    DSP::log << "DSP::MacroStack::RemoveMacroFromList" << DSP::e::LogMode::second << "Current macro list:" << endl;
+    DSP::log << "DSP::MacroStack::RemoveMacroFromList" << DSP::e::LogMode::second << "Current macro list:" << std::endl;
     for (ind = 0; ind < ListLength; ind++)
     {
-      DSP::log << "  >>" << DSP::e::LogMode::second << List[ind]->GetName() << endl;
+      DSP::log << "  >>" << DSP::e::LogMode::second << List[ind]->GetName() << std::endl;
     }
-    DSP::log << endl;
+    DSP::log << std::endl;
 
     DSP::log << DSP::e::LogMode::Error << "DSP::MacroStack::RemoveMacroFromList" << DSP::e::LogMode::second
-      << "Macro:>>" << macro->GetName() << "<< not found on the list!" << endl;
+      << "Macro:>>" << macro->GetName() << "<< not found on the list!" << std::endl;
   }
 #endif
 }
 
 
-bool DSP::Macro::DefineInput(const string &Name, const unsigned int &InputNo)
+bool DSP::Macro::DefineInput(const std::string &Name, const unsigned int &InputNo)
 {
   if (MacroInput_block != NULL)
   {
@@ -11158,7 +11158,7 @@ bool DSP::Macro::DefineInput(const string &Name, const unsigned int &InputNo)
   }
   return false;
 }
-bool DSP::Macro::DefineInput(const string &Name, const unsigned int &InputNo_re, const unsigned int &InputNo_im)
+bool DSP::Macro::DefineInput(const std::string &Name, const unsigned int &InputNo_re, const unsigned int &InputNo_im)
 {
   if (MacroInput_block != NULL)
   {
@@ -11170,7 +11170,7 @@ bool DSP::Macro::DefineInput(const string &Name, const unsigned int &InputNo_re,
   }
   return false;
 }
-bool DSP::Macro::DefineInput(const string &Name, const vector<unsigned int> &Inputs)
+bool DSP::Macro::DefineInput(const std::string &Name, const std::vector<unsigned int> &Inputs)
 {
   if (MacroInput_block != NULL)
   {
@@ -11182,7 +11182,7 @@ bool DSP::Macro::DefineInput(const string &Name, const vector<unsigned int> &Inp
   }
   return false;
 }
-bool DSP::Macro::UndefineInput(const string &Name)
+bool DSP::Macro::UndefineInput(const std::string &Name)
 {
   if (MacroInput_block != NULL)
   {
@@ -11196,7 +11196,7 @@ bool DSP::Macro::UndefineInput(const string &Name)
 }
 
 
-bool DSP::Macro::DefineOutput(const string &Name, const unsigned int &OutputNo)
+bool DSP::Macro::DefineOutput(const std::string &Name, const unsigned int &OutputNo)
 {
   if (MacroOutput_block != NULL)
   {
@@ -11208,7 +11208,7 @@ bool DSP::Macro::DefineOutput(const string &Name, const unsigned int &OutputNo)
   }
   return false;
 }
-bool DSP::Macro::DefineOutput(const string &Name, const unsigned int &OutputNo_re, const unsigned int &OutputNo_im)
+bool DSP::Macro::DefineOutput(const std::string &Name, const unsigned int &OutputNo_re, const unsigned int &OutputNo_im)
 {
   if (MacroOutput_block != NULL)
   {
@@ -11220,7 +11220,7 @@ bool DSP::Macro::DefineOutput(const string &Name, const unsigned int &OutputNo_r
   }
   return false;
 }
-bool DSP::Macro::DefineOutput(const string &Name, vector<unsigned int> &Outputs)
+bool DSP::Macro::DefineOutput(const std::string &Name, std::vector<unsigned int> &Outputs)
 {
   if (MacroOutput_block != NULL)
   {
@@ -11232,7 +11232,7 @@ bool DSP::Macro::DefineOutput(const string &Name, vector<unsigned int> &Outputs)
   }
   return false;
 }
-bool DSP::Macro::UndefineOutput(const string &Name)
+bool DSP::Macro::UndefineOutput(const std::string &Name)
 {
   if (MacroOutput_block != NULL)
   {
@@ -11247,23 +11247,23 @@ bool DSP::Macro::UndefineOutput(const string &Name)
 
 
 // returns internal output of the macro input of the given name
-DSP::output &DSP::Macro::MacroInput(const string &Name)
+DSP::output &DSP::Macro::MacroInput(const std::string &Name)
 {
   return MacroInput_block->Output(Name);
 }
 // returns internal input of the macro output of the given name
-DSP::input &DSP::Macro::MacroOutput(const string &Name)
+DSP::input &DSP::Macro::MacroOutput(const std::string &Name)
 {
   return MacroOutput_block->Input(Name);
 }
 
 // returns external macro output of the given name
-DSP::output &DSP::Macro::Output(const string &Name)
+DSP::output &DSP::Macro::Output(const std::string &Name)
 {
   return MacroOutput_block->Output(Name); // external outputs
 }
 // returns external macro input of the given name
-DSP::input &DSP::Macro::Input(const string &Name)
+DSP::input &DSP::Macro::Input(const std::string &Name)
 {
   return MacroInput_block->Input(Name); // external inputs
 }
@@ -11284,7 +11284,7 @@ unsigned int DSP::Macro::GetMacroInputNo(DSP::Component_ptr output_block, unsign
 
   if (output_block->Convert2Copy() != NULL)
   {
-    DSP::log << DSP::e::LogMode::Error << "DSP::Macro::GetMacroInputNo" << DSP::e::LogMode::second << "Encountered unrecognized copy block" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::Macro::GetMacroInputNo" << DSP::e::LogMode::second << "Encountered unrecognized copy block" << std::endl;
   }
 
   for (ind = 0; ind < NoOfInputs; ind++)
@@ -11329,8 +11329,8 @@ DSP::Clock_ptr DSP::Macro::GetOutputClock(unsigned int OutputNo)
 
 void DSP::Macro::MacroInitStarted(void)
 {
-  vector <unsigned int> indexes;
-  string temp;
+  std::vector <unsigned int> indexes;
+  std::string temp;
 
   DSP::MacroStack::AddMacroToStack(this);
 
@@ -11356,7 +11356,7 @@ void DSP::Macro::MacroInitStarted(void)
     indexes.resize(NoOfInputs);
     for (unsigned int ind=0; ind<NoOfInputs; ind++)
     {
-      temp = "in" + to_string(ind+1);
+      temp = "in" + std::to_string(ind+1);
       DefineInput(temp, ind);
 
       indexes[ind] = ind;
@@ -11375,7 +11375,7 @@ void DSP::Macro::MacroInitStarted(void)
     indexes.resize(NoOfOutputs);
     for (unsigned int ind=0; ind<NoOfOutputs; ind++)
     {
-      temp = "ou" + to_string(ind+1);
+      temp = "ou" + std::to_string(ind+1);
       DefineOutput(temp, ind);
 
       indexes[ind] = ind;
@@ -11397,7 +11397,7 @@ void DSP::Macro::MacroInitFinished(void)
 /* Creates MacroInput and MacroOutput objects
  *  with given input and output lines number.
  */
-DSP::Macro::Macro(const string &macro_name,
+DSP::Macro::Macro(const std::string &macro_name,
           unsigned int NoOfInputs_in, unsigned int NoOfOutputs_in)
   : DSP::name(macro_name)
 {

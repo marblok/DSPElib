@@ -8,6 +8,8 @@ TODO::
 LAST DONE:
 
 CHANGES:
+- ver. 0.20.024 - <b>2022.04.14</b> Changed: 
+  - removed "using namespace std"
 - ver. 0.20.023 - <b>2022.04.14</b> Added: 
   - added static methods TAudioMixer::GetNoOfWaveInDevices and TAudioMixer::GetNoOfWaveOutDevices
 - ver. 0.20.022 - <b>2022.04.04</b> Added: 

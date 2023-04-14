@@ -178,7 +178,7 @@ class DSP::Clock
      *  returns -1: no clock where found
      */
     static long GetAlgorithmClocks(DSP::Clock_ptr ReferenceClock,
-        vector<DSP::Clock_ptr> &ClocksList, bool FindSignalActivatedClocks = false);
+        std::vector<DSP::Clock_ptr> &ClocksList, bool FindSignalActivatedClocks = false);
 
   private:
     //8) Jednokierunkowa lista obiekt�w DSP::Clock
@@ -363,7 +363,7 @@ class DSP::Clock
      *
      */
     static void SchemeToDOTfile(DSP::Clock_ptr ReferenceClock,
-                                const string &dot_filename,
+                                const std::string &dot_filename,
                                 DSP::Macro_ptr DrawnMacro = NULL);
 
   #ifdef __DEBUG__
@@ -373,12 +373,12 @@ class DSP::Clock
        *  in dot-file format. Called from DSP::Clock::SchemeToDOTfile
        */
       bool ClockComponentsToDOTfile(std::ofstream &m_plik,
-              vector<bool> &ComponentDoneTable, long max_components_number,
-              vector<bool> &UsedMacrosTable, vector<DSP::Macro_ptr> &MacrosList, 
-              vector<bool> &UsedClocksTable, vector<DSP::Clock_ptr> &ClocksList, 
+              std::vector<bool> &ComponentDoneTable, long max_components_number,
+              std::vector<bool> &UsedMacrosTable, std::vector<DSP::Macro_ptr> &MacrosList, 
+              std::vector<bool> &UsedClocksTable, std::vector<DSP::Clock_ptr> &ClocksList, 
               DSP::Macro_ptr DrawnMacro);
       bool ClockNotificationsToDOTfile(std::ofstream &dot_plik,
-              vector<bool> &ComponentDoneTable, long max_components_number);
+              std::vector<bool> &ComponentDoneTable, long max_components_number);
               //bool *UsedClocksTable, DSP::Clock_ptr *ClocksList, long clocks_number);
   #endif
 

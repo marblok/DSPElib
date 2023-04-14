@@ -22,7 +22,7 @@
 int DSP::TMorseTable::TablesNo=0;
 DSP::TMorseTable *DSP::TMorseTable::FirstTable=NULL;
 DSP::TMorseTable *DSP::TMorseTable::Current=NULL;
-const string &DSP::TMorseTable::BaseDirectory="./";
+const std::string &DSP::TMorseTable::BaseDirectory="./";
 
 DSP::TMorseTable::TMorseTable(void)
 {
@@ -315,7 +315,7 @@ uint32_t DSP::TMorseTable::Ind2FontCharset(int ind)
 }
 
 
-const string DSP::TMorseTable::Ind2AnsiString(int ind)
+const std::string DSP::TMorseTable::Ind2AnsiString(int ind)
 {
   switch (Ind2FontCharset(ind))
   {
@@ -347,7 +347,7 @@ const string DSP::TMorseTable::Ind2AnsiString(int ind)
   }
 }
 
-uint32_t DSP::TMorseTable::MorseCodeText2Number(const string &dot_dash_text)
+uint32_t DSP::TMorseTable::MorseCodeText2Number(const std::string &dot_dash_text)
 {
   uint32_t weigth;
   uint32_t Number;
@@ -372,9 +372,9 @@ uint32_t DSP::TMorseTable::MorseCodeText2Number(const string &dot_dash_text)
   return Number;
 }
 
-string DSP::TMorseTable::Number2MorseCodeText(uint32_t Number)
+std::string DSP::TMorseTable::Number2MorseCodeText(uint32_t Number)
 {
-  string dash_dot_text = "";
+  std::string dash_dot_text = "";
 
   while (Number!=0)
   {
@@ -393,7 +393,7 @@ string DSP::TMorseTable::Number2MorseCodeText(uint32_t Number)
   return dash_dot_text;
 }
 
-int DSP::TMorseTable::MorseCodeText2LetterInd(const string &dot_dash_text)
+int DSP::TMorseTable::MorseCodeText2LetterInd(const std::string &dot_dash_text)
 {
   uint32_t number;
   int ind;
@@ -428,10 +428,10 @@ uint32_t DSP::TMorseTable::Char2Number(char znak)
   return 0;
 }
 
-void DSP::TMorseTable::Save2File(const string &Name)
+void DSP::TMorseTable::Save2File(const std::string &Name)
 {
   #if _DEMO_ == 0
-    string Dir_FileName;
+    std::string Dir_FileName;
     unsigned char pomB;
     uint16_t pom;
     unsigned long ind;
@@ -482,9 +482,9 @@ void DSP::TMorseTable::Save2File(const string &Name)
 
 //---------------------------------------------------------------------------
 
-bool DSP::TMorseTable::LoadFromFile(const string &Name)
+bool DSP::TMorseTable::LoadFromFile(const std::string &Name)
 {
-  string Dir_FileName;
+  std::string Dir_FileName;
   uint8_t IleFONT;
   uint8_t ver;
   FILE *plik;
@@ -525,7 +525,7 @@ bool DSP::TMorseTable::LoadFromFile(const string &Name)
       fread(&pom, sizeof(uint16_t), 1, plik);
       if (pom!=0)
       {
-        vector<char> buffer(pom+1);
+        std::vector<char> buffer(pom+1);
         fread(buffer.data(), 1, pom, plik);
         buffer[pom] = 0x00;
         FontName[ind] = buffer.data();
@@ -537,7 +537,7 @@ bool DSP::TMorseTable::LoadFromFile(const string &Name)
       fread(&pom, sizeof(uint16_t), 1, plik);
       if (pom!=0)
       {
-        vector<char> buffer(pom+1);
+        std::vector<char> buffer(pom+1);
         fread(buffer.data(), 1, pom, plik);
         buffer[pom] = 0x00;
         TestText[ind] = buffer.data();
@@ -610,7 +610,7 @@ void DSP::TMorseTable::FreeTables(void)
 }
 
 //! \warning Not yet implemented
-void DSP::TMorseTable::LoadTables(const string &BaseDir)
+void DSP::TMorseTable::LoadTables(const std::string &BaseDir)
 {
   UNUSED_ARGUMENT(BaseDir);
   //! \todo convert to gcc
@@ -680,7 +680,7 @@ void DSP::TMorseTable::NewTable(void)
 {
   //TSearchRec F;
   TMorseTable *pom;
-  string Dir_FileName;
+  std::string Dir_FileName;
   int ind_;
 
   pom=FirstTable;
@@ -757,7 +757,7 @@ void DSP::TMorseTable::SaveCurrent(void)
 }
 
 //! \todo convert to gcc
-bool DSP::TMorseTable::RenameCurrentTable(const string &NewName)
+bool DSP::TMorseTable::RenameCurrentTable(const std::string &NewName)
 {
   UNUSED_ARGUMENT(NewName);
 /*
@@ -794,7 +794,7 @@ bool DSP::TMorseTable::RenameCurrentTable(const string &NewName)
   return true;
 }
 
-const string DSP::TMorseTable::Description(void)
+const std::string DSP::TMorseTable::Description(void)
 {
   return TableDescription;
 }
@@ -929,7 +929,7 @@ void DSP::u::MORSEkey::Init(DSP::Clock_ptr ParentClock)
   RegisterOutputClock(ParentClock);
 };
 
-bool DSP::u::MORSEkey::LoadCodeTable(const string &filename)
+bool DSP::u::MORSEkey::LoadCodeTable(const std::string &filename)
 {
   return MorseTable.LoadFromFile(filename);
 }
@@ -983,7 +983,7 @@ void DSP::u::MORSEkey::SetKeyingSpeed(float WPM_in, long sampling_rate_in,
   space_len = (int)(space2dot_ratio * dot_len_float+0.5);
 }
 
-void DSP::u::MORSEkey::AddString(string AsciiText_in)
+void DSP::u::MORSEkey::AddString(std::string AsciiText_in)
 {
   //! TODO mutex
   AsciiText += AsciiText_in;

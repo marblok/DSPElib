@@ -18,14 +18,14 @@
   namespace DSP
   {
     //! Pointer to the Message callback function
-    /*! bool func(const string &source, const string &message, const bool IsError)
+    /*! bool func(const std::string &source, const std::string &message, const bool IsError)
      *  used in DSP::logstream::Message, DSP::logstream::ErrorMessage, DSP::logstream::InfoMessage
      *
      *  If function returns true all other message logging
      *  actions will be abandoned. Message will be treated
      *  as local addressed only for callback function.
      */
-    typedef bool (*Message_callback_ptr)(const string &, const string &, const bool);
+    typedef bool (*Message_callback_ptr)(const std::string &, const std::string &, const bool);
 
     class logstream;
 
@@ -97,7 +97,7 @@
          * If LOG file is open, it is closed and file_name is changed.
          * New file will be created when next LOG message will be issued.
          */
-        void SetLogFileName(const string &file_name);
+        void SetLogFileName(const std::string &file_name);
         //! Sets/changes current user LOG Message processing function
         void SetLogFunctionPtr(Message_callback_ptr function_ptr);
 
@@ -135,7 +135,7 @@
 
 //  template <class charT, class Traits>
 //  inline basic_ostream<charT,Traits>& operator<< (basic_ostream<charT,Traits>& os, const DSP::e::LogMode& log_mode) {
-inline ostream& operator<< (ostream& os, const DSP::e::LogMode& log_mode) {
+inline std::ostream& operator<< (std::ostream& os, const DSP::e::LogMode& log_mode) {
     DSP::logstream *p;
     try {
       p = dynamic_cast<DSP::logstream*>(&os);

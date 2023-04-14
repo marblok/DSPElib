@@ -8,7 +8,6 @@
 
 #include <cstring>
 #include <iostream>
-using namespace std;
 
 #include "DSP_logstream.h"
 
@@ -39,7 +38,7 @@ namespace DSP
     class LogStatus
     {
       friend void DSP::logstream::SetLogState(const DSP::e::LogState &);
-      friend void DSP::logstream::SetLogFileName(const string &);
+      friend void DSP::logstream::SetLogFileName(const std::string &);
       friend void DSP::logstream::SetLogFunctionPtr(DSP::Message_callback_ptr);
       friend long int DSP::logstream::NoOfErrors(bool Reset);
       friend DSP::logstream& ::operator<< (DSP::logstream& os, const DSP::e::LogMode& log_mode);
@@ -51,7 +50,7 @@ namespace DSP
         long int ErrorsCounter;
 
         //! LOG file name (possibly together with path)
-        string file_name;
+        std::string file_name;
         std::ofstream *plik; // bool IsFileOpened;
 
         //! User defined Message processing function
@@ -64,7 +63,7 @@ namespace DSP
          *   - LS_file=2,
          *   - LS_file_append=6, // = (LS_file | 4)
          */
-        void WriteMessage2LOGfile(const string &Message);
+        void WriteMessage2LOGfile(const std::string &Message);
 
         /*! \warning Should be used only in WriteMessage2LOGfile
          */
@@ -102,8 +101,8 @@ namespace DSP
         bool start_new_line;
         std::shared_ptr<std::recursive_mutex> mtx = nullptr;
 
-        string First_string; //! Main part of the collected message
-        string Second_string; //! Second_string part of the collected message
+        std::string First_string; //! Main part of the collected message
+        std::string Second_string; //! Second_string part of the collected message
         DSP::e::LogMode mode; //! stream mode (Error/Info)
         DSP::e::LogMode msg_part; //! message part (first/second)
         bool pause_after_message; //! if true wiat for key press in console mode
@@ -121,7 +120,7 @@ namespace DSP
         //! Error message generation
         /*! Waits for user reaction.
          */
-        void ErrorMessage(const string &source, const string &message = "");
+        void ErrorMessage(const std::string &source, const std::string &message = "");
         //! Information message generation
         /* -# source == "" && message == "" => "\n"
          * -# source != "" && message == "" => "source\n"
@@ -129,28 +128,28 @@ namespace DSP
          * -# source != "" && message != "" => "Info(source): message\n"
          * .
          */
-        void InfoMessage(const string &source = "", const string &message = "");
+        void InfoMessage(const std::string &source = "", const std::string &message = "");
         // //! returns size of text buffer required for the given message
-        //int DSP::f::GetMessageLength(bool IsError, const string &source, const string &message = NULL);
+        //int DSP::f::GetMessageLength(bool IsError, const std::string &source, const std::string &message = NULL);
 
         //! Returns error message in format used in DSP::f::ErrorMessage.
         /*!  See also ::DSP::f::GetErrorMessage, ::DSP::f::GetInfoMessage.
          */
-        string GetErrorMessage(const string &source, const string &message = "");
+        std::string GetErrorMessage(const std::string &source, const std::string &message = "");
         //! Returns informational message in format used in DSP::f::InfoMessage.
         /*!  See also ::GetMessageLength.
          */
-        string GetInfoMessage(const string &source, const string &message = "");
+        std::string GetInfoMessage(const std::string &source, const std::string &message = "");
         //! Error or Information message generation
-        void Message(bool IsError, const string &source, const string &message = "");
+        void Message(bool IsError, const std::string &source, const std::string &message = "");
      };
 
     logstream::logstream(void) : std::ostream(this)
     {
        init_logstream();
     // test:
-    //  log << "test" << endl;
-    //  log << "test2" <<  LogMode::second << "2" << endl;
+    //  log << "test" << std::endl;
+    //  log << "test2" <<  LogMode::second << "2" << std::endl;
     }
 
     logstream::~logstream(void)
@@ -346,7 +345,7 @@ namespace DSP
       log_buf->LogStatus_object.Mode = Mode;
     }
 
-    void logstream::SetLogFileName(const string &file_name)
+    void logstream::SetLogFileName(const std::string &file_name)
     {
       log_buf->LogStatus_object.file_name = file_name;
 
@@ -358,7 +357,7 @@ namespace DSP
       log_buf->LogStatus_object.function_ptr = function_ptr;
     }
 
-    void LogStatus::WriteMessage2LOGfile(const string &Message)
+    void LogStatus::WriteMessage2LOGfile(const std::string &Message)
     {
       if (plik == NULL)
       {
@@ -427,9 +426,9 @@ namespace DSP
     }
 
     // Error message generation
-    void logbuf::ErrorMessage(const string &source, const string &message)
+    void logbuf::ErrorMessage(const std::string &source, const std::string &message)
     {
-      string MessageText;
+      std::string MessageText;
 
       // ******************************************* //
       LogStatus_object.ErrorsCounter++;
@@ -454,7 +453,7 @@ namespace DSP
       if ((LogStatus_object.Mode & DSP::e::LogState::console) == DSP::e::LogState::console)
       { // console
         //printf(MessageText.c_str());
-        cout << MessageText << flush;
+        std::cout << MessageText << std::flush;
       }
       if ((LogStatus_object.Mode & DSP::e::LogState::file) == DSP::e::LogState::file)
       { // file & file_append
@@ -470,9 +469,9 @@ namespace DSP
       }
     }
 
-    string logbuf::GetErrorMessage(const string &source, const string &message)
+    std::string logbuf::GetErrorMessage(const std::string &source, const std::string &message)
     {
-      string text_buffer;
+      std::string text_buffer;
       if (message.length() == 0)
 	if (source.length() == 0) {
           text_buffer = "";
@@ -486,9 +485,9 @@ namespace DSP
     }
 
     // Information message generation
-    void logbuf::InfoMessage(const string &source, const string &message)
+    void logbuf::InfoMessage(const std::string &source, const std::string &message)
     {
-      string MessageText;
+      std::string MessageText;
 
       if (LogStatus_object.Mode == DSP::e::LogState::off)
         return;
@@ -511,7 +510,7 @@ namespace DSP
       if ((LogStatus_object.Mode & DSP::e::LogState::console) == DSP::e::LogState::console)
       { // console
         //printf(MessageText.c_str());
-        cout << MessageText << flush;
+        std::cout << MessageText << std::flush;
       }
       if ((LogStatus_object.Mode & DSP::e::LogState::file) == DSP::e::LogState::file)
       { // file & file_append
@@ -527,9 +526,9 @@ namespace DSP
       }
     }
 
-    string logbuf::GetInfoMessage(const string &source, const string &message)
+    std::string logbuf::GetInfoMessage(const std::string &source, const std::string &message)
     {
-      string text_buffer;
+      std::string text_buffer;
       if (message.length() == 0)
         if (source.length() == 0)
           text_buffer = "\n";
@@ -545,7 +544,7 @@ namespace DSP
 
 
     // Error or Information message generation
-    void logbuf::Message(bool IsError, const string &source, const string &message)
+    void logbuf::Message(bool IsError, const std::string &source, const std::string &message)
     {
       if (IsError == false)
         InfoMessage(source, message);

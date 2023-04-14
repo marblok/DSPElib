@@ -11,7 +11,7 @@
 
 #define DSP_VER_MAJOR 0
 #define DSP_VER_MINOR 20
-#define DSP_VER_BUILD 23 // !!! without zeroes before, else this will be treated as octal number
+#define DSP_VER_BUILD 24 // !!! without zeroes before, else this will be treated as octal number
 #define DSP_VER_YEAR  2023
 #define DSP_VER       DSP_VER_MAJOR.DSP_VER_MINOR.DSP_VER_BUILD
 
@@ -37,7 +37,7 @@
 namespace DSP {
   struct libver;
   DSP::libver lib_version(void);
-  string lib_version_string();
+  std::string lib_version_string();
 }
 
 /*!
@@ -136,8 +136,8 @@ struct DSP::libver
  * \todo consider omitting InputClocks memory reservation in release mode
  */
 DSP::libver DSP::lib_version(void);
-//! Return DSP Engine library version information string.
-string DSP::lib_version_string();
+//! Return DSP Engine library version information std::string.
+std::string DSP::lib_version_string();
 
 /* @} ver_data */
 
@@ -302,7 +302,7 @@ string DSP::lib_version_string();
  *
  *  Library version can be checked using
  *   - ::DSP::lib_version function which returns DSP::libver structure
- *   - ::DSP::lib_version_string function which returns string with version and copyright
+ *   - ::DSP::lib_version_string function which returns std::string with version and copyright
  *     information
  *   .
  *
@@ -683,11 +683,11 @@ string DSP::lib_version_string();
  *      .
  *   \section lib_LOG_usr User LOG messages
  *     - DSP::e::LogMode::Info, DSP::e::LogMode::Error, DSP::e::LogMode::first, DSP::e::LogMode::second
- *       - DSP::log << "Hello" << DSP::e::LogMode::second << "This is echo !!!" << endl;
- *       - DSP::log << DSP::e::LogMode::Error << "MAIN" << DSP::e::LogMode::second << "end" << endl;
+ *       - DSP::log << "Hello" << DSP::e::LogMode::second << "This is echo !!!" << std::endl;
+ *       - DSP::log << DSP::e::LogMode::Error << "MAIN" << DSP::e::LogMode::second << "end" << std::endl;
  *       .
  *     - DSP::e::LogMode::pause, DSP::e::LogMode::pause_off
- *       - DSP::log << DSP::e::LogMode::pause << "Finished SolveMatrix test" << endl;
+ *       - DSP::log << DSP::e::LogMode::pause << "Finished SolveMatrix test" << std::endl;
  *       .
  *     .
  *   \section lib_LOG_wx Working with wxWidgets

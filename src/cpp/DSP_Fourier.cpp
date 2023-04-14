@@ -271,7 +271,7 @@ void DSP::Fourier::absFFT(const unsigned long &N, DSP::Float_vector &abs_fft, co
 
   #ifdef __DEBUG__
     if (fft.size() != probki.size()) {
-      DSP::log << DSP::e::LogMode::Error << "DSP::Fourier::absFFT" << DSP::e::LogMode::second << "fft.size() != probki.size()" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Fourier::absFFT" << DSP::e::LogMode::second << "fft.size() != probki.size()" << std::endl;
       return;
     }
   #endif
@@ -419,7 +419,7 @@ void DSP::Fourier::abs2FFT(const unsigned long &N, DSP::Float_vector &abs_fft, c
 
   #ifdef __DEBUG__
     if (fft.size() != probki.size()) {
-      DSP::log << DSP::e::LogMode::Error << "DSP::Fourier::abs2FFT" << DSP::e::LogMode::second << "fft.size() != probki.size()" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Fourier::abs2FFT" << DSP::e::LogMode::second << "fft.size() != probki.size()" << std::endl;
       return;
     }
   #endif
@@ -983,7 +983,7 @@ void DSP::Fourier::DFT(const unsigned long &N, const DSP::Complex_vector &probki
 
   #ifdef __DEBUG__
     if (probki_in.size() != probki_out.size()) {
-      DSP::log << DSP::e::LogMode::Error << "DSP::Fourier::DFT" << DSP::e::LogMode::second << "probki_in.size() != probki_out.size()" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Fourier::DFT" << DSP::e::LogMode::second << "probki_in.size() != probki_out.size()" << std::endl;
       return;
     }
   #endif

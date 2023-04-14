@@ -69,18 +69,18 @@ namespace DSP {
 
   //! DSPElib  sub-namespace for special functions 
   namespace f { 
-    unsigned long ReadCoefficientsFromFile(DSP::Float_vector &Buffer, unsigned long N, const string &FileName, const string &FileDir, DSP::e::SampleType type, unsigned long offset);
-    unsigned long ReadCoefficientsFromFile(DSP::Complex_vector &Buffer, unsigned long N, const string &FileName, const string &FileDir, DSP::e::SampleType type, unsigned long offset);
-    bool GetWAVEfileParams(const string &FileName, const string &FileDir, T_WAVEchunk_ptr WAVEparams);
+    unsigned long ReadCoefficientsFromFile(DSP::Float_vector &Buffer, unsigned long N, const std::string &FileName, const std::string &FileDir, DSP::e::SampleType type, unsigned long offset);
+    unsigned long ReadCoefficientsFromFile(DSP::Complex_vector &Buffer, unsigned long N, const std::string &FileName, const std::string &FileDir, DSP::e::SampleType type, unsigned long offset);
+    bool GetWAVEfileParams(const std::string &FileName, const std::string &FileDir, T_WAVEchunk_ptr WAVEparams);
     //! Determines file type by filename extension
-    DSP::e::FileType FileExtToFileType(const string &filename);
+    DSP::e::FileType FileExtToFileType(const std::string &filename);
 
     //! This function adds the ability to get wav file params before DSP::Block creation
     /*! Returns false if the file cannot be opened.
     *
     * \ingroup load_func
     */
-    bool GetWAVEfileParams(const string &FileName, const string &FileDir, T_WAVEchunk_ptr WAVEparams);
+    bool GetWAVEfileParams(const std::string &FileName, const std::string &FileDir, T_WAVEchunk_ptr WAVEparams);
 
     //! returns audio buffer size for given Fs based on reference values given for DSP::ReferenceFs
     uint32_t GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP::e::AudioBufferType &type);
@@ -125,7 +125,7 @@ namespace DSP {
  * \ingroup load_func
  */
 unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Float_vector &Buffer, unsigned long N,
-                     const string &FileName, const string &FileDir,
+                     const std::string &FileName, const std::string &FileDir,
                      DSP::e::SampleType type=DSP::e::SampleType::ST_float,
                      unsigned long offset=0);
 
@@ -169,7 +169,7 @@ namespace DSP {
       // zeruj stan
       void clear();
 
-      friend bool DSP::f::GetWAVEfileParams(const string &FileName, const string &FileDir, T_WAVEchunk_ptr WAVEparams);
+      friend bool DSP::f::GetWAVEfileParams(const std::string &FileName, const std::string &FileDir, T_WAVEchunk_ptr WAVEparams);
     
     private:
       int strncmpi(const char* str1, const char* str2, int N);
@@ -332,8 +332,8 @@ class DSP::u::WaveInput : public DSP::File, public DSP::Source//: public CAudioI
     //FILE *hIn;
     bool FileEnd;
     DSP::T_WAVEchunk WAVEchunk;
-    string FileName;
-    string FileDir;
+    std::string FileName;
+    std::string FileDir;
 
     uint32_t ReadBufferLen;  // in bytes
     std::vector<char>  ReadBuffer;
@@ -368,7 +368,7 @@ class DSP::u::WaveInput : public DSP::File, public DSP::Source//: public CAudioI
 
   public:
     WaveInput(DSP::Clock_ptr ParentClock,
-                  const string &FileName_in, const string &FileDir_in,
+                  const std::string &FileName_in, const std::string &FileDir_in,
                   unsigned int OutputsNo=1); //just one channel
     ~WaveInput(void);
 
@@ -442,7 +442,7 @@ class DSP::u::FileInput : public DSP::File, public DSP::Source
      * Can be used between calls to DSP::Clock::execute
      * or in blocks' callbacks.
      */
-    bool OpenFile(const string &FileName,
+    bool OpenFile(const std::string &FileName,
         DSP::e::SampleType sample_type=DSP::e::SampleType::ST_float,
         DSP::e::FileType FILEtype = DSP::e::FileType::FT_raw,
         unsigned int Default_NoOfFileChannels = 0);
@@ -451,7 +451,7 @@ class DSP::u::FileInput : public DSP::File, public DSP::Source
     /*! NoOfChannels == 0 - autodetect no of channels
      */
     FileInput(DSP::Clock_ptr ParentClock,
-                   const string &FileName,
+                   const std::string &FileName,
                    unsigned int NoOfChannels = 1U,
                    DSP::e::SampleType sample_type=DSP::e::SampleType::ST_float,
                    DSP::e::FileType FILEtype = DSP::e::FileType::FT_raw
@@ -585,14 +585,14 @@ class DSP::u::FileOutput  : public DSP::File, public DSP::Block
     void FlushBuffer(void);
     void raw_FlushBuffer(void);
 
-    bool Open(const string &FileName, DSP::e::SampleType sample_type=DSP::e::SampleType::ST_float,
+    bool Open(const std::string &FileName, DSP::e::SampleType sample_type=DSP::e::SampleType::ST_float,
               unsigned int NoOfChannels=1, DSP::e::FileType file_type=DSP::e::FileType::FT_raw,
               long int sampling_rate = -1);
     void Close(void);
 
     //! true if file must be reopen in current clock cycle
     bool           ReOpenFile;
-    string         ReOpen_FileName;
+    std::string         ReOpen_FileName;
     DSP::e::SampleType ReOpen_SampleType;
     DSP::e::FileType  ReOpen_FileType;
     unsigned long     ReOpen_sampling_rate;
@@ -631,7 +631,7 @@ class DSP::u::FileOutput  : public DSP::File, public DSP::Block
     FileOutput(unsigned char NoOfChannels=1);
     /*! \test constant inputs must be tested
      */
-    FileOutput(const string &FileName,
+    FileOutput(const std::string &FileName,
                    DSP::e::SampleType sample_type=DSP::e::SampleType::ST_float,
                    unsigned int NoOfChannels=1,
                    DSP::e::FileType file_type=DSP::e::FileType::FT_raw,
@@ -683,7 +683,7 @@ class DSP::u::FileOutput  : public DSP::File, public DSP::Block
      * \note This function only marks output file to be reopened.
      *  All samples from current cycle will be stored in the old file.
      */
-    void ReOpen(const string &FileName,
+    void ReOpen(const std::string &FileName,
                 DSP::e::SampleType sample_type=DSP::e::SampleType::ST_float,
                 DSP::e::FileType file_type=DSP::e::FileType::FT_raw,
                 long int sampling_rate = -1);

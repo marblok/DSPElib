@@ -26,7 +26,6 @@
 #endif
 
 #include <string>
-using namespace std;
 
 //---------------------------------------------------------------------------
 #include <DSP_setup.h>
@@ -59,26 +58,26 @@ class TAudioMixer
   public:
     //! returns number of currently available WaveIn devices or -1 if not supported in current configuration
     static long GetNoOfWaveInDevices(void);
-    static string GetWaveInDevName(UINT DevNo=WAVE_MAPPER );
+    static std::string GetWaveInDevName(UINT DevNo=WAVE_MAPPER );
     //! returns number of currently available WaveOut devices or -1 if not supported in current configuration
     static long GetNoOfWaveOutDevices(void);
-    static string GetWaveOutDevName(UINT DevNo=WAVE_MAPPER );
+    static std::string GetWaveOutDevName(UINT DevNo=WAVE_MAPPER );
 
     bool MixerSupported;
     //! true if there is global mixer or multiplexer for input lines
     bool InputMixer_support;
 
-    static const string PCMwaveFileName;
+    static const std::string PCMwaveFileName;
 
     static const DWORD Types[];
-    static const string TypesNames[];
-    static const string ComponentNames[];
+    static const std::string TypesNames[];
+    static const std::string ComponentNames[];
     static const DWORD ComponentTypes[];
 
 //    AnsiString MixerName;
-    string Input_MixerName;
-    string Output_MixerName;
-    string Input_Output_MixerName;
+    std::string Input_MixerName;
+    std::string Output_MixerName;
+    std::string Input_Output_MixerName;
 
     int Mixer_InputLinesNumber; //! Number of input lines supported by soundcard
 
@@ -144,8 +143,8 @@ class TAudioMixer
     bool MixerSettingsMemorized_WAVEIN;
     bool MixerSettingsMemorized_OUT;
 
-    static const string GetMixerControlType(DWORD dwControlType);
-    static const string GetMixerComponentType(DWORD dwComponentType);
+    static const std::string GetMixerControlType(DWORD dwControlType);
+    static const std::string GetMixerComponentType(DWORD dwComponentType);
 
     bool PCMwaveFileActive;
     double PCMwaveFileActiveValue;
@@ -160,21 +159,21 @@ class TAudioMixer
 //    void TestInfo(TStrings *Lines);
 
 //    AnsiString GetMixerName(void);
-    string GetMixerName(void);
+    std::string GetMixerName(void);
 
-    //! Returns empty string on failure
-    string GetSourceLineName(int ind);
+    //! Returns empty std::string on failure
+    std::string GetSourceLineName(int ind);
     DWORD GetSourceLineType(int ind);
     int GetNumberOfSourceLines(void);
 
-    //! Returns empty string on failure
-    string GetDestLineName(int ind);
+    //! Returns empty std::string on failure
+    std::string GetDestLineName(int ind);
     DWORD GetDestLineType(int ind);
     int GetNumberOfDestLines(void);
 
     int  GetActiveSourceLine(void);
     void SetActiveSourceLine(int ActiveNo);
-    void SetActiveSourceLine(string ActiveName);
+    void SetActiveSourceLine(std::string ActiveName);
     void SetSourceLineState(int LineNo, bool IsActive);
     //! gets active source line volume
     /*! - returns vol in range [0, 1] on success

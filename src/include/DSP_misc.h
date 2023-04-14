@@ -44,8 +44,6 @@
 #include <fstream>
 #include <string>
 
-using namespace std;
-
 //---------------------------------------------------------------------------
 #include <DSP_setup.h>
 #include <DSP_logstream.h>
@@ -65,7 +63,7 @@ namespace DSP {
     unsigned long gcd(unsigned long a, unsigned long b);
 
     //! Solves matrix equation using Gaussian elimination with backsubstitution
-    void SolveMatrixEqu(const vector<DSP::Float_vector> &A_in, //! square matrix of coefficients (table of rows)
+    void SolveMatrixEqu(const std::vector<DSP::Float_vector> &A_in, //! square matrix of coefficients (table of rows)
                         DSP::Float_vector &X,    //!vector reserved for solution
                         const DSP::Float_vector &B_in); //!right-hand side quantities vector
 
@@ -73,7 +71,7 @@ namespace DSP {
     /*! All calculations are internally done at high precision
     */
     void SolveMatrixEqu_prec(
-                        const vector<DSP::Float_vector> &A_in, //!matrix coefficients (table of rows)
+                        const std::vector<DSP::Float_vector> &A_in, //!matrix coefficients (table of rows)
                         DSP::Float_vector &X_in,    //!vector reserved for solution
                         const DSP::Float_vector &B_in); //!right-hand side quantities vector
     //! Solves matrix equation using Gaussian elimination with backward substitution
@@ -82,7 +80,7 @@ namespace DSP {
     * \note use_pivoting = 0 should not be used
     */
     void SolveMatrixEqu_prec(
-                        const vector<DSP::Prec_Float_vector> &A_in, //!matrix coefficients (table of rows)
+                        const std::vector<DSP::Prec_Float_vector> &A_in, //!matrix coefficients (table of rows)
                         DSP::Prec_Float_vector &X_in,    //!vector reserved for solution
                         const DSP::Prec_Float_vector &B_in, //!right-hand side quantities vector
                         int use_pivoting); //! pivoting mode: 0-none; 1-rows; 2-rows&cols
@@ -110,9 +108,9 @@ namespace DSP {
     /*! \warning if parent_dir != NULL then it must exist.
     *  \warning Will create single subdirectory (no nested subdir creation)
     */
-    bool MakeDir(const string &dir_name, const string &parent_dir = "");
+    bool MakeDir(const std::string &dir_name, const std::string &parent_dir = "");
     //! Splits directory name into bits and tries to create it subdirectory by subdirectory
-    void MakeDir_Ex(const string &dir_name);
+    void MakeDir_Ex(const std::string &dir_name);
 
 
     //! Symbol error rate estimation for QPSK
@@ -236,7 +234,7 @@ namespace DSP {
     * \f$x(x) = \frac{\sin({\pi}x)}{{\pi}x)}\f$
     */
     template <typename T>
-    void sinc(const DSP::Float_vector& arguments, vector<T> &output_buffer);
+    void sinc(const DSP::Float_vector& arguments, std::vector<T> &output_buffer);
 
     //! Normalized sinc function
     /*!
@@ -300,7 +298,7 @@ inline DSP::e::LoadCoef_Type DSP::e::operator|(DSP::e::LoadCoef_Type __a, DSP::e
 class DSP::LoadCoef
 {
   public:
-    string filename; // file name with path
+    std::string filename; // file name with path
 
     unsigned char file_version;
 
@@ -362,7 +360,7 @@ class DSP::LoadCoef
      *
      *  @return Returns false on error.
      */
-    bool Open(const string &Filename, const string &Dir);
+    bool Open(const std::string &Filename, const std::string &Dir);
 
     //! Checks Coefficients size for given vector
     /*! \param vector_no = 0, 1, ...

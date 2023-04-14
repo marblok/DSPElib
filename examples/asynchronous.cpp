@@ -16,7 +16,7 @@ int main(void)
   DSP::log.SetLogState(DSP::e::LogState::console | DSP::e::LogState::file);
   DSP::log.SetLogFileName("log_file.log");
 
-  DSP::log << DSP::lib_version_string() << endl << endl;
+  DSP::log << DSP::lib_version_string() << std::endl << std::endl;
 
   MasterClock=DSP::Clock::CreateMasterClock();
   SignalActivatedClock=DSP::Clock::CreateMasterClock();
@@ -39,14 +39,14 @@ int main(void)
   gain.Output("out") >> sum.Input("in1");
 
   #ifdef use_clock_trigger
-    DSP::log << endl << "Using clock trigger for clock activation" << endl << endl;
+    DSP::log << std::endl << "Using clock trigger for clock activation" << std::endl << std::endl;
     DSP::u::ClockTrigger CT(MasterClock, SignalActivatedClock);
     DSP::u::SampleSelector sampler(MasterClock, SignalActivatedClock, false);
 
     sum.Output("out") >> CT.Input("act");
     sampler.Output("out") >> hold.Input("in");
   #else
-  DSP::log << endl << "Directly using SampleSelector for clock activation" << endl << endl;
+  DSP::log << std::endl << "Directly using SampleSelector for clock activation" << std::endl << std::endl;
   DSP::u::SampleSelector sampler(MasterClock, SignalActivatedClock, true);
 
     sum.Output("out") >> sampler.Input("act");
@@ -71,7 +71,7 @@ int main(void)
   {
     DSP::Clock::Execute(MasterClock, Fp/8);
 
-    DSP::log << "MAIN" << DSP::e::LogMode::second <<  temp << endl;
+    DSP::log << "MAIN" << DSP::e::LogMode::second <<  temp << std::endl;
     temp++;
   }
   while (AudioIn.GetBytesRead() != 0);
@@ -79,7 +79,7 @@ int main(void)
   DSP::Clock::Execute(MasterClock, Fp/8);
 
   DSP::Clock::FreeClocks();
-  DSP::log << "MAIN" << DSP::e::LogMode::second << "end" << endl;
+  DSP::log << "MAIN" << DSP::e::LogMode::second << "end" << std::endl;
 
   return 0;
 }

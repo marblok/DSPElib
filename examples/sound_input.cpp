@@ -17,15 +17,15 @@ int test_sound_input(bool use_audio_output)
 #endif // INCLUDE_DSPE_EXAMPLES
 
   DSP::Clock_ptr MasterClock, AudioInClock;
-  string tekst;
+  std::string tekst;
   int temp;
   long int Fp, Fp2;
 
   DSP::log.SetLogState(DSP::e::LogState::console | DSP::e::LogState::file);
   DSP::log.SetLogFileName("log_file.log");
 
-  DSP::log << DSP::lib_version_string() << endl << endl;
-  DSP::log << "Sound input example" << endl;
+  DSP::log << DSP::lib_version_string() << std::endl << std::endl;
+  DSP::log << "Sound input example" << std::endl;
  
   MasterClock=DSP::Clock::CreateMasterClock();
 
@@ -61,14 +61,14 @@ int test_sound_input(bool use_audio_output)
   {
     DSP::Clock::Execute(MasterClock, Fp/8);
 
-    DSP::log << "MAIN" << DSP::e::LogMode::second << temp << endl;
+    DSP::log << "MAIN" << DSP::e::LogMode::second << temp << std::endl;
     temp++;
   }
   while ((temp <= 8) || (WaveIn.GetBytesRead() != 0));
 
   AudioOut.reset();
   DSP::Clock::FreeClocks();
-  DSP::log << DSP::e::LogMode::Error << "MAIN" << DSP::e::LogMode::second << "end" << endl;
+  DSP::log << DSP::e::LogMode::Error << "MAIN" << DSP::e::LogMode::second << "end" << std::endl;
 
   return 0;
 }

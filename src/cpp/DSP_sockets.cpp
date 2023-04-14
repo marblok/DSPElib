@@ -32,7 +32,7 @@ DSP::e::SocketStatus& DSP::e::operator&= (DSP::e::SocketStatus& left,
 // Basic sockets support
 bool DSP::Socket::winsock_initialized = false;
 int  DSP::Socket::NoOfSocketObjects = 0;
-const string DSP::Socket::DEFAULT_PORT = "27027";
+const std::string DSP::Socket::DEFAULT_PORT = "27027";
 #ifndef  __NO_WINSOCK__
   WSADATA DSP::Socket::wsaData;
 #endif
@@ -46,7 +46,7 @@ bool DSP::Socket::listen_ready = false;
 int DSP::Socket::no_of_server_objects = 0;
 std::vector<DSP::Socket *> DSP::Socket::server_objects_list;
 
-DSP::Socket::Socket(const string &address_with_port, bool run_as_client, uint32_t ServerObjectID_in)
+DSP::Socket::Socket(const std::string &address_with_port, bool run_as_client, uint32_t ServerObjectID_in)
 {
   result = NULL;
   ptr = NULL;
@@ -120,7 +120,7 @@ int DSP::Socket::GetLastError() {
 #endif
 }
 
-bool DSP::Socket::InitServer_ListenSocket(const string & address_with_port)
+bool DSP::Socket::InitServer_ListenSocket(const std::string & address_with_port)
 {
   int res;
 
@@ -129,7 +129,7 @@ bool DSP::Socket::InitServer_ListenSocket(const string & address_with_port)
 
   if (listen_ready == true)
   {
-    DSP::log << "DSP::Socket::InitServer_ListenSocket" << DSP::e::LogMode::second << "already initialized" << endl;
+    DSP::log << "DSP::Socket::InitServer_ListenSocket" << DSP::e::LogMode::second << "already initialized" << std::endl;
     return false;
   }
 
@@ -144,8 +144,8 @@ bool DSP::Socket::InitServer_ListenSocket(const string & address_with_port)
     hints.ai_flags = AI_PASSIVE;
     // Resolve the server address and port
 
-    string hostname = extract_hostname(address_with_port);
-    string port = extract_port(address_with_port, DEFAULT_PORT);
+    std::string hostname = extract_hostname(address_with_port);
+    std::string port = extract_port(address_with_port, DEFAULT_PORT);
     iResult = getaddrinfo(hostname.c_str(), port.c_str(), &hints, &result);
     if ( iResult != 0 )
     {
@@ -153,7 +153,7 @@ bool DSP::Socket::InitServer_ListenSocket(const string & address_with_port)
       //iResult = getaddrinfo(address, DEFAULT_PORT, &hints, &result);
       //if ( iResult != 0 )
       //{
-        DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitServer" << DSP::e::LogMode::second << "getaddrinfo failed" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitServer" << DSP::e::LogMode::second << "getaddrinfo failed" << std::endl;
         listen_ready = false;
         return false;
       //}
@@ -168,7 +168,7 @@ bool DSP::Socket::InitServer_ListenSocket(const string & address_with_port)
     if (is_socket_valid(ListenSocket) == false)
     {
       res = DSP::Socket::GetLastError();
-      DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitServer" << DSP::e::LogMode::second << "Error at socket(): " << res << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitServer" << DSP::e::LogMode::second << "Error at socket(): " << res << std::endl;
       freeaddrinfo(result);
       result = NULL;
       listen_ready = false;
@@ -185,7 +185,7 @@ bool DSP::Socket::InitServer_ListenSocket(const string & address_with_port)
     #endif
     if (DSP::Socket::is_socket_error(iResult))
     {
-      DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitServer" << DSP::e::LogMode::second << "ioctlsocket failed to set non-blocking mode" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitServer" << DSP::e::LogMode::second << "ioctlsocket failed to set non-blocking mode" << std::endl;
     }
 
     // Setup the TCP listening socket
@@ -193,7 +193,7 @@ bool DSP::Socket::InitServer_ListenSocket(const string & address_with_port)
         result->ai_addr, (int)result->ai_addrlen);
     if (DSP::Socket::is_socket_error(iResult))
     {
-      DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitServer" << DSP::e::LogMode::second << "bind failed" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitServer" << DSP::e::LogMode::second << "bind failed" << std::endl;
       //printf("bind failed: %d\n", WSAGetLastError());
       freeaddrinfo(result);
       result = NULL;
@@ -205,7 +205,7 @@ bool DSP::Socket::InitServer_ListenSocket(const string & address_with_port)
     // support multiple outgoing connections
     if ( DSP::Socket::is_socket_error(listen( ListenSocket, SOMAXCONN )) )
     {
-      DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitServer" << DSP::e::LogMode::second << "listen failed" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitServer" << DSP::e::LogMode::second << "listen failed" << std::endl;
       //printf("listen failed: %d\n", WSAGetLastError());
       freeaddrinfo(result);
       result = NULL;
@@ -245,7 +245,7 @@ bool DSP::Socket::TryAcceptConnection(void)
   unsigned long in_counter;
   uint32_t temp_ServerObjectID;
   SOCKET temp_socket;
-  string text;
+  std::string text;
 
   if (DSP::Socket::is_socket_valid(ListenSocket) == false)
     return false;
@@ -266,7 +266,7 @@ bool DSP::Socket::TryAcceptConnection(void)
   //current_socket_state &= DSP::e::SocketStatus::timeout_mask; // no object
   if (DSP::Socket::is_socket_error(res) == true)
   {
-    DSP::log << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "SOCKET_ERROR" << endl;
+    DSP::log << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "SOCKET_ERROR" << std::endl;
     DSP::Socket::close_socket();
     // current_socket_state |= DSP::e::SocketStatus::error; no object
     return false;
@@ -276,7 +276,7 @@ bool DSP::Socket::TryAcceptConnection(void)
   temp_socket = accept(ListenSocket, NULL, NULL);
   if (DSP::Socket::is_socket_valid(temp_socket) == false)
   {
-    DSP::log << DSP::e::LogMode::Error << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "accept failed" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "accept failed" << std::endl;
     //printf("accept failed: %d\n", WSAGetLastError());
     DSP::Socket::close_socket();
     listen_ready = false;
@@ -303,12 +303,12 @@ bool DSP::Socket::TryAcceptConnection(void)
      *  ?!? this might block other connections ?!?
      */
     DSP::Socket::close_socket(temp_socket);
-    DSP::log << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "socket ID data has not been received (timeout - connection closed)" << endl;
+    DSP::log << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "socket ID data has not been received (timeout - connection closed)" << std::endl;
     return false;
   }
   if (DSP::Socket::is_socket_error( res ) == true)
   {
-    DSP::log << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "error reading socket ID data" << endl;
+    DSP::log << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "error reading socket ID data" << std::endl;
     // current_socket_state |= DSP::e::SocketStatus::error; // no object
     return false;
   }
@@ -321,18 +321,18 @@ bool DSP::Socket::TryAcceptConnection(void)
   if (in_counter == 0)
   {
     // connection has been closed
-    DSP::log << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "connection has been closed" << endl;
+    DSP::log << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "connection has been closed" << std::endl;
     return false;
   }
   if (in_counter < sizeof(uint32_t))
   {
-    DSP::log << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "error reading socket ID data (not enough data)" << endl;
+    DSP::log << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "error reading socket ID data (not enough data)" << std::endl;
     // current_socket_state |= DSP::e::SocketStatus::error; // no object
     return false;
   }
   in_counter = recv(temp_socket, (char *)(&temp_ServerObjectID), sizeof(uint32_t), 0);
 
-  DSP::log << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "ServerObjectID = " << (int)temp_ServerObjectID << endl;
+  DSP::log << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "ServerObjectID = " << (int)temp_ServerObjectID << std::endl;
 
   // update ConnectSocket in according socket object
   for (ind = 0; ind < no_of_server_objects; ind++)
@@ -346,7 +346,7 @@ bool DSP::Socket::TryAcceptConnection(void)
         {
           DSP::log << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second
             << "server_objects_list[" << ind
-            << "]ServerObjectID = " << (unsigned int)server_objects_list[ind]->ServerObjectID << endl;
+            << "]ServerObjectID = " << (unsigned int)server_objects_list[ind]->ServerObjectID << std::endl;
 
           server_objects_list[ind]->ConnectSocket = temp_socket;
           server_objects_list[ind]->socket_ready = true;
@@ -358,14 +358,14 @@ bool DSP::Socket::TryAcceptConnection(void)
     }
   }
   // current_socket_state |= DSP::e::SocketStatus::error; // no object
-  DSP::log << DSP::e::LogMode::Error << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "Unexpected incoming connection" << endl;
+  DSP::log << DSP::e::LogMode::Error << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "Unexpected incoming connection" << std::endl;
   return false;
 }
 
-string DSP::Socket::extract_hostname(const string &address_with_port) {
-  string hostname;
+std::string DSP::Socket::extract_hostname(const std::string &address_with_port) {
+  std::string hostname;
   size_t found = address_with_port.find_first_of(":");
-  if (found != string::npos) {
+  if (found != std::string::npos) {
     hostname = address_with_port.substr(0, found);
   }
   else {
@@ -374,10 +374,10 @@ string DSP::Socket::extract_hostname(const string &address_with_port) {
   return hostname;
 }
 
-string DSP::Socket::extract_port(const string& address_with_port, const string &default_port) {
-  string port;
+std::string DSP::Socket::extract_port(const std::string& address_with_port, const std::string &default_port) {
+  std::string port;
   size_t found = address_with_port.find_first_of(":");
-  if (found != string::npos) {
+  if (found != std::string::npos) {
     port = address_with_port.substr(found+1);
   }
   else {
@@ -400,7 +400,7 @@ void DSP::Socket::close_socket(SOCKET &socket_to_close) {
   #endif
 }
 
-bool DSP::Socket::InitClient(const string & address_with_port)
+bool DSP::Socket::InitClient(const std::string & address_with_port)
 {
   bool ready;
 
@@ -421,12 +421,12 @@ bool DSP::Socket::InitClient(const string & address_with_port)
   // Resolve the server address and port
 
   ready = true;
-  string hostname = extract_hostname(address_with_port);
-  string port = extract_port(address_with_port, DEFAULT_PORT);
+  std::string hostname = extract_hostname(address_with_port);
+  std::string port = extract_port(address_with_port, DEFAULT_PORT);
   iResult = getaddrinfo(hostname.c_str(), port.c_str(), &hints, &result);
   if ( iResult != 0 )
   {
-    DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitClient" << DSP::e::LogMode::second << "getaddrinfo failed" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitClient" << DSP::e::LogMode::second << "getaddrinfo failed" << std::endl;
     current_socket_state |= DSP::e::SocketStatus::error;
     return false;
   }
@@ -440,7 +440,7 @@ bool DSP::Socket::InitClient(const string & address_with_port)
     ConnectSocket = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
     if (DSP::Socket::is_socket_valid(ConnectSocket) == false)
     {
-      DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitClient" << DSP::e::LogMode::second << "Error at socket()" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitClient" << DSP::e::LogMode::second << "Error at socket()" << std::endl;
       //printf("Error at socket(): %ld\n", WSAGetLastError());
       freeaddrinfo(result);
       result = NULL;
@@ -456,7 +456,7 @@ bool DSP::Socket::InitClient(const string & address_with_port)
     #endif
     if (DSP::Socket::is_socket_error(iResult) == true)
     {
-      DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitClient" << DSP::e::LogMode::second << "ioctlsocket failed to set non-blocking mode" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Socket::InitClient" << DSP::e::LogMode::second << "ioctlsocket failed to set non-blocking mode" << std::endl;
       current_socket_state |= DSP::e::SocketStatus::error;
     }
   }
@@ -469,7 +469,7 @@ bool DSP::Socket::TryConnect(uint32_t SerwerObjectID)
 {
   unsigned long out_counter;
 #ifdef __DEBUG__
-  string text;
+  std::string text;
 #endif
   int err;
 
@@ -501,7 +501,7 @@ bool DSP::Socket::TryConnect(uint32_t SerwerObjectID)
         current_socket_state &= DSP::e::SocketStatus::timeout_mask;
         socket_ready = true;
         #ifdef __DEBUG__
-          DSP::log << "DSP::Socket::TryConnect" << DSP::e::LogMode::second << "connection established (" << err << ")" << endl;
+          DSP::log << "DSP::Socket::TryConnect" << DSP::e::LogMode::second << "connection established (" << err << ")" << std::endl;
         #endif
         break;
 
@@ -537,11 +537,11 @@ bool DSP::Socket::TryConnect(uint32_t SerwerObjectID)
   #ifdef __DEBUG__
     if (res == 0)
     {
-      DSP::log << DSP::e::LogMode::Error << "DSP::Socket::TryConnect" << DSP::e::LogMode::second << "connected but not ready to write (" << res << ")" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Socket::TryConnect" << DSP::e::LogMode::second << "connected but not ready to write (" << res << ")" << std::endl;
     }
     else
     {
-      DSP::log << "DSP::Socket::TryConnect" << DSP::e::LogMode::second << "connected and ready to write (" << res << ")" << endl;
+      DSP::log << "DSP::Socket::TryConnect" << DSP::e::LogMode::second << "connected and ready to write (" << res << ")" << std::endl;
     }
   #endif
 
@@ -552,13 +552,13 @@ bool DSP::Socket::TryConnect(uint32_t SerwerObjectID)
   if (out_counter < sizeof(uint32_t))
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error << "DSP::Socket::TryConnect" << DSP::e::LogMode::second << "failed to send expected server object data" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Socket::TryConnect" << DSP::e::LogMode::second << "failed to send expected server object data" << std::endl;
     #endif
     current_socket_state |= DSP::e::SocketStatus::error;
     return false;
   }
   #ifdef __DEBUG__
-    DSP::log << "DSP::Socket::TryConnect" << DSP::e::LogMode::second << "SerwerObjectID has been sent" << endl;
+    DSP::log << "DSP::Socket::TryConnect" << DSP::e::LogMode::second << "SerwerObjectID has been sent" << std::endl;
   #endif
   return socket_ready;
 }
@@ -572,7 +572,7 @@ bool DSP::Socket::Init_socket(void)
   if (iResult != 0)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error << "DSP::Socket::Init_socket" << DSP::e::LogMode::second << "WSAStartup failed" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Socket::Init_socket" << DSP::e::LogMode::second << "WSAStartup failed" << std::endl;
     #endif
     current_socket_state |= DSP::e::SocketStatus::error;
     return false;
@@ -657,7 +657,7 @@ DSP::Socket::~Socket(void)
 /* ***************************************** */
 /* ***************************************** */
 DSP::u::SocketInput::SocketInput(DSP::Clock_ptr ParentClock,
-      const string &address_with_port, bool run_as_client,
+      const std::string &address_with_port, bool run_as_client,
       uint32_t ServerObjectID_in,
       unsigned int NoOfChannels,
       DSP::e::SampleType sample_type)
@@ -680,7 +680,7 @@ void DSP::u::SocketInput::Init(DSP::Clock_ptr ParentClock,
                             unsigned int OutputsNo, //just one channel
                             DSP::e::SampleType sample_type)
 {
-  string temp;
+  std::string temp;
 
   Fp = -1;
   Offset = 0;
@@ -702,7 +702,7 @@ void DSP::u::SocketInput::Init(DSP::Clock_ptr ParentClock,
   }
   for (unsigned int ind=0; ind<NoOfOutputs; ind++)
   {
-    temp = "out" + to_string(ind+1);
+    temp = "out" + std::to_string(ind+1);
     DefineOutput(temp, ind);
   }
 
@@ -749,7 +749,7 @@ bool DSP::u::SocketInput::SetSkip(long long Offset_in)
   UNUSED_ARGUMENT(Offset_in);
 
   #ifdef __DEBUG__
-    DSP::log << "DSP::u::SocketInput::SetSkip" << DSP::e::LogMode::second << "Offset setting not yet supported" << endl;
+    DSP::log << "DSP::u::SocketInput::SetSkip" << DSP::e::LogMode::second << "Offset setting not yet supported" << std::endl;
   #endif
   return false;
 }
@@ -805,7 +805,7 @@ bool DSP::u::SocketInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
   }
   if (THIS->SocketInfoData_received == false)
   {
-    DSP::log << "DSP::u::SocketInput::OutputExecute" << DSP::e::LogMode::second << "THIS->ReadConnectionData" << endl;
+    DSP::log << "DSP::u::SocketInput::OutputExecute" << DSP::e::LogMode::second << "THIS->ReadConnectionData" << std::endl;
     THIS->SocketInfoData_received = THIS->ReadConnectionData();
   }
 
@@ -860,7 +860,7 @@ bool DSP::u::SocketInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
     THIS->current_socket_state &= DSP::e::SocketStatus::timeout_mask;
     if (DSP::Socket::is_socket_error(res) == true)
     {
-      DSP::log << "DSP::u::SocketInput::OutputExecute" << DSP::e::LogMode::second << "SOCKET_ERROR" << endl;
+      DSP::log << "DSP::u::SocketInput::OutputExecute" << DSP::e::LogMode::second << "SOCKET_ERROR" << std::endl;
       //  close socket
       DSP::Socket::close_socket(THIS->ConnectSocket);
 
@@ -882,7 +882,7 @@ bool DSP::u::SocketInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
     if (in_counter == 0)
     {
       // connection has been closed
-      DSP::log << "DSP::u::SocketInput::OutputExecute" << DSP::e::LogMode::second << "connection has been closed" << endl;
+      DSP::log << "DSP::u::SocketInput::OutputExecute" << DSP::e::LogMode::second << "connection has been closed" << std::endl;
       // close socket
       close_socket(THIS->ConnectSocket);
 
@@ -897,7 +897,7 @@ bool DSP::u::SocketInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
     if (in_counter < THIS->inbuffer_size)
     {
 	  #ifdef __DEBUG__
-        DSP::log << "DSP::u::SocketInput::OutputExecute" << DSP::e::LogMode::second << "more data expected" << endl;
+        DSP::log << "DSP::u::SocketInput::OutputExecute" << DSP::e::LogMode::second << "more data expected" << std::endl;
       #endif // __DEBUG__
       DSP::Clock::InputNeedsMoreTime[THIS->my_clock->MasterClockIndex] = true;
 
@@ -1012,7 +1012,7 @@ bool DSP::u::SocketInput::ReadConnectionData(void)
     if (DSP::Socket::is_socket_error(res) == true)
     {
       #ifdef __DEBUG__
-        DSP::log << DSP::e::LogMode::Error << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second << "SOCKET_ERROR" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second << "SOCKET_ERROR" << std::endl;
       #endif
       // close socket
       socket_ready = false;
@@ -1031,7 +1031,7 @@ bool DSP::u::SocketInput::ReadConnectionData(void)
     {
       // connection has been closed
       #ifdef __DEBUG__
-        DSP::log << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second << "connection has been closed" << endl;
+        DSP::log << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second << "connection has been closed" << std::endl;
       #endif
       // close socket
       socket_ready = false;
@@ -1046,7 +1046,7 @@ bool DSP::u::SocketInput::ReadConnectionData(void)
       {
         DSP::log << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second
           << "more data expected: in_counter = " << in_counter
-          << "; expected_data_size = " << expected_data_size << endl;
+          << "; expected_data_size = " << expected_data_size << std::endl;
       }
       #endif
       continue;
@@ -1057,7 +1057,7 @@ bool DSP::u::SocketInput::ReadConnectionData(void)
     {
       DSP::log << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second
         << "in_counter_recv = " << in_counter_recv << "; state = " << state
-        << "; expected_data_size = " << expected_data_size << endl;
+        << "; expected_data_size = " << expected_data_size << std::endl;
     }
     #endif
 
@@ -1067,7 +1067,7 @@ bool DSP::u::SocketInput::ReadConnectionData(void)
         if (buffer[0] != 0xffff)
         {
           #ifdef __DEBUG__
-            DSP::log << DSP::e::LogMode::Error << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second << "unexpected marker" << endl;
+            DSP::log << DSP::e::LogMode::Error << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second << "unexpected marker" << std::endl;
           #endif
           data_type = DSP::e::SocketInfoDataType::end;
         }
@@ -1087,7 +1087,7 @@ bool DSP::u::SocketInput::ReadConnectionData(void)
         {
           case DSP::e::SocketInfoDataType::Fp:
             #ifdef __DEBUG__
-              DSP::log << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second << "DSP::e::SocketInfoDataType::Fp" << endl;
+              DSP::log << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second << "DSP::e::SocketInfoDataType::Fp" << std::endl;
             #endif
             state = 3; // waiting for Fp data
             expected_data_size = sizeof(long);
@@ -1095,7 +1095,7 @@ bool DSP::u::SocketInput::ReadConnectionData(void)
 
           case DSP::e::SocketInfoDataType::Offset:
             #ifdef __DEBUG__
-              DSP::log << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second << "DSP::e::SocketInfoDataType::Offset" << endl;
+              DSP::log << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second << "DSP::e::SocketInfoDataType::Offset" << std::endl;
             #endif
             state = 3; // waiting for Offset data
             expected_data_size = sizeof(long);
@@ -1103,7 +1103,7 @@ bool DSP::u::SocketInput::ReadConnectionData(void)
 
           case DSP::e::SocketInfoDataType::UserData:
             #ifdef __DEBUG__
-              DSP::log << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second << "DSP::e::SocketInfoDataType::UserData" << endl;
+              DSP::log << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second << "DSP::e::SocketInfoDataType::UserData" << std::endl;
             #endif
             state = 3; // waiting for user data
 //            expected_data_size = *((long *)buffer);
@@ -1111,7 +1111,7 @@ bool DSP::u::SocketInput::ReadConnectionData(void)
             break;
           case DSP::e::SocketInfoDataType::end:
             #ifdef __DEBUG__
-              DSP::log << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second << "DSP::e::SocketInfoDataType::end" << endl;
+              DSP::log << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second << "DSP::e::SocketInfoDataType::end" << std::endl;
             #endif
             // ignore: transmission finished
             break;
@@ -1120,7 +1120,7 @@ bool DSP::u::SocketInput::ReadConnectionData(void)
 //            expected_data_size = *((long *)buffer);
             memcpy(&expected_data_size,buffer, sizeof(long));
             #ifdef __DEBUG__
-              DSP::log << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second << "unexpected field type" << endl;
+              DSP::log << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second << "unexpected field type" << std::endl;
             #endif
             current_socket_state |= DSP::e::SocketStatus::error;
             break;
@@ -1143,7 +1143,7 @@ bool DSP::u::SocketInput::ReadConnectionData(void)
             break;
           default:
             #ifdef __DEBUG__
-              DSP::log << DSP::e::LogMode::Error << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second << "unexpected data type" << endl;
+              DSP::log << DSP::e::LogMode::Error << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second << "unexpected data type" << std::endl;
             #endif
             current_socket_state |= DSP::e::SocketStatus::error;
             break;
@@ -1154,7 +1154,7 @@ bool DSP::u::SocketInput::ReadConnectionData(void)
       default:
         data_type = DSP::e::SocketInfoDataType::end;
         #ifdef __DEBUG__
-          DSP::log << DSP::e::LogMode::Error << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second << "unexpected state" << endl;
+          DSP::log << DSP::e::LogMode::Error << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second << "unexpected state" << std::endl;
         #endif
         current_socket_state |= DSP::e::SocketStatus::error;
         break;
@@ -1165,7 +1165,7 @@ bool DSP::u::SocketInput::ReadConnectionData(void)
   #ifdef __DEBUG__
   {
     DSP::log << "DSP::u::SocketInput::ReadConnectionData" << DSP::e::LogMode::second
-        << "in_counter_recv = " << in_counter_recv << endl;
+        << "in_counter_recv = " << in_counter_recv << std::endl;
   }
   #endif
   return true;
@@ -1173,7 +1173,7 @@ bool DSP::u::SocketInput::ReadConnectionData(void)
 /* ***************************************** */
 /* ***************************************** */
 DSP::u::SocketOutput::SocketOutput(
-      const string &address_with_port, bool run_as_client,
+      const std::string &address_with_port, bool run_as_client,
       uint32_t ServerObjectID_in,
       unsigned int NoOfChannels,
       DSP::e::SampleType sample_type)
@@ -1187,7 +1187,7 @@ DSP::u::SocketOutput::SocketOutput(
 void DSP::u::SocketOutput::Init(unsigned int InputsNo,
                              DSP::e::SampleType sample_type)
 {
-  string temp;
+  std::string temp;
 
   SocketInfoData_sent = false;
 
@@ -1207,7 +1207,7 @@ void DSP::u::SocketOutput::Init(unsigned int InputsNo,
   }
   for (unsigned int ind=0; ind<NoOfInputs; ind++)
   {
-    temp = "in" + to_string(ind+1);
+    temp = "in" + std::to_string(ind+1);
     DefineInput(temp, ind);
   }
 
@@ -1346,7 +1346,7 @@ bool DSP::u::SocketOutput::SendConnectionData(void)
   unsigned short buffer[1024];
   unsigned long out_counter;
   #ifdef __DEBUG__
-    string text;
+    std::string text;
   #endif
 
   fd_set writefds;
@@ -1369,7 +1369,7 @@ bool DSP::u::SocketOutput::SendConnectionData(void)
   if (DSP::Socket::is_socket_error(res) == true)
   {
     #ifdef __DEBUG__
-      DSP::log << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "SOCKET_ERROR" << endl;
+      DSP::log << "DSP::Socket::TryAcceptConnection" << DSP::e::LogMode::second << "SOCKET_ERROR" << std::endl;
     #endif
     close_socket(ConnectSocket);
     current_socket_state |= DSP::e::SocketStatus::closed;
@@ -1383,17 +1383,17 @@ bool DSP::u::SocketOutput::SendConnectionData(void)
   out_counter = send(ConnectSocket, (char *)buffer, sizeof(unsigned short), 0);
   #ifdef __DEBUG__
     DSP::log << "DSP::u::SocketOutput::SendConnectionData" << DSP::e::LogMode::second
-      << "marker(end) out_counter = " << out_counter << endl;
+      << "marker(end) out_counter = " << out_counter << std::endl;
   #endif
   // version
   buffer[0] = 0x0001;
   out_counter += send(ConnectSocket, (char *)buffer, sizeof(unsigned short), 0);
   #ifdef __DEBUG__
     DSP::log << "DSP::u::SocketOutput::SendConnectionData" << DSP::e::LogMode::second
-      << "version(end) out_counter = " << out_counter << endl;
+      << "version(end) out_counter = " << out_counter << std::endl;
 
     DSP::log << "DSP::u::SocketOutput::SendConnectionData" << DSP::e::LogMode::second
-      << "DSP::e::SocketInfoDataType::Fp(start) out_counter = " << out_counter << endl;
+      << "DSP::e::SocketInfoDataType::Fp(start) out_counter = " << out_counter << std::endl;
   #endif
 
   // field type
@@ -1408,9 +1408,9 @@ bool DSP::u::SocketOutput::SendConnectionData(void)
   out_counter += send(ConnectSocket, (char *)buffer, sizeof(long), 0);
   #ifdef __DEBUG__
     DSP::log << "DSP::u::SocketOutput::SendConnectionData" << DSP::e::LogMode::second
-      << "DSP::e::SocketInfoDataType::Fp(end) out_counter = " << out_counter << endl;
+      << "DSP::e::SocketInfoDataType::Fp(end) out_counter = " << out_counter << std::endl;
     DSP::log << "DSP::u::SocketOutput::SendConnectionData" << DSP::e::LogMode::second
-      << "DSP::e::SocketInfoDataType::Offset(start) out_counter = " << out_counter << endl;
+      << "DSP::e::SocketInfoDataType::Offset(start) out_counter = " << out_counter << std::endl;
   #endif
 
   // field type
@@ -1427,7 +1427,7 @@ bool DSP::u::SocketOutput::SendConnectionData(void)
 
   #ifdef __DEBUG__
     DSP::log << "DSP::u::SocketOutput::SendConnectionData" << DSP::e::LogMode::second
-      << "DSP::e::SocketInfoDataType::Offset(end) out_counter = " << out_counter << endl;
+      << "DSP::e::SocketInfoDataType::Offset(end) out_counter = " << out_counter << std::endl;
   #endif
 
   // field type
@@ -1466,7 +1466,7 @@ void DSP::u::SocketOutput::InputExecute(INPUT_EXECUTE_ARGS)
   }
   if (THIS->SocketInfoData_sent == false)
   {
-    DSP::log << "DSP::u::SocketOutput::InputExecute" << DSP::e::LogMode::second << "THIS->SendConnectionData" << endl;
+    DSP::log << "DSP::u::SocketOutput::InputExecute" << DSP::e::LogMode::second << "THIS->SendConnectionData" << std::endl;
     THIS->SocketInfoData_sent = THIS->SendConnectionData();
   }
 

@@ -110,35 +110,35 @@ void DSP::ALSA_object_t::log_driver_data()
     //! For logging
     int val;
 
-    DSP::log << "ALSA library version: " << SND_LIB_VERSION_STR << endl;
+    DSP::log << "ALSA library version: " << SND_LIB_VERSION_STR << std::endl;
 
-    DSP::log << endl;
-    DSP::log << "PCM stream types:" << endl;
+    DSP::log << std::endl;
+    DSP::log << "PCM stream types:" << std::endl;
     for (val = 0; val <= SND_PCM_STREAM_LAST; val++)
-      DSP::log << "  " << snd_pcm_stream_name((snd_pcm_stream_t)val) << endl;
+      DSP::log << "  " << snd_pcm_stream_name((snd_pcm_stream_t)val) << std::endl;
 
-    DSP::log << endl;
-    DSP::log << "PCM access types:" << endl;
+    DSP::log << std::endl;
+    DSP::log << "PCM access types:" << std::endl;
     for (val = 0; val <= SND_PCM_ACCESS_LAST; val++)
-      DSP::log << "  " << snd_pcm_access_name((snd_pcm_access_t)val) << endl;
+      DSP::log << "  " << snd_pcm_access_name((snd_pcm_access_t)val) << std::endl;
 
-    DSP::log << endl;
-    DSP::log << "PCM formats:" << endl;
+    DSP::log << std::endl;
+    DSP::log << "PCM formats:" << std::endl;
     for (val = 0; val <= SND_PCM_FORMAT_LAST; val++)
       if (snd_pcm_format_name((snd_pcm_format_t)val) != NULL)
         DSP::log << "  " << snd_pcm_format_name((snd_pcm_format_t)val) <<
-          "(" << snd_pcm_format_description((snd_pcm_format_t)val) << ")" << endl;
+          "(" << snd_pcm_format_description((snd_pcm_format_t)val) << ")" << std::endl;
 
-    DSP::log << endl;
-    DSP::log << "PCM subformats:" << endl;
+    DSP::log << std::endl;
+    DSP::log << "PCM subformats:" << std::endl;
     for (val = 0; val <= SND_PCM_SUBFORMAT_LAST; val++)
       DSP::log << "  " << snd_pcm_subformat_name((snd_pcm_subformat_t)val) <<
-        "(" << snd_pcm_subformat_description((snd_pcm_subformat_t)val) << ")" << endl;
+        "(" << snd_pcm_subformat_description((snd_pcm_subformat_t)val) << ")" << std::endl;
 
-    DSP::log << endl;
-    DSP::log << "PCM states: " << endl;
+    DSP::log << std::endl;
+    DSP::log << "PCM states: " << std::endl;
     for (val = 0; val <= SND_PCM_STATE_LAST; val++)
-      DSP::log << "  " << snd_pcm_state_name((snd_pcm_state_t)val) << endl;
+      DSP::log << "  " << snd_pcm_state_name((snd_pcm_state_t)val) << std::endl;
   #endif // AUDIO_DEBUG_MESSAGES_ON
 }
 
@@ -161,15 +161,15 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     close_alsa_device();
 
   #ifdef AUDIO_DEBUG_MESSAGES_ON
-    DSP::log << "Opening ALSA device" << endl;
+    DSP::log << "Opening ALSA device" << std::endl;
   
     //! \TODO Test mode:	Open mode (see SND_PCM_NONBLOCK, SND_PCM_ASYNC)
     
     if (stream_type == SND_PCM_STREAM_PLAYBACK)
-      DSP::log << "Opening PCM device for playback." << endl;
+      DSP::log << "Opening PCM device for playback." << std::endl;
     
     else
-      DSP::log << "Opening PCM device for recording (capture)." << endl;
+      DSP::log << "Opening PCM device for recording (capture)." << std::endl;
 
   #endif // AUDIO_DEBUG_MESSAGES_ON
 
@@ -177,7 +177,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 
   if (rc < 0)
   {
-    DSP::log << "Unable to open pcm device: " << snd_strerror(rc) << endl;
+    DSP::log << "Unable to open pcm device: " << snd_strerror(rc) << std::endl;
     return -1;
   }
 
@@ -195,8 +195,8 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   snd_pcm_hw_params_set_access(alsa_handle, params, SND_PCM_ACCESS_RW_INTERLEAVED);
 
   #ifdef AUDIO_DEBUG_MESSAGES_ON
-    DSP::log << "Setting the SND PCM FORMAT." << endl;
-    DSP::log << "Something less than 0 means an error occurance." << endl;
+    DSP::log << "Setting the SND PCM FORMAT." << std::endl;
+    DSP::log << "Something less than 0 means an error occurance." << std::endl;
   #endif // AUDIO_DEBUG_MESSAGES_ON
     
   errc = DSP::ALSA_object_t::set_snd_pcm_format(params);
@@ -221,7 +221,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 
     if (rc < 0)
     {
-      DSP::log << "Unable to set a buffer size with error code: " << rc << endl;
+      DSP::log << "Unable to set a buffer size with error code: " << rc << std::endl;
       return -5;
     }
 
@@ -231,12 +231,12 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     #ifdef AUDIO_DEBUG_MESSAGES_ON
       if (audio_outbuffer_size_in_frames != requested_audio_outbuffer_size_in_frames)
       {
-        DSP::log << "Current frames value should be equal: " << requested_audio_outbuffer_size_in_frames << endl;
-        DSP::log << "Frames is not equal to tmp_frames! Frames: " << audio_outbuffer_size_in_frames << endl;    
+        DSP::log << "Current frames value should be equal: " << requested_audio_outbuffer_size_in_frames << std::endl;
+        DSP::log << "Frames is not equal to tmp_frames! Frames: " << audio_outbuffer_size_in_frames << std::endl;    
       }
 
       else
-        DSP::log << "Frames has been set correctly." << endl;
+        DSP::log << "Frames has been set correctly." << std::endl;
     #endif // AUDIO_DEBUG_MESSAGES_ON
   }
 
@@ -253,7 +253,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 
     if (rc < 0)
     {
-      DSP::log << "Unable to set a buffer size with error code: " << rc << endl;
+      DSP::log << "Unable to set a buffer size with error code: " << rc << std::endl;
       return -5;
     }
 
@@ -263,12 +263,12 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
     #ifdef AUDIO_DEBUG_MESSAGES_ON
       if (audio_inbuffer_size_in_frames != requested_audio_inbuffer_size_in_frames)
       {
-        DSP::log << "Current frames value should be equal: " << requested_audio_inbuffer_size_in_frames << endl;
-        DSP::log << "Frames is not equal to tmp_frames! Frames: " << audio_inbuffer_size_in_frames << endl;    
+        DSP::log << "Current frames value should be equal: " << requested_audio_inbuffer_size_in_frames << std::endl;
+        DSP::log << "Frames is not equal to tmp_frames! Frames: " << audio_inbuffer_size_in_frames << std::endl;    
       }
 
       else
-        DSP::log << "Frames has been set correctly." << endl;
+        DSP::log << "Frames has been set correctly." << std::endl;
     #endif // AUDIO_DEBUG_MESSAGES_ON
   }
 
@@ -277,8 +277,8 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 
   if (rc < 0)
   {
-    DSP::log << "Unable to set hw parameters: " << snd_strerror(rc) << endl;
-    DSP::log << "Closing ALSA device" << endl;
+    DSP::log << "Unable to set hw parameters: " << snd_strerror(rc) << std::endl;
+    DSP::log << "Closing ALSA device" << std::endl;
 
     close_alsa_device();
     return -2;
@@ -292,82 +292,82 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
   // ============================================================= //
   
   #ifdef AUDIO_DEBUG_MESSAGES_ON
-    DSP::log << "PCM handle name = '" << snd_pcm_name(alsa_handle) << "'" << endl;
+    DSP::log << "PCM handle name = '" << snd_pcm_name(alsa_handle) << "'" << std::endl;
 
-    DSP::log << "PCM state = " << snd_pcm_state_name(snd_pcm_state(alsa_handle)) << endl;
+    DSP::log << "PCM state = " << snd_pcm_state_name(snd_pcm_state(alsa_handle)) << std::endl;
 
     snd_pcm_hw_params_get_access(hw_params, (snd_pcm_access_t *) &val);
-    DSP::log << "access type = " << snd_pcm_access_name((snd_pcm_access_t)val) << endl;
+    DSP::log << "access type = " << snd_pcm_access_name((snd_pcm_access_t)val) << std::endl;
 
     snd_pcm_format_t format;
 
     snd_pcm_hw_params_get_format(hw_params, &format);
     DSP::log << "format = '" << snd_pcm_format_name(format) << "' "
-      << "(" << snd_pcm_format_description(format) << ")" << endl;
+      << "(" << snd_pcm_format_description(format) << ")" << std::endl;
 
     snd_pcm_hw_params_get_subformat(hw_params, (snd_pcm_subformat_t *)&val);
     DSP::log << "subformat = '" << snd_pcm_subformat_name((snd_pcm_subformat_t)val) << "' "
-      << "(" << snd_pcm_subformat_description((snd_pcm_subformat_t)val) << ")" << endl;
+      << "(" << snd_pcm_subformat_description((snd_pcm_subformat_t)val) << ")" << std::endl;
   
     snd_pcm_hw_params_get_channels(hw_params, &val);
-    DSP::log << "channels = " << val << endl;
+    DSP::log << "channels = " << val << std::endl;
   
     snd_pcm_hw_params_get_rate(hw_params, &val, &dir);
-    DSP::log << "rate = " << val << " bps" << endl;
+    DSP::log << "rate = " << val << " bps" << std::endl;
   
     snd_pcm_hw_params_get_period_time(hw_params, &val, &dir);
-    DSP::log << "period time = " << val << " us" << endl;
+    DSP::log << "period time = " << val << " us" << std::endl;
 
     snd_pcm_hw_params_get_period_size(hw_params, (snd_pcm_uframes_t *)&val, &dir);
-    DSP::log << "period size = " << val << " frames" << endl;
+    DSP::log << "period size = " << val << " frames" << std::endl;
 
     snd_pcm_hw_params_get_buffer_time(hw_params, &val, &dir);
-    DSP::log << "buffer time = " << val << " us" << endl;
+    DSP::log << "buffer time = " << val << " us" << std::endl;
 
     snd_pcm_hw_params_get_buffer_size(hw_params, (snd_pcm_uframes_t *) &val);
-    DSP::log << "buffer size = " << val << " frames" << endl;
+    DSP::log << "buffer size = " << val << " frames" << std::endl;
 
     snd_pcm_hw_params_get_periods(hw_params, &val, &dir);
-    DSP::log << "periods per buffer = " << val << " frames" << endl;
+    DSP::log << "periods per buffer = " << val << " frames" << std::endl;
 
     snd_pcm_hw_params_get_rate_numden(hw_params, &val, &val2);
-    DSP::log << "exact rate = " << val << "/" << val2 << " bps" << endl;
+    DSP::log << "exact rate = " << val << "/" << val2 << " bps" << std::endl;
 
     val = snd_pcm_hw_params_get_sbits(hw_params);
-    DSP::log << "significant bits = " << val << endl;
+    DSP::log << "significant bits = " << val << std::endl;
 
     snd_pcm_hw_params_get_tick_time(hw_params, &val, &dir); // deprecated !!!
-    DSP::log << "tick time = " << val << " us" << endl;
+    DSP::log << "tick time = " << val << " us" << std::endl;
 
     val = snd_pcm_hw_params_is_batch(hw_params);
-    DSP::log << "is batch = " << val << endl;
+    DSP::log << "is batch = " << val << std::endl;
 
     val = snd_pcm_hw_params_is_block_transfer(hw_params);
-    DSP::log << "is block transfer = " << val << endl;
+    DSP::log << "is block transfer = " << val << std::endl;
 
     val = snd_pcm_hw_params_is_double(hw_params);
-    DSP::log << "is double = " << val << endl;
+    DSP::log << "is double = " << val << std::endl;
 
     val = snd_pcm_hw_params_is_half_duplex(hw_params);
-    DSP::log << "is half duplex = " << val << endl;
+    DSP::log << "is half duplex = " << val << std::endl;
 
     val = snd_pcm_hw_params_is_joint_duplex(hw_params);
-    DSP::log <<"is joint duplex = " << val << endl;
+    DSP::log <<"is joint duplex = " << val << std::endl;
 
     val = snd_pcm_hw_params_can_overrange(hw_params);
-    DSP::log << "can overrange = " << val << endl;
+    DSP::log << "can overrange = " << val << std::endl;
 
     val = snd_pcm_hw_params_can_mmap_sample_resolution(hw_params);
-    DSP::log << "can mmap = " << val << endl;
+    DSP::log << "can mmap = " << val << std::endl;
 
     val = snd_pcm_hw_params_can_pause(hw_params);
-    DSP::log << "can pause = " << val << endl;
+    DSP::log << "can pause = " << val << std::endl;
 
     val = snd_pcm_hw_params_can_resume(hw_params);
-    DSP::log << "can resume = " << val << endl;
+    DSP::log << "can resume = " << val << std::endl;
 
     val = snd_pcm_hw_params_can_sync_start(hw_params);
-    DSP::log << "can sync start = " << val << endl;
+    DSP::log << "can sync start = " << val << std::endl;
   #endif // AUDIO_DEBUG_MESSAGES_ON  
 
   //  snd_pcm_hw_params_free(params);
@@ -459,7 +459,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
         break;
 
       default:
-        DSP::log << "Unsupported no of bytes in channel" << endl;
+        DSP::log << "Unsupported no of bytes in channel" << std::endl;
         return -6;
         break;
     }
@@ -503,7 +503,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
         break;
 
       default:
-        DSP::log << "Unsupported no of bytes in channel" << endl;
+        DSP::log << "Unsupported no of bytes in channel" << std::endl;
         return -9;
         break;
     }
@@ -515,7 +515,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 
     if (rc < 0)
     {
-      DSP::log << "Unable to set blocking mode" << endl;
+      DSP::log << "Unable to set blocking mode" << std::endl;
       return -7;
     }
   }
@@ -526,7 +526,7 @@ int DSP::ALSA_object_t::open_alsa_device(snd_pcm_stream_t stream_type)
 
     if (rc < 0)
     {
-      DSP::log << "Unable to set non blocking mode" << endl;
+      DSP::log << "Unable to set non blocking mode" << std::endl;
       return -8;
     }
   }
@@ -545,7 +545,7 @@ int DSP::ALSA_object_t::set_snd_pcm_format(snd_pcm_hw_params_t *params)
       errc = snd_pcm_hw_params_set_format(alsa_handle, params, SND_PCM_FORMAT_U8);
 
       #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "Format set with error code: " << errc << endl;
+        DSP::log << "Format set with error code: " << errc << std::endl;
       #endif // AUDIO_DEBUG_MESSAGES_ON
       break;
 
@@ -563,7 +563,7 @@ int DSP::ALSA_object_t::set_snd_pcm_format(snd_pcm_hw_params_t *params)
       }
 
       #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "Format set with error code: " << errc << endl;
+        DSP::log << "Format set with error code: " << errc << std::endl;
       #endif // AUDIO_DEBUG_MESSAGES_ON
       break;
 
@@ -621,7 +621,7 @@ int DSP::ALSA_object_t::set_snd_pcm_format(snd_pcm_hw_params_t *params)
       }
 
       #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "Format set with error code: " << errc << endl;
+        DSP::log << "Format set with error code: " << errc << std::endl;
       #endif // AUDIO_DEBUG_MESSAGES_ON
       break;
 
@@ -639,12 +639,12 @@ int DSP::ALSA_object_t::set_snd_pcm_format(snd_pcm_hw_params_t *params)
       }
 
       #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "Format set with error code: " << errc << endl;
+        DSP::log << "Format set with error code: " << errc << std::endl;
       #endif // AUDIO_DEBUG_MESSAGES_ON
       break;
     
     default:
-      DSP::log << "Unsupported no of bytes in channel" << endl;
+      DSP::log << "Unsupported no of bytes in channel" << std::endl;
       return -1;
       break;
   }
@@ -671,7 +671,7 @@ long DSP::ALSA_object_t::open_PCM_device_4_output(const int &no_of_channels, int
   
   else 
   {
-    DSP::log << "Device has not been opened. Error code: " << rc << endl;
+    DSP::log << "Device has not been opened. Error code: " << rc << std::endl;
     return -1;
   }
 }
@@ -694,7 +694,7 @@ long DSP::ALSA_object_t::open_PCM_device_4_input(const int &no_of_channels, int 
   }  
   else 
   {
-    DSP::log << "Device has not been opened. Error code: " << rc << endl;
+    DSP::log << "Device has not been opened. Error code: " << rc << std::endl;
     return -1;
   }
 }
@@ -779,7 +779,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
           break;
         
         default:
-          DSP::log << "Unsupported no of bytes in channel" << endl;
+          DSP::log << "Unsupported no of bytes in channel" << std::endl;
           break;
       
         // converting samples ends
@@ -800,7 +800,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
           IsPlayingNow = true;
 
           #ifdef AUDIO_DEBUG_MESSAGES_ON
-            DSP::log << "IsPlayingNow set to true" << endl;
+            DSP::log << "IsPlayingNow set to true" << std::endl;
           #endif // AUDIO_DEBUG_MESSAGES_ON
         }
       }
@@ -817,7 +817,7 @@ long DSP::ALSA_object_t::append_playback_buffer(DSP::Float_vector &float_buffer)
     else
     {
       #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "DSP::ALSA_object_t::append_playback_buffer error code is positive. Nothing to play." << endl;
+        DSP::log << "DSP::ALSA_object_t::append_playback_buffer error code is positive. Nothing to play." << std::endl;
       #endif // AUDIO_DEBUG_MESSAGES_ON
 
       DSP::f::Sleep(0);
@@ -914,7 +914,7 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
         
           #ifdef AUDIO_DEBUG_MESSAGES_ON
             // EPIPE means underrun
-            DSP::log << "Underrun occurred" << endl;
+            DSP::log << "Underrun occurred" << std::endl;
           #endif // AUDIO_DEBUG_MESSAGES_ON
         
            snd_pcm_prepare(alsa_handle);
@@ -923,7 +923,7 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
         case EAGAIN:
 
           #ifdef AUDIO_DEBUG_MESSAGES_ON
-            DSP::log << "EAGAIN occurred. Waiting for a free buffer." << endl;
+            DSP::log << "EAGAIN occurred. Waiting for a free buffer." << std::endl;
           #endif // AUDIO_DEBUG_MESSAGES_ON
         
           DSP::f::Sleep(0);
@@ -936,7 +936,7 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
             pcm_buffer[ind] += rc * no_of_channels_alsa * no_of_bytes_in_channel;
 
             #ifdef AUDIO_DEBUG_MESSAGES_ON
-              DSP::log << "Short read. Current rc = " << rc << "." << endl;
+              DSP::log << "Short read. Current rc = " << rc << "." << std::endl;
             #endif // AUDIO_DEBUG_MESSAGES_ON
 
             if (pcm_buffer_size_in_frames[ind] == 0)
@@ -945,7 +945,7 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
               std::swap(wave_in_raw_buffer, capture_buffer);
               
               #ifdef AUDIO_DEBUG_MESSAGES_ON
-                DSP::log << "Inbuffer is full." << endl;
+                DSP::log << "Inbuffer is full." << std::endl;
               #endif // AUDIO_DEBUG_MESSAGES_ON
 
               pcm_buffer[ind] = (uint8_t *)(capture_buffer.data());
@@ -959,8 +959,8 @@ bool DSP::ALSA_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType
           {
             #ifdef AUDIO_DEBUG_MESSAGES_ON
               // EPIPE means underrun
-              DSP::log << "Unsupported error." << endl;
-              DSP::log << "Error from readi: " << snd_strerror(rc) << endl;
+              DSP::log << "Unsupported error." << std::endl;
+              DSP::log << "Error from readi: " << snd_strerror(rc) << std::endl;
             #endif // AUDIO_DEBUG_MESSAGES_ON
 
             pcm_buffer_size_in_frames[ind] = 0;
@@ -987,7 +987,7 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_p
     {
       case EAGAIN:
         #ifdef AUDIO_DEBUG_MESSAGES_ON
-          DSP::log << "EAGAIN occurred. Waiting for a free buffer." << endl;
+          DSP::log << "EAGAIN occurred. Waiting for a free buffer." << std::endl;
         #endif // AUDIO_DEBUG_MESSAGES_ON
         //! \TODO M.B. In the future snd_pcm_status_get_avail / snd_pcm_avail_update could be used to select sleep time
         DSP::f::Sleep(0);
@@ -996,7 +996,7 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_p
       case EPIPE:
         #ifdef AUDIO_DEBUG_MESSAGES_ON
           // EPIPE means underrun
-          DSP::log << "Underrun occurred" << endl;
+          DSP::log << "Underrun occurred" << std::endl;
         #endif // AUDIO_DEBUG_MESSAGES_ON
         
         snd_pcm_prepare(alsa_handle);
@@ -1010,7 +1010,7 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_p
           current_buffer += rc * no_of_channels_alsa * no_of_bytes_in_channel;
 
           #ifdef AUDIO_DEBUG_MESSAGES_ON
-            DSP::log << "Short write. Current rc = " << rc << "." << endl;
+            DSP::log << "Short write. Current rc = " << rc << "." << std::endl;
           #endif // AUDIO_DEBUG_MESSAGES_ON
         }
 
@@ -1018,8 +1018,8 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_p
         {
           #ifdef AUDIO_DEBUG_MESSAGES_ON
             // EPIPE means underrun
-            DSP::log << "Unsupported error." << endl;
-            DSP::log << "Error from writei: " << snd_strerror(rc) << endl;
+            DSP::log << "Unsupported error." << std::endl;
+            DSP::log << "Error from writei: " << snd_strerror(rc) << std::endl;
           #endif // AUDIO_DEBUG_MESSAGES_ON
 
           buffer_size_in_frames = 0;
@@ -1029,7 +1029,7 @@ snd_pcm_sframes_t DSP::ALSA_object_t::pcm_writei(const void *buffer, const snd_p
   }
 
   #ifdef AUDIO_DEBUG_MESSAGES_ON
-    DSP::log << "The end of the playback" << endl;
+    DSP::log << "The end of the playback" << std::endl;
   #endif // AUDIO_DEBUG_MESSAGES_ON
 
   return rc;
@@ -1045,7 +1045,7 @@ void DSP::ALSA_object_t::close_alsa_device(bool do_drain, bool use_log)
     }
     
     #ifdef AUDIO_DEBUG_MESSAGES_ON
-      DSP::log << "Closing the PCM device." << endl;
+      DSP::log << "Closing the PCM device." << std::endl;
     #endif // AUDIO_DEBUG_MESSAGES_ON
 
     snd_pcm_close(alsa_handle);
@@ -1060,7 +1060,7 @@ void DSP::ALSA_object_t::close_alsa_device(bool do_drain, bool use_log)
 
     if (use_log == true)
     {
-      DSP::log << "ALSA PCM sound closed." << endl;
+      DSP::log << "ALSA PCM sound closed." << std::endl;
     }
 
   IsDeviceInputOpen = false;

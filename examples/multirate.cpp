@@ -51,7 +51,7 @@ int main(int argn, char *args[])
   DSP::log.SetLogFileName("log_file.log");
   DSP::log.SetLogState(DSP::e::LogState::file | DSP::e::LogState::console);
 
-  DSP::log << DSP::lib_version_string() << endl << endl;
+  DSP::log << DSP::lib_version_string() << std::endl << std::endl;
   /*************************************************************/
   DSP::Clock_ptr MasterClock, OutputClock; 
   MasterClock=DSP::Clock::CreateMasterClock();
@@ -86,7 +86,7 @@ int main(int argn, char *args[])
       
       if (Fp1 != 22050)
       {
-        DSP::log << DSP::e::LogMode::Error << "Input wave file's sampling rate must be 22050 Sa/s" << endl;
+        DSP::log << DSP::e::LogMode::Error << "Input wave file's sampling rate must be 22050 Sa/s" << std::endl;
         
         blocks["SoundIn"].reset();
         return 1;
@@ -117,7 +117,7 @@ int main(int argn, char *args[])
       h_LPF_resample[n] *= L; 
     }
      
-    DSP::log << "Filter coeficients files should be generated beforehand using >>multirate_filters.m<<" << endl;
+    DSP::log << "Filter coeficients files should be generated beforehand using >>multirate_filters.m<<" << std::endl;
   }
   else
   {

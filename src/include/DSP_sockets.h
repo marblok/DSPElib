@@ -135,7 +135,7 @@ class DSP::Socket
   private:
     static bool winsock_initialized;
     static int NoOfSocketObjects;
-    static const string DEFAULT_PORT;
+    static const std::string DEFAULT_PORT;
     #ifndef  __NO_WINSOCK__
       static WSADATA wsaData;
     #endif
@@ -153,8 +153,8 @@ class DSP::Socket
     //! table of DSP::Socket created in server mode
     static std::vector<DSP::Socket *> server_objects_list;
 
-    string extract_hostname(const string& address_with_port);
-    string extract_port(const string& address_with_port, const string& default_port);
+    std::string extract_hostname(const std::string& address_with_port);
+    std::string extract_port(const std::string& address_with_port, const std::string& default_port);
 
     static void close_socket();
   public:
@@ -183,8 +183,8 @@ class DSP::Socket
 
     bool Init_socket(void);
 
-    bool InitClient(const string &address_with_port);
-    bool InitServer_ListenSocket(const string &address_with_port);
+    bool InitClient(const std::string &address_with_port);
+    bool InitServer_ListenSocket(const std::string &address_with_port);
     bool InitServer(void); //uint32_t ServerObjectID_in);
 
     //! Attempts to accepts single connections if there is any in the listen queue
@@ -211,7 +211,7 @@ class DSP::Socket
      *
      * \note ServerObjectID_in == 0x00000000 means : accept all IDs
      */
-    Socket(const string &address_with_port, bool run_as_client, uint32_t ServerObjectID_in);
+    Socket(const std::string &address_with_port, bool run_as_client, uint32_t ServerObjectID_in);
     ~Socket(void);
 
     //! Waits until connection with current object is made
@@ -284,7 +284,7 @@ class DSP::u::SocketInput : public DSP::File, public DSP::Socket, public DSP::So
   public:
     //! \note address may include port number after colon
     SocketInput(DSP::Clock_ptr ParentClock,
-                  const string &address_with_port, bool run_as_client,
+                  const std::string &address_with_port, bool run_as_client,
                   uint32_t ServerObjectID,
                   unsigned int NoOfChannels=1,
                   DSP::e::SampleType sample_type=DSP::e::SampleType::ST_float);
@@ -397,7 +397,7 @@ class DSP::u::SocketOutput : public DSP::Socket, public DSP::Block
      * @param sample_type
      */
     SocketOutput(
-        const string & address_with_port, bool run_as_client,
+        const std::string & address_with_port, bool run_as_client,
         uint32_t ServerObjectID,
         unsigned int NoOfChannels=1,
         DSP::e::SampleType sample_type=DSP::e::SampleType::ST_float);

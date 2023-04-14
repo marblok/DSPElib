@@ -49,7 +49,7 @@ void CALLBACK DSP::WMM_object_t::waveOutProc(HWAVEOUT hwo, UINT uMsg,
   DSP::u::AudioOutput *Current;
   bool AllDone;
   int ind;
-  string tekst;
+  std::string tekst;
 
   Current = AudioObjects[dwInstance];
 
@@ -57,19 +57,19 @@ void CALLBACK DSP::WMM_object_t::waveOutProc(HWAVEOUT hwo, UINT uMsg,
   {
     case WOM_OPEN:
       DSP::log << "DSP::WMM_object_t::waveOutProc" << DSP::e::LogMode::second
-        << "WOM_OPEN(" << (int)dwInstance << ")" << endl;
+        << "WOM_OPEN(" << (int)dwInstance << ")" << std::endl;
       break;
     case WOM_CLOSE:
       DSP::log << "DSP::WMM_object_t::waveOutProc" << DSP::e::LogMode::second
-        << "WOM_CLOSE(" << (int)dwInstance << ")" << endl;
+        << "WOM_CLOSE(" << (int)dwInstance << ")" << std::endl;
       break;
     case WOM_DONE:
       DSP::log << "DSP::WMM_object_t::waveOutProc" << DSP::e::LogMode::second
-        << "WOM_DONE(" << (int)dwInstance << ")" << endl;
+        << "WOM_DONE(" << (int)dwInstance << ")" << std::endl;
 
       if (Current->StopPlayback)
       {
-        DSP::log << "DSP::WMM_object_t::waveOutProc" << DSP::e::LogMode::second << "StopPlayback is set" << endl;
+        DSP::log << "DSP::WMM_object_t::waveOutProc" << DSP::e::LogMode::second << "StopPlayback is set" << std::endl;
         return;
       }
       else
@@ -78,7 +78,7 @@ void CALLBACK DSP::WMM_object_t::waveOutProc(HWAVEOUT hwo, UINT uMsg,
         for (ind=0; ind < DSP_NoOfAudioOutputBuffers; ind++)
           AllDone &= (Current->waveHeaderOut[ind].dwFlags & WHDR_DONE);
         if (AllDone)
-          DSP::log << "DSP::WMM_object_t::waveOutProc" << DSP::e::LogMode::second << "All buffers had been used - nothing to play" << endl;
+          DSP::log << "DSP::WMM_object_t::waveOutProc" << DSP::e::LogMode::second << "All buffers had been used - nothing to play" << std::endl;
       }
       break;
   }
@@ -91,35 +91,35 @@ void DSP::WMM_object_t::log_driver_data() {
   /*
   int val;
 
-  DSP::log << "WMM library version: " << SND_LIB_VERSION_STR << endl;
+  DSP::log << "WMM library version: " << SND_LIB_VERSION_STR << std::endl;
 
-  DSP::log << endl;
-  DSP::log << "PCM stream types:" << endl;
+  DSP::log << std::endl;
+  DSP::log << "PCM stream types:" << std::endl;
   for (val = 0; val <= SND_PCM_STREAM_LAST; val++)
-    DSP::log << "  " << snd_pcm_stream_name((snd_pcm_stream_t)val) << endl;
+    DSP::log << "  " << snd_pcm_stream_name((snd_pcm_stream_t)val) << std::endl;
 
-  DSP::log << endl;
-  DSP::log << "PCM access types:" << endl;
+  DSP::log << std::endl;
+  DSP::log << "PCM access types:" << std::endl;
   for (val = 0; val <= SND_PCM_ACCESS_LAST; val++)
-    DSP::log << "  " << snd_pcm_access_name((snd_pcm_access_t)val) << endl;
+    DSP::log << "  " << snd_pcm_access_name((snd_pcm_access_t)val) << std::endl;
 
-  DSP::log << endl;
-  DSP::log << "PCM formats:" << endl;
+  DSP::log << std::endl;
+  DSP::log << "PCM formats:" << std::endl;
   for (val = 0; val <= SND_PCM_FORMAT_LAST; val++)
     if (snd_pcm_format_name((snd_pcm_format_t)val) != NULL)
       DSP::log << "  " << snd_pcm_format_name((snd_pcm_format_t)val) <<
-        "(" << snd_pcm_format_description((snd_pcm_format_t)val) << ")" << endl;
+        "(" << snd_pcm_format_description((snd_pcm_format_t)val) << ")" << std::endl;
 
-  DSP::log << endl;
-  DSP::log << "PCM subformats:" << endl;
+  DSP::log << std::endl;
+  DSP::log << "PCM subformats:" << std::endl;
   for (val = 0; val <= SND_PCM_SUBFORMAT_LAST; val++)
     DSP::log << "  " << snd_pcm_subformat_name((snd_pcm_subformat_t)val) <<
-      "(" << snd_pcm_subformat_description((snd_pcm_subformat_t)val) << ")" << endl;
+      "(" << snd_pcm_subformat_description((snd_pcm_subformat_t)val) << ")" << std::endl;
 
-  DSP::log << endl;
-  DSP::log << "PCM states:" << endl;
+  DSP::log << std::endl;
+  DSP::log << "PCM states:" << std::endl;
   for (val = 0; val <= SND_PCM_STATE_LAST; val++)
-    DSP::log << "  " << snd_pcm_state_name((snd_pcm_state_t)val) << endl;
+    DSP::log << "  " << snd_pcm_state_name((snd_pcm_state_t)val) << std::endl;
   */
 }
 
@@ -176,7 +176,7 @@ bool DSP::WMM_object_t::is_device_recording(void) {
 long DSP::WMM_object_t::open_PCM_device_4_input(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_inbuffer_size) {
   if (is_device_input_open)
   {
-    DSP::log << "DSP::WMM_object_t::open_PCM_device_4_input" << DSP::e::LogMode::second << "Device has been already opened: closing device before reopening" << endl;
+    DSP::log << "DSP::WMM_object_t::open_PCM_device_4_input" << DSP::e::LogMode::second << "Device has been already opened: closing device before reopening" << std::endl;
     close_PCM_device_input();
   }
 
@@ -282,7 +282,7 @@ long DSP::WMM_object_t::open_PCM_device_4_input(const int &no_of_channels, int n
 long DSP::WMM_object_t::open_PCM_device_4_output(const int &no_of_channels, int no_of_bits, const long &sampling_rate, const long &audio_outbuffer_size) {
   if (is_device_output_open)
   {
-    DSP::log << "DSP::WMM_object_t::open_PCM_device_4_output" << DSP::e::LogMode::second << "Device has been already opened: closing device before reopening" << endl;
+    DSP::log << "DSP::WMM_object_t::open_PCM_device_4_output" << DSP::e::LogMode::second << "Device has been already opened: closing device before reopening" << std::endl;
     close_PCM_device_output(false);
   }
 
@@ -377,7 +377,7 @@ bool DSP::WMM_object_t::close_PCM_device_input(void) {
   DSP::f::AudioCheckError(result);
 
   #ifdef AUDIO_DEBUG_MESSAGES_ON
-    DSP::log << "DSP::u::AudioInput" << DSP::e::LogMode::second << "Closing DSP::u::AudioInput" << endl;
+    DSP::log << "DSP::u::AudioInput" << DSP::e::LogMode::second << "Closing DSP::u::AudioInput" << std::endl;
   #endif
   result=waveInClose(hWaveIn);
   while (result==WAVERR_STILLPLAYING)
@@ -388,7 +388,7 @@ bool DSP::WMM_object_t::close_PCM_device_input(void) {
   //      sleep(100);
   //    #endif
     #ifdef AUDIO_DEBUG_MESSAGES_ON
-      DSP::log << "DSP::u::AudioInput" << DSP::e::LogMode::second << "Closing DSP::u::AudioInput" << endl;
+      DSP::log << "DSP::u::AudioInput" << DSP::e::LogMode::second << "Closing DSP::u::AudioInput" << std::endl;
     #endif
     result=waveInClose(hWaveIn);
   }
@@ -439,14 +439,14 @@ bool DSP::WMM_object_t::close_PCM_device_output(const bool &do_drain) {
   }
 
   #ifdef AUDIO_DEBUG_MESSAGES_ON
-    DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Closing DSP::u::AudioOutput" << endl;
+    DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Closing DSP::u::AudioOutput" << std::endl;
   #endif
   result=waveOutClose(hWaveOut);
   while (result==WAVERR_STILLPLAYING)
   {
     DSP::f::Sleep(100);
     #ifdef AUDIO_DEBUG_MESSAGES_ON
-      DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Closing DSP::u::AudioOutput" << endl;
+      DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Closing DSP::u::AudioOutput" << std::endl;
     #endif
     result=waveOutClose(hWaveOut);
   }  
@@ -461,7 +461,7 @@ bool DSP::WMM_object_t::close_PCM_device_output(const bool &do_drain) {
   #endif
 
   #ifdef AUDIO_DEBUG_MESSAGES_ON
-    DSP::log << "WMM PCM sound closed" << endl;
+    DSP::log << "WMM PCM sound closed" << std::endl;
   #endif
 
   is_device_input_open = false;
@@ -474,11 +474,11 @@ bool DSP::WMM_object_t::close_PCM_device_output(const bool &do_drain) {
 
 bool DSP::WMM_object_t::start_recording(void) {
   #ifdef AUDIO_DEBUG_MESSAGES_ON
-    DSP::log << "DSP::u::AudioInput::Execute" << DSP::e::LogMode::second << "Starting recording using two wave buffers" << endl;
+    DSP::log << "DSP::u::AudioInput::Execute" << DSP::e::LogMode::second << "Starting recording using two wave buffers" << std::endl;
   #endif
 
   // if (get_input_callback_object() == NULL) {
-  //   DSP::log << DSP::e::LogMode::Error << "DSP::WMM_object_t::start_recording" << DSP::e::LogMode::second << "No AudioInput object registered for callbacks" << endl;
+  //   DSP::log << DSP::e::LogMode::Error << "DSP::WMM_object_t::start_recording" << DSP::e::LogMode::second << "No AudioInput object registered for callbacks" << std::endl;
   //   return false;
   // }
 
@@ -533,7 +533,7 @@ bool DSP::WMM_object_t::get_wave_in_raw_buffer(DSP::e::SampleType &InSampleType_
     {
 #ifdef __DEBUG__
 #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "DSP::WMM_object_t::get_wave_in_raw_buffer" << DSP::e::LogMode::second << "Wrong audio frame ready or other unexpected error" << endl;
+        DSP::log << "DSP::WMM_object_t::get_wave_in_raw_buffer" << DSP::e::LogMode::second << "Wrong audio frame ready or other unexpected error" << std::endl;
 #endif
 #endif
       return false;
@@ -552,7 +552,7 @@ long DSP::WMM_object_t::append_playback_buffer(DSP::Float_vector &float_buffer) 
   // Send float_buffer to the audio device
 
   #ifdef AUDIO_DEBUG_MESSAGES_ON
-    DSP::log << "DSP::WMM_object_t::append_playback_buffer" << DSP::e::LogMode::second << "Flushing output buffer" << endl;
+    DSP::log << "DSP::WMM_object_t::append_playback_buffer" << DSP::e::LogMode::second << "Flushing output buffer" << std::endl;
   #endif
 
   while (1)
@@ -642,7 +642,7 @@ long DSP::WMM_object_t::append_playback_buffer(DSP::Float_vector &float_buffer) 
     {
   //    Sleep(10);
   #ifdef AUDIO_DEBUG_MESSAGES_ON
-      DSP::log << "DSP::WMM_object_t::append_playback_buffer" << DSP::e::LogMode::second << "Waiting for free output buffer" << endl;
+      DSP::log << "DSP::WMM_object_t::append_playback_buffer" << DSP::e::LogMode::second << "Waiting for free output buffer" << std::endl;
   #endif
       DSP::f::Sleep(0);
     }
@@ -665,7 +665,7 @@ void CALLBACK DSP::WMM_object_t::waveInProc(HWAVEIN hwi, UINT uMsg,
   DSP::WMM_object_t *Current;
 #ifdef __DEBUG__
   #ifdef AUDIO_DEBUG_MESSAGES_ON
-    stringstream tekst;
+    std::stringstream tekst;
   #endif
 #endif
 
@@ -679,11 +679,11 @@ void CALLBACK DSP::WMM_object_t::waveInProc(HWAVEIN hwi, UINT uMsg,
 #ifdef AUDIO_DEBUG_MESSAGES_ON
     case WIM_OPEN:
       DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
-        << "WIM_OPEN(" << (int)dwInstance << ")" << endl;
+        << "WIM_OPEN(" << (int)dwInstance << ")" << std::endl;
       break;
     case WIM_CLOSE:
       DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
-        << "WIM_CLOSE(" << (int)dwInstance << ")" << endl;
+        << "WIM_CLOSE(" << (int)dwInstance << ")" << std::endl;
       break;
 #endif
 #endif
@@ -692,7 +692,7 @@ void CALLBACK DSP::WMM_object_t::waveInProc(HWAVEIN hwi, UINT uMsg,
 #ifdef __DEBUG__
 #ifdef AUDIO_DEBUG_MESSAGES_ON
       DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
-        << "WIM_DATA(" << (int)dwInstance << ")" << endl;
+        << "WIM_DATA(" << (int)dwInstance << ")" << std::endl;
 #endif
 #endif
       if (Current->StopRecording)
@@ -711,7 +711,7 @@ void CALLBACK DSP::WMM_object_t::waveInProc(HWAVEIN hwi, UINT uMsg,
             // ignore data
 #ifdef __DEBUG__
 #ifdef AUDIO_DEBUG_MESSAGES_ON
-            DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second << "All buffers had been used - skipping input audio frame" << endl;
+            DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second << "All buffers had been used - skipping input audio frame" << std::endl;
 #endif
 #endif
           }
@@ -730,7 +730,7 @@ void CALLBACK DSP::WMM_object_t::waveInProc(HWAVEIN hwi, UINT uMsg,
         {
 #ifdef __DEBUG__
 #ifdef AUDIO_DEBUG_MESSAGES_ON
-            DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second << "Wrong audio frame ready or other unexpected error" << endl;
+            DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second << "Wrong audio frame ready or other unexpected error" << std::endl;
 #endif
 #endif
         }

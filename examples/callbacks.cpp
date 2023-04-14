@@ -69,7 +69,7 @@ int main(void)
   DSP::log.SetLogState(DSP::e::LogState::console | DSP::e::LogState::file);
   DSP::log.SetLogFileName("log_file.log");
 
-  DSP::log << DSP::lib_version_string() << endl;
+  DSP::log << DSP::lib_version_string() << std::endl;
 
   MasterClock=DSP::Clock::CreateMasterClock();
 
@@ -119,7 +119,7 @@ int main(void)
   {
     DSP::Clock::Execute(MasterClock, Fp/8);
 
-    DSP::log << "MAIN" << DSP::e::LogMode::second << temp << endl;
+    DSP::log << "MAIN" << DSP::e::LogMode::second << temp << std::endl;
     temp++;
   }
   while (AudioIn->GetBytesRead() != 0);
@@ -136,7 +136,7 @@ int main(void)
 
   DSP::Clock::ListOfAllComponents();
   DSP::Clock::FreeClocks();
-  DSP::log << "MAIN" << DSP::e::LogMode::second << "end" << endl;
+  DSP::log << "MAIN" << DSP::e::LogMode::second << "end" << std::endl;
 
   return 0;
 }

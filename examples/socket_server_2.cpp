@@ -17,7 +17,7 @@ int main(void)
   DSP::log.SetLogState(DSP::e::LogState::console | DSP::e::LogState::file);
   DSP::log.SetLogFileName("log_file.log");
 
-  DSP::log << DSP::lib_version_string() << endl << endl;
+  DSP::log << DSP::lib_version_string() << std::endl << std::endl;
 
   MasterClock = DSP::Clock::CreateMasterClock();
 
@@ -40,7 +40,7 @@ int main(void)
 
   // use server socket
 //  DSP::u::SocketOutput out_socket("0.0.0.0", false, 0x00000003);
-  string bind_address = "0.0.0.0:10000";
+  std::string bind_address = "0.0.0.0:10000";
   DSP::u::SocketOutput out_socket(bind_address, false, 0x00000003);
   out_socket.SetName(bind_address);
   Mul.Output("out") >> out_socket.Input("in");
@@ -62,14 +62,14 @@ int main(void)
   {
     DSP::Clock::Execute(MasterClock, Fp/8);
 
-    DSP::log << "MAIN" << DSP::e::LogMode::second << temp << endl;
+    DSP::log << "MAIN" << DSP::e::LogMode::second << temp << std::endl;
     temp++;
   }
   while (temp < 200); //(AudioIn.GetBytesRead() != 0);
 
   DSP::Clock::FreeClocks();
 
-  DSP::log << DSP::e::LogMode::Error << "MAIN" << DSP::e::LogMode::second << "end" << endl;
+  DSP::log << DSP::e::LogMode::Error << "MAIN" << DSP::e::LogMode::second << "end" << std::endl;
   //! \bug socket will be closed at application finish not at processing end
 
   return 0;

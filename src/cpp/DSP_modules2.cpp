@@ -269,21 +269,21 @@ DSP::u::DynamicCompressor::DynamicCompressor(
   if (BufferSize_in <= 0)
   {
     #ifdef __DEBUG__
-      DSP::log << "DSP::u::DynamicCompressor::DynamicCompressor" << DSP::e::LogMode::second << "BufferSize_in <= 0" << endl;
+      DSP::log << "DSP::u::DynamicCompressor::DynamicCompressor" << DSP::e::LogMode::second << "BufferSize_in <= 0" << std::endl;
     #endif
     BufferSize_in = 1;
   }
   if (OutputDelay_in < -1)
   {
     #ifdef __DEBUG__
-      DSP::log << "DSP::u::DynamicCompressor::DynamicCompressor" << DSP::e::LogMode::second << "OutputDelay_in < -1" << endl;
+      DSP::log << "DSP::u::DynamicCompressor::DynamicCompressor" << DSP::e::LogMode::second << "OutputDelay_in < -1" << std::endl;
     #endif
     OutputDelay_in = 0;
   }
   if (OutputDelay_in >= BufferSize_in)
   {
     #ifdef __DEBUG__
-      DSP::log << "DSP::u::DynamicCompressor::DynamicCompressor" << DSP::e::LogMode::second << "OutputDelay_in >= BufferSize_in" << endl;
+      DSP::log << "DSP::u::DynamicCompressor::DynamicCompressor" << DSP::e::LogMode::second << "OutputDelay_in >= BufferSize_in" << std::endl;
     #endif
     OutputDelay_in = BufferSize_in - 1;
   }
@@ -579,7 +579,7 @@ void DSP::u::DynamicCompressor::InputExecute_complex(INPUT_EXECUTE_ARGS)
 //  OutputExecute_ptr = &OutputExecute;
 //}
 
-DSP::u::Farrow::Farrow(const bool& IsComplex, const vector<DSP::Float_vector>& Farrow_coefs_in,
+DSP::u::Farrow::Farrow(const bool& IsComplex, const std::vector<DSP::Float_vector>& Farrow_coefs_in,
   const DSP::Clock_ptr& InputClock, const DSP::Clock_ptr& OutputClock)
   : DSP::Block(), DSP::Source()
 {
@@ -617,7 +617,7 @@ DSP::u::Farrow::Farrow(const bool& IsComplex, const vector<DSP::Float_vector>& F
 
   if (InputClock == NULL)
   {
-    DSP::log << DSP::e::LogMode::Error << "DSP::u::Farrow" << DSP::e::LogMode::second << "Undefined InputClock (AutoUpdate not implemented yet)" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::u::Farrow" << DSP::e::LogMode::second << "Undefined InputClock (AutoUpdate not implemented yet)" << std::endl;
     return;
   }
   else
@@ -756,11 +756,11 @@ bool DSP::u::Farrow::OutputExecute(OUTPUT_EXECUTE_ARGS)
     { // This is InputClock calling ;-)
       if (clock == THIS->InputClocks[0])
       {
-        DSP::log << DSP::e::LogMode::Error << "DSP::u::Farrow::OutputExecute" << DSP::e::LogMode::second << "WARNING: InputClock not expected !!!" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::u::Farrow::OutputExecute" << DSP::e::LogMode::second << "WARNING: InputClock not expected !!!" << std::endl;
       }
       else
       {
-        DSP::log << DSP::e::LogMode::Error << "DSP::u::Farrow::OutputExecute" << DSP::e::LogMode::second << "WARNING: Unexpected clock called !!!" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::u::Farrow::OutputExecute" << DSP::e::LogMode::second << "WARNING: Unexpected clock called !!!" << std::endl;
       }
       return true;
     }
@@ -930,7 +930,7 @@ void DSP::u::GardnerSampling::Init(
             DSP::e::GardnerSamplingOptions options_in)
 {
   unsigned int ind;
-  string tekst;
+  std::string tekst;
 
   SetName("GardnerSampling", false);
 
@@ -958,11 +958,11 @@ void DSP::u::GardnerSampling::Init(
   DefineInput("in.im", 1);
   for (ind=0; ind < NoOfChannels; ind++)
   {
-    tekst = "in" + to_string(ind+1);
+    tekst = "in" + std::to_string(ind+1);
     DefineInput(tekst, ind*2, ind*2+1);
-    tekst = "in" + to_string(ind+1) + ".re";
+    tekst = "in" + std::to_string(ind+1) + ".re";
     DefineInput(tekst, ind*2);
-    tekst = "in" + to_string(ind+1) + ".im";
+    tekst = "in" + std::to_string(ind+1) + ".im";
     DefineInput(tekst, ind*2+1);
   }
 
@@ -972,11 +972,11 @@ void DSP::u::GardnerSampling::Init(
   DefineOutput("out.im", 1);
   for (ind=0; ind < NoOfChannels; ind++)
   {
-    tekst = "out" + to_string(ind+1);
+    tekst = "out" + std::to_string(ind+1);
     DefineOutput(tekst, ind*2, ind*2+1);
-    tekst = "out" + to_string(ind+1) + ".re";
+    tekst = "out" + std::to_string(ind+1) + ".re";
     DefineOutput(tekst, ind*2);
-    tekst = "out" + to_string(ind+1) + ".im";
+    tekst = "out" + std::to_string(ind+1) + ".im";
     DefineOutput(tekst, ind*2+1);
   }
 
@@ -984,9 +984,9 @@ void DSP::u::GardnerSampling::Init(
 //  ClockGroups.AddOutput2Group("output", Output("out"));
   for (ind=0; ind < NoOfChannels; ind++)
   {
-    tekst = "in" + to_string(ind+1);
+    tekst = "in" + std::to_string(ind+1);
     ClockGroups.AddInput2Group("input", Input(tekst));
-    tekst = "out" + to_string(ind+1);
+    tekst = "out" + std::to_string(ind+1);
     ClockGroups.AddOutput2Group("output", Output(tekst));
   }
 
@@ -1046,7 +1046,7 @@ void DSP::u::GardnerSampling::Init(
   { //activate output clock
     if ((InputClock == NULL) || (OutputClock == NULL))
     {
-      DSP::log << DSP::e::LogMode::Error << "DSP::u::GardnerSampling::Init" << DSP::e::LogMode::second << "Can't activate output clock: InputClock or OutputClock is NULL" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::GardnerSampling::Init" << DSP::e::LogMode::second << "Can't activate output clock: InputClock or OutputClock is NULL" << std::endl;
       return;
     }
     MasterClockIndex = InputClock->GetMasterClockIndex();
@@ -1547,7 +1547,7 @@ DSP::u::PSKencoder::PSKencoder(DSP::e::PSK_type type) : DSP::Block()
       break;
 
     default:
-      DSP::log << DSP::e::LogMode::Error << "DSP::u::PSKencoder::PSKencoder" << DSP::e::LogMode::second << "Unsupported modulation type, falling back to BPSK" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::PSKencoder::PSKencoder" << DSP::e::LogMode::second << "Unsupported modulation type, falling back to BPSK" << std::endl;
       Type = DSP::e::PSK_type::BPSK;
       Execute_ptr = &InputExecute_BPSK;
       break;
@@ -1754,10 +1754,10 @@ DSP::u::SymbolMapper::SymbolMapper(
   }
 
   SetNoOfInputs(bits_per_symbol_in,false);
-  vector<unsigned int> inds;
+  std::vector<unsigned int> inds;
   for (auto ind = 0U; ind < NoOfInputs; ind++) {
     inds.push_back(ind);
-    DefineInput("in"+to_string(ind+1), ind);
+    DefineInput("in"+std::to_string(ind+1), ind);
   }
   DefineInput("in", inds);
 
@@ -1796,7 +1796,7 @@ unsigned int getConstellation(
           constellation[ind].im = static_cast<DSP::Float>(sin(constellation_phase_offset+(DSP::M_PIx2*n)/DSP::Float(M)));
 
 //          stringstream ss;
-//          ss << "constellation[" << ind << "]={" << setprecision(2) << constellation[ind].re << "," << constellation[ind].im << "}; n=" << n;
+//          ss << "constellation[" << ind << "]={" << std::setprecision(2) << constellation[ind].re << "," << constellation[ind].im << "}; n=" << n;
 //          DSP::f::InfoMessage(ss.str());
 
           n ^= mask;
@@ -1837,7 +1837,7 @@ unsigned int getConstellation(
     case DSP::e::ModulationType::QAM: {
         //  to convert number into gray, take the number and perform XOR after shifting the number 1 bit to the right.
         // x_gray = x ^ (x >> 1);
-        DSP::Float component_offset = (sqrt(DSP::Float(M))-1)/2;
+        DSP::Float component_offset = (sqrtf(DSP::Float(M))-1)/2;
         if ((bits_per_symbol % 2) == 0) {
           unsigned int mask = 0x00;
           for (unsigned int ind = 0; ind < bits_per_symbol/2; ind++) {
@@ -1861,13 +1861,13 @@ unsigned int getConstellation(
         }
         else {
           //! \TODO for odd bits_per_symbol generate QAM constellation for bits_per_symbol+1 and next remove half of the symbols with larger magnitude ???
-          DSP::log << DSP::e::LogMode::Error << "getConstellation" << DSP::e::LogMode::second << "Unsupported modulation QAM bits_per_symbol value " << endl;
+          DSP::log << DSP::e::LogMode::Error << "getConstellation" << DSP::e::LogMode::second << "Unsupported modulation QAM bits_per_symbol value " << std::endl;
         }
       }
       break;
 
     default:
-      DSP::log << DSP::e::LogMode::Error << "getConstellation" << DSP::e::LogMode::second << "Unsupported modulation type" << endl;
+      DSP::log << DSP::e::LogMode::Error << "getConstellation" << DSP::e::LogMode::second << "Unsupported modulation type" << std::endl;
       break;
   }
 
@@ -1932,10 +1932,10 @@ void DSP::u::SymbolMapper::InputExecute_bits(INPUT_EXECUTE_ARGS)
 DSP::u::Serial2Parallel::Serial2Parallel(const DSP::Clock_ptr &InputClock,
                                            const unsigned int &NoOfParallelOutputs,
                                            const unsigned int &NoOfLinesPerInput,
-                                           const vector<DSP::Float> &first_output_vector)
+                                           const std::vector<DSP::Float> &first_output_vector)
   : DSP::Block(), DSP::Source()
 {
-  string tekst;
+  std::string tekst;
 
   SetName("Serial2Parallel", false);
 
@@ -1943,7 +1943,7 @@ DSP::u::Serial2Parallel::Serial2Parallel(const DSP::Clock_ptr &InputClock,
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // Inputs definitions
-  vector <unsigned int> inds;
+  std::vector <unsigned int> inds;
   SetNoOfInputs(NoOfLinesPerInput,false);
   DefineInput("in.re", 0);
   if (NoOfInputs >= 2) {
@@ -1952,7 +1952,7 @@ DSP::u::Serial2Parallel::Serial2Parallel(const DSP::Clock_ptr &InputClock,
   inds.clear();
   for (auto ind = 0U; ind < NoOfInputs; ind++) {
     inds.push_back(ind);
-    tekst = "in" + to_string(ind+1);
+    tekst = "in" + std::to_string(ind+1);
     DefineInput(tekst, ind);
   }
   DefineInput("in", inds);
@@ -1971,19 +1971,19 @@ DSP::u::Serial2Parallel::Serial2Parallel(const DSP::Clock_ptr &InputClock,
       inds.push_back(ind*NoOfInputs+ind2);
 
       // # "out1[1]", "out1[2]", ... - first, second, ... line of output first output sample ...
-      tekst = "out" + to_string(ind+1) + "[" + to_string(ind2+1) + "]";
+      tekst = "out" + std::to_string(ind+1) + "[" + std::to_string(ind2+1) + "]";
       DefineOutput(tekst, ind*NoOfInputs+ind2);
     }
     // # "out1.re", "out2.re", ... - real part (first line) of output samples
-    tekst = "out" + to_string(ind+1) + ".re";
+    tekst = "out" + std::to_string(ind+1) + ".re";
     DefineOutput(tekst, ind*NoOfInputs+0);
     // # "out1.im", "out2.im", ... - imag part (second line) of output samples (available only if NoOfInputs > 1)
     if (NoOfInputs >= 2) {
-      tekst = "out" + to_string(ind+1) + ".im";
+      tekst = "out" + std::to_string(ind+1) + ".im";
       DefineOutput(tekst, ind*NoOfInputs+1);
     }
     // # "out1", "out2", ...  first,second, ... output sample (each with NoOfInputs lines)
-    tekst = "out" + to_string(ind+1);
+    tekst = "out" + std::to_string(ind+1);
     DefineOutput(tekst, inds);
   }
 
@@ -2011,7 +2011,7 @@ DSP::u::Serial2Parallel::Serial2Parallel(const DSP::Clock_ptr &InputClock,
   if (first_output_vector.size() != NoOfOutputs) {
     outputs.resize(NoOfOutputs, 0.0);
     if (first_output_vector.size() > 0) {
-      DSP::log << DSP::e::LogMode::Error << "DSP::u::Serial2Parallel" << DSP::e::LogMode::second << "Wrong size of first_output_vector" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::Serial2Parallel" << DSP::e::LogMode::second << "Wrong size of first_output_vector" << std::endl;
     }
   }
   else {
@@ -2076,7 +2076,7 @@ DSP::u::Parallel2Serial::Parallel2Serial(const DSP::Clock_ptr &InputClock,
                                            const bool &reversed_order)
   : DSP::Block(), DSP::Source()
 {
-  string tekst;
+  std::string tekst;
 
   SetName("Parallel2Serial", false);
 
@@ -2084,7 +2084,7 @@ DSP::u::Parallel2Serial::Parallel2Serial(const DSP::Clock_ptr &InputClock,
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++ //
   // Outputs definitions
-  vector <unsigned int> inds;
+  std::vector <unsigned int> inds;
   SetNoOfOutputs(NoOfLinesPerInput);
   DefineOutput("out.re", 0);
   if (NoOfOutputs >= 2) {
@@ -2093,7 +2093,7 @@ DSP::u::Parallel2Serial::Parallel2Serial(const DSP::Clock_ptr &InputClock,
   inds.clear();
   for (auto ind = 0U; ind < NoOfOutputs; ind++) {
     inds.push_back(ind);
-    tekst = "out" + to_string(ind+1);
+    tekst = "out" + std::to_string(ind+1);
     DefineOutput(tekst, ind);
   }
   DefineOutput("out", inds);
@@ -2114,19 +2114,19 @@ DSP::u::Parallel2Serial::Parallel2Serial(const DSP::Clock_ptr &InputClock,
         inds.push_back(ind*NoOfOutputs+ind2);
 
         // # "in1[1]", "in1[2]", ... - first, second, ... line of input of first input sample ...
-        tekst = "in" + to_string(ind+1) + "[" + to_string(ind2+1) + "]";
+        tekst = "in" + std::to_string(ind+1) + "[" + std::to_string(ind2+1) + "]";
         DefineInput(tekst, ind*NoOfOutputs+ind2);
       }
       // # "in1.re", "in2.re", ... - real part (first line) of input samples
-      tekst = "in" + to_string(ind+1) + ".re";
+      tekst = "in" + std::to_string(ind+1) + ".re";
       DefineInput(tekst, ind*NoOfOutputs+0);
       // "in1.im", "in2.im", ... - imag part (second line) of input samples (available only if NoOfLinesPerInput > 1)
       if (NoOfOutputs >= 2) {
-        tekst = "in" + to_string(ind+1) + ".im";
+        tekst = "in" + std::to_string(ind+1) + ".im";
         DefineInput(tekst, ind*NoOfOutputs+1);
       }
       // "in1", "in2", ...  first,second, ... input sample (each with NoOfLinesPerInput lines)
-      tekst = "in" + to_string(ind+1);
+      tekst = "in" + std::to_string(ind+1);
       DefineInput(tekst, inds);
     }
   }
@@ -2147,19 +2147,19 @@ DSP::u::Parallel2Serial::Parallel2Serial(const DSP::Clock_ptr &InputClock,
         inds.push_back((NoOfParallelInputs-1-ind)*NoOfOutputs+ind2);
 
         // # "in1[1]", "in1[2]", ... - first, second, ... line of input of first input sample ...
-        tekst = "in" + to_string(ind+1) + "[" + to_string(ind2+1) + "]";
+        tekst = "in" + std::to_string(ind+1) + "[" + std::to_string(ind2+1) + "]";
         DefineInput(tekst, (NoOfParallelInputs-1-ind)*NoOfOutputs+ind2);
       }
       // # "in1.re", "in2.re", ... - real part (first line) of input samples
-      tekst = "in" + to_string(ind+1) + ".re";
+      tekst = "in" + std::to_string(ind+1) + ".re";
       DefineInput(tekst, (NoOfParallelInputs-1-ind)*NoOfOutputs+0);
       // "in1.im", "in2.im", ... - imag part (second line) of input samples (available only if NoOfLinesPerInput > 1)
       if (NoOfOutputs >= 2) {
-        tekst = "in" + to_string(ind+1) + ".im";
+        tekst = "in" + std::to_string(ind+1) + ".im";
         DefineInput(tekst, (NoOfParallelInputs-1-ind)*NoOfOutputs+1);
       }
       // "in1", "in2", ...  first,second, ... input sample (each with NoOfLinesPerInput lines)
-      tekst = "in" + to_string(ind+1);
+      tekst = "in" + std::to_string(ind+1);
       DefineInput(tekst, inds);
     }
   }
@@ -2250,10 +2250,10 @@ DSP::u::SymbolDemapper::SymbolDemapper( DSP::e::ModulationType type,
   Execute_ptr = &InputExecute_constellation;
 
   SetNoOfOutputs(bits_per_symbol_in);
-  vector<unsigned int> inds;
+  std::vector<unsigned int> inds;
   for (auto ind=0U; ind<NoOfOutputs; ind++) {
     inds.push_back(ind);
-    DefineOutput("out"+to_string(ind+1), ind);
+    DefineOutput("out"+std::to_string(ind+1), ind);
   }
   DefineOutput("out", inds);
 
@@ -2325,7 +2325,7 @@ void DSP::u::SymbolDemapper::InputExecute_constellation(INPUT_EXECUTE_ARGS)
   }
 
 //  stringstream ss;
-//  ss << setprecision(2) << "input={" << THIS_->input.re << "," << THIS_->input.im << "}\n";
+//  ss << std::setprecision(2) << "input={" << THIS_->input.re << "," << THIS_->input.im << "}\n";
 //  ss << "min_squared_dist=" << min_squared_dist << ",symbol_index=" << symbol_index <<"\n";
 //  ss << "bits:";
   unsigned int mask = 0x01;
@@ -2443,7 +2443,7 @@ DSP::u::PSKdecoder::PSKdecoder(DSP::e::PSK_type type) : DSP::Block()
       break;
 
     default:
-      DSP::log << DSP::e::LogMode::Error << "DSP::u::PSKdecoder::PSKdecoder" << DSP::e::LogMode::second << "Unsupported modulation type, falling back to BPSK" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::PSKdecoder::PSKdecoder" << DSP::e::LogMode::second << "Unsupported modulation type, falling back to BPSK" << std::endl;
       Execute_ptr = &InputExecute_BPSK;
       break;
   }
@@ -2589,7 +2589,7 @@ void DSP::u::PSKdecoder::InputExecute_QPSK_A(INPUT_EXECUTE_ARGS)
 DSP::u::FFT::FFT(unsigned int K_in, bool AreInputsComplex)
   : DSP::Block()
 {
-  string temp;
+  std::string temp;
   unsigned int ind;
 
   K = K_in;
@@ -2602,12 +2602,12 @@ DSP::u::FFT::FFT(unsigned int K_in, bool AreInputsComplex)
 
     for (ind=0; ind<K; ind++)
     {
-      temp = "in" + to_string(ind+1);
+      temp = "in" + std::to_string(ind+1);
       DefineInput(temp, ind*2, ind*2+1);
 
-      temp = "in" + to_string(ind+1) + ".re";
+      temp = "in" + std::to_string(ind+1) + ".re";
       DefineInput(temp, ind*2);
-      temp = "in" + to_string(ind+1) + ".im";
+      temp = "in" + std::to_string(ind+1) + ".im";
       DefineInput(temp, ind*2+1);
     }
   }
@@ -2616,9 +2616,9 @@ DSP::u::FFT::FFT(unsigned int K_in, bool AreInputsComplex)
     SetNoOfInputs(K, true); // allow for constant inputs
     for (ind=0; ind<K; ind++)
     {
-      temp = "in" + to_string(ind+1);
+      temp = "in" + std::to_string(ind+1);
       DefineInput(temp, ind);
-      temp = "in" + to_string(ind+1) + ".re";
+      temp = "in" + std::to_string(ind+1) + ".re";
       DefineInput(temp, ind);
     }
   }
@@ -2626,12 +2626,12 @@ DSP::u::FFT::FFT(unsigned int K_in, bool AreInputsComplex)
   SetNoOfOutputs(2*K);
   for (ind=0; ind<K; ind++)
   {
-    temp = "out" + to_string(ind+1);
+    temp = "out" + std::to_string(ind+1);
     DefineOutput(temp, ind*2, ind*2+1);
 
-    temp = "out" + to_string(ind+1) + ".re";
+    temp = "out" + std::to_string(ind+1) + ".re";
     DefineOutput(temp, ind*2);
-    temp = "out" + to_string(ind+1) + ".im";
+    temp = "out" + std::to_string(ind+1) + ".im";
     DefineOutput(temp, ind*2+1);
   }
 

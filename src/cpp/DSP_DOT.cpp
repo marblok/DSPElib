@@ -11,15 +11,13 @@
 //#include <DSP_clocks.h>
 #include <DSP_lib.h>
 
-using namespace std;
-
-const vector<string> DSP::DOT_colors =
+const std::vector<std::string> DSP::DOT_colors =
 {
     "red", "royalblue2", "green3", "turquoise2", "yellow3",
     "chocolate4", "blueviolet", "deeppink1", "goldenrod1"
 };
 
-const vector<string> DSP::DOT_edge_colors =
+const std::vector<std::string> DSP::DOT_edge_colors =
 {
     "royalblue2", "red", "green3", "turquoise2", "yellow3",
     "chocolate4", "blueviolet", "deeppink1", "goldenrod1"
@@ -27,10 +25,10 @@ const vector<string> DSP::DOT_edge_colors =
 
 
 #ifdef __DEBUG__
-  string DSP::u::Splitter::GetComponentNodeParams_DOTfile(void) {
+  std::string DSP::u::Splitter::GetComponentNodeParams_DOTfile(void) {
     return GetComponentNodeParams_DOTfile();
   }
-  string DSP::u::Splitter::GetComponentNodeParams_DOTfile(const string &leading_space)
+  std::string DSP::u::Splitter::GetComponentNodeParams_DOTfile(const std::string &leading_space)
   {
     UNUSED_ARGUMENT(leading_space);
     return "[shape=point]";
@@ -40,10 +38,10 @@ const vector<string> DSP::DOT_edge_colors =
   bool DSP::u::Splitter::UsePorts_DOTfile(void)
   { return false; }
 
-  string DSP::u::Splitter::GetComponentEdgeParams_DOTfile(const unsigned int &output_index)
+  std::string DSP::u::Splitter::GetComponentEdgeParams_DOTfile(const unsigned int &output_index)
   {
     unsigned int ind2;
-    stringstream text_buffer;
+    std::stringstream text_buffer;
 
     // start from output with the same input the skip by NoOfInputs
     //ind2 = output_index / (NoOfOutputs / NoOfInputs);
@@ -189,11 +187,11 @@ DSP::Macro_ptr DSP::Component::DOT_DrawAsMacro(DSP::Macro_ptr DrawnMacro)
 }
 
 // Returns component name used in DOTfile
-string DSP::Component::GetComponentName_DOTfile()
+std::string DSP::Component::GetComponentName_DOTfile()
 {
   long component_index;
-  string type_name;
-  string text_buffer;
+  std::string type_name;
+  std::string text_buffer;
 
   component_index = GetComponentIndexInTable(this);
   if (component_index < 0)
@@ -226,30 +224,30 @@ string DSP::Component::GetComponentName_DOTfile()
 
   text_buffer = type_name;
   text_buffer += '_';
-  text_buffer += to_string(component_index);
+  text_buffer += std::to_string(component_index);
 
   return text_buffer;
 }
 
-string DSP::Component::GetComponentNodeParams_DOTfile(void) {
+std::string DSP::Component::GetComponentNodeParams_DOTfile(void) {
   return GetComponentNodeParams_DOTfile("");
 }
 
 // Returns component node parameters used in DOTfile
 /*
- *    -# generate string segment (internal buffer - ?? size selection)
+ *    -# generate std::string segment (internal buffer - ?? size selection)
  *    -# check if it will fit into the output buffer
- *    -# copy string segment into output buffer.
+ *    -# copy std::string segment into output buffer.
  *    .
  */
-string DSP::Component::GetHtmlNodeLabel_DOTfile(const unsigned long &no_of_inputs, const unsigned long &no_of_outputs, const string &node_name, const string &leading_space, const unsigned int &border_width)
+std::string DSP::Component::GetHtmlNodeLabel_DOTfile(const unsigned long &no_of_inputs, const unsigned long &no_of_outputs, const std::string &node_name, const std::string &leading_space, const unsigned int &border_width)
 {
-  string tempName;
+  std::string tempName;
   unsigned int ind;
   //! pointer to an internal text buffer
-  string internal_text;
+  std::string internal_text;
   //! length of the output text (including trailing zero)
-  stringstream text_buffer;
+  std::stringstream text_buffer;
 
   tempName = node_name;
   if (tempName.length() == 0)
@@ -339,18 +337,18 @@ string DSP::Component::GetHtmlNodeLabel_DOTfile(const unsigned long &no_of_input
 
 // Returns component node parameters used in DOTfile
 /*
- *    -# generate string segment (internal buffer - ?? size selection)
+ *    -# generate std::string segment (internal buffer - ?? size selection)
  *    -# check if it will fit into the output buffer
- *    -# copy string segment into output buffer.
+ *    -# copy std::string segment into output buffer.
  *    .
  */
-string DSP::Component::GetComponentNodeParams_DOTfile(const string &leading_space)
+std::string DSP::Component::GetComponentNodeParams_DOTfile(const std::string &leading_space)
 {
-  string tempName;
+  std::string tempName;
   //! pointer to an internal text buffer
-  string internal_text;
+  std::string internal_text;
   //! length of the output text (including trailing zero)
-  stringstream text_buffer;
+  std::stringstream text_buffer;
 
   tempName = GetName();
   if (tempName.length() == 0)
@@ -377,9 +375,9 @@ string DSP::Component::GetComponentNodeParams_DOTfile(const string &leading_spac
   return text_buffer.str();
 }
 
-string DSP::Component::GetComponentEdgeParams_DOTfile(const unsigned int &output_index)
+std::string DSP::Component::GetComponentEdgeParams_DOTfile(const unsigned int &output_index)
 {
-  stringstream text_buffer;
+  std::stringstream text_buffer;
   text_buffer << "[color=" << DOT_edge_colors[output_index % DOT_edge_colors.size()] << "]";
   return text_buffer.str();
 }
@@ -389,13 +387,13 @@ bool DSP::Component::UsePorts_DOTfile(void)
 { return true; }
 
 // Writes component edges to file
-void DSP::Component::ComponentEdgesToDOTfile(std::ofstream &dot_plik, const string &this_name,
-    vector<bool> &UsedMacrosTable, vector<DSP::Macro_ptr> &MacrosList,
+void DSP::Component::ComponentEdgesToDOTfile(std::ofstream &dot_plik, const std::string &this_name,
+    std::vector<bool> &UsedMacrosTable, std::vector<DSP::Macro_ptr> &MacrosList,
     DSP::Macro_ptr DrawnMacro, unsigned int space_sep)
 {
   unsigned int ind, ind_sep;
   unsigned long ind2;
-  string that_name, text_buffer;
+  std::string that_name, text_buffer;
   DSP::Block_ptr temp_block;
   DSP::Macro_ptr current_macro;
 
@@ -504,10 +502,10 @@ void DSP::Component::ComponentEdgesToDOTfile(std::ofstream &dot_plik, const stri
         {
           for (ind_sep = 0; ind_sep < space_sep; ind_sep++)
             dot_plik << ' ';
-          stringstream ss;
+          std::stringstream ss;
           ss << this_name << "_const_in" << ind + 1
              << " [shape=none,label="
-             << fixed << setprecision(3) << temp_block->ConstantInputValues[ind] << "];";
+             << std::fixed << std::setprecision(3) << temp_block->ConstantInputValues[ind] << "];";
           dot_plik << ss.str() << std::endl;
 
           for (ind_sep = 0; ind_sep < space_sep; ind_sep++)
@@ -537,9 +535,9 @@ void DSP::Component::ComponentEdgesToDOTfile(std::ofstream &dot_plik, const stri
  * Can be called for sources and mixed blocks but cannot call itself for sources & mixed blocks
  */
 void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
-          vector<bool> &ComponentDoneTable, long max_components_number,
-          vector<bool> &UsedMacrosTable, vector<DSP::Macro_ptr> &MacrosList, 
-          vector<bool> &UsedClocksTable, vector<DSP::Clock_ptr> &ClocksList,
+          std::vector<bool> &ComponentDoneTable, long max_components_number,
+          std::vector<bool> &UsedMacrosTable, std::vector<DSP::Macro_ptr> &MacrosList, 
+          std::vector<bool> &UsedClocksTable, std::vector<DSP::Clock_ptr> &ClocksList,
           DSP::Macro_ptr DrawnMacro, DSP::Clock_ptr clock_ptr)
 {
   unsigned int ind;
@@ -547,7 +545,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
   DSP::Block_ptr temp_OUT;
   long component_index;
   DSP::Macro_ptr current_macro;
-  string this_name;
+  std::string this_name;
 
 
   component_index = GetComponentIndexInTable(this);
@@ -556,7 +554,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DSP::Component::ComponentToDOTfile" << DSP::e::LogMode::second
         <<  "max_components_number (" << (int)max_components_number
-        << ") <= component_index (" << (int)component_index << ")" << endl;
+        << ") <= component_index (" << (int)component_index << ")" << std::endl;
     #endif
     return;
   }
@@ -584,7 +582,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
   else
   {
 //    int name_len, temp_name_len;
-    string temp_name;
+    std::string temp_name;
 //    bool done;
 
     ComponentDoneTable[component_index] = true;
@@ -603,7 +601,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
 
       /*! \bug 2010.04.19 For multiclock blocks clocks edge should point at appropriate block's input/output instead of the block itself
        */
-      stringstream ss;
+      std::stringstream ss;
       ss << "clock_" << clock_ptr;
       dot_plik << "    " << ss.str() << " -> ";
       dot_plik << this_name << " [style=dotted, constraint=false, color="
@@ -635,7 +633,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
                   << DOT_colors[OutputClocks[0]->GetMasterClockIndex() % DOT_colors.size()]
                                 << "];" << std::endl;
 
-          stringstream ss;
+          std::stringstream ss;
           ss << "clock_" << OutputClocks[0];
           dot_plik << "    " << ss.str() << " -> ";
           dot_plik << this_name << " [style=dotted, constraint=false, color="
@@ -711,22 +709,22 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
     return result;
   }
 
-  string DSP::Macro::GetMacroName_DOTfile()
+  std::string DSP::Macro::GetMacroName_DOTfile()
   {
-    stringstream ss;
+    std::stringstream ss;
     ss << "macro_" << this;
     return ss.str();
   }
 
 
   // Returns macro node parames used in DOTfile
-  string DSP::Macro::GetMacroNodeParams_DOTfile()
+  std::string DSP::Macro::GetMacroNodeParams_DOTfile()
   {
-    stringstream text_buffer;
+    std::stringstream text_buffer;
 
     text_buffer  << "[";
 
-    string leading_space = "  ";
+    std::string leading_space = "  ";
     text_buffer  << DSP::Component::GetHtmlNodeLabel_DOTfile(NoOfInputs, NoOfOutputs, GetName(), leading_space, 3);
 
     text_buffer << ", color=blue]"; // shape=record, penwidth=4.0]";
@@ -734,13 +732,13 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
     return text_buffer.str();
   }
 
-  string DSP::Macro::GetMacroInputNodeParams_DOTfile()
+  std::string DSP::Macro::GetMacroInputNodeParams_DOTfile()
   {
-    stringstream text_buffer;
+    std::stringstream text_buffer;
 
     text_buffer  << "[";
 
-    string leading_space = "  ";
+    std::string leading_space = "  ";
     text_buffer  << DSP::Component::GetHtmlNodeLabel_DOTfile(0, MacroInput_block->NoOfOutputs, MacroInput_block->GetName(), leading_space, 3);
 
     text_buffer << ", color=blue]"; // shape=record, penwidth=4.0]";
@@ -748,13 +746,13 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
     return text_buffer.str();
   }
 
-  string DSP::Macro::GetMacroOutputNodeParams_DOTfile()
+  std::string DSP::Macro::GetMacroOutputNodeParams_DOTfile()
   {
-    stringstream text_buffer;
+    std::stringstream text_buffer;
 
     text_buffer  << "[";
 
-    string leading_space = "  ";
+    std::string leading_space = "  ";
     text_buffer  << DSP::Component::GetHtmlNodeLabel_DOTfile(MacroOutput_block->NoOfInputs, 0, MacroOutput_block->GetName(), leading_space, 3);
 
     text_buffer << ", color=blue]"; // shape=record, penwidth=4.0]";
@@ -762,9 +760,9 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
     return text_buffer.str();
   }
 
-  string DSP::Macro::GetMacroEdgeParams_DOTfile(const unsigned int &output_index)
+  std::string DSP::Macro::GetMacroEdgeParams_DOTfile(const unsigned int &output_index)
   {
-    stringstream text_buffer;
+    std::stringstream text_buffer;
     text_buffer << "[color=" << DOT_edge_colors[output_index % DOT_edge_colors.size()] << "]";
     return text_buffer.str();
   }
@@ -774,12 +772,12 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
   { return true; }
 
   // Writes macro outgoing and constant inputs edges to file
-  void DSP::Macro::MacroEdgesToDOTfile(std::ofstream &dot_plik, const string &macro_name,
+  void DSP::Macro::MacroEdgesToDOTfile(std::ofstream &dot_plik, const std::string &macro_name,
       DSP::Macro_ptr DrawnMacro, unsigned int space_sep)
   {
     unsigned int ind, ind_sep;
-    string that_name;
-    stringstream text_buffer;
+    std::string that_name;
+    std::stringstream text_buffer;
     DSP::Macro_ptr current_macro;
     bool input_done;
     //DSP::Component_ptr temp_component;
@@ -826,7 +824,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
         else
         {
          // this should not happen
-          DSP::log << "DSP::Macro::MacroEdgesToDOTfile" << DSP::e::LogMode::second << "Nothing connected to the output block's input" << endl;
+          DSP::log << "DSP::Macro::MacroEdgesToDOTfile" << DSP::e::LogMode::second << "Nothing connected to the output block's input" << std::endl;
         }
 
 
@@ -884,7 +882,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
             dot_plik << ' ';
           text_buffer.clear(); text_buffer.str("");
           text_buffer << macro_name << "_const_in" << ind << " [shape=none,label="
-                      << fixed << setprecision(3) << MacroInput_block->ConstantInputValues[ind] << "];";
+                      << std::fixed << std::setprecision(3) << MacroInput_block->ConstantInputValues[ind] << "];";
           dot_plik << text_buffer.str() << std::endl;
 
           for (ind_sep = 0; ind_sep < space_sep; ind_sep++)
@@ -943,12 +941,12 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
   }
 
   //! Writes macro input edges to file
-  void DSP::Macro::MacroInputEdgesToDOTfile(std::ofstream &dot_plik, const string &macro_input_name,
+  void DSP::Macro::MacroInputEdgesToDOTfile(std::ofstream &dot_plik, const std::string &macro_input_name,
       DSP::Macro_ptr DrawnMacro, unsigned int space_sep)
   {
     unsigned int ind, ind_sep;
-    string that_name;
-    stringstream text_buffer;
+    std::string that_name;
+    std::stringstream text_buffer;
     DSP::Macro_ptr current_macro;
     DSP::Block_ptr current_output;
 
@@ -970,7 +968,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
         }
         if (current_output->Convert2Copy() != NULL)
         { // 2. Copy
-          DSP::log << "DSP::Macro::MacroInputEdgesToDOTfile" << DSP::e::LogMode::second << "Edge to Copy !!!" << endl;
+          DSP::log << "DSP::Macro::MacroInputEdgesToDOTfile" << DSP::e::LogMode::second << "Edge to Copy !!!" << std::endl;
         }
 
         // ++++++++++++++++++++++++++++++++++++++++++++++++++ //
@@ -978,7 +976,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
         if (current_macro != NULL)
         {
           //! \todo edge to other macro
-          DSP::log << "DSP::Macro::MacroInputEdgesToDOTfile" << DSP::e::LogMode::second << "edge to other macro not implemented yet" << endl;
+          DSP::log << "DSP::Macro::MacroInputEdgesToDOTfile" << DSP::e::LogMode::second << "edge to other macro not implemented yet" << std::endl;
         }
         else
         {
@@ -1053,12 +1051,12 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
   }
 
   // Writes component edges to file
-  void DSP::Macro::MacroOutputEdgesToDOTfile(std::ofstream &dot_plik, const string &macro_output_name,
+  void DSP::Macro::MacroOutputEdgesToDOTfile(std::ofstream &dot_plik, const std::string &macro_output_name,
       DSP::Macro_ptr DrawnMacro, unsigned int space_sep)
   {
     unsigned int ind, ind_sep;
-    string that_name;
-    stringstream text_buffer;
+    std::string that_name;
+    std::stringstream text_buffer;
     bool input_done;
 
 
@@ -1074,7 +1072,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
             dot_plik << ' ';
           text_buffer.clear(); text_buffer.str("");
           text_buffer << macro_output_name << "_const_in" << ind + 1 << " [shape=none,label="
-                      << fixed << setprecision(3) << MacroOutput_block->ConstantInputValues[ind] << "];",
+                      << std::fixed << std::setprecision(3) << MacroOutput_block->ConstantInputValues[ind] << "];",
           dot_plik << text_buffer.str() << std::endl;
 
           for (ind_sep = 0; ind_sep < space_sep; ind_sep++)
@@ -1184,7 +1182,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
   {
     if (DrawnMacro != this)
     {
-      string macro_name;
+      std::string macro_name;
 
       ///////////////////////////////
       // Zdefiniuj macro node
@@ -1200,7 +1198,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
     }
     else
     {
-      string component_name;
+      std::string component_name;
 
       // draw macro input
       component_name = MacroInput_block->GetComponentName_DOTfile();
@@ -1235,7 +1233,7 @@ void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
  *  dot-file format.
  *
  */
-void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &dot_filename,
+void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const std::string &dot_filename,
                                 DSP::Macro_ptr DrawnMacro)
 {
   UNUSED_RELEASE_ARGUMENT(ReferenceClock);
@@ -1246,20 +1244,20 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
     // ********************************** //
     if (ReferenceClock==NULL)
     {
-      DSP::log << DSP::e::LogMode::Error << "DSP::Clock::SchemeToDOTfile" << DSP::e::LogMode::second << "NULL ReferenceClock" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Clock::SchemeToDOTfile" << DSP::e::LogMode::second << "NULL ReferenceClock" << std::endl;
       return;
     }
 
     // ********************************** //
-    string tekst;
+    std::string tekst;
     std::ofstream dot_plik(dot_filename);
-    vector<DSP::Clock_ptr> ClocksList;
+    std::vector<DSP::Clock_ptr> ClocksList;
     DSP::Clock_ptr temp_clock;
-    vector<bool> UsedClocksTable;
+    std::vector<bool> UsedClocksTable;
     long int max_components_number;
-    vector<bool> ComponentDoneTable;
-    vector<bool> UsedMacrosTable;
-    vector<DSP::Macro_ptr> MacrosList;
+    std::vector<bool> ComponentDoneTable;
+    std::vector<bool> UsedMacrosTable;
+    std::vector<DSP::Macro_ptr> MacrosList;
     DSP::Clock_trigger_ptr Clock_trigger;
 
     // ********************************** //
@@ -1290,7 +1288,7 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
     #ifdef __DEBUG__
       if (ClocksList.size() != DSP::Clock::GetNoOfClocks())
         DSP::log << DSP::e::LogMode::Error << "DSP::Clock::SchemeToDOTfile" << DSP::e::LogMode::second
-                << "wrong number of clocks in ClocksList" << endl;
+                << "wrong number of clocks in ClocksList" << std::endl;
     #endif // __DEBUG__
 
     // ********************************** //
@@ -1360,7 +1358,7 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
 
         if (Clock_trigger != NULL)
         {
-          stringstream ss;
+          std::stringstream ss;
 
           ss << "clock_" << Clock_trigger->SignalActivatedClock;
           dot_plik << "  " << DSP::Component::GetComponent(ind)->GetComponentName_DOTfile() << " -> ";
@@ -1422,7 +1420,7 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
     // clocks subgraph
     if (ClocksList.size() > 0)
     {
-      stringstream ss;
+      std::stringstream ss;
       //dot_plik << "  subgraph cluster_CLOCKS {" << std::endl;
       ss << "  subgraph cluster_clock_group_" << ClocksList[0]->MasterClockIndex << " {";
       dot_plik << ss.str() << std::endl;
@@ -1518,9 +1516,9 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
    * Returns true if any of the sources has been drawn.
    */
   bool DSP::Clock::ClockComponentsToDOTfile(std::ofstream &dot_plik,
-                             vector<bool> &ComponentDoneTable, long max_components_number,
-                             vector<bool> &UsedMacrosTable, vector<DSP::Macro_ptr> &MacrosList,
-                             vector<bool> &UsedClocksTable, vector<DSP::Clock_ptr> &ClocksList,
+                             std::vector<bool> &ComponentDoneTable, long max_components_number,
+                             std::vector<bool> &UsedMacrosTable, std::vector<DSP::Macro_ptr> &MacrosList,
+                             std::vector<bool> &UsedClocksTable, std::vector<DSP::Clock_ptr> &ClocksList,
                              DSP::Macro_ptr DrawnMacro)
   {
     unsigned long ind;
@@ -1546,13 +1544,13 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
   }
 
   bool DSP::Clock::ClockNotificationsToDOTfile(std::ofstream &dot_plik,
-                             vector<bool> &ComponentDoneTable, long max_components_number)
+                             std::vector<bool> &ComponentDoneTable, long max_components_number)
                              //, bool *UsedClocksTable, DSP::Clock_ptr *ClocksList) long clocks_number)
   {
     unsigned long ind;
     long component_index;
-    string block_name;
-    string clock_name;
+    std::string block_name;
+    std::string clock_name;
     bool clock_used;
 
     clock_used = false;
@@ -1565,7 +1563,7 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
         #ifdef __DEBUG__
           DSP::log << DSP::e::LogMode::Error << "DSP::Clock::ClockNotificationsToDOTfile"  << DSP::e::LogMode::second
             << "max_components_number (" << max_components_number
-            << ") <= component_index (" << component_index << ")" << endl;
+            << ") <= component_index (" << component_index << ")" << std::endl;
         #endif
       }
       else
@@ -1575,7 +1573,7 @@ void DSP::Clock::SchemeToDOTfile(DSP::Clock_ptr ReferenceClock, const string &do
           //if (ComponentsNotifications_Table[ind]->DOT_DrawAsMacro() == NULL)
           block_name = ComponentsNotifications_Table[ind]->GetComponentName_DOTfile();
 
-          stringstream ss;
+          std::stringstream ss;
           ss << "clock_" << this;
           clock_name = ss.str();
 

@@ -33,23 +33,23 @@ class DSP::TMorseTable
   private:
     static int TablesNo;
     static TMorseTable *FirstTable;
-    static const string &BaseDirectory;
+    static const std::string &BaseDirectory;
 
     TMorseTable *NextTable;
 
-    string FileName;
-    string TableDescription;
+    std::string FileName;
+    std::string TableDescription;
 
-    void Save2File(const string &Name);
+    void Save2File(const std::string &Name);
 
     static TMorseTable *Current;
 
   public:
-    bool LoadFromFile(const string &Name);
+    bool LoadFromFile(const std::string &Name);
 
-    string FontName[FontsEditEntriesNo];
+    std::string FontName[FontsEditEntriesNo];
     uint16_t  FontCharset[FontsEditEntriesNo];
-    string TestText[FontsEditEntriesNo];
+    std::string TestText[FontsEditEntriesNo];
 
     uint16_t  MorseCodeEntriesNo;
     uint32_t MorseCode[MaxMorseCodeEntriesNumber]; //Converter to number
@@ -60,33 +60,33 @@ class DSP::TMorseTable
 
     static int FontCharset2Ind(uint32_t charset);
     static uint32_t Ind2FontCharset(int ind);
-    static const string Ind2AnsiString(int ind);
+    static const std::string Ind2AnsiString(int ind);
 
-    static uint32_t MorseCodeText2Number(const string &dot_dash_text);
+    static uint32_t MorseCodeText2Number(const std::string &dot_dash_text);
     /*!
      * @param Number        - numerical representation of MORSE code
      * @return output text
      */
-    static string Number2MorseCodeText(uint32_t Number);
+    static std::string Number2MorseCodeText(uint32_t Number);
     //! Converts character into Morse code number
     /*! \warning  works only for single character codes
      */
     uint32_t Char2Number(char znak);
 
-    int MorseCodeText2LetterInd(const string &dot_dash_text);
+    int MorseCodeText2LetterInd(const std::string &dot_dash_text);
 
     TMorseTable(void);
     ~TMorseTable(void);
 
     static int Count(void); //number of tables
-    const string Description(void);
+    const std::string Description(void);
     static void SelectCurrent(int ind);
     static TMorseTable *GetTable(int ind);
     static int  GetTableNo(TMorseTable *Table);
-    static void LoadTables(const string &BaseDir);
+    static void LoadTables(const std::string &BaseDir);
     static void ReloadCurrentTable(void);
     static bool DeleteCurrentTable(void);
-    static bool RenameCurrentTable(const string &NewName);
+    static bool RenameCurrentTable(const std::string &NewName);
     static void NewTable(void);
     static void FreeTables(void);
     static void SaveCurrent(void);
@@ -109,14 +109,14 @@ class DSP::u::MORSEkey : public DSP::Source // , public DSP::Randomization
     void Init(DSP::Clock_ptr ParentClock);
     TMorseTable MorseTable;
 
-    string AsciiText;
+    std::string AsciiText;
     //int current_char; // always first char is the current char
 
     //! current key state (1.0/0.0 == ON/OFF)
     DSP::Float value;
     int state, morse_state;
 
-    string morse_text;
+    std::string morse_text;
     int current_morse_segment;
 
     float WPM;
@@ -153,7 +153,7 @@ class DSP::u::MORSEkey : public DSP::Source // , public DSP::Randomization
     static float GetDotLength(float WPM_in, long sampling_rate_in,
         float dash2dot_ratio = 3.0, float space2dot_ratio = 7.0);
 
-    bool LoadCodeTable(const string &filename);
+    bool LoadCodeTable(const std::string &filename);
 
     //! Changes manually current key state
     /*!
@@ -161,8 +161,8 @@ class DSP::u::MORSEkey : public DSP::Source // , public DSP::Randomization
      */
     void SetKeyState(bool set_to_ON);
 
-    //! Append string to the characters to transmit
-    void AddString(string AsciiText_in);
+    //! Append std::string to the characters to transmit
+    void AddString(std::string AsciiText_in);
     //! Append char to the characters to transmit
     void AddChar(char znak);
 

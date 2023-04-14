@@ -113,9 +113,9 @@ DSP::u::Const::Const(DSP::Clock_ptr ParentClock,
                        int NoOfOutputs_in, DSP::Float_ptr values)
   : DSP::Source(ParentClock)
 {
-  string tekst;
+  std::string tekst;
   int ind;
-  vector<int> temp_int;
+  std::vector<int> temp_int;
   
   SetName("Const", false);
  
@@ -123,9 +123,9 @@ DSP::u::Const::Const(DSP::Clock_ptr ParentClock,
   temp_int = new int[NoOfOutputs_in];
   for (ind = 0; ind < NoOfOutputs_in; ind++)
   {
-    tekst = "out" + to_string(ind+1);
+    tekst = "out" + std::to_string(ind+1);
     DefineOutput(tekst, ind);
-    tekst = "out" + to_string(ind+1) + ".re";
+    tekst = "out" + std::to_string(ind+1) + ".re";
     DefineOutput(tekst, ind);
     
     temp_int.push_back(ind);
@@ -148,9 +148,9 @@ DSP::u::Const::Const(DSP::Clock_ptr ParentClock,
                        int NoOfOutputs_in, DSP::Complex_ptr values)
   : DSP::Source(ParentClock)
 {
-  string tekst;
+  std::string tekst;
   int ind;
-  vector<int> temp_int;
+  std::vector<int> temp_int;
   
   SetName("Const", false);
  
@@ -158,11 +158,11 @@ DSP::u::Const::Const(DSP::Clock_ptr ParentClock,
   temp_int = new int[2*NoOfOutputs_in];
   for (ind = 0; ind < NoOfOutputs_in; ind++)
   {
-    tekst = "out" + to_string(ind+1);
+    tekst = "out" + std::to_string(ind+1);
     DefineOutput(tekst, 2*ind, 2*ind+1);
-    tekst = "out" + to_string(ind+1) + ".re";
+    tekst = "out" + std::to_string(ind+1) + ".re";
     DefineOutput(tekst, 2*ind);
-    tekst = "out" + to_string(ind+1) + ".im";
+    tekst = "out" + std::to_string(ind+1) + ".im";
     DefineOutput(tekst, 2*ind+1);
     
     temp_int.push_back(ind);

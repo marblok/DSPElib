@@ -30,12 +30,12 @@
 //*****************************************************//
 //*****************************************************//
 unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Float_vector &Buffer, unsigned long N,
-                     const string &FileName, const string &FileDir,
+                     const std::string &FileName, const std::string &FileDir,
                      DSP::e::SampleType type,
                      unsigned long offset)
 {
   FILE *plik;
-  string file_name;
+  std::string file_name;
   uint32_t ValuesRead;
   unsigned int ind;
 
@@ -57,7 +57,7 @@ unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Float_vector &Buffer, unsign
         case DSP::e::SampleType::ST_uchar:
           //reading
           {
-            vector<uint8_t> tempBuffer;
+            std::vector<uint8_t> tempBuffer;
             tempBuffer.resize(N);
             ValuesRead=(uint32_t)fread(tempBuffer.data(), sizeof(uint8_t), N, plik);
             //convertion
@@ -68,7 +68,7 @@ unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Float_vector &Buffer, unsign
         case DSP::e::SampleType::ST_short:
           //reading
           {
-            vector<short> tempBuffer;
+            std::vector<short> tempBuffer;
             tempBuffer.resize(N);
             ValuesRead=(uint32_t)fread(tempBuffer.data(), sizeof(short), N, plik);
             //convertion
@@ -91,7 +91,7 @@ unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Float_vector &Buffer, unsign
     #ifdef __DEBUG__
       else
       {
-        DSP::log << DSP::e::LogMode::Error << "DSP::f::ReadCoefficientsFromFile" << DSP::e::LogMode::second << "ReadCoefficientsFromFile wrong offset" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::f::ReadCoefficientsFromFile" << DSP::e::LogMode::second << "ReadCoefficientsFromFile wrong offset" << std::endl;
       }
     #endif
     fclose(plik);
@@ -101,12 +101,12 @@ unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Float_vector &Buffer, unsign
 
 //*****************************************************//
 unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Complex_vector &Buffer, unsigned long N,
-                     const string &FileName, const string &FileDir,
+                     const std::string &FileName, const std::string &FileDir,
                      DSP::e::SampleType type,
                      unsigned long offset)
 {
   FILE *plik;
-  string file_name;
+  std::string file_name;
   uint32_t ValuesRead;
   unsigned int ind;
 
@@ -128,7 +128,7 @@ unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Complex_vector &Buffer, unsi
         case DSP::e::SampleType::ST_uchar:
           //reading
           {
-            vector<uint8_t> tempBuffer;
+            std::vector<uint8_t> tempBuffer;
             tempBuffer.resize(2*N);
             ValuesRead=(uint32_t)fread(tempBuffer.data(), sizeof(uint8_t), 2*N, plik);
             //convertion
@@ -143,7 +143,7 @@ unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Complex_vector &Buffer, unsi
         case DSP::e::SampleType::ST_short:
           //reading
           {
-            vector<short> tempBuffer;
+            std::vector<short> tempBuffer;
             tempBuffer.resize(2*N);
             ValuesRead=(uint32_t)fread(tempBuffer.data(), sizeof(short), 2*N, plik);
             //convertion
@@ -158,7 +158,7 @@ unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Complex_vector &Buffer, unsi
         case DSP::e::SampleType::ST_float:
           //reading
           {
-            vector<DSP::Float> tempBuffer;
+            std::vector<DSP::Float> tempBuffer;
             tempBuffer.resize(2*N);
             ValuesRead=(uint32_t)fread(Buffer.data(), sizeof(float), 2*N, plik);
             // convertion
@@ -175,7 +175,7 @@ unsigned long DSP::f::ReadCoefficientsFromFile(DSP::Complex_vector &Buffer, unsi
     #ifdef __DEBUG__
       else
       {
-        DSP::log << DSP::e::LogMode::Error << "DSP::f::ReadCoefficientsFromFile" << DSP::e::LogMode::second << "ReadCoefficientsFromFile wrong offset" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::f::ReadCoefficientsFromFile" << DSP::e::LogMode::second << "ReadCoefficientsFromFile wrong offset" << std::endl;
       }
     #endif
     fclose(plik);
@@ -243,7 +243,7 @@ DSP::u::Vacuum::Vacuum(bool AreInputsComplex, unsigned int NoOfInputs_in)
 void DSP::u::Vacuum::Init(bool AreInputsComplex, unsigned int NoOfInputs_in)
 {
   unsigned int ind;
-  string temp;
+  std::string temp;
 
   SetName("Vacuum", false);
 
@@ -270,16 +270,16 @@ void DSP::u::Vacuum::Init(bool AreInputsComplex, unsigned int NoOfInputs_in)
     }
   }
 
-  vector <unsigned int> all_indexes;
+  std::vector <unsigned int> all_indexes;
   for (ind=0; ind<NoOfInputs_in; ind++)
   {
     if (AreInputsComplex == false)
     {
       all_indexes.push_back(ind);
 
-      temp = "in" + to_string(ind+1);
+      temp = "in" + std::to_string(ind+1);
       DefineInput(temp, ind);
-      temp = "in" + to_string(ind+1) + ".re";
+      temp = "in" + std::to_string(ind+1) + ".re";
       DefineInput(temp, ind);
     }
     else
@@ -287,12 +287,12 @@ void DSP::u::Vacuum::Init(bool AreInputsComplex, unsigned int NoOfInputs_in)
       all_indexes.push_back(2*ind);
       all_indexes.push_back(2*ind+1);
   
-      temp = "in" + to_string(ind+1);
+      temp = "in" + std::to_string(ind+1);
       DefineInput(temp, 2*ind, 2*ind+1);
   
-      temp = "in" + to_string(ind+1) + ".re";
+      temp = "in" + std::to_string(ind+1) + ".re";
       DefineInput(temp, 2*ind);
-      temp = "in" + to_string(ind+1) + ".im";
+      temp = "in" + std::to_string(ind+1) + ".im";
       DefineInput(temp, 2*ind+1);
     }
   }
@@ -316,11 +316,11 @@ void DSP::u::Vacuum::InputExecute(INPUT_EXECUTE_ARGS)
 //*****************************************************//
 //*****************************************************//
 // Determines file type by filename extension
-DSP::e::FileType DSP::f::FileExtToFileType(const string &filename)
+DSP::e::FileType DSP::f::FileExtToFileType(const std::string &filename)
 {
   DSP::e::FileType FileType;
   int ind;
-  string ext;
+  std::string ext;
 
   FileType = DSP::e::FileType::FT_raw;
 
@@ -339,7 +339,7 @@ DSP::e::FileType DSP::f::FileExtToFileType(const string &filename)
 
   if (ext.length() > 0)
   {
-    string upper_ext = ext;
+    std::string upper_ext = ext;
     std::transform(upper_ext.begin(), upper_ext.end(),upper_ext.begin(), ::toupper);
     if (upper_ext.compare("FLT") == 0)
       FileType = DSP::e::FileType::FT_flt;
@@ -355,13 +355,13 @@ DSP::e::FileType DSP::f::FileExtToFileType(const string &filename)
 //*****************************************************//
 //*****************************************************//
 DSP::u::FileInput::FileInput(DSP::Clock_ptr ParentClock,
-                  const string &FileName,
+                  const std::string &FileName,
                   unsigned int NoOfChannels,
                   DSP::e::SampleType sample_type,
                   DSP::e::FileType FILEtype)
   : DSP::File(), DSP::Source()
 {
-  string temp;
+  std::string temp;
   bool ready;
 
   SetName("FileInput", false);
@@ -380,7 +380,7 @@ DSP::u::FileInput::FileInput(DSP::Clock_ptr ParentClock,
     {
       #ifdef __DEBUG__
         DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second
-          << "Detection of no of channels is not supported for DSP::e::FileType::FT_raw (defaulting to 1 channels)" << endl;
+          << "Detection of no of channels is not supported for DSP::e::FileType::FT_raw (defaulting to 1 channels)" << std::endl;
         NoOfChannels = 1;
       #endif
     }
@@ -407,7 +407,7 @@ DSP::u::FileInput::FileInput(DSP::Clock_ptr ParentClock,
     //NoOfChannels = 2;
     //! \bug support for reading files with different number of channels then number of block's outputs
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second << "Wrong number of channels for *.tape file !!!" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second << "Wrong number of channels for *.tape file !!!" << std::endl;
     #endif
     ready = false;
   }
@@ -417,7 +417,7 @@ DSP::u::FileInput::FileInput(DSP::Clock_ptr ParentClock,
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second
         << "Incorrect number of input channels: expected "
-        << NoOfOutputs << " but found " << NoOfFileChannels << "!!!" << endl;
+        << NoOfOutputs << " but found " << NoOfFileChannels << "!!!" << std::endl;
     #endif
     //! \bug support for reading files with different number of channels then number of block's outputs
     ready = false;
@@ -441,7 +441,7 @@ DSP::u::FileInput::FileInput(DSP::Clock_ptr ParentClock,
   if (NoOfOutputs > 2)
   {
     unsigned int ind;
-    vector <unsigned int> tempOut;
+    std::vector <unsigned int> tempOut;
     tempOut.resize(NoOfOutputs);
     for (ind=0; ind<NoOfOutputs; ind++)
       tempOut[ind]=ind;
@@ -451,7 +451,7 @@ DSP::u::FileInput::FileInput(DSP::Clock_ptr ParentClock,
     DefineOutput("out.im", 1);
     for (ind=0; ind<NoOfOutputs; ind++)
     {
-      temp = "out" + to_string(ind+1);
+      temp = "out" + std::to_string(ind+1);
       DefineOutput(temp, ind);
     }
   }
@@ -462,7 +462,7 @@ DSP::u::FileInput::FileInput(DSP::Clock_ptr ParentClock,
   // +++++++++++++++++++++++++++++++++++++++++++++ //
   if (ready == false) {
     DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput" << DSP::e::LogMode::second
-      << "Block <" << GetName() << "> failed to open file \"" << FileName << "\"" << endl;
+      << "Block <" << GetName() << "> failed to open file \"" << FileName << "\"" << std::endl;
     OutputExecute_ptr = &OutputExecute_Dummy;
   }
   else
@@ -474,12 +474,12 @@ bool DSP::u::FileInput::SetSkip(long long Offset)
   UNUSED_ARGUMENT(Offset);
 
   #ifdef __DEBUG__
-    DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::SetSkip" << DSP::e::LogMode::second << "not implemented yet" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::SetSkip" << DSP::e::LogMode::second << "not implemented yet" << std::endl;
   #endif
   return false;
 }
 
-bool DSP::u::FileInput::OpenFile(const string &FileName,
+bool DSP::u::FileInput::OpenFile(const std::string &FileName,
     DSP::e::SampleType sample_type, DSP::e::FileType FILEtype,
     unsigned int Default_NoOfChannels)
 {
@@ -507,7 +507,7 @@ bool DSP::u::FileInput::OpenFile(const string &FileName,
             ready = false;
 
             #ifdef __DEBUG__
-              DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second << "Unsupported *.flt file version !!!" << endl;
+              DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second << "Unsupported *.flt file version !!!" << std::endl;
               //! \todo verify if file header data match constructor parameters
             #endif
           }
@@ -531,15 +531,15 @@ bool DSP::u::FileInput::OpenFile(const string &FileName,
             ready = false;
 
             #ifdef __DEBUG__
-              DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second << "Unsupported *.tape file sample type!!!" << endl;
+              DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second << "Unsupported *.tape file sample type!!!" << std::endl;
             #endif
           }
 
           #ifdef __DEBUG__
             if (sizeof(DSP::T_TAPE_header) != DSP::TAPE_header_LEN)
-              DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second << "TAPE_header_LEN does not much sizeof T_TAPE_header structure !!!" << endl;
+              DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second << "TAPE_header_LEN does not much sizeof T_TAPE_header structure !!!" << std::endl;
             if (tape_header[0].header_size() != DSP::TAPE_header_LEN)
-              DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second << "Unsupported *.tape file version !!!" << endl;
+              DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second << "Unsupported *.tape file version !!!" << std::endl;
           #endif
 
           SamplingRate = tape_header[0].sampling_rate();
@@ -558,7 +558,7 @@ bool DSP::u::FileInput::OpenFile(const string &FileName,
             #ifdef __DEBUG__
             {
               DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second
-                << "This (" << FileName << ") is not PCM WAVE file or file is corrupted !!!" << endl;
+                << "This (" << FileName << ") is not PCM WAVE file or file is corrupted !!!" << std::endl;
             }
             #endif
           }
@@ -582,7 +582,7 @@ bool DSP::u::FileInput::OpenFile(const string &FileName,
               #ifdef __DEBUG__
               {
                 DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second
-                  << "Unsupported PCM sample size ==> " << wav_header[0].wBitsPerSample << " bits!!!" << endl;
+                  << "Unsupported PCM sample size ==> " << wav_header[0].wBitsPerSample << " bits!!!" << std::endl;
               }
               #endif
               break;
@@ -596,7 +596,7 @@ bool DSP::u::FileInput::OpenFile(const string &FileName,
             #ifdef __DEBUG__
             {
               DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::FileInput" << DSP::e::LogMode::second
-                << "No data have been found in PCM file " << FileName << "!!!" << endl;
+                << "No data have been found in PCM file " << FileName << "!!!" << std::endl;
             }
             #endif
           }
@@ -717,7 +717,7 @@ unsigned long DSP::u::FileInput::GetSampleSize(DSP::e::SampleType SampleType_in)
       if ((DSP::File_buffer_size % 8) != 0)
       {
         DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput" << DSP::e::LogMode::second << "Can't read bit stream corectly:"
-          " DSP::File_buffer_size is not a multiply of byte size (8 bits)" << endl;
+          " DSP::File_buffer_size is not a multiply of byte size (8 bits)" << std::endl;
       }
       break;
     case DSP::e::SampleType::ST_short:
@@ -728,7 +728,7 @@ unsigned long DSP::u::FileInput::GetSampleSize(DSP::e::SampleType SampleType_in)
       break;
     default:
       sample_size=8*sizeof(short);
-      DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput" << DSP::e::LogMode::second << "Unsupported data type" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput" << DSP::e::LogMode::second << "Unsupported data type" << std::endl;
       break;
   }
   sample_size*=NoOfFileChannels;
@@ -998,7 +998,7 @@ bool DSP::u::FileInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
 //*****************************************************//
 DSP::u::FileOutput::FileOutput(unsigned char NoOfChannels) : DSP::Block()
 {
-  string temp;
+  std::string temp;
   ReOpen_FileType = DSP::e::FileType::FT_raw;
   ReOpen_sampling_rate = 0;
   ReOpen_SampleType = DSP::e::SampleType::ST_none;
@@ -1032,7 +1032,7 @@ DSP::u::FileOutput::FileOutput(unsigned char NoOfChannels) : DSP::Block()
   if (NoOfChannels > 2)
   {
     unsigned int ind;
-    vector <unsigned int> tempOut;
+    std::vector <unsigned int> tempOut;
     tempOut.resize(NoOfChannels);
     for (ind=0; ind<NoOfChannels; ind++)
       tempOut[ind]=ind;
@@ -1042,7 +1042,7 @@ DSP::u::FileOutput::FileOutput(unsigned char NoOfChannels) : DSP::Block()
     DefineInput("in.im", 1);
     for (ind=0; ind<NoOfChannels; ind++)
     {
-      temp = "in" + to_string(ind+1);
+      temp = "in" + std::to_string(ind+1);
       DefineInput(temp, ind);
     }
   }
@@ -1063,13 +1063,13 @@ DSP::u::FileOutput::FileOutput(unsigned char NoOfChannels) : DSP::Block()
   UnblockFile = false;
 }
 
-DSP::u::FileOutput::FileOutput(const string &FileName,
+DSP::u::FileOutput::FileOutput(const std::string &FileName,
                 DSP::e::SampleType sample_type,
                 unsigned int NoOfChannels,
                 DSP::e::FileType file_type, long int sampling_rate)
   : DSP::Block()
 {
-  string temp;
+  std::string temp;
 
   SetName("FileOutput", false);
   SetNoOfOutputs(0);
@@ -1093,7 +1093,7 @@ DSP::u::FileOutput::FileOutput(const string &FileName,
   if (NoOfChannels > 2)
   {
     unsigned int ind;
-    vector<unsigned int> tempOut;
+    std::vector<unsigned int> tempOut;
     tempOut.resize(NoOfChannels);
     for (ind=0; ind<NoOfChannels; ind++)
       tempOut[ind]=ind;
@@ -1103,7 +1103,7 @@ DSP::u::FileOutput::FileOutput(const string &FileName,
     DefineInput("in.im", 1);
     for (ind=0; ind<NoOfChannels; ind++)
     {
-      temp = "in" + to_string(ind+1);
+      temp = "in" + std::to_string(ind+1);
       DefineInput(temp, ind);
     }
   }
@@ -1132,7 +1132,7 @@ unsigned long DSP::u::FileOutput::GetSamplingRate(void)
   return ReOpen_sampling_rate;
 }
 
-bool DSP::u::FileOutput::Open(const string &FileName, DSP::e::SampleType sample_type, unsigned int NoOfChannels,
+bool DSP::u::FileOutput::Open(const std::string &FileName, DSP::e::SampleType sample_type, unsigned int NoOfChannels,
                            DSP::e::FileType file_type, long int sampling_rate)
 {
   FileType = file_type;
@@ -1145,7 +1145,7 @@ bool DSP::u::FileOutput::Open(const string &FileName, DSP::e::SampleType sample_
   if (NoOfChannels > UCHAR_MAX)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput::Open" << DSP::e::LogMode::second << "NoOfChannels to large (> UCHAR_MAX)" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput::Open" << DSP::e::LogMode::second << "NoOfChannels to large (> UCHAR_MAX)" << std::endl;
     #endif
     NoOfChannels = UCHAR_MAX;
   }
@@ -1191,7 +1191,7 @@ bool DSP::u::FileOutput::Open(const string &FileName, DSP::e::SampleType sample_
       if ((DSP::File_buffer_size % 8) != 0)
       {
         DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput" << DSP::e::LogMode::second << "Can't write bit stream correctly:"
-          " DSP::File_buffer_size is not a multiply of byte size (8 bits)" << endl;
+          " DSP::File_buffer_size is not a multiply of byte size (8 bits)" << std::endl;
       }
       // "0 / 1" byte by byte
       TmpBuffer.resize(SampleSize*DSP::File_buffer_size);
@@ -1201,7 +1201,7 @@ bool DSP::u::FileOutput::Open(const string &FileName, DSP::e::SampleType sample_
       break;
     default:
       #ifdef __DEBUG__
-        DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput" << DSP::e::LogMode::second << "Unsupported data type changing to DSP::e::SampleType::ST_short" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput" << DSP::e::LogMode::second << "Unsupported data type changing to DSP::e::SampleType::ST_short" << std::endl;
       #endif
       SampleType = DSP::e::SampleType::ST_short;
       Execute_ptr = &InputExecute_short;
@@ -1228,7 +1228,7 @@ bool DSP::u::FileOutput::Open(const string &FileName, DSP::e::SampleType sample_
             break;
           default:
             #ifdef  __DEBUG__
-              DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput" << DSP::e::LogMode::second << "*.wav: unsupported sample type" << endl;
+              DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput" << DSP::e::LogMode::second << "*.wav: unsupported sample type" << std::endl;
             #endif
             break;
         }
@@ -1288,7 +1288,7 @@ bool DSP::u::FileOutput::Open(const string &FileName, DSP::e::SampleType sample_
               break;
             default:
               #ifdef  __DEBUG__
-                DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput" << DSP::e::LogMode::second << "*.flt: unsupported sample type" << endl;
+                DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput" << DSP::e::LogMode::second << "*.flt: unsupported sample type" << std::endl;
               #endif
               break;
           }
@@ -1332,7 +1332,7 @@ bool DSP::File::SetOffset(long long Offset, DSP::e::OffsetMode mode)
     case DSP::e::OffsetMode::standard:
     default:
       #ifdef __DEBUG__
-        DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput:: SetOffset" << DSP::e::LogMode::second << "The mode is unsuported" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput:: SetOffset" << DSP::e::LogMode::second << "The mode is unsuported" << std::endl;
       #endif
       break;
   }
@@ -1378,7 +1378,7 @@ unsigned long DSP::u::FileOutput::GetSampleSize(DSP::e::SampleType SampleType_in
       if ((DSP::File_buffer_size % 8) != 0)
       {
         DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput::GetSampleSize" << DSP::e::LogMode::second << "Can't write bit stream corectly:"
-          " DSP::File_buffer_size is not a multiply of byte size (8 bits)" << endl;
+          " DSP::File_buffer_size is not a multiply of byte size (8 bits)" << std::endl;
       }
       break;
     case DSP::e::SampleType::ST_none:
@@ -1386,7 +1386,7 @@ unsigned long DSP::u::FileOutput::GetSampleSize(DSP::e::SampleType SampleType_in
       break;
     default:
       #ifdef __DEBUG__
-        DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput::GetSampleSize" << DSP::e::LogMode::second << "Unsupported data type changing to DSP::e::SampleType::ST_short" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput::GetSampleSize" << DSP::e::LogMode::second << "Unsupported data type changing to DSP::e::SampleType::ST_short" << std::endl;
       #endif
       sample_size=8*sizeof(short);
       break;
@@ -1456,7 +1456,7 @@ void DSP::u::FileOutput::PerformReOpen(void)
   ReOpenFile = false;
 }
 
-void DSP::u::FileOutput::ReOpen(const string &FileName, DSP::e::SampleType sample_type,
+void DSP::u::FileOutput::ReOpen(const std::string &FileName, DSP::e::SampleType sample_type,
                              DSP::e::FileType file_type, long int sampling_rate)
 {
   ReOpen_FileName = FileName;
@@ -1473,7 +1473,7 @@ bool DSP::u::FileOutput::BlockOutput(bool block)
   if (FileHandle == NULL)
   {
     #ifdef __DEBUG__
-      DSP::log << "DSP::u::FileOutput::BlockOutput" << DSP::e::LogMode::second << "Warning: FileHandle == NULL !!!" << endl;
+      DSP::log << "DSP::u::FileOutput::BlockOutput" << DSP::e::LogMode::second << "Warning: FileHandle == NULL !!!" << std::endl;
     #endif
     return false;
   }
@@ -1654,7 +1654,7 @@ unsigned long DSP::u::FileOutput::WriteSegmentFromBuffer(
       break;
 
     default:
-      DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput::WriteSegmentToBuffer" << DSP::e::LogMode::second << "Unsupported file sample type - write aborted" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::FileOutput::WriteSegmentToBuffer" << DSP::e::LogMode::second << "Unsupported file sample type - write aborted" << std::endl;
       return 0;
   }
 
@@ -2383,7 +2383,7 @@ void DSP::u::FileOutput::FlushBuffer(void)
     {
     #ifdef __DEBUG__
       case DSP::e::SampleType::ST_short:
-        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::e::LogMode::second << "DSP::e::SampleType::ST_short no longer supported" << endl;
+        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::e::LogMode::second << "DSP::e::SampleType::ST_short no longer supported" << std::endl;
         /*
         tempBuffer_float=Buffer;
 
@@ -2397,7 +2397,7 @@ void DSP::u::FileOutput::FlushBuffer(void)
         */
         break;
       case DSP::e::SampleType::ST_float:
-        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::e::LogMode::second << "DSP::e::SampleType::ST_float no longer supported" << endl;
+        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::e::LogMode::second << "DSP::e::SampleType::ST_float no longer supported" << std::endl;
         /*
         tempBuffer_float=Buffer;
 
@@ -2411,10 +2411,10 @@ void DSP::u::FileOutput::FlushBuffer(void)
         */
         break;
       case DSP::e::SampleType::ST_tchar:
-        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::e::LogMode::second << "DSP::e::SampleType::ST_tchar no longer supported" << endl;
+        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::e::LogMode::second << "DSP::e::SampleType::ST_tchar no longer supported" << std::endl;
         break;
       case DSP::e::SampleType::ST_uchar:
-        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::e::LogMode::second << "DSP::e::SampleType::ST_uchar no longer supported" << endl;
+        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::e::LogMode::second << "DSP::e::SampleType::ST_uchar no longer supported" << std::endl;
         /*
         tempBuffer_float=Buffer;
 
@@ -2428,7 +2428,7 @@ void DSP::u::FileOutput::FlushBuffer(void)
         */
         break;
       case DSP::e::SampleType::ST_bit_text:
-        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::e::LogMode::second << "DSP::e::SampleType::ST_bit_text no longer supported" << endl;
+        DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::e::LogMode::second << "DSP::e::SampleType::ST_bit_text no longer supported" << std::endl;
         /*
         tempBuffer_float=Buffer;
 
@@ -2491,7 +2491,7 @@ void DSP::u::FileOutput::FlushBuffer(void)
         break;
       default:
         #ifdef __DEBUG__
-          DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::e::LogMode::second << "Unsupported format detected" << endl;
+          DSP::log << "DSP::u::FileOutput::FlushBuffer" << DSP::e::LogMode::second << "Unsupported format detected" << std::endl;
         #endif
         break;
     }
@@ -2518,10 +2518,10 @@ void DSP::u::FileOutput::raw_FlushBuffer(void)
 
 //*****************************************************//
 //*****************************************************//
-bool DSP::f::GetWAVEfileParams(const string &FileName, const string &FileDir,
+bool DSP::f::GetWAVEfileParams(const std::string &FileName, const std::string &FileDir,
                            T_WAVEchunk_ptr WAVEparams)
 {
-  string tekst;
+  std::string tekst;
   FILE *hIn;
 
   tekst = FileDir;
@@ -2545,7 +2545,7 @@ bool DSP::f::GetWAVEfileParams(const string &FileName, const string &FileDir,
     #ifdef __DEBUG__
     {
       DSP::log << DSP::e::LogMode::Error << "DSP::f::GetWAVEfileParams" << DSP::e::LogMode::second
-        << "This (" << FileName << ") is not PCM WAVE file or file is corrupted !!!" << endl;
+        << "This (" << FileName << ") is not PCM WAVE file or file is corrupted !!!" << std::endl;
     }
     #endif
     fclose(hIn);
@@ -2558,7 +2558,7 @@ bool DSP::f::GetWAVEfileParams(const string &FileName, const string &FileDir,
 
 // Creates object for *.wav files reading
 DSP::u::WaveInput::WaveInput(DSP::Clock_ptr ParentClock,
-                             const string &FileName_in, const string &FileDir_in,
+                             const std::string &FileName_in, const std::string &FileDir_in,
                              unsigned int OutputsNo)
   : DSP::File(), DSP::Source()
 {
@@ -2581,8 +2581,8 @@ DSP::u::WaveInput::WaveInput(DSP::Clock_ptr ParentClock,
   if (OutputsNo > 2)
   {
     unsigned int ind;
-    vector<unsigned int> tempOut;
-    string temp;
+    std::vector<unsigned int> tempOut;
+    std::string temp;
 
     tempOut.resize(OutputsNo);
     for (ind=0; ind<OutputsNo; ind++)
@@ -2593,7 +2593,7 @@ DSP::u::WaveInput::WaveInput(DSP::Clock_ptr ParentClock,
     DefineOutput("out.im", 1);
     for (ind=0; ind<OutputsNo; ind++)
     {
-      temp = "out" + to_string(ind+1);
+      temp = "out" + std::to_string(ind+1);
       DefineOutput(temp, ind);
     }
   }
@@ -2625,7 +2625,7 @@ bool DSP::u::WaveInput::SetSkip(long long Offset)
   UNUSED_ARGUMENT(Offset);
 
   #ifdef __DEBUG__
-    DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::SetSkip" << DSP::e::LogMode::second << "not implemented yet" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::u::FileInput::SetSkip" << DSP::e::LogMode::second << "not implemented yet" << std::endl;
   #endif
   return false;
 }
@@ -2635,7 +2635,7 @@ bool DSP::u::WaveInput::SetSkip(long long Offset)
 //To be used in constructor
 bool DSP::u::WaveInput::Init(void)
 {
-  string tekst;
+  std::string tekst;
   int len;
 
   BufferIndex=0; //this means also that Buffer is empty
@@ -2661,7 +2661,7 @@ bool DSP::u::WaveInput::Init(void)
     #ifdef __DEBUG__
       DSP::log << "DSP::u::WaveInput::Init" << DSP::e::LogMode::second
         << "(Input file \"" << tekst
-        << "\" in block <" << GetName() << "> could not be opened" << endl;
+        << "\" in block <" << GetName() << "> could not be opened" << std::endl;
     #endif
 
     FileEnd=true;
@@ -2677,7 +2677,7 @@ bool DSP::u::WaveInput::Init(void)
   {
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DSP::u::WaveInput::Init" << DSP::e::LogMode::second
-        << "This (" << FileName << ") is not PCM WAVE file or file is corrupted !!!" << endl;
+        << "This (" << FileName << ") is not PCM WAVE file or file is corrupted !!!" << std::endl;
     #endif
     fclose(FileHandle);
     FileHandle=NULL;
@@ -2688,7 +2688,7 @@ bool DSP::u::WaveInput::Init(void)
   //Check channels number
   #ifdef __DEBUG__
   {
-    stringstream temp;
+    std::stringstream temp;
     switch (WAVEchunk.nChannels)
     {
       case 1:
@@ -2705,7 +2705,7 @@ bool DSP::u::WaveInput::Init(void)
               << WAVEchunk.wBitsPerSample << "bits";
          break;
      }
-    DSP::log << "DSP::u::WaveInput::Init" << DSP::e::LogMode::second << temp.str() << endl;
+    DSP::log << "DSP::u::WaveInput::Init" << DSP::e::LogMode::second << temp.str() << std::endl;
   }
   #endif
   //SampleSize = WAVEchunk.wBitsPerSample * WAVEchunk.nChannels;
@@ -2715,7 +2715,7 @@ bool DSP::u::WaveInput::Init(void)
   {
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DSP::u::WaveInput::Init" << DSP::e::LogMode::second
-        << "No data have been found in PCM file " << FileName << "!!!" << endl;
+        << "No data have been found in PCM file " << FileName << "!!!" << std::endl;
     #endif
     fclose(FileHandle);
     FileHandle=NULL;
@@ -2827,7 +2827,7 @@ uint32_t DSP::u::WaveInput::ReadAudioSegment(void)
         #ifdef __DEBUG__
           else
           {
-            DSP::log << DSP::e::LogMode::Error << "DSP::u::WaveInput::ReadAudioSegment" << DSP::e::LogMode::second << "unsupported PCM sample size" << endl;
+            DSP::log << DSP::e::LogMode::Error << "DSP::u::WaveInput::ReadAudioSegment" << DSP::e::LogMode::second << "unsupported PCM sample size" << std::endl;
           }
         #endif
 
@@ -2932,7 +2932,7 @@ inline void __fastcall CAudioInput::Execute() {};
 //================================================================//
 inline void CWaveInput::SourceDescription(TStringList *Text)
 {
-  string temp;
+  std::string temp;
   int ind, ind_;
   SYSTEMTIME stime;
 
@@ -3046,7 +3046,7 @@ void DSP::T_WAVEchunk::PrepareHeader(
   wBitsPerSample = wBitsPerSample_in;
   #ifdef __DEBUG__
     if ((wBitsPerSample % 8) != 0)
-      DSP::log << DSP::e::LogMode::Error << "T_WAVEchunk::PrepareHeader" << DSP::e::LogMode::second << "wBitsPerSample_in in not a multiple of 8" << endl;
+      DSP::log << DSP::e::LogMode::Error << "T_WAVEchunk::PrepareHeader" << DSP::e::LogMode::second << "wBitsPerSample_in in not a multiple of 8" << std::endl;
   #endif
   nBlockAlign = (uint16_t)(wBitsPerSample / 8 * nChannels);
   nAvgBytesPerSec = nSamplesPerSec * nBlockAlign;
@@ -3472,7 +3472,7 @@ inline short CDirectXInput::GetFullBuffersNo(void)
 
 inline void CDirectXInput::SourceDescription(TStringList *Text)
 {
-  string temp;
+  std::string temp;
   int ind, ind_;
   SYSTEMTIME stime;
 
@@ -3519,31 +3519,31 @@ inline void CDirectXInput::SourceDescription(TStringList *Text)
       {
         case MMSYSERR_ALLOCATED:
           DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
-            "Specified resource is already allocated." << endl;
+            "Specified resource is already allocated." << std::endl;
           break;
         case MMSYSERR_BADDEVICEID:
           DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
-            "Specified device identifier is out of range." << endl;
+            "Specified device identifier is out of range." << std::endl;
           break;
         case MMSYSERR_NODRIVER:
           DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
-            "No device driver is present." << endl;
+            "No device driver is present." << std::endl;
           break;
         case MMSYSERR_NOMEM:
           DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
-            "Unable to allocate or lock memory." << endl;
+            "Unable to allocate or lock memory." << std::endl;
           break;
         case WAVERR_BADFORMAT:
           DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
-            "Attempted to open with an unsupported waveform-audio format." << endl;
+            "Attempted to open with an unsupported waveform-audio format." << std::endl;
           break;
         case WAVERR_SYNC:
           DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
-            "The device is synchronous but waveOutOpen was called without using the WAVE_ALLOWSYNC flag." << endl;
+            "The device is synchronous but waveOutOpen was called without using the WAVE_ALLOWSYNC flag." << std::endl;
           break;
         case MMSYSERR_INVALFLAG:
           DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
-            "Invalid flag" << endl;
+            "Invalid flag" << std::endl;
           break;
         case MMSYSERR_NOERROR:
           return false;
@@ -3553,24 +3553,24 @@ inline void CDirectXInput::SourceDescription(TStringList *Text)
           break;
         case MMSYSERR_INVALHANDLE:
           DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
-            "Specified device handle is invalid." << endl;
+            "Specified device handle is invalid." << std::endl;
           break;
         case WAVERR_UNPREPARED:
           DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
-            "The data block pointed to by the pwh parameter hasn't been prepared." << endl;
+            "The data block pointed to by the pwh parameter hasn't been prepared." << std::endl;
           break;
         case MMSYSERR_HANDLEBUSY:
           DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
-            "Handle busy." << endl;
+            "Handle busy." << std::endl;
           break;
         case WAVERR_STILLPLAYING:
           DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second <<
-            "There are still buffers in the queue." << endl;
+            "There are still buffers in the queue." << std::endl;
           break;
         default:
           {
             DSP::log << DSP::e::LogMode::Error << "DSP::f::AudioCheckError" << DSP::e::LogMode::second
-              << "Unknown error " << WAVERR_BASE << " " << result << endl;
+              << "Unknown error " << WAVERR_BASE << " " << result << std::endl;
           }
           break;
       }
@@ -3604,7 +3604,7 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
 #ifdef __DEBUG__
   if ((SamplingFreq * size) / DSP::ReferenceFs > UINT32_MAX){
     DSP::log << DSP::e::LogMode::Error << "DSP::f::GetAudioBufferSize" << DSP::e::LogMode::second
-       << "Buffer size (" << (SamplingFreq * size) / DSP::ReferenceFs << ") > UINT32_MAX" << endl;
+       << "Buffer size (" << (SamplingFreq * size) / DSP::ReferenceFs << ") > UINT32_MAX" << std::endl;
   }
 #endif
   size = (uint32_t)((SamplingFreq * size) / DSP::ReferenceFs);
@@ -3640,11 +3640,11 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
   // #ifdef AUDIO_DEBUG_MESSAGES_ON
   //     case WIM_OPEN:
   //       DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
-  //         << "WIM_OPEN(" << (int)dwInstance << ")" << endl;
+  //         << "WIM_OPEN(" << (int)dwInstance << ")" << std::endl;
   //       break;
   //     case WIM_CLOSE:
   //       DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
-  //         << "WIM_CLOSE(" << (int)dwInstance << ")" << endl;
+  //         << "WIM_CLOSE(" << (int)dwInstance << ")" << std::endl;
   //       break;
   // #endif
   // #endif
@@ -3653,7 +3653,7 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
   // #ifdef __DEBUG__
   // #ifdef AUDIO_DEBUG_MESSAGES_ON
   //       DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
-  //         << "WIM_DATA(" << (int)dwInstance << ")" << endl;
+  //         << "WIM_DATA(" << (int)dwInstance << ")" << std::endl;
   // #endif
   // #endif
 
@@ -3665,7 +3665,7 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
   //         {
   // #ifdef __DEBUG__
   // #ifdef AUDIO_DEBUG_MESSAGES_ON
-  //           DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second << "All buffers had been used - skipping input audio frame" << endl;
+  //           DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second << "All buffers had been used - skipping input audio frame" << std::endl;
   // #endif
   // #endif
   //           result=waveInUnprepareHeader(Current->hWaveIn,
@@ -3698,7 +3698,7 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
   //             #ifdef __DEBUG__
   //               if (Current->InSampleType != DSP::e::SampleType::ST_short)
   //               {
-  //                 DSP::log << "DSP::u::AudioInput::waveInProc_short" << DSP::e::LogMode::second << "Current->InSampleType != DSP::e::SampleType::ST_short" << endl;
+  //                 DSP::log << "DSP::u::AudioInput::waveInProc_short" << DSP::e::LogMode::second << "Current->InSampleType != DSP::e::SampleType::ST_short" << std::endl;
   //               }
   //             #endif
 
@@ -3725,7 +3725,7 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
   //           {
   // #ifdef __DEBUG__
   // #ifdef AUDIO_DEBUG_MESSAGES_ON
-  //             DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second << "Wrong audio frame ready or other unexpected error" << endl;
+  //             DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second << "Wrong audio frame ready or other unexpected error" << std::endl;
   // #endif
   // #endif
   //           }
@@ -3768,7 +3768,7 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
   //       break;
   //     case WIM_CLOSE:
   //       DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
-  //         << "WIM_CLOSE(" << (int)dwInstance << ")" << endl;
+  //         << "WIM_CLOSE(" << (int)dwInstance << ")" << std::endl;
   //       break;
   // #endif
   // #endif
@@ -3777,7 +3777,7 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
   // #ifdef __DEBUG__
   // #ifdef AUDIO_DEBUG_MESSAGES_ON
   //       DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second
-  //         << "WIM_DATA(" << (int)dwInstance << ")" << endl;
+  //         << "WIM_DATA(" << (int)dwInstance << ")" << std::endl;
   // #endif
   // #endif
 
@@ -3789,7 +3789,7 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
   //         {
   // #ifdef __DEBUG__
   // #ifdef AUDIO_DEBUG_MESSAGES_ON
-  //           DSP::log << "DSP::u::AudioInput::waveInProc"  << DSP::e::LogMode::second << "All buffers had been used - skipping input audio frame" << endl;
+  //           DSP::log << "DSP::u::AudioInput::waveInProc"  << DSP::e::LogMode::second << "All buffers had been used - skipping input audio frame" << std::endl;
   // #endif
   // #endif
   //           result=waveInUnprepareHeader(Current->hWaveIn,
@@ -3822,7 +3822,7 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
   //             #ifdef __DEBUG__
   //               if (Current->InSampleType != DSP::e::SampleType::ST_uchar)
   //               {
-  //                 DSP::log << "DSP::u::AudioInput::waveInProc_uchar" << DSP::e::LogMode::second << "Current->InSampleType != DSP::e::SampleType::ST_uchar" << endl;
+  //                 DSP::log << "DSP::u::AudioInput::waveInProc_uchar" << DSP::e::LogMode::second << "Current->InSampleType != DSP::e::SampleType::ST_uchar" << std::endl;
   //               }
   //             #endif
 
@@ -3849,7 +3849,7 @@ uint32_t DSP::f::GetAudioBufferSize(const unsigned long &SamplingFreq, const DSP
   //           {
   // #ifdef __DEBUG__
   // #ifdef AUDIO_DEBUG_MESSAGES_ON
-  //             DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second << "Wrong audio frame ready or other unexpected error" << endl;
+  //             DSP::log << "DSP::u::AudioInput::waveInProc" << DSP::e::LogMode::second << "Wrong audio frame ready or other unexpected error" << std::endl;
   // #endif
   // #endif
   //           }
@@ -3916,7 +3916,7 @@ void DSP::u::AudioOutput::Init(unsigned long SamplingFreq,
     UNUSED_ARGUMENT(WaveOutDevNo);
   #endif
 
-  string temp;
+  std::string temp;
 
 
   SetNoOfInputs(InputsNo, true);
@@ -3939,7 +3939,7 @@ void DSP::u::AudioOutput::Init(unsigned long SamplingFreq,
   }
   for (unsigned int ind_i=0; ind_i<NoOfInputs; ind_i++)
   {
-    temp = "in" + to_string(ind_i+1);
+    temp = "in" + std::to_string(ind_i+1);
     DefineInput(temp, ind_i);
     ClockGroups.AddInput2Group("input", Input(temp));
   }
@@ -4004,19 +4004,19 @@ bool DSP::u::AudioInput::SOUND_object_callback(const DSP::e::SampleType &InSampl
       case DSP::e::SampleType::ST_short: {
           if (InBufferLen != wave_in_raw_buffer.size() / sizeof(short)) {
             DSP::log << "DSP::u::AudioInput::SOUND_object_callback" << DSP::e::LogMode::second << "incorrect wave_in_raw_buffer size: " <<
-              wave_in_raw_buffer.size()  << " instead of " << InBufferLen * sizeof(short) << endl;
+              wave_in_raw_buffer.size()  << " instead of " << InBufferLen * sizeof(short) << std::endl;
           }
         }
         break;
       case DSP::e::SampleType::ST_uchar: {
           if (InBufferLen != wave_in_raw_buffer.size() / sizeof(uint8_t)) {
             DSP::log << "DSP::u::AudioInput::SOUND_object_callback" << DSP::e::LogMode::second << "incorrect wave_in_raw_buffer size: " <<
-              wave_in_raw_buffer.size()  << " instead of " << InBufferLen * sizeof(uint8_t) << endl;
+              wave_in_raw_buffer.size()  << " instead of " << InBufferLen * sizeof(uint8_t) << std::endl;
           }
         }
         break;
       default:
-        DSP::log << "DSP::u::AudioInput::SOUND_object_callback" << DSP::e::LogMode::second << "Unsupported Current->InSampleType" << endl;
+        DSP::log << "DSP::u::AudioInput::SOUND_object_callback" << DSP::e::LogMode::second << "Unsupported Current->InSampleType" << std::endl;
         break;
     }
 #endif // __DEBUG__
@@ -4054,7 +4054,7 @@ bool DSP::u::AudioInput::SOUND_object_callback(const DSP::e::SampleType &InSampl
 
       default:
     #ifdef __DEBUG__
-        DSP::log << "DSP::u::AudioInput::SOUND_object_callback" << DSP::e::LogMode::second << "Unsupported Current->InSampleType" << endl;
+        DSP::log << "DSP::u::AudioInput::SOUND_object_callback" << DSP::e::LogMode::second << "Unsupported Current->InSampleType" << std::endl;
     #endif
         break;
     }
@@ -4083,7 +4083,7 @@ void DSP::u::AudioInput::Init(DSP::Clock_ptr ParentClock,
                            unsigned int WaveInDevNo)
 {
   unsigned long ind;
-  string temp;
+  std::string temp;
 
   // #ifdef WINMMAPI
   //   MMRESULT result;
@@ -4115,7 +4115,7 @@ void DSP::u::AudioInput::Init(DSP::Clock_ptr ParentClock,
   }
   for (unsigned int ind_i=0; ind_i<NoOfOutputs; ind_i++)
   {
-    temp = "out" + to_string(ind_i+1);
+    temp = "out" + std::to_string(ind_i+1);
     DefineOutput(temp, ind_i);
   }
 
@@ -4160,12 +4160,12 @@ void DSP::u::AudioInput::Init(DSP::Clock_ptr ParentClock,
     DSP::input_callback_function  cp = &DSP::u::AudioInput::SOUND_object_callback;
     snd_object.register_input_callback_object(this, cp); // use default device
 #ifdef __DEBUG__
-    DSP::log << "DSP::u::AudioInput::Init" << DSP::e::LogMode::second << "using callback mode" << endl;
+    DSP::log << "DSP::u::AudioInput::Init" << DSP::e::LogMode::second << "using callback mode" << std::endl;
 #endif // __DEBUG__
   }
 #ifdef __DEBUG__
   else {
-    DSP::log << "DSP::u::AudioInput::Init" << DSP::e::LogMode::second << "using non-callback mode" << endl;
+    DSP::log << "DSP::u::AudioInput::Init" << DSP::e::LogMode::second << "using non-callback mode" << std::endl;
   }
 #endif // __DEBUG__
   if (snd_object.open_PCM_device_4_input(NoOfOutputs, BitPrec, SamplingFreq, audio_inbuffer_size) > 0) {
@@ -4218,7 +4218,7 @@ DSP::u::AudioOutput::~AudioOutput()
     //   }
 
     //   #ifdef AUDIO_DEBUG_MESSAGES_ON
-    //     DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Closing DSP::u::AudioOutput" << endl;
+    //     DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Closing DSP::u::AudioOutput" << std::endl;
     //   #endif
     //   result=waveOutClose(hWaveOut);
     //   while (result==WAVERR_STILLPLAYING)
@@ -4229,7 +4229,7 @@ DSP::u::AudioOutput::~AudioOutput()
     //   //      sleep(100);
     //   //    #endif
     //     #ifdef AUDIO_DEBUG_MESSAGES_ON
-    //       DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Closing DSP::u::AudioOutput" << endl;
+    //       DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Closing DSP::u::AudioOutput" << std::endl;
     //     #endif
     //     result=waveOutClose(hWaveOut);
     //   }
@@ -4297,7 +4297,7 @@ void DSP::u::AudioOutput::FlushBuffer(void)
   //   // Send buffer to the audio device
 
   // #ifdef AUDIO_DEBUG_MESSAGES_ON
-  //   DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Flushing output buffer" << endl;
+  //   DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Flushing output buffer" << std::endl;
   // #endif
 
   // while (1)
@@ -4387,7 +4387,7 @@ void DSP::u::AudioOutput::FlushBuffer(void)
   //   {
   // //    Sleep(10);
   // #ifdef AUDIO_DEBUG_MESSAGES_ON
-  //     DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Waiting for free output buffer" << endl;
+  //     DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second << "Waiting for free output buffer" << std::endl;
   // #endif
   //     DSP::f::Sleep(0);
   //   }
@@ -4434,7 +4434,7 @@ void DSP::u::AudioOutput::InputExecute(INPUT_EXECUTE_ARGS)
   #ifdef __DEBUG__
   #ifdef VerboseCompilation
     DSP::log << "DSP::u::AudioOutput" << DSP::e::LogMode::second
-      << InputNo << ": " << setw(5) << setprecision(3) << fixed << value << endl;
+      << InputNo << ": " << std::setw(5) << std::setprecision(3) << std::fixed << value << std::endl;
   #endif
   #endif
 }
@@ -4461,7 +4461,7 @@ bool DSP::u::AudioInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
   if (DSP_THIS->InBufferLen == 0)
   { // no audio device opened
   	#ifdef AUDIO_DEBUG_MESSAGES_ON
-      DSP::log << "DSP::u::AudioInput::Execute" << DSP::e::LogMode::second << "No audio device opened" << endl;
+      DSP::log << "DSP::u::AudioInput::Execute" << DSP::e::LogMode::second << "No audio device opened" << std::endl;
   	#endif
 
     for (ind=0; ind < DSP_THIS->NoOfOutputs; ind++)
@@ -4500,7 +4500,7 @@ bool DSP::u::AudioInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
       // so we must wait for some
 
       #ifdef AUDIO_DEBUG_MESSAGES_ON
-        DSP::log << "DSP::u::AudioInput::Execute" << DSP::e::LogMode::second << "no data ready we must wait" << endl;
+        DSP::log << "DSP::u::AudioInput::Execute" << DSP::e::LogMode::second << "no data ready we must wait" << std::endl;
       #endif
 		  DSP::Clock::InputNeedsMoreTime[DSP_THIS->my_clock->MasterClockIndex] = true;
 		  return false;
@@ -4517,7 +4517,7 @@ bool DSP::u::AudioInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
           DSP_THIS->CurrentBufferIndex %= DSP::NoOfAudioInputBuffers;
 
           #ifdef AUDIO_DEBUG_MESSAGES_ON
-            DSP::log << "DSP::u::AudioInput::Execute" << DSP::e::LogMode::second << "fresh data has finally arrived" << endl;
+            DSP::log << "DSP::u::AudioInput::Execute" << DSP::e::LogMode::second << "fresh data has finally arrived" << std::endl;
           #endif
         }
         else
@@ -4580,7 +4580,7 @@ bool DSP::u::AudioInput::OutputExecute(OUTPUT_EXECUTE_ARGS)
     return false;
   }
 
-//  DSP::log << "DSP::u::AudioInput::Execute" << "No input buffer ready yet" << endl;
+//  DSP::log << "DSP::u::AudioInput::Execute" << "No input buffer ready yet" << std::endl;
   DSP::Clock::InputNeedsMoreTime[DSP_THIS->my_clock->MasterClockIndex] = true;
   return false;
 }
@@ -4607,7 +4607,7 @@ DSP::u::InputBuffer::InputBuffer(DSP::Clock_ptr ParentClock, int BufferSize_in,
   : DSP::Source()
 {
   DSP::Clock_ptr NotificationClock;
-  string temp;
+  std::string temp;
 
   SetName("InputBuffer", false);
 
@@ -4632,7 +4632,7 @@ DSP::u::InputBuffer::InputBuffer(DSP::Clock_ptr ParentClock, int BufferSize_in,
   if (NoOfChannels > 2)
   {
     unsigned int ind;
-    vector <unsigned int> tempOut;
+    std::vector <unsigned int> tempOut;
     tempOut.resize(NoOfChannels);
     for (ind=0; ind<NoOfChannels; ind++)
       tempOut[ind]=ind;
@@ -4642,7 +4642,7 @@ DSP::u::InputBuffer::InputBuffer(DSP::Clock_ptr ParentClock, int BufferSize_in,
     DefineOutput("out.im", 1);
     for (ind=0; ind<NoOfChannels; ind++)
     {
-      temp = "out" + to_string(ind+1);
+      temp = "out" + std::to_string(ind+1);
       DefineOutput(temp, ind);
     }
   }
@@ -4743,14 +4743,14 @@ void DSP::u::InputBuffer::WriteBuffer(void *source,
     {
       DSP::log << DSP::e::LogMode::Error << "DSP::u::InputBuffer::WriteBuffer" << DSP::e::LogMode::second
         << "(" << this->GetName() << ") source_size ("
-        << source_size << ") doesn't match source_DataType" << endl;
+        << source_size << ") doesn't match source_DataType" << std::endl;
     }
     if (BufferSize < NoOfSourceSamples)
     {
-      stringstream tekst;
+      std::stringstream tekst;
       DSP::log << DSP::e::LogMode::Error << "DSP::u::InputBuffer::WriteBuffer" << DSP::e::LogMode::second
         << "(" << this->GetName() << ") source_size ("
-        << source_size << ") larger then Buffer size\n" << endl;
+        << source_size << ") larger then Buffer size\n" << std::endl;
     }
   #endif
 
@@ -4909,8 +4909,8 @@ DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOf
                                      DSP::Buffer_callback_ptr func_ptr, unsigned int CallbackIdentifier)
   : DSP::Block(), DSP::Source()
 {
-  vector<unsigned int> tempOut;
-  string temp;
+  std::vector<unsigned int> tempOut;
+  std::string temp;
   DSP::Clock_ptr OutputClock;
 
   Init(BufferSize_in, NoOfInputs_in, cyclic, NotificationsStep_in);
@@ -4920,7 +4920,7 @@ DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOf
   tempOut.resize(NoOfOutputs);
   for (unsigned int ind=0; ind<NoOfOutputs; ind++)
   {
-    temp = "out" + to_string(ind+1);
+    temp = "out" + std::to_string(ind+1);
     DefineOutput(temp, ind);
 
     tempOut[ind]=ind;
@@ -4977,8 +4977,8 @@ DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOf
                                      unsigned int NoOfOutputs_in, DSP::Buffer_callback_ptr func_ptr, unsigned int CallbackIdentifier)
   : DSP::Block(), DSP::Source()
 {
-  vector <unsigned int> tempOut;
-  string temp;
+  std::vector <unsigned int> tempOut;
+  std::string temp;
 
   Init(BufferSize_in, NoOfInputs_in, cyclic, -1);
 
@@ -4987,7 +4987,7 @@ DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOf
   tempOut.resize(NoOfOutputs);
   for (unsigned int ind=0; ind<NoOfOutputs; ind++)
   {
-    temp = "out" + to_string(ind+1);
+    temp = "out" + std::to_string(ind+1);
     DefineOutput(temp, ind);
 
     tempOut[ind]=ind;
@@ -5047,7 +5047,7 @@ DSP::u::OutputBuffer::~OutputBuffer(void)
 void DSP::u::OutputBuffer::Init(unsigned int BufferSize_in, unsigned int NoOfChannels,
                              DSP::e::BufferType cyclic, int NotificationsStep_in)
 {
-  string temp;
+  std::string temp;
 
   SetName("OutputBuffer", false);
 
@@ -5076,7 +5076,7 @@ void DSP::u::OutputBuffer::Init(unsigned int BufferSize_in, unsigned int NoOfCha
   if (NoOfChannels > 2)
   {
     unsigned int ind;
-    vector <unsigned int> tempIn;
+    std::vector <unsigned int> tempIn;
     tempIn.resize(NoOfChannels);
     for (ind=0; ind<NoOfChannels; ind++)
       tempIn[ind]=ind;
@@ -5086,7 +5086,7 @@ void DSP::u::OutputBuffer::Init(unsigned int BufferSize_in, unsigned int NoOfCha
     DefineInput("in.im", 1);
     for (ind=0; ind<NoOfChannels; ind++)
     {
-      temp = "in" + to_string(ind+1);
+      temp = "in" + std::to_string(ind+1);
       DefineInput(temp, ind);
     }
   }
@@ -5134,7 +5134,7 @@ unsigned long DSP::u::OutputBuffer::ReadBuffer(void *dest, long int dest_size,
   #ifdef __DEBUG__
     if (dest == NULL)
     {
-      DSP::log << DSP::e::LogMode::Error << "DSP::u::OutputBuffer::ReadBuffer" << DSP::e::LogMode::second << "dest == NULL !!!" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::u::OutputBuffer::ReadBuffer" << DSP::e::LogMode::second << "dest == NULL !!!" << std::endl;
       return 0;
     }
   #endif
@@ -5159,7 +5159,7 @@ unsigned long DSP::u::OutputBuffer::ReadBuffer(void *dest, long int dest_size,
     if (NoOfDestSamples*OutputSampleSize != dest_size)
     {
       DSP::log << DSP::e::LogMode::Error << "DSP::u::OutputBuffer::ReadBuffer" << DSP::e::LogMode::second
-         << "(" << this->GetName() << ") dest_size (" << dest_size << ") doesn't match dest_DataType" << endl;
+         << "(" << this->GetName() << ") dest_size (" << dest_size << ") doesn't match dest_DataType" << std::endl;
     }
   #endif
 
@@ -5233,7 +5233,7 @@ unsigned long DSP::u::OutputBuffer::ReadBuffer(void *dest, long int dest_size,
         //128       128                   256           256
         #ifdef __DEBUG__
           if (reset - (BufferSize - BufferIndex) > INT_MAX) {
-            DSP::log << DSP::e::LogMode::Error << "DSP::u::OutputBuffer::ReadBuffer" << DSP::e::LogMode::second << "step > INT_MAX" << endl;
+            DSP::log << DSP::e::LogMode::Error << "DSP::u::OutputBuffer::ReadBuffer" << DSP::e::LogMode::second << "step > INT_MAX" << std::endl;
           }
         #endif // __DEBUG__
         step = (int)(reset - (BufferSize - BufferIndex));
@@ -5429,7 +5429,7 @@ bool DSP::u::OutputBuffer::OutputExecute(OUTPUT_EXECUTE_ARGS)
   #ifdef __DEBUG__
   else
   {
-    DSP::log << DSP::e::LogMode::Error << "DSP::u::OutputBuffer::OutputExecute" << DSP::e::LogMode::second << "DSP_THIS->OutputSamples_ready == false" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::u::OutputBuffer::OutputExecute" << DSP::e::LogMode::second << "DSP_THIS->OutputSamples_ready == false" << std::endl;
   }
   #endif
 
@@ -5526,7 +5526,7 @@ void DSP::f::Sleep(uint32_t time)
 /*! Checks Coefficients file type and fills
  *  DSP_LoadCoef_Info structure.
  */
-bool DSP::LoadCoef::Open(const string &Filename, const string &Dir)
+bool DSP::LoadCoef::Open(const std::string &Filename, const std::string &Dir)
 {
   FILE *plik;
   uint32_t ValuesRead;
@@ -5600,7 +5600,7 @@ bool DSP::LoadCoef::Open(const string &Filename, const string &Dir)
 
   if (this->NoOfVectors == -1)
   {
-    DSP::log << DSP::e::LogMode::Error << "DSP_LoadCoef::Open" << DSP::e::LogMode::second << "File doesn't exist or unsupported file format." << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP_LoadCoef::Open" << DSP::e::LogMode::second << "File doesn't exist or unsupported file format." << std::endl;
     return false;
   }
 
@@ -5804,7 +5804,7 @@ bool DSP::LoadCoef::Load(DSP::Float_vector &FIR_coef, int vector_index)
 }
 
 //!
-FILE * CreateFLTfile(const string &filename, const unsigned int &NoOfChannels = 1U, const unsigned int &Fp=0)
+FILE * CreateFLTfile(const std::string &filename, const unsigned int &NoOfChannels = 1U, const unsigned int &Fp=0)
 {
   FILE *FileHandle;
 
@@ -5822,7 +5822,7 @@ FILE * CreateFLTfile(const string &filename, const unsigned int &NoOfChannels = 
 }
 
 // Saves to *.flt file len samples from real valued vector
-bool DSP::f::SaveVector(const string &filename, const DSP::Float_vector &vector, const unsigned int &Fp)
+bool DSP::f::SaveVector(const std::string &filename, const DSP::Float_vector &vector, const unsigned int &Fp)
 {
   FILE *FileHandle = CreateFLTfile(filename, 1U, Fp);
 
@@ -5837,7 +5837,7 @@ bool DSP::f::SaveVector(const string &filename, const DSP::Float_vector &vector,
   return false;
 }
 // Saves to *.flt file len samples from complex valued vector
-bool DSP::f::SaveVector(const string &filename, const DSP::Complex_vector &vector, const unsigned int &Fp)
+bool DSP::f::SaveVector(const std::string &filename, const DSP::Complex_vector &vector, const unsigned int &Fp)
 {
   FILE *FileHandle = CreateFLTfile(filename, 2U, Fp);
 

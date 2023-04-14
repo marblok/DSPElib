@@ -290,7 +290,7 @@ class DSP::u::Farrow  : public DSP::Block, public DSP::Source
      * \param InputClock clock for input signal
      * \param OutputClock clock for output signal
      */
-    Farrow(const bool &IsComplex, const vector<DSP::Float_vector> &Farrow_coefs_in,
+    Farrow(const bool &IsComplex, const std::vector<DSP::Float_vector> &Farrow_coefs_in,
       const DSP::Clock_ptr &InputClock, const DSP::Clock_ptr &OutputClock);
     
     ~Farrow(void);
@@ -516,8 +516,8 @@ class DSP::u::Serial2Parallel : public DSP::Block, public DSP::Source
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
 
     int no_of_parallel_outputs; //! number of inputs cycles before the output is generated
-    vector<DSP::Float> inputs;  //! vector for input samples
-    vector<DSP::Float> outputs;  //! vector for input samples
+    std::vector<DSP::Float> inputs;  //! vector for input samples
+    std::vector<DSP::Float> outputs;  //! vector for input samples
     bool output_ready; //! set true when all inputs are collected in inputs vector
     int current_cycle_no; // 0, 1, ..., no_of_inputs_per_output-1
   public:
@@ -525,7 +525,7 @@ class DSP::u::Serial2Parallel : public DSP::Block, public DSP::Source
     Serial2Parallel(const DSP::Clock_ptr &InputClock,
         const unsigned int &NoOfParallelOutputs,
         const unsigned int &NoOfLinesPerInput=1,
-        const vector<DSP::Float> &first_output_vector={});
+        const std::vector<DSP::Float> &first_output_vector={});
     ~Serial2Parallel(void);
 };
 
@@ -559,7 +559,7 @@ class DSP::u::Parallel2Serial : public DSP::Block, public DSP::Source
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
 
     int no_of_parallel_inputs; //! number of output cycles per input cycle
-    vector<DSP::Float> inputs;  //! vector for input samples for current clock cycle
+    std::vector<DSP::Float> inputs;  //! vector for input samples for current clock cycle
     bool ready; //! set true when all lines of the first input are collected in inputs vector and output can be generated for the first output clock cycle
     unsigned int no_of_first_output_sample_lines_ready; // allows for detection when the first output sample can be generated
     int current_out; //! index of currently generated output
@@ -613,7 +613,7 @@ class DSP::u::SymbolMapper : public DSP::Block
     DSP::Complex_vector current_constellation;
 
     friend unsigned int getConstellation(DSP::Complex_vector &constellation, DSP::e::ModulationType type, const DSP::Float &constellation_phase_offset, const unsigned int &bits_per_symbol_in, bool &is_real);
-    vector <unsigned char> input_bits;
+    std::vector <unsigned char> input_bits;
 
     static void InputExecute_bits(INPUT_EXECUTE_ARGS);
   public:

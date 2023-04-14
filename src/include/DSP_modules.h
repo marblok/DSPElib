@@ -23,8 +23,6 @@
 #include <DSP_types.h>
 #include <DSP_misc.h>
 
-using namespace std;
-
 //#include <DSPclocks.h>
 
 namespace DSP {
@@ -117,7 +115,7 @@ class DSP::output
     static DSP::output _null;
 
     //! output name
-    string _name;
+    std::string _name;
   public:
 
     //! connects the given output to the given input
@@ -127,14 +125,14 @@ class DSP::output
     friend bool ::operator>>( const DSP::output  &output, const DSP::input &input );
 
     //! read output name
-    const string &get_name(void) const;
+    const std::string &get_name(void) const;
     //! set output name
-    void set_name(const string &name);
+    void set_name(const std::string &name);
 
     //! pointer to the component with the given output
     DSP::Component_ptr component;
     //! indexes of output lines
-    vector <unsigned int> Outputs;
+    std::vector <unsigned int> Outputs;
 
     //! returns null output object
     inline static DSP::output &null(){
@@ -161,7 +159,7 @@ class DSP::input
     static DSP::input _null;
 
     //! input name
-    string _name;
+    std::string _name;
 
   public:
     //! connects the given output to the given input
@@ -171,14 +169,14 @@ class DSP::input
     friend bool ::operator<<( const DSP::input &input, const DSP::output  &output);
 
     //! read input name
-    const string &get_name(void) const;
+    const std::string &get_name(void) const;
     //! set input name
-    void set_name(const string &name);
+    void set_name(const std::string &name);
 
     //! pointer to the component with the given output
     DSP::Component_ptr component;
     //! indexes of input lines
-    vector <unsigned int> Inputs;
+    std::vector <unsigned int> Inputs;
 
     //! returns null input object
     inline static DSP::input &null(){
@@ -205,16 +203,16 @@ class DSP::name
   private:
     #if __DEBUG__ == 1
       //! Name of the object
-      string ObjectName;
+      std::string ObjectName;
     #endif
   public:
     name(void);
-    name(const string &Name);
+    name(const std::string &Name);
 
     //! Sets the name of the block
-    void SetName(const string &Name, bool Append=true);
+    void SetName(const std::string &Name, bool Append=true);
     //! Returns the block's name
-    string GetName();
+    std::string GetName();
 };
 
 // ***************************************************** //
@@ -726,8 +724,8 @@ class DSP::name
 
 #ifdef __DEBUG__
   namespace DSP {
-    extern const vector<string> DOT_colors;
-    extern const vector<string> DOT_edge_colors;
+    extern const std::vector<std::string> DOT_colors;
+    extern const std::vector<std::string> DOT_edge_colors;
   }
 #endif
 
@@ -917,7 +915,7 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
     // //! counter containing the number of defined outputs
     //unsigned int DefinedOutputsCounter;
     //! pointer the the array containing pointer to defined outputs
-    vector <DSP::output> DefinedOutputs;
+    std::vector <DSP::output> DefinedOutputs;
 
   public:
     //! creates output definition for the given block
@@ -926,17 +924,17 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
      *  e.g. separate components of complex output
      * and complex output itself
      */
-    bool DefineOutput(const string &Name, const unsigned int &OutputNo = 0);
-    bool DefineOutput(const string &Name, const unsigned int &OutputNo_re, const unsigned int &OutputNo_im);
-    bool DefineOutput(const string &Name, const vector<unsigned int> &Outputs);
+    bool DefineOutput(const std::string &Name, const unsigned int &OutputNo = 0);
+    bool DefineOutput(const std::string &Name, const unsigned int &OutputNo_re, const unsigned int &OutputNo_im);
+    bool DefineOutput(const std::string &Name, const std::vector<unsigned int> &Outputs);
     //! Deletes output definition
     /*! If Name.length() == 0 deletes all output definitions
      */
-    bool UndefineOutput(const string &Name);
+    bool UndefineOutput(const std::string &Name);
     //! returns output of the given name
-    DSP::output &Output(const string &Name);
+    DSP::output &Output(const std::string &Name);
     //! returns input of the given name
-    virtual DSP::input  &Input(const string &Name);
+    virtual DSP::input  &Input(const std::string &Name);
 
   protected:
     //! Connects DSP::Block input to output of the current block
@@ -999,33 +997,33 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
 
     #ifdef __DEBUG__
       //! Returns component name used in DOTfile (empty on failure)
-      string GetComponentName_DOTfile();
+      std::string GetComponentName_DOTfile();
       /*! output_index - index of the rendered output
       */
-      virtual string GetComponentEdgeParams_DOTfile(const unsigned int &output_index = 0U);
+      virtual std::string GetComponentEdgeParams_DOTfile(const unsigned int &output_index = 0U);
 
       /*! generates component HMTL label and shape for DOT
        */
-      static string GetHtmlNodeLabel_DOTfile(const unsigned long &no_of_inputs, const unsigned long &no_of_outputs, const string &node_name, const string &leading_space, const unsigned int &border_width);
+      static std::string GetHtmlNodeLabel_DOTfile(const unsigned long &no_of_inputs, const unsigned long &no_of_outputs, const std::string &node_name, const std::string &leading_space, const unsigned int &border_width);
 
       //! Returns component node parameters used in DOTfile
-      virtual string GetComponentNodeParams_DOTfile(const string &leading_space);
+      virtual std::string GetComponentNodeParams_DOTfile(const std::string &leading_space);
       //! Returns component node parameters used in DOTfile
-      virtual string GetComponentNodeParams_DOTfile(void);
+      virtual std::string GetComponentNodeParams_DOTfile(void);
       //! Returns true if ports should be used for edges
       virtual bool UsePorts_DOTfile(void);
       //! Writes component edges to file
-      void ComponentEdgesToDOTfile(std::ofstream &dot_plik, const string &this_name,
-          vector<bool> &UsedMacrosTable, vector<DSP::Macro_ptr> &MacrosList, 
+      void ComponentEdgesToDOTfile(std::ofstream &dot_plik, const std::string &this_name,
+          std::vector<bool> &UsedMacrosTable, std::vector<DSP::Macro_ptr> &MacrosList, 
           DSP::Macro_ptr DrawnMacro, unsigned int space_sep = 4);
       /*! Returns source name in first_source_name if first_source_name != NULL.
        *  User must reserve memory for it beforehand.
        *
        */
       void ComponentToDOTfile(std::ofstream &dot_plik,
-            vector<bool> &ComponentDoneTable, long max_components_number,
-            vector<bool> &UsedMacrosTable, vector<DSP::Macro_ptr> &MacrosList,
-            vector<bool> &UsedClocksTable, vector<DSP::Clock_ptr> &ClocksList,
+            std::vector<bool> &ComponentDoneTable, long max_components_number,
+            std::vector<bool> &UsedMacrosTable, std::vector<DSP::Macro_ptr> &MacrosList,
+            std::vector<bool> &UsedClocksTable, std::vector<DSP::Clock_ptr> &ClocksList,
             DSP::Macro_ptr DrawnMacro = NULL,
             DSP::Clock_ptr clock_ptr = NULL);
     #endif
@@ -1034,7 +1032,7 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
   /* Notifications support    */
   /****************************/
   private:
-    vector<DSP::Clock_ptr> NotificationClocks;
+    std::vector<DSP::Clock_ptr> NotificationClocks;
   public:
     //! Function called by main clocks' processing function at the begining of each cycle
     /*! It is called only for registered components. It's executed for each
@@ -1047,7 +1045,7 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
       #ifdef __DEBUG__
         DSP::log << DSP::e::LogMode::Error << "DSP::Component::Notify";
         DSP::log << DSP::e::LogMode::second << "Component >>" << GetName() << "<< registered for notifications but notification function not implemented !!!";
-        DSP::log << endl;
+        DSP::log << std::endl;
       #endif
       return;
     }
@@ -1195,8 +1193,8 @@ class DSP::Clock_trigger
   //  friend void DSP::Component::ComponentToDOTfile(std::ofstream &dot_plik,
       //bool *ComponentDoneTable, long max_components_number,
       //DSP::Clock_ptr clock_ptr);
-    friend string DSP::Component::GetComponentNodeParams_DOTfile(const string &leading_space);
-    friend string DSP::Component::GetComponentNodeParams_DOTfile(void);
+    friend std::string DSP::Component::GetComponentNodeParams_DOTfile(const std::string &leading_space);
+    friend std::string DSP::Component::GetComponentNodeParams_DOTfile(void);
   #endif
 
   protected:
@@ -1353,26 +1351,26 @@ class DSP::Block : public virtual DSP::Component
     // //! counter containing the number of defined inputs
     //unsigned int DefinedInputsCounter;
     //! pointer the the array containing pointer to defined inputs
-    vector<DSP::input> DefinedInputs;
+    std::vector<DSP::input> DefinedInputs;
 
   public:
     //! creates input definition for the given block
     /*! Returns true if succeeds.
      */
-    bool DefineInput(const string &Name, const unsigned int &InputNo = 0);
-    bool DefineInput(const string &Name, const unsigned int &InputNo_re, const unsigned int &InputNo_im);
-    bool DefineInput(const string &Name, const vector <unsigned int> &Inputs);
+    bool DefineInput(const std::string &Name, const unsigned int &InputNo = 0);
+    bool DefineInput(const std::string &Name, const unsigned int &InputNo_re, const unsigned int &InputNo_im);
+    bool DefineInput(const std::string &Name, const std::vector <unsigned int> &Inputs);
     //! Deletes input definition
     /*! If Name == NULL deletes all input definitions
      */
-    bool UndefineInput(const string &Name);
+    bool UndefineInput(const std::string &Name);
     //! returns input of the given name
-    DSP::input  &Input(const string &Name);
+    DSP::input  &Input(const std::string &Name);
 
   protected:
     //! Clocks at which each input works
     /*! This is only for the sake of structure syntax checking */
-    vector<DSP::Clock_ptr> InputClocks;
+    std::vector<DSP::Clock_ptr> InputClocks;
 
     DSP::clock_groups ClockGroups;
 
@@ -1437,9 +1435,9 @@ class DSP::Block : public virtual DSP::Component
      */
     bool BlockAllowsForConstantInputs;
     //! Values for constant inputs
-    vector<DSP::Float> ConstantInputValues;
+    std::vector<DSP::Float> ConstantInputValues;
     //! true is given value is constant
-    vector<bool> IsConstantInput;
+    std::vector<bool> IsConstantInput;
 
     //!Sets number of inputs
     /*!Parameters are: number of real inputs, number of complex inputs
@@ -1495,7 +1493,7 @@ class DSP::Block : public virtual DSP::Component
      * Replaces obsolete function:
      *   bool SetConstInput(int InputNo, DSP::Float value);
      */
-    bool SetConstInput(const string &InputName, DSP::Float value);
+    bool SetConstInput(const std::string &InputName, DSP::Float value);
     /*! Indicates given input as constant value
      *  InputNo   -> real_value
      *  InputNo+1 -> imag_value
@@ -1506,8 +1504,8 @@ class DSP::Block : public virtual DSP::Component
      * Replaces obsolete function:
      *   bool SetConstInput(int InputNo, DSP::Float real_value, DSP::Float imag_value);
      */
-    bool SetConstInput(const string &InputName, DSP::Float real_value, DSP::Float imag_value);
-    bool SetConstInput(const string &InputName, DSP::Complex value)
+    bool SetConstInput(const std::string &InputName, DSP::Float real_value, DSP::Float imag_value);
+    bool SetConstInput(const std::string &InputName, DSP::Complex value)
     {
       return SetConstInput(InputName, value.re, value.im);
     }
@@ -1536,7 +1534,7 @@ class DSP::Block : public virtual DSP::Component
       #ifndef __DEBUG__
         UNUSED_ARGUMENT(block);
       #else
-        stringstream tekst;
+        std::stringstream tekst;
         if (block == &DummyBlock)
         {
           tekst << "WARNING: Unconnected output detected (" << Caller->GetName() << ")";
@@ -1546,7 +1544,7 @@ class DSP::Block : public virtual DSP::Component
           tekst << "WARNING: Block uses DummyExecute. Check block constructor if Execute_ptr is set correctly ("
                 << Caller->GetName() << ")";
         }
-        DSP::log << DSP::e::LogMode::Error << "DSP::Block::Execute" << DSP::e::LogMode::second <<  tekst.str() << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::Block::Execute" << DSP::e::LogMode::second <<  tekst.str() << std::endl;
       #endif
     }
 
@@ -1637,7 +1635,7 @@ class DSP::Source : public virtual DSP::Component
         DSP::log << DSP::e::LogMode::Error << "DSP::Block::Execute"
           << DSP::e::LogMode::Error
           << "WARNING: Source uses DummyExecute. Check source constructor if OutputExecute_ptr is set correctly ("
-          << source->GetName() << ")" << endl;
+          << source->GetName() << ")" << std::endl;
       #endif
       return true;
     }
@@ -1726,7 +1724,7 @@ class DSP::MacroStack
      * \warning The user must free MacroList table allocated
      *  by this function on his own.
      */
-    static unsigned int GetCurrentMacroList(vector<DSP::Macro_ptr> &MacrosList);
+    static unsigned int GetCurrentMacroList(std::vector<DSP::Macro_ptr> &MacrosList);
 };
 
 //! User can derive class from this block to group several DSP components into single macro component
@@ -1758,10 +1756,10 @@ class DSP::MacroStack
 class DSP::Macro : public virtual DSP::name
 {
   #ifdef __DEBUG__
-    friend void DSP::Component::ComponentEdgesToDOTfile(std::ofstream &, const string &,
-                      vector<bool> &, vector<DSP::Macro_ptr> &, DSP::Macro_ptr, unsigned int);
-    friend string DSP::Component::GetHtmlNodeLabel_DOTfile(const unsigned long &, const unsigned long &, 
-                      const string &, const string &, const unsigned int &);
+    friend void DSP::Component::ComponentEdgesToDOTfile(std::ofstream &, const std::string &,
+                      std::vector<bool> &, std::vector<DSP::Macro_ptr> &, DSP::Macro_ptr, unsigned int);
+    friend std::string DSP::Component::GetHtmlNodeLabel_DOTfile(const unsigned long &, const unsigned long &, 
+                      const std::string &, const std::string &, const unsigned int &);
   #endif
 
   private:
@@ -1796,15 +1794,15 @@ class DSP::Macro : public virtual DSP::name
     DSP::u::Copy_ptr MacroOutput_block;
 
     //! returns internal output of the macro input of the given name
-    DSP::output &MacroInput(const string &Name);
+    DSP::output &MacroInput(const std::string &Name);
     //! returns internal input of the macro output of the given name
-    DSP::input &MacroOutput(const string &Name);
+    DSP::input &MacroOutput(const std::string &Name);
 
   public:
     //! returns macro output of the given name
-    DSP::output &Output(const string &Name);
+    DSP::output &Output(const std::string &Name);
     //! returns external macro input of the given name
-    DSP::input &Input(const string &Name);
+    DSP::input &Input(const std::string &Name);
 
     //! Returns macro input line number connected to the given macro block input
     /*! Returns FO_NoInput if not connected to the macro input
@@ -1814,20 +1812,20 @@ class DSP::Macro : public virtual DSP::name
     //! creates input definition for macro input (internal and external)
     /*! Returns true if succeeds.
      */
-    bool DefineInput(const string &Name, const unsigned int &InputNo = 0);
-    bool DefineInput(const string &Name, const unsigned int &InputNo_re, const unsigned int &InputNo_im);
-    bool DefineInput(const string &Name, const vector<unsigned int> &Inputs);
+    bool DefineInput(const std::string &Name, const unsigned int &InputNo = 0);
+    bool DefineInput(const std::string &Name, const unsigned int &InputNo_re, const unsigned int &InputNo_im);
+    bool DefineInput(const std::string &Name, const std::vector<unsigned int> &Inputs);
     //! Deletes input definition
-    bool UndefineInput(const string &Name = "");
+    bool UndefineInput(const std::string &Name = "");
 
     //! creates output definition for macro output (internal and external)
     /*! Returns true if succeeds
      */
-    bool DefineOutput(const string &Name, const unsigned int &OutputNo = 0);
-    bool DefineOutput(const string &Name, const unsigned int &OutputNo_re, const unsigned int &OutputNo_im);
-    bool DefineOutput(const string &Name, vector<unsigned int> &Outputs);
+    bool DefineOutput(const std::string &Name, const unsigned int &OutputNo = 0);
+    bool DefineOutput(const std::string &Name, const unsigned int &OutputNo_re, const unsigned int &OutputNo_im);
+    bool DefineOutput(const std::string &Name, std::vector<unsigned int> &Outputs);
     //! Deletes output definition
-    bool UndefineOutput(const string &Name = "");
+    bool UndefineOutput(const std::string &Name = "");
 
     //! Returns clock assigned to macro external output number OutputNo
     DSP::Clock_ptr GetOutputClock(unsigned int OutputNo=0);
@@ -1866,7 +1864,7 @@ class DSP::Macro : public virtual DSP::name
      * \note All macro components should be created in derived class destructor
      *   between calls to DSP::Macro::MacroInitStarted and DSP::Macro::MacroInitFinished.
      */
-    Macro(const string &macro_name,
+    Macro(const std::string &macro_name,
           unsigned int NoOfInputs_in,
           unsigned int NoOfOutputs_in);
     //! Macro container clean up
@@ -1899,24 +1897,24 @@ class DSP::Macro : public virtual DSP::name
   #ifdef __DEBUG__
     private:
       //! Returns macro node parames used in DOTfile
-      string GetMacroNodeParams_DOTfile();
+      std::string GetMacroNodeParams_DOTfile();
       //! used in macro graph to draw input node
-      string GetMacroInputNodeParams_DOTfile();
+      std::string GetMacroInputNodeParams_DOTfile();
       //! used in macro graph to draw output node
-      string GetMacroOutputNodeParams_DOTfile();
+      std::string GetMacroOutputNodeParams_DOTfile();
       //! Draws macro node edges
-      string GetMacroEdgeParams_DOTfile(const unsigned int &output_index);
+      std::string GetMacroEdgeParams_DOTfile(const unsigned int &output_index);
       bool UsePorts_DOTfile(void);
       //! Writes macro outgoing edges to file
-      void MacroEdgesToDOTfile(std::ofstream &dot_plik, const string &macro_name,
+      void MacroEdgesToDOTfile(std::ofstream &dot_plik, const std::string &macro_name,
           DSP::Macro_ptr DrawnMacro, unsigned int space_sep = 4);
-      void MacroInputEdgesToDOTfile(std::ofstream &dot_plik, const string &macro_input_name,
+      void MacroInputEdgesToDOTfile(std::ofstream &dot_plik, const std::string &macro_input_name,
           DSP::Macro_ptr DrawnMacro, unsigned int space_sep = 4);
-      void MacroOutputEdgesToDOTfile(std::ofstream &dot_plik, const string &macro_output_name,
+      void MacroOutputEdgesToDOTfile(std::ofstream &dot_plik, const std::string &macro_output_name,
           DSP::Macro_ptr DrawnMacro, unsigned int space_sep = 4);
 
       //! Returns macro name used in DOTfile
-      string GetMacroName_DOTfile();
+      std::string GetMacroName_DOTfile();
   #endif
 };
 
@@ -1962,13 +1960,13 @@ class DSP::u::LoopDelay  : public DSP::Block, public DSP::Source
      *    equal to size of the delay
      *  \param state_buffer - buffer with initial values
      */
-    bool SetState(const string &InputName, unsigned int size, DSP::Float_ptr state_buffer);
+    bool SetState(const std::string &InputName, unsigned int size, DSP::Float_ptr state_buffer);
     //! Sets internal state for delay line related to given input
     /*! State buffer size (block delay) must equal one.
      * \param InputName - must be name of real valued input line
      *  \param state_buffer_value - buffer with initial values
      */
-    bool SetState(const string &InputName, DSP::Float state_buffer_value);
+    bool SetState(const std::string &InputName, DSP::Float state_buffer_value);
 };
 
 //! Delay element implemented in processing mode
@@ -2034,9 +2032,9 @@ class DSP::u::Splitter : public DSP::Block
   #ifdef __DEBUG__
     private:
       bool UsePorts_DOTfile(void);
-      string GetComponentNodeParams_DOTfile(const string &leading_space);
-      string GetComponentNodeParams_DOTfile(void);
-      string GetComponentEdgeParams_DOTfile(const unsigned int &output_index);
+      std::string GetComponentNodeParams_DOTfile(const std::string &leading_space);
+      std::string GetComponentNodeParams_DOTfile(void);
+      std::string GetComponentEdgeParams_DOTfile(const unsigned int &output_index);
   #endif
 
   public:

@@ -18,13 +18,13 @@ int main(void)
   DSP::log.SetLogState(DSP::e::LogState::console | DSP::e::LogState::file);
   DSP::log.SetLogFileName("log_file_client.log");
 
-  DSP::log << DSP::lib_version_string() << endl << endl;
+  DSP::log << DSP::lib_version_string() << std::endl << std::endl;
 
   coef_info.Open("LPF_8000_11025.coef", "matlab");
   N_SRC = coef_info.GetSize(0);
   if (N_SRC < 1)
   {
-    DSP::log << "Filter coefficients files should be generated using >>socket_filters.m<<" << endl;
+    DSP::log << "Filter coefficients files should be generated using >>socket_filters.m<<" << std::endl;
     return 1;
   }
   else
@@ -36,7 +36,7 @@ int main(void)
 
   // use client socket
 //  DSP::u::SocketInput in_socket(MasterClock, "127.0.0.1", true, 0x00000003);
-  string server_address = "127.0.0.1:10000";
+  std::string server_address = "127.0.0.1:10000";
   DSP::u::SocketInput in_socket(MasterClock, server_address, true, 0x00000003);
   in_socket.SetName(server_address);
   Fp1 = 8000;  Fp2 = 11025;
@@ -60,7 +60,7 @@ int main(void)
     DSP::Clock::Execute(MasterClock, Fp1/4);
 
     DSP::log << "MAIN" << DSP::e::LogMode::second << temp 
-             << " (" << in_socket.GetBytesRead() << ")" << endl;
+             << " (" << in_socket.GetBytesRead() << ")" << std::endl;
     temp++;
   }
   while (in_socket.GetBytesRead() != 0);

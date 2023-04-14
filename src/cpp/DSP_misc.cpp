@@ -34,16 +34,16 @@ DSP::libver DSP::lib_version(void)
   return VersionData;
 }
 
-string DSP::lib_version_string()
+std::string DSP::lib_version_string()
 {
-  stringstream tekst;
+  std::stringstream tekst;
 #ifdef __ANONYMOUS__
   return "";
 #else
   tekst << "Signal processing in this application is built on\n"
            "DSP Engine ver. " << int(VersionData.major)
-                       << "." << setw(2) << setfill('0') << int(VersionData.minor)
-                       << "." << setw(3) << setfill('0') << VersionData.build
+                       << "." << std::setw(2) << std::setfill('0') << int(VersionData.minor)
+                       << "." << std::setw(3) << std::setfill('0') << VersionData.build
         << " 2005-" << DSP_VER_YEAR
         << " Marek Blok";
 #endif
@@ -75,7 +75,7 @@ unsigned long DSP::f::gcd(unsigned long a, unsigned long b)
 //                    DSP::Float_ptr B_in) //right-hand side quantities vector
 // Solves matrix equation using Gaussian elimination with backsubstitution
 void DSP::f::SolveMatrixEqu(
-                    const vector<DSP::Float_vector> &A_in, //!matrix coefficients (table of rows)
+                    const std::vector<DSP::Float_vector> &A_in, //!matrix coefficients (table of rows)
                     DSP::Float_vector &X,    //!vector reserved for solution
                     const DSP::Float_vector &B_in) //!right-hand side quantities vector
 {
@@ -86,14 +86,14 @@ void DSP::f::SolveMatrixEqu(
   DSP::Float_vector B; //vector B
   unsigned int Size = (unsigned int)(B_in.size());
   if (Size != A_in.size()) {
-    DSP::log << DSP::e::LogMode::Error << "DSP::f::SolveMatrixEqu" << DSP::e::LogMode::second << "Size mismatch of matrix A_in and vector B_in" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::f::SolveMatrixEqu" << DSP::e::LogMode::second << "Size mismatch of matrix A_in and vector B_in" << std::endl;
     return;
   }
   else {
     //! \TODO check also second dimension of matrix A_in
   }
 
-  vector<DSP::Float_vector> A(Size,DSP::Float_vector(Size));
+  std::vector<DSP::Float_vector> A(Size,DSP::Float_vector(Size));
   for (i = 0; i < int(Size); i++) {
     A[i]=A_in[i]; // copy content of rows
   }
@@ -117,7 +117,7 @@ void DSP::f::SolveMatrixEqu(
     if (pivot_row != row)
     {
 //      tempA=A[row]; A[row]=A[pivot_row]; A[pivot_row]=tempA;
-      swap(A[row],A[pivot_row]);
+      std::swap(A[row],A[pivot_row]);
       tempB=B[row]; B[row]=B[pivot_row]; B[pivot_row]=tempB;
     }
 
@@ -146,7 +146,7 @@ void DSP::f::SolveMatrixEqu(
 };
 
 void DSP::f::SolveMatrixEqu_prec(
-    const vector<DSP::Float_vector> &A_in, //!matrix coefficients (table of rows)
+    const std::vector<DSP::Float_vector> &A_in, //!matrix coefficients (table of rows)
     DSP::Float_vector &X_in,    //!vector reserved for solution
     const DSP::Float_vector &B_in) //right-hand side quantities vector
 {
@@ -157,14 +157,14 @@ void DSP::f::SolveMatrixEqu_prec(
   DSP::Prec_Float_vector B; //vector B
   unsigned int Size = (unsigned int)(B_in.size());
   if (Size != A_in.size()) {
-    DSP::log << DSP::e::LogMode::Error << "DSP::f::SolveMatrixEqu_prec" << DSP::e::LogMode::second << "Size mismatch of matrix A_in and vector B_in" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::f::SolveMatrixEqu_prec" << DSP::e::LogMode::second << "Size mismatch of matrix A_in and vector B_in" << std::endl;
     return;
   }
   else {
     //! \TODO check also second dimension of matrix A_in
   }
 
-  vector<DSP::Prec_Float_vector> A(Size,DSP::Prec_Float_vector(Size));
+  std::vector<DSP::Prec_Float_vector> A(Size,DSP::Prec_Float_vector(Size));
   B.resize(Size);
   for (i = 0; i < int(Size); i++) {
     for (j = 0; j < Size; j++) {
@@ -194,7 +194,7 @@ void DSP::f::SolveMatrixEqu_prec(
     if (pivot_row != row)
     {
 //      tempA=A[row]; A[row]=A[pivot_row]; A[pivot_row]=tempA;
-      swap(A[row],A[pivot_row]);
+      std::swap(A[row],A[pivot_row]);
       tempB=B[row]; B[row]=B[pivot_row]; B[pivot_row]=tempB;
     }
 
@@ -227,7 +227,7 @@ void DSP::f::SolveMatrixEqu_prec(
 };
 
 void DSP::f::SolveMatrixEqu_prec(
-                        const vector<DSP::Prec_Float_vector> &A_in, //!matrix coefficients (table of rows)
+                        const std::vector<DSP::Prec_Float_vector> &A_in, //!matrix coefficients (table of rows)
                         DSP::Prec_Float_vector &X_in,    //!vector reserved for solution
                         const DSP::Prec_Float_vector &B_in, //right-hand side quantities vector
                         int use_pivoting) // pivoting mode
@@ -241,16 +241,16 @@ void DSP::f::SolveMatrixEqu_prec(
   DSP::Prec_Float_vector B; //vector B
   unsigned int Size = (unsigned int)(B_in.size());
   if (Size != A_in.size()) {
-    DSP::log << DSP::e::LogMode::Error << "DSP::f::SolveMatrixEqu_prec" << DSP::e::LogMode::second << "Size mismatch of matrix A_in and vector B_in" << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::f::SolveMatrixEqu_prec" << DSP::e::LogMode::second << "Size mismatch of matrix A_in and vector B_in" << std::endl;
     return;
   }
   else {
     //! \TODO check also second dimension of matrix A_in
   }
 
-  vector<DSP::Prec_Float_vector> A(Size,DSP::Prec_Float_vector(Size));
+  std::vector<DSP::Prec_Float_vector> A(Size,DSP::Prec_Float_vector(Size));
   B.resize(Size);
-  vector<int> X_ind; // indexing of solution samples <== important if column pivoting is used
+  std::vector<int> X_ind; // indexing of solution samples <== important if column pivoting is used
   X_ind.resize(Size);
 
   DSP::Prec_Float_vector X; //vector X - for solutions
@@ -284,7 +284,7 @@ void DSP::f::SolveMatrixEqu_prec(
       if (pivot_row != row)
       {
 //        tempA=A[row]; A[row]=A[pivot_row]; A[pivot_row]=tempA;
-        swap(A[row],A[pivot_row]);
+        std::swap(A[row],A[pivot_row]);
         tempB=B[row]; B[row]=B[pivot_row]; B[pivot_row]=tempB;
       }
 
@@ -323,7 +323,7 @@ void DSP::f::SolveMatrixEqu_prec(
       if (pivot_row != row)
       {
 //        tempA=A[row]; A[row]=A[pivot_row]; A[pivot_row]=tempA;
-        swap(A[row],A[pivot_row]);
+        std::swap(A[row],A[pivot_row]);
         tempB=B[row]; B[row]=B[pivot_row]; B[pivot_row]=tempB;
       }
 
@@ -382,9 +382,9 @@ void DSP::f::SolveMatrixEqu_prec(
 
 #ifndef _MSC_VER
 //! \bug problem with DSP::f::MakeDir(".", "outputs")
-bool DSP::f::MakeDir(const string &dir_name, const string &parent_dir)
+bool DSP::f::MakeDir(const std::string &dir_name, const std::string &parent_dir)
 {
-  string full_name;
+  std::string full_name;
   DIR *temp_dir;
 
   //strncpy(full_name, ".", 1023);
@@ -401,7 +401,7 @@ bool DSP::f::MakeDir(const string &dir_name, const string &parent_dir)
     if (temp_dir == NULL)
     {
       #ifdef __DEBUG__
-        DSP::log << DSP::e::LogMode::Error << "DSP::f::MakeDir" << DSP::e::LogMode::second << "Parent directory does not exist" << endl;
+        DSP::log << DSP::e::LogMode::Error << "DSP::f::MakeDir" << DSP::e::LogMode::second << "Parent directory does not exist" << std::endl;
       #endif
       return false;
     }
@@ -428,7 +428,7 @@ bool DSP::f::MakeDir(const string &dir_name, const string &parent_dir)
   if (temp_dir == NULL)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error << "DSP::f::MakeDir" << DSP::e::LogMode::second << "Could not create directory" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::f::MakeDir" << DSP::e::LogMode::second << "Could not create directory" << std::endl;
     #endif
     return false;
   }
@@ -436,7 +436,7 @@ bool DSP::f::MakeDir(const string &dir_name, const string &parent_dir)
 }
 #else
 
-bool checkIfDirectoryExists(const string& dirname) {
+bool checkIfDirectoryExists(const std::string& dirname) {
   WIN32_FIND_DATA data;
   HANDLE hFile = FindFirstFile(dirname.c_str(), &data);
   bool _dir_exists = false;
@@ -453,9 +453,9 @@ bool checkIfDirectoryExists(const string& dirname) {
 }
 
 //! \bug problem with DSP::f::MakeDir(".", "outputs")
-bool DSP::f::MakeDir(const string& dir_name, const string& parent_dir)
+bool DSP::f::MakeDir(const std::string& dir_name, const std::string& parent_dir)
 {
-	string full_name;
+	std::string full_name;
 
 	//strncpy(full_name, ".", 1023);
 	if (parent_dir.length() == 0)
@@ -471,7 +471,7 @@ bool DSP::f::MakeDir(const string& dir_name, const string& parent_dir)
 		if (_dir_exists == false)
 		{
 #ifdef __DEBUG__
-			DSP::log << DSP::e::LogMode::Error << "DSP::f::MakeDir" << DSP::e::LogMode::second << "Parent directory does not exist" << endl;
+			DSP::log << DSP::e::LogMode::Error << "DSP::f::MakeDir" << DSP::e::LogMode::second << "Parent directory does not exist" << std::endl;
 #endif
 			return false;
 		}
@@ -482,7 +482,7 @@ bool DSP::f::MakeDir(const string& dir_name, const string& parent_dir)
 	if (_mkdir(full_name.c_str()) != 0)
 	{
 #ifdef __DEBUG__
-		DSP::log << DSP::e::LogMode::Error << "DSP::f::MakeDir" << DSP::e::LogMode::second << "Could not create directory" << endl;
+		DSP::log << DSP::e::LogMode::Error << "DSP::f::MakeDir" << DSP::e::LogMode::second << "Could not create directory" << std::endl;
 #endif
 		return false;
 	}
@@ -492,12 +492,12 @@ bool DSP::f::MakeDir(const string& dir_name, const string& parent_dir)
 
 
 // Splits directory name into bits and tries to create it
-void DSP::f::MakeDir_Ex(const string &dir_name)
+void DSP::f::MakeDir_Ex(const std::string &dir_name)
 {
-  string sub_dir;
-  string parent_subdir;
-  string parent_dir;
-  string temp_parent_dir;
+  std::string sub_dir;
+  std::string parent_subdir;
+  std::string parent_dir;
+  std::string temp_parent_dir;
 
 #ifndef _MSC_VER
   DIR *temp_dir;
@@ -818,7 +818,7 @@ void DSP::f::Gauss(int size, DSP::Float_ptr buffer, DSP::Float sigma, bool norma
   if (sigma > 0.5)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error << "DSP::f::Gauss" << DSP::e::LogMode::second << "Sigma must be less or equal 0.5" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::f::Gauss" << DSP::e::LogMode::second << "Sigma must be less or equal 0.5" << std::endl;
     #endif
     return;
   }
@@ -939,7 +939,7 @@ void DSP::f::sinc(int size, DSP::Float_ptr buffer)
 }
 
 template <typename T>
-void DSP::f::sinc(const DSP::Float_vector& arguments, vector<T>& output_buffer) {
+void DSP::f::sinc(const DSP::Float_vector& arguments, std::vector<T>& output_buffer) {
   unsigned int n;
   DSP::Float x;
   output_buffer.resize(arguments.size());
@@ -1087,7 +1087,7 @@ void DSP::f::LPF_LS (int N, DSP::Float fp, DSP::Float fs, DSP::Float_vector &h_b
 
 //  DSP::Prec_Float_ptr *G;
 //  DSP::Prec_Float_ptr a;
-  vector<DSP::Prec_Float_vector> G;
+  std::vector<DSP::Prec_Float_vector> G;
   DSP::Prec_Float_vector a;
 
   L=(DSP::Prec_Float(N)-1)/2;

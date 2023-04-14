@@ -198,14 +198,14 @@ void DSP::Clock::SetAsNewMasterClock(DSP::Clock_ptr new_master)
   if (MasterClocks[new_master->MasterClockIndex] != NULL)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error << "DSP::Clock::SetAsNewMasterClock" << DSP::e::LogMode::second << "Cannot set new master clock if the old has not been released" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Clock::SetAsNewMasterClock" << DSP::e::LogMode::second << "Cannot set new master clock if the old has not been released" << std::endl;
     #endif
     return;
   }
   if (First[new_master->MasterClockIndex] == NULL)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error << "DSP::Clock::SetAsNewMasterClock" << DSP::e::LogMode::second << "There are no clocks on the list for given master clock !!!" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Clock::SetAsNewMasterClock" << DSP::e::LogMode::second << "There are no clocks on the list for given master clock !!!" << std::endl;
     #endif
     return;
   }
@@ -415,7 +415,7 @@ unsigned long DSP::Clock::Execute(DSP::Clock_ptr ReferenceClock,
   {
 //    ReferenceClock=GetClock();
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error << "DSP::Clock::Execute"  << DSP::e::LogMode::second << "NULL ReferenceClock" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Clock::Execute"  << DSP::e::LogMode::second << "NULL ReferenceClock" << std::endl;
     #endif
     return 0;
   }
@@ -536,24 +536,24 @@ unsigned long DSP::Clock::Execute(DSP::Clock_ptr ReferenceClock,
                 if (ReferenceClock_is_signal_activated == false)
                 {
                   #ifdef __DEBUG__
-                    DSP::log << "DSP::Clock::Execute" << DSP::e::LogMode::second << "Not all sources processed but no source is ready" << endl;
-                    DSP::log << "DSP::Clock::Execute" << DSP::e::LogMode::second << ">> Check if there is the feedback loop without DSP::u::LoopDelay." << endl;
+                    DSP::log << "DSP::Clock::Execute" << DSP::e::LogMode::second << "Not all sources processed but no source is ready" << std::endl;
+                    DSP::log << "DSP::Clock::Execute" << DSP::e::LogMode::second << ">> Check if there is the feedback loop without DSP::u::LoopDelay." << std::endl;
                     DSP::log << "DSP::Clock::Execute  >>" << DSP::e::LogMode::second
-                      << "Number of signal activated clocks still on the list:" << *SignalActivatedClocksListLength_ptr << endl;
+                      << "Number of signal activated clocks still on the list:" << *SignalActivatedClocksListLength_ptr << std::endl;
                     for (clock_ind=0; clock_ind<(*ListLength); clock_ind++)
                     {
                       for (unsigned int component_ind=0; component_ind<ClocksList[clock_ind]->NoOfComponents; component_ind++)
                       {
                         DSP::log << "DSP::Clock::Execute  >>" << DSP::e::LogMode::second
                           << clock_ind << ":" << component_ind << ") NOTIFY: " << ClocksList[clock_ind]->ComponentsNotifications_Table[component_ind]->GetName()
-                          << endl;
+                          << std::endl;
                       }
 
                       for (unsigned int sources_ind=0; sources_ind<ClocksList[clock_ind]->NoOfSources; sources_ind++)
                       {
                         DSP::log << "DSP::Clock::Execute  >>" << DSP::e::LogMode::second
                           << clock_ind << ":" << sources_ind << ") PROCESS: " << ClocksList[clock_ind]->SourcesTable[sources_ind]->GetName()
-                          << endl;
+                          << std::endl;
                       }
                     }
                   #endif
@@ -750,7 +750,7 @@ void DSP::Clock::ClockInit(DSP::Clock_ptr ReferenceClock, long int L_in, long in
   if (ActiveClocksList == NULL)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error << "DSP::Clock::ClockInit" << DSP::e::LogMode::second << "ActiveClockList not yet defined" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Clock::ClockInit" << DSP::e::LogMode::second << "ActiveClockList not yet defined" << std::endl;
     #endif
     return;
   }
@@ -786,7 +786,7 @@ void DSP::Clock::UpdateGlobalSamplingRate(void)
         if (clocks_GlobalSamplingRate != current->GlobalSamplingRate) {
           DSP::log << DSP::e::LogMode::Error
            << "DSP::Clock::UpdateGlobalSamplingRate: clocks_GlobalSamplingRate = " << clocks_GlobalSamplingRate
-           << " but current->GlobalSamplingRate = " << current->GlobalSamplingRate << endl;
+           << " but current->GlobalSamplingRate = " << current->GlobalSamplingRate << std::endl;
         }
       }
     }
@@ -953,7 +953,7 @@ void DSP::Clock::FreeClocks(DSP::Clock_ptr ReferenceClock)
   if (ReferenceClock == NULL)
   {
     #ifdef __DEBUG__
-      DSP::log << "DSP::Clock::FreeClocks"  << DSP::e::LogMode::second << "Reference clock is NULL" << endl;
+      DSP::log << "DSP::Clock::FreeClocks"  << DSP::e::LogMode::second << "Reference clock is NULL" << std::endl;
     #endif
     return;
   }
@@ -962,7 +962,7 @@ void DSP::Clock::FreeClocks(DSP::Clock_ptr ReferenceClock)
   if (temp_master == NULL)
   {
     #ifdef __DEBUG__
-      DSP::log << "DSP::Clock::FreeClocks"  << DSP::e::LogMode::second << "Reference clock refers to NULL Master Clock" << endl;
+      DSP::log << "DSP::Clock::FreeClocks"  << DSP::e::LogMode::second << "Reference clock refers to NULL Master Clock" << std::endl;
     #endif
     // ??? Master Clock was not reelected
     //return;
@@ -986,7 +986,7 @@ void DSP::Clock::FreeClocks(DSP::Clock_ptr ReferenceClock)
   {
     #ifdef __DEBUG__
       DSP::log << DSP::e::LogMode::Error << "DSP::Clock::FreeClocks" << DSP::e::LogMode::second
-        << "Reference clock refers to Master Clock which it is not related to (it's possible that Reference clock is invalid or was deleted before)" << endl;
+        << "Reference clock refers to Master Clock which it is not related to (it's possible that Reference clock is invalid or was deleted before)" << std::endl;
     #endif
     return;
   }
@@ -1292,7 +1292,7 @@ void DSP::Clock::UpdateCycleLengths(DSP::Clock_ptr RootParentClock)
   if (RootParentClock==NULL)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error << "DSP::Clock::UpdateCycleLengths"  << DSP::e::LogMode::second << "RootParentClock undefined" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Clock::UpdateCycleLengths"  << DSP::e::LogMode::second << "RootParentClock undefined" << std::endl;
     #endif
     return; //there's nothing to do
   }
@@ -1442,7 +1442,7 @@ DSP::Clock_ptr DSP::Clock::GetClock(DSP::Clock_ptr ParentClock, long L, long M)
   if (ParentClock==NULL)
   {
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error << "GetClock"  << DSP::e::LogMode::second << "ParrentClock undefined" << endl;
+      DSP::log << DSP::e::LogMode::Error << "GetClock"  << DSP::e::LogMode::second << "ParrentClock undefined" << std::endl;
     #endif
     return NULL;
   }
@@ -1495,7 +1495,7 @@ unsigned long DSP::Clock::GetTimeToNextCycle(DSP::Clock_ptr CurrentMasterClock)
  * ClockList - vector with list where clocks' pointers will be stored (appended)
  */
 long DSP::Clock::GetAlgorithmClocks(DSP::Clock_ptr ReferenceClock,
-                                   vector<DSP::Clock_ptr> &ClocksList, 
+                                   std::vector<DSP::Clock_ptr> &ClocksList, 
                                    bool FindSignalActivatedClocks)
 {
   unsigned long index;
@@ -1563,7 +1563,7 @@ DSP::Clock_ptr* DSP::Clock::FindNextActiveClocks(DSP::Clock_ptr CurrentMasterClo
   if (ActiveClocksList==NULL)
   { //b��d lub brak zegar�w
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error << "DSP::Clock::FindNextActiveClocks" << DSP::e::LogMode::second << "Error or there are no Clocks at all" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Clock::FindNextActiveClocks" << DSP::e::LogMode::second << "Error or there are no Clocks at all" << std::endl;
     #endif
     return NULL;
   }
@@ -1571,7 +1571,7 @@ DSP::Clock_ptr* DSP::Clock::FindNextActiveClocks(DSP::Clock_ptr CurrentMasterClo
   if (ActiveClocksList[CurrentMasterClock->MasterClockIndex]==NULL)
   { //b?d lub brak zegarw
     #ifdef __DEBUG__
-      DSP::log << DSP::e::LogMode::Error << "DSP::Clock::FindNextActiveClocks" << DSP::e::LogMode::second << "Error or there are no Clocks at all (2)" << endl;
+      DSP::log << DSP::e::LogMode::Error << "DSP::Clock::FindNextActiveClocks" << DSP::e::LogMode::second << "Error or there are no Clocks at all (2)" << std::endl;
     #endif
     return NULL;
   }
@@ -1639,9 +1639,9 @@ void DSP::Clock::ListOfAllComponents(bool list_outputs)
   UNUSED_RELEASE_ARGUMENT(list_outputs);
 
   #ifdef __DEBUG__
-    DSP::log << "DSP::Clock::ListOfAllComponents"  << DSP::e::LogMode::second << "Starting ..." << endl;
+    DSP::log << "DSP::Clock::ListOfAllComponents"  << DSP::e::LogMode::second << "Starting ..." << std::endl;
     DSP::Component::ListOfAllComponents(list_outputs);
-    DSP::log << "DSP::Clock::ListOfAllComponents"  << DSP::e::LogMode::second << "End" << endl << endl;
+    DSP::log << "DSP::Clock::ListOfAllComponents"  << DSP::e::LogMode::second << "End" << std::endl << std::endl;
   #endif
 }
 
@@ -1649,14 +1649,14 @@ void DSP::Clock::ListComponents(void)
 {
   #ifdef __DEBUG__
     DSP::Clock *current;
-    string text;
+    std::string text;
 
-    DSP::log << "DSP::Clock::ListComponents"  << DSP::e::LogMode::second << "Starting ..." << endl;
+    DSP::log << "DSP::Clock::ListComponents"  << DSP::e::LogMode::second << "Starting ..." << std::endl;
     for (unsigned int ind_clocks = 0; ind_clocks < NoOfMasterClocks; ind_clocks++)
     {
       DSP::log << "DSP::Clock::ListComponents" << DSP::e::LogMode::second
         << "Master clock (index = " << ind_clocks
-        << ") / Number of Master clocks " << ((int)NoOfMasterClocks) << endl;
+        << ") / Number of Master clocks " << ((int)NoOfMasterClocks) << std::endl;
 
 
   //    DSP::Component::ListComponents(MasterClocks[ind_clocks]);
@@ -1669,21 +1669,21 @@ void DSP::Clock::ListComponents(void)
         {
           for (unsigned int ind = 0; ind < current->NoOfSources; ind++)
           {
-            DSP::log << "  >>source" << DSP::e::LogMode::second << current->SourcesTable[ind]->GetName() << endl;
+            DSP::log << "  >>source" << DSP::e::LogMode::second << current->SourcesTable[ind]->GetName() << std::endl;
           }
         }
 
         DSP::Component::ListComponents(current);
-        DSP::log << endl;
+        DSP::log << std::endl;
 
         current=current->Next;
       }
 
       // List Unconnected components
-      DSP::log << "DSP::Clock::ListComponents" << DSP::e::LogMode::second << "Master clock >>NULL<<" << endl;
+      DSP::log << "DSP::Clock::ListComponents" << DSP::e::LogMode::second << "Master clock >>NULL<<" << std::endl;
       DSP::Component::ListComponents(NULL);
     }
-    DSP::log << "DSP::Clock::ListComponents" << DSP::e::LogMode::second << "End" << endl << endl;
+    DSP::log << "DSP::Clock::ListComponents" << DSP::e::LogMode::second << "End" << std::endl << std::endl;
   #endif
 }
 
@@ -1693,10 +1693,10 @@ void DSP::Clock::ListComponents(DSP::Clock_ptr MasterClock)
 
   #ifdef __DEBUG__
     DSP::Clock *current;
-    string text;
+    std::string text;
     bool OK;
 
-    DSP::log << "DSP::Clock::ListComponents" << DSP::e::LogMode::second << "Starting ..." << endl;
+    DSP::log << "DSP::Clock::ListComponents" << DSP::e::LogMode::second << "Starting ..." << std::endl;
 
     // checking whether MasterClock still exists
     OK = false;
@@ -1711,7 +1711,7 @@ void DSP::Clock::ListComponents(DSP::Clock_ptr MasterClock)
     if (OK == true)
     {
       DSP::log << "DSP::Clock::ListComponents" << DSP::e::LogMode::second
-        << "List for master clock with index: " << (int)MasterClock->MasterClockIndex << endl;
+        << "List for master clock with index: " << (int)MasterClock->MasterClockIndex << std::endl;
 
       //Find clock which points to this one
       current=First[MasterClock->MasterClockIndex];
@@ -1721,7 +1721,7 @@ void DSP::Clock::ListComponents(DSP::Clock_ptr MasterClock)
         {
           for (unsigned int ind = 0; ind < current->NoOfSources; ind++)
           {
-            DSP::log << "  >>source" << DSP::e::LogMode::second << current->SourcesTable[ind]->GetName() << endl;
+            DSP::log << "  >>source" << DSP::e::LogMode::second << current->SourcesTable[ind]->GetName() << std::endl;
           }
         }
 
@@ -1732,9 +1732,9 @@ void DSP::Clock::ListComponents(DSP::Clock_ptr MasterClock)
     }
     else
     {
-      DSP::log << ">> WARNING" << DSP::e::LogMode::second << "Given Clock does not exists" << endl;
+      DSP::log << ">> WARNING" << DSP::e::LogMode::second << "Given Clock does not exists" << std::endl;
     }
-    DSP::log << "DSP::Clock::ListComponents" << DSP::e::LogMode::second << "End" << endl << endl;
+    DSP::log << "DSP::Clock::ListComponents" << DSP::e::LogMode::second << "End" << std::endl << std::endl;
   #endif
 }
 
@@ -1753,7 +1753,7 @@ void DSP::Clock::AddSignalActivatedClock(unsigned int MasterClockIndex,
 #ifdef __DEBUG__
   else
   {
-    DSP::log << DSP::e::LogMode::Error << "DSP::Clock::AddSignalActivatedClock" << DSP::e::LogMode::second << "Trying too add more than MAX_NO_OF_SIGNAL_ACTIVATED_CLOCKS clocks." << endl;
+    DSP::log << DSP::e::LogMode::Error << "DSP::Clock::AddSignalActivatedClock" << DSP::e::LogMode::second << "Trying too add more than MAX_NO_OF_SIGNAL_ACTIVATED_CLOCKS clocks." << std::endl;
   }
 #endif // __DEBUG__
 }

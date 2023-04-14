@@ -16,7 +16,7 @@ int main(void)
   DSP::log.SetLogState(DSP::e::LogState::console | DSP::e::LogState::file);
   DSP::log.SetLogFileName("log_file_client.log");
 
-  DSP::log << DSP::lib_version_string() << endl << endl;
+  DSP::log << DSP::lib_version_string() << std::endl << std::endl;
 
   MasterClock=DSP::Clock::CreateMasterClock();
 
@@ -41,13 +41,13 @@ int main(void)
   {
     DSP::Clock::Execute(MasterClock, Fp/8);
 
-    DSP::log << "MAIN" << DSP::e::LogMode::second << temp << endl;
+    DSP::log << "MAIN" << DSP::e::LogMode::second << temp << std::endl;
     temp++;
   }
   while (in_socket.GetBytesRead() != 0);
 
   DSP::Clock::FreeClocks();
-  DSP::log << DSP::e::LogMode::Error << "MAIN" << DSP::e::LogMode::second << "end" << endl;
+  DSP::log << DSP::e::LogMode::Error << "MAIN" << DSP::e::LogMode::second << "end" << std::endl;
 
   return 0;
 }

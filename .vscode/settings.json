@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "Makefile": "makefile",
         "optional": "cpp",
         "istream": "cpp",
         "ostream": "cpp",
@@ -52,7 +53,12 @@
         "iterator": "cpp",
         "bit": "cpp",
         "numeric": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "numbers": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

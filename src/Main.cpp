@@ -335,8 +335,8 @@ int test_1(int argc, char*argv[])
 
   DSP::Clock_ptr MasterClock, Fp1Zegar;
   MasterClock=NULL;
-  string InputName="DSPElib.wav";
-  string OutputName="output.flt";
+  std::string InputName="DSPElib.wav";
+  std::string OutputName="output.flt";
 //  DSP::u::WaveInput WaveInput(InputName, ".", 1);
   DSP::u::FileInput WaveInput(MasterClock, InputName, 1, DSP::e::SampleType::ST_float);
   DSP::u::FileOutput FileOutput(OutputName, DSP::e::SampleType::ST_float, 2);
@@ -360,9 +360,9 @@ int test_1(int argc, char*argv[])
   return 0;
 
 /*
-  string InputName="input.flt";
-  string CoefficientsName="hI_coef.flt";
-  string OutputName="output.flt";
+  std::string InputName="input.flt";
+  std::string CoefficientsName="hI_coef.flt";
+  std::string OutputName="output.flt";
   DSP::Clock_ptr Fp1Zegar, Fp2Zegar;
 
   int N_hI;
@@ -391,8 +391,8 @@ int test_1(int argc, char*argv[])
   // real input + complex coefficients // OK
   // complex input + real coefficients // OK
   // complex input + complex coefficients // OK
-  string InputName="delta.flt";
-  string InputName2="delta_im.flt";
+  std::string InputName="delta.flt";
+  std::string InputName2="delta_im.flt";
   DSP::Clock_ptr MainZegar;
 
   DSP::u::FileInput FileInput(InputName);
@@ -471,7 +471,7 @@ int test_1(int argc, char*argv[])
 
 
 
-long int CheckFs(const string &WaveName, const string &Dir)
+long int CheckFs(const std::string &WaveName, const std::string &Dir)
 {
   DSP::T_WAVEchunk WaveParams;
 
@@ -480,7 +480,7 @@ long int CheckFs(const string &WaveName, const string &Dir)
   return 0;
 }
 
-int ReadResamplerCoef(const string &name, const string &dir)
+int ReadResamplerCoef(const std::string &name, const std::string &dir)
 { //reads impulse response length
   DSP::Float_vector temp;
   int FilterOffset;
@@ -500,7 +500,7 @@ int ReadResamplerCoef(const string &name, const string &dir)
   return N_LPF;
 }
 
-long int ReadResamplerCoef(const string &name, const string &dir, DSP::Float_vector h_LPF)
+long int ReadResamplerCoef(const std::string &name, const std::string &dir, DSP::Float_vector h_LPF)
 {
   long int Fs;
   DSP::Float_vector temp;
@@ -530,7 +530,7 @@ long int ReadResamplerCoef(const string &name, const string &dir, DSP::Float_vec
   return Fs;
 }
 
-int ReadIIRCoef(const string &name, const string &dir)
+int ReadIIRCoef(const std::string &name, const std::string &dir)
 { //Read IIR filter order
   DSP::Float_vector temp(1);
   unsigned long ile;
@@ -542,7 +542,7 @@ int ReadIIRCoef(const string &name, const string &dir)
   return int(temp[0]);
 }
 
-int ReadIIRCoef(const string &name, const string &dir, int Order,
+int ReadIIRCoef(const std::string &name, const std::string &dir, int Order,
                 DSP::Complex_vector &A, DSP::Complex_vector &B)
 { //returns mean bandpass group delay (int)
   DSP::Float_vector temp;
@@ -557,7 +557,7 @@ int ReadIIRCoef(const string &name, const string &dir, int Order,
   return int(temp[0]);
 }
 
-void Process(long int Fs, const string &WaveName, const string &Dir)
+void Process(long int Fs, const std::string &WaveName, const std::string &Dir)
 {
   int ind;
 
@@ -570,7 +570,7 @@ void Process(long int Fs, const string &WaveName, const string &Dir)
 
   int IIR_order[5], IIR_delay[5];
   DSP::Complex_vector IIR_A[5], IIR_B[5];
-  string IIR_name="IIR_1.flt";
+  std::string IIR_name="IIR_1.flt";
 
   long czas0, czas1, czas2;
 
@@ -838,7 +838,7 @@ void Process(long int Fs, const string &WaveName, const string &Dir)
   DSP::Clock::FreeClocks();
 
   DSP::log << "MAIN"  << DSP::e::LogMode::second << "(" << czas1-czas0 << " ms"
-    << " + " << czas2-czas1 << " ms)" << endl;
+    << " + " << czas2-czas1 << " ms)" << std::endl;
   // todo: DSP::u::CCPC instead of DSP::u::ABS + DSP::u::Angle
 }
 
@@ -1213,7 +1213,7 @@ int test_4()
 
   /*************************************************************/
   L1=(int)(Fp1/Fb);
-  DSP::log << "MAIN" << DSP::e::LogMode::second <<  "L1=" << L1 << " (Fp1=" << std::setprecision(1) << Fp1 << "Hz)" << endl;
+  DSP::log << "MAIN" << DSP::e::LogMode::second <<  "L1=" << L1 << " (Fp1=" << std::setprecision(1) << Fp1 << "Hz)" << std::endl;
 
   int M2=5;
 
@@ -1257,7 +1257,7 @@ int test_4()
   /*************************************************************/
   L2=(int)(Fp2/Fb);
   sprintf(tekst, "L2=%i (Fp2=%.1fHz)", L2, Fp2);
-  DSP::log << "MAIN" << DSP::e::LogMode::second << tekst << endl;
+  DSP::log << "MAIN" << DSP::e::LogMode::second << tekst << std::endl;
 
   /*************************************************************/
   // automatic gain control
@@ -1462,7 +1462,7 @@ int test_4()
             elapsed_time, float(500.0*(ind+1)/elapsed_time/1000), Fp1/1000,
             GardnerSampling.GetSamplingPeriod());
 //            PilotAGC.GetPower(), (Fo-Band/2)-pilot_DCO.GetFrequency(Fp1));
-    DSP::log << "MAIN" << DSP::e::LogMode::second << tekst << endl;
+    DSP::log << "MAIN" << DSP::e::LogMode::second << tekst << std::endl;
 
     #ifdef WIN32
       MSG temp_msg;
@@ -1491,7 +1491,7 @@ int test_4()
   }
   DSP::Clock::FreeClocks();
 
-  DSP::log << DSP::e::LogMode::Error << "MAIN" << DSP::e::LogMode::second << "Finished" << endl;
+  DSP::log << DSP::e::LogMode::Error << "MAIN" << DSP::e::LogMode::second << "Finished" << std::endl;
   return 0;
 }
 
@@ -1545,10 +1545,10 @@ DSP::u::Addition Sum;
   for (int temp=0; temp<40; temp++)
   {
     DSP::Clock::Execute(MasterClock, Fp/8);
-    DSP::log << "MAIN" << DSP::e::LogMode::second << temp << endl;
+    DSP::log << "MAIN" << DSP::e::LogMode::second << temp << std::endl;
   }
 
-  DSP::log << DSP::e::LogMode::Error << "MAIN" << DSP::e::LogMode::second << "end" << endl;
+  DSP::log << DSP::e::LogMode::Error << "MAIN" << DSP::e::LogMode::second << "end" << std::endl;
   DSP::Clock::FreeClocks();
 
   return 0;
@@ -1593,7 +1593,7 @@ int test_6()
   delete tester;
   delete const_;
 
-  DSP::log << DSP::e::LogMode::Error << "MAIN" << DSP::e::LogMode::second << "end" << endl;
+  DSP::log << DSP::e::LogMode::Error << "MAIN" << DSP::e::LogMode::second << "end" << std::endl;
   DSP::Clock::FreeClocks();
 
   return 0;
@@ -1663,7 +1663,7 @@ int test_7()
   DSP::log.SetLogState(DSP::e::LogState::console | DSP::e::LogState::file);
   DSP::log.SetLogFileName("log_file.log");
 
-  DSP::log << DSP::lib_version_string() << endl << endl;
+  DSP::log << DSP::lib_version_string() << std::endl << std::endl;
 
   MasterClock=DSP::Clock::CreateMasterClock();
 
@@ -1701,7 +1701,7 @@ int test_7()
   {
     DSP::Clock::Execute(MasterClock, Fp/8);
 
-    DSP::log << "MAIN" << DSP::e::LogMode::second << temp << endl;
+    DSP::log << "MAIN" << DSP::e::LogMode::second << temp << std::endl;
     temp++;
   }
   while (AudioIn->GetBytesRead() != 0);
@@ -1715,7 +1715,7 @@ int test_7()
   DSP::Clock::ListOfAllComponents();
 
   DSP::Clock::FreeClocks();
-  DSP::log << "MAIN" << DSP::e::LogMode::second << "end" << endl;
+  DSP::log << "MAIN" << DSP::e::LogMode::second << "end" << std::endl;
 
   return 0;
 }
@@ -1840,7 +1840,7 @@ int test_9()
   DSP::log.SetLogFileName("log_file.txt");
   DSP::log.SetLogState(DSP::e::LogState::file | DSP::e::LogState::console);
 
-  DSP::log << DSP::lib_version_string() << endl << endl;
+  DSP::log << DSP::lib_version_string() << std::endl << std::endl;
   /*************************************************************/
 
 /*
@@ -1894,7 +1894,7 @@ int test_9()
   DSP::u::FileOutput FileOut_a("matlab/cw3_zad2.wav", DSP::e::SampleType::ST_short, 1, DSP::e::FileType::FT_wav, Fp1);
   DSP::u::FileOutput FileOut_b("matlab/cw3_zad2.flt", DSP::e::SampleType::ST_float, 1, DSP::e::FileType::FT_flt, Fp1);
 
-  DSP::log << "Fp1 = " << Fp1 << ", L_IFIR = " << L_IFIR << endl;
+  DSP::log << "Fp1 = " << Fp1 << ", L_IFIR = " << L_IFIR << std::endl;
 
   /*************************************************************/
   // Connections definitions
@@ -1960,7 +1960,7 @@ int test_10()
   N_C = coef_info.GetSize(0);
   if (N_C < 1)
   {
-    DSP::log << DSP::e::LogMode::Error << "No test.coef: aborting" << endl;
+    DSP::log << DSP::e::LogMode::Error << "No test.coef: aborting" << std::endl;
     return -1;
   }
   else
@@ -2016,7 +2016,7 @@ int test_11()
   //DSP::f::SetLogState(DSP_LS_file | DSP_LS_console);
   DSP::log.SetLogState(DSP::e::LogState::file);
 
-  DSP::log << DSP::lib_version_string() << endl << endl;
+  DSP::log << DSP::lib_version_string() << std::endl << std::endl;
   /*************************************************************/
 
   long int Fp2, F_symb;
@@ -2030,7 +2030,7 @@ int test_11()
   N_rc = coef_info.GetSize(0);
   if (N_rc < 1)
   {
-    DSP::log << DSP::e::LogMode::Error << "No cw5_zad1_h_rc.coef: aborting" << endl;
+    DSP::log << DSP::e::LogMode::Error << "No cw5_zad1_h_rc.coef: aborting" << std::endl;
     return -1;
   }
   else
@@ -2053,7 +2053,7 @@ int test_11()
   int K = 32;
   Fp2 = K*F_symb;
 
-  DSP::log << "Fsymb = " << F_symb << ", Fp2 = " << Fp2 << ", L = " << K << endl;
+  DSP::log << "Fsymb = " << F_symb << ", Fp2 = " << Fp2 << ", L = " << K << std::endl;
 
   SymbolClock=DSP::Clock::GetClock(InputClock, 1, K);
 
@@ -2087,9 +2087,9 @@ int test_11()
   {
     H_g[ind] = new DSP::u::FIR(h_rc, (K-1)-ind, K);
 
-    string name, name2;
-    name = "out"; name += to_string(ind+1);
-    name2 = "in"; name2 += to_string(ind+1);
+    std::string name, name2;
+    name = "out"; name += std::to_string(ind+1);
+    name2 = "in"; name2 += std::to_string(ind+1);
     OutputBuffer.Output(name), H_g[ind]->Input("in");
     H_g[ind]->Output("out") >> fft->Input(name2);
   }
@@ -2130,15 +2130,15 @@ int test_11()
 
   // pod��cz kana�y w�skopasmowe ST
   // kana� nr 8
-  string name;
-  name = "out"; name += to_string(channel1);
+  std::string name;
+  name = "out"; name += std::to_string(channel1);
   fft->Output(name), PSKdecoder1.Input("in");
   // kana� nr 10
-  name = "out"; name += to_string(channel2);
+  name = "out"; name += std::to_string(channel2);
   fft->Output(name), PSKdecoder2.Input("in");
   fft->Output(name), SymbData1.Input("in");
   // kana� nr 13
-  name = "out"; name += to_string(channel3);
+  name = "out"; name += std::to_string(channel3);
   fft->Output(name), PSKdecoder3.Input("in");
 
   PSKdecoder1.Output("out") >> BinData1.Input("in");
@@ -2271,7 +2271,7 @@ int test_12(void)
   DSP::log.SetLogState(DSP::e::LogState::console | DSP::e::LogState::file);
   DSP::log.SetLogFileName("log_file.log");
 
-  DSP::log << DSP::lib_version_string() << endl;
+  DSP::log << DSP::lib_version_string() << std::endl;
 
   MasterClock=DSP::Clock::CreateMasterClock();
 
@@ -2321,7 +2321,7 @@ int test_12(void)
   {
     DSP::Clock::Execute(MasterClock, Fp/8);
 
-    DSP::log << "MAIN"<< DSP::e::LogMode::second << temp << endl;
+    DSP::log << "MAIN"<< DSP::e::LogMode::second << temp << std::endl;
     temp++;
   }
   while (AudioIn->GetBytesRead() != 0);
@@ -2336,13 +2336,13 @@ int test_12(void)
 
   DSP::Clock::ListOfAllComponents();
   DSP::Clock::FreeClocks();
-  DSP::log << "MAIN" << DSP::e::LogMode::second << "end" << endl;
+  DSP::log << "MAIN" << DSP::e::LogMode::second << "end" << std::endl;
 
   return 0;
 }
 
 int test_SolveMatrix(int mode) {
-  vector<DSP::Float_vector> A_in =
+  std::vector<DSP::Float_vector> A_in =
      {{3.0, 1.0, 1.0},
       {0.5, 1.0, 1.5}, // {0.5, 2.0, 1.5},
       {0.1, 1.0, 0.1}}; // matrix coefficients (table of rows)
@@ -2350,10 +2350,10 @@ int test_SolveMatrix(int mode) {
   DSP::Float_vector X;   // vector reserved for solution
 
   {
-    DSP::log << "A=[" << endl;
+    DSP::log << "A=[" << std::endl;
     for (const auto &row: A_in) {
       unsigned int ind = 0;
-      stringstream ss;
+      std::stringstream ss;
       ss << "    [";
       for (const auto &val: row) {
         ss << val;
@@ -2363,13 +2363,13 @@ int test_SolveMatrix(int mode) {
         }
       }
       ss << "]";
-      DSP::log << ss.str() << endl;
+      DSP::log << ss.str() << std::endl;
     }
-    DSP::log << "  ]" << endl;
+    DSP::log << "  ]" << std::endl;
   }
   {
     unsigned int ind = 0;
-    stringstream ss;
+    std::stringstream ss;
     ss << "B_in = [";
     for (const auto &val: B_in) {
       ss << val;
@@ -2379,26 +2379,26 @@ int test_SolveMatrix(int mode) {
       }
     }
     ss << "]";
-    DSP::log << ss.str() << endl;
+    DSP::log << ss.str() << std::endl;
   }
   switch (mode) {
     case 0:
-      DSP::log << "DSP::f::SolveMatrixEqu(A_in, X, B_in);" << endl;
+      DSP::log << "DSP::f::SolveMatrixEqu(A_in, X, B_in);" << std::endl;
       DSP::f::SolveMatrixEqu(A_in, X, B_in);
       break;
 
     case 1:
-      DSP::log << "DSP::f::SolveMatrixEqu_prec(A_in, X, B_in);" << endl;
+      DSP::log << "DSP::f::SolveMatrixEqu_prec(A_in, X, B_in);" << std::endl;
       DSP::f::SolveMatrixEqu_prec(A_in, X, B_in);
       break;
 
     default:
-      DSP::log << "test_SolveMatrix" << DSP::e::LogMode::second << "unsupported mode" << endl;
+      DSP::log << "test_SolveMatrix" << DSP::e::LogMode::second << "unsupported mode" << std::endl;
       break;
   }
   {
     unsigned int ind = 0;
-    stringstream ss;
+    std::stringstream ss;
     ss << "X = [";
     for (const auto &val: X) {
       ss << val;
@@ -2408,7 +2408,7 @@ int test_SolveMatrix(int mode) {
       }
     }
     ss << "]";
-    DSP::log << ss.str() << endl;
+    DSP::log << ss.str() << std::endl;
   }
 
 //  \test Test also DSP::f::LPF_LS();
@@ -2424,7 +2424,7 @@ int test_SolveMatrix(int mode) {
 }
 
 int test_SolveMatrix_prec(int mode) {
-  vector<DSP::Prec_Float_vector> A_in =
+  std::vector<DSP::Prec_Float_vector> A_in =
      {{3.0, 1.0, 1.0},
       {0.5, 1.0, 1.5}, // {0.5, 2.0, 1.5},
       {0.1, 1.0, 0.1}}; // matrix coefficients (table of rows)
@@ -2432,10 +2432,10 @@ int test_SolveMatrix_prec(int mode) {
   DSP::Prec_Float_vector X;   // vector reserved for solution
 
   {
-    DSP::log << "A=[" << endl;
+    DSP::log << "A=[" << std::endl;
     for (const auto &row: A_in) {
       unsigned int ind = 0;
-      stringstream ss;
+      std::stringstream ss;
       ss << "    [";
       for (const auto &val: row) {
         ss << val;
@@ -2445,13 +2445,13 @@ int test_SolveMatrix_prec(int mode) {
         }
       }
       ss << "]";
-      DSP::log << ss.str() << endl;
+      DSP::log << ss.str() << std::endl;
     }
-    DSP::log << "  ]" << endl;
+    DSP::log << "  ]" << std::endl;
   }
   {
     unsigned int ind = 0;
-    stringstream ss;
+    std::stringstream ss;
     ss << "B_in = [";
     for (const auto &val: B_in) {
       ss << val;
@@ -2461,31 +2461,31 @@ int test_SolveMatrix_prec(int mode) {
       }
     }
     ss << "]";
-    DSP::log << ss.str() << endl;
+    DSP::log << ss.str() << std::endl;
   }
   switch (mode) {
     case 0:
-      DSP::log << "DSP::f::SolveMatrixEqu_prec(A_in, X, B_in, 0);" << endl;
+      DSP::log << "DSP::f::SolveMatrixEqu_prec(A_in, X, B_in, 0);" << std::endl;
       DSP::f::SolveMatrixEqu_prec(A_in, X, B_in, 0);
       break;
 
     case 1:
-      DSP::log << "DSP::f::SolveMatrixEqu_prec(A_in, X, B_in, 1);" << endl;
+      DSP::log << "DSP::f::SolveMatrixEqu_prec(A_in, X, B_in, 1);" << std::endl;
       DSP::f::SolveMatrixEqu_prec(A_in, X, B_in, 1);
       break;
 
     case 2:
-      DSP::log << "DSP::f::SolveMatrixEqu_prec(A_in, X, B_in, 2);" << endl;
+      DSP::log << "DSP::f::SolveMatrixEqu_prec(A_in, X, B_in, 2);" << std::endl;
       DSP::f::SolveMatrixEqu_prec(A_in, X, B_in, 2);
       break;
 
     default:
-      DSP::log << "test_SolveMatrix_prec" << DSP::e::LogMode::second << "unsupported mode" << endl;
+      DSP::log << "test_SolveMatrix_prec" << DSP::e::LogMode::second << "unsupported mode" << std::endl;
       break;
   }
   {
     unsigned int ind = 0;
-    stringstream ss;
+    std::stringstream ss;
     ss << "X = [";
     for (const auto &val: X) {
       ss << val;
@@ -2495,7 +2495,7 @@ int test_SolveMatrix_prec(int mode) {
       }
     }
     ss << "]";
-    DSP::log << ss.str() << endl;
+    DSP::log << ss.str() << std::endl;
   }
 
 //  \TODO test also DSP::f::LPF_LS();
@@ -2512,19 +2512,19 @@ int test_SolveMatrix_prec(int mode) {
 
 int test_SymbolMapper() {
   DSP::Clock_ptr BitClock, SymbolClock;
-  map<string,shared_ptr<DSP::Component> > blocks;
+  std::map<std::string,std::shared_ptr<DSP::Component> > blocks;
 
   int bits_per_symbol = 3;
 
   BitClock = DSP::Clock::CreateMasterClock();
-  blocks["binary_stream"] = shared_ptr<DSP::Source>(new DSP::u::BinRand(BitClock));
+  blocks["binary_stream"] = std::shared_ptr<DSP::Source>(new DSP::u::BinRand(BitClock));
 
-  blocks["file_bin"] = shared_ptr<DSP::Block>(new DSP::u::FileOutput("bin_input.txt", DSP::e::SampleType::ST_bit_text, 1, DSP::e::FileType::FT_raw));
+  blocks["file_bin"] = std::shared_ptr<DSP::Block>(new DSP::u::FileOutput("bin_input.txt", DSP::e::SampleType::ST_bit_text, 1, DSP::e::FileType::FT_raw));
 //  sources["binary_stream"]->Output("out"),blocks["file_bin"]->Input("in");
   blocks["binary_stream"]->Output("out") >> blocks["file_bin"]->Input("in");
 
-  blocks["SPconv"] = make_shared<DSP::u::Serial2Parallel>(BitClock, bits_per_symbol);
-  blocks["mapper"] = make_shared<DSP::u::SymbolMapper>(DSP::e::ModulationType::ASK, bits_per_symbol);
+  blocks["SPconv"] = std::make_shared<DSP::u::Serial2Parallel>(BitClock, bits_per_symbol);
+  blocks["mapper"] = std::make_shared<DSP::u::SymbolMapper>(DSP::e::ModulationType::ASK, bits_per_symbol);
   blocks["binary_stream"]->Output("out") >> blocks["SPconv"]->Input("in");
   blocks["SPconv"]->Output("out") >> blocks["mapper"]->Input("in");
   SymbolClock = blocks["mapper"]->GetOutputClock();
@@ -2535,17 +2535,17 @@ int test_SymbolMapper() {
   if (dynamic_cast<DSP::u::SymbolMapper *>(blocks["mapper"].get())->isOutputReal() == false)
     noChannels = 2;
 
-  blocks["file_symb"] = shared_ptr<DSP::Block>(new DSP::u::FileOutput("symb_output.flt", DSP::e::SampleType::ST_float, noChannels, DSP::e::FileType::FT_flt));
+  blocks["file_symb"] = std::shared_ptr<DSP::Block>(new DSP::u::FileOutput("symb_output.flt", DSP::e::SampleType::ST_float, noChannels, DSP::e::FileType::FT_flt));
   blocks["mapper"]->Output("out"),blocks["file_symb"]->Input("in");
 
-  blocks["demapper"] = make_shared<DSP::u::SymbolDemapper>(DSP::e::ModulationType::ASK, bits_per_symbol);
+  blocks["demapper"] = std::make_shared<DSP::u::SymbolDemapper>(DSP::e::ModulationType::ASK, bits_per_symbol);
   blocks["mapper"]->Output("out") >> blocks["demapper"]->Input("in");
-  blocks["PSconv"] = make_shared<DSP::u::Parallel2Serial>(SymbolClock, bits_per_symbol);
+  blocks["PSconv"] = std::make_shared<DSP::u::Parallel2Serial>(SymbolClock, bits_per_symbol);
   blocks["demapper"]->Output("out") >> blocks["PSconv"]->Input("in");
 
 
-  blocks["file_bin_recovered"] = shared_ptr<DSP::Block>(new DSP::u::FileOutput("bin_output.flt", DSP::e::SampleType::ST_float, 1, DSP::e::FileType::FT_flt));
-  blocks["file_bin_recovered2"] = shared_ptr<DSP::Block>(new DSP::u::FileOutput("bin_output.txt", DSP::e::SampleType::ST_bit_text, 1, DSP::e::FileType::FT_raw));
+  blocks["file_bin_recovered"] = std::shared_ptr<DSP::Block>(new DSP::u::FileOutput("bin_output.flt", DSP::e::SampleType::ST_float, 1, DSP::e::FileType::FT_flt));
+  blocks["file_bin_recovered2"] = std::shared_ptr<DSP::Block>(new DSP::u::FileOutput("bin_output.txt", DSP::e::SampleType::ST_bit_text, 1, DSP::e::FileType::FT_raw));
   blocks["PSconv"]->Output("out"),blocks["file_bin_recovered"]->Input("in");
   blocks["PSconv"]->Output("out"),blocks["file_bin_recovered2"]->Input("in");
 
@@ -2582,7 +2582,7 @@ int test_ZPSTC_cw_3()
   N_rc = coef_info.GetSize(0);
   if (N_rc < 1)
   {
-    DSP::log << DSP::e::LogMode::Error << "No cw3_zad3_h_rc.coef: aborting" << endl;
+    DSP::log << DSP::e::LogMode::Error << "No cw3_zad3_h_rc.coef: aborting" << std::endl;
     return -1;
   }
   else
@@ -2596,7 +2596,7 @@ int test_ZPSTC_cw_3()
   N2 = coef_info.GetSize(0);
   if (N2 < 1)
   {
-    DSP::log << DSP::e::LogMode::Error << "No cw3_zad3_h2.coef: aborting" << endl;
+    DSP::log << DSP::e::LogMode::Error << "No cw3_zad3_h2.coef: aborting" << std::endl;
     return -1;
   }
   else
@@ -2620,9 +2620,9 @@ int test_ZPSTC_cw_3()
 
   L1 = (unsigned int)(Fp1 / F_symb);
   L2 = (unsigned int)(Fp2 / Fp1);
-  stringstream ss;
+  std::stringstream ss;
   ss << "Fsymb = " << F_symb << ", Fp1 = " << Fp1 << ", Fp2 = " << Fp2 << ", L1 = " << L1 << ", L2 = " << L2;
-  DSP::log << ss.str() << endl;
+  DSP::log << ss.str() << std::endl;
 
   SecondClock=DSP::Clock::GetClock(SymbolClock, L2, 1);
 
@@ -2689,7 +2689,7 @@ int test_ZPSTC_cw_3()
     // ********************************************************** //
 
     unsigned long bytes_read = BinData.GetBytesRead();
-    DSP::log << "BinData.GetBytesRead() = " << bytes_read << endl;
+    DSP::log << "BinData.GetBytesRead() = " << bytes_read << std::endl;
     if (bytes_read > 0)
     {
         NoOfSamplesProcessed = 0; // Play the whole file
@@ -2784,7 +2784,7 @@ int test_ZPSTC_cw_3()
   and writes to standard output for 5 seconds of data.
 
   */
-  vector<int16_t> test_record() {
+  std::vector<int16_t> test_record() {
     long loops;
     int rc;
     int frames_size;
@@ -2793,7 +2793,7 @@ int test_ZPSTC_cw_3()
     unsigned int val;
     int dir;
     snd_pcm_uframes_t frames;
-    vector<int16_t> buffer;
+    std::vector<int16_t> buffer;
 
     /* Open PCM device for recording (capture). */
     rc = snd_pcm_open(&handle, "default",
@@ -2952,15 +2952,15 @@ int main(int argc, char*argv[])
   DSP::log.SetLogFileName("DSPElib_test_log.txt");
 
   #ifdef ALSA_support_H
-    DSP::log << "test ALSA" << endl;
+    DSP::log << "test ALSA" << std::endl;
     test_ALSA();
   #endif // ALSA_support_H
 
-  DSP::log << "test DSP::log" << endl;
-  DSP::log << "test DSP::log(2)" << DSP::e::LogMode::second << "2" << endl;
-  DSP::log << DSP::e::LogMode::Error << "test DSP::log error" << endl;
+  DSP::log << "test DSP::log" << std::endl;
+  DSP::log << "test DSP::log(2)" << DSP::e::LogMode::second << "2" << std::endl;
+  DSP::log << DSP::e::LogMode::Error << "test DSP::log error" << std::endl;
 
-  DSP::log << "Starting SolveMatrix test" << endl;
+  DSP::log << "Starting SolveMatrix test" << std::endl;
   for (auto i=0; i<3; i++) {
     test_SolveMatrix(i);
   }
@@ -2968,74 +2968,74 @@ int main(int argc, char*argv[])
     test_SolveMatrix_prec(i);
   }
   //! \TODO test also DSP::f::LPF_LS
-  DSP::log << DSP::e::LogMode::pause << "Finished SolveMatrix test" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished SolveMatrix test" << std::endl;
 
 #ifdef INCLUDE_DSPE_EXAMPLES
   
-  DSP::log << "Starting test_hello" << endl;
+  DSP::log << "Starting test_hello" << std::endl;
   test_hello();
-  DSP::log << DSP::e::LogMode::Error << "Finished test_hello" << endl;
+  DSP::log << DSP::e::LogMode::Error << "Finished test_hello" << std::endl;
 
-  DSP::log << "Starting test_sound_input" << endl;
+  DSP::log << "Starting test_sound_input" << std::endl;
   bool use_audio_output = false;
   test_sound_input(use_audio_output);
-  DSP::log << DSP::e::LogMode::Error << "Finished test_sound_input" << endl;
+  DSP::log << DSP::e::LogMode::Error << "Finished test_sound_input" << std::endl;
 
 #endif // INCLUDE_DSPE_EXAMPLES
 
-  DSP::log << "Starting SymbolMapper test" << endl;
+  DSP::log << "Starting SymbolMapper test" << std::endl;
   test_SymbolMapper();
-  DSP::log << DSP::e::LogMode::pause << "Finished SymbolMapper test" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished SymbolMapper test" << std::endl;
 
-  DSP::log << "Starting test_ZPSTC_cw_3" << endl;
+  DSP::log << "Starting test_ZPSTC_cw_3" << std::endl;
   test_ZPSTC_cw_3();
-  DSP::log << "Finished test_ZPSTC_cw_3" << DSP::e::LogMode::pause << endl;
+  DSP::log << "Finished test_ZPSTC_cw_3" << DSP::e::LogMode::pause << std::endl;
 
-  DSP::log << "Starting test_1" << endl;
+  DSP::log << "Starting test_1" << std::endl;
   test_1(argc, argv);
-  DSP::log << DSP::e::LogMode::pause << "Finished test_1" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_1" << std::endl;
 
-  DSP::log << "Starting test_2" << endl;
+  DSP::log << "Starting test_2" << std::endl;
   test_2();
-  DSP::log << DSP::e::LogMode::pause << "Finished test_2" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_2" << std::endl;
 
-  DSP::log << "Starting test_3" << endl;
+  DSP::log << "Starting test_3" << std::endl;
   test_3();
-  DSP::log << DSP::e::LogMode::pause << "Finished test_3" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_3" << std::endl;
 
-  DSP::log << "Starting test_4" << endl;
+  DSP::log << "Starting test_4" << std::endl;
   test_4();
-  DSP::log << DSP::e::LogMode::pause << "Finished test_4" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_4" << std::endl;
 
-  DSP::log << "Starting test_5" << endl;
+  DSP::log << "Starting test_5" << std::endl;
   test_5();
-  DSP::log << DSP::e::LogMode::pause << "Finished test_5" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_5" << std::endl;
 
-  DSP::log << "Starting test_6" << endl;
+  DSP::log << "Starting test_6" << std::endl;
   test_6();
-  DSP::log << DSP::e::LogMode::pause << "Finished test_6" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_6" << std::endl;
 
-  DSP::log << "Starting test_7" << endl;
+  DSP::log << "Starting test_7" << std::endl;
   test_7();
-  DSP::log << DSP::e::LogMode::pause << "Finished test_7" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_7" << std::endl;
 
-  DSP::log << "Starting test_8" << endl;
+  DSP::log << "Starting test_8" << std::endl;
   test_8();
-  DSP::log << DSP::e::LogMode::pause << "Finished test_8" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_8" << std::endl;
 
-  DSP::log << "Starting test_9" << endl;
+  DSP::log << "Starting test_9" << std::endl;
   test_9();
-  DSP::log << DSP::e::LogMode::pause << "Finished test_9" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_9" << std::endl;
 
-  DSP::log << "Starting test_10" << endl;
+  DSP::log << "Starting test_10" << std::endl;
   test_10();
-  DSP::log << DSP::e::LogMode::pause << "Finished test_10" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_10" << std::endl;
 
-  DSP::log << "Starting test_11" << endl;
+  DSP::log << "Starting test_11" << std::endl;
   test_11();
-  DSP::log << DSP::e::LogMode::pause << "Finished test_11" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_11" << std::endl;
 
-  DSP::log << "Starting test_12" << endl;
+  DSP::log << "Starting test_12" << std::endl;
   test_12();
-  DSP::log << DSP::e::LogMode::pause << "Finished test_12" << endl;
+  DSP::log << DSP::e::LogMode::pause << "Finished test_12" << std::endl;
 }
