@@ -33,7 +33,6 @@ class DSP::TMorseTable
   private:
     static int TablesNo;
     static TMorseTable *FirstTable;
-    static const std::string &BaseDirectory;
 
     TMorseTable *NextTable;
 
@@ -45,6 +44,7 @@ class DSP::TMorseTable
     static TMorseTable *Current;
 
   public:
+    //! loads coding table from file *.mct, where Name if filename with full path
     bool LoadFromFile(const std::string &Name);
 
     std::string FontName[FontsEditEntriesNo];
@@ -154,6 +154,8 @@ class DSP::u::MORSEkey : public DSP::Source // , public DSP::Randomization
         float dash2dot_ratio = 3.0, float space2dot_ratio = 7.0);
 
     bool LoadCodeTable(const std::string &filename);
+    //! \TODO add possibilitu to add user table without using file
+    void SetTable(const TMorseTable &new_table);
 
     //! Changes manually current key state
     /*!

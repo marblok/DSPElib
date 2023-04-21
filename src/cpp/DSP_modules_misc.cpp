@@ -22,7 +22,6 @@
 int DSP::TMorseTable::TablesNo=0;
 DSP::TMorseTable *DSP::TMorseTable::FirstTable=NULL;
 DSP::TMorseTable *DSP::TMorseTable::Current=NULL;
-const std::string &DSP::TMorseTable::BaseDirectory="./";
 
 DSP::TMorseTable::TMorseTable(void)
 {
@@ -431,7 +430,6 @@ uint32_t DSP::TMorseTable::Char2Number(char znak)
 void DSP::TMorseTable::Save2File(const std::string &Name)
 {
   #if _DEMO_ == 0
-    std::string Dir_FileName;
     unsigned char pomB;
     uint16_t pom;
     unsigned long ind;
@@ -439,11 +437,7 @@ void DSP::TMorseTable::Save2File(const std::string &Name)
 
     FileName = Name;
 
-    Dir_FileName = BaseDirectory;
-    Dir_FileName += "config/";
-    Dir_FileName += FileName;
-
-    plik = fopen(Dir_FileName.c_str(), "wb");
+    plik = fopen(FileName.c_str(), "wb");
 
     pomB=FontsEditEntriesNo;
     fwrite(&pomB, sizeof(unsigned char), 1, plik);
@@ -476,7 +470,6 @@ void DSP::TMorseTable::Save2File(const std::string &Name)
 
     fclose(plik);
 
-    Dir_FileName = "";
   #endif // _DEMO_ == 0
 }
 
@@ -484,7 +477,6 @@ void DSP::TMorseTable::Save2File(const std::string &Name)
 
 bool DSP::TMorseTable::LoadFromFile(const std::string &Name)
 {
-  std::string Dir_FileName;
   uint8_t IleFONT;
   uint8_t ver;
   FILE *plik;
@@ -499,11 +491,7 @@ bool DSP::TMorseTable::LoadFromFile(const std::string &Name)
   else
     TableDescription = Name;
 
-  Dir_FileName = BaseDirectory;
-  Dir_FileName += "config/";
-  Dir_FileName += FileName;
-
-  plik = fopen(Dir_FileName.c_str(), "rb");
+  plik = fopen(FileName.c_str(), "rb");
   if (plik == NULL)
     return false;
 
@@ -570,7 +558,7 @@ bool DSP::TMorseTable::LoadFromFile(const std::string &Name)
   {
     if (ind<MaxMorseCodeEntriesNumber)
     {
-      fread(MorseCode+ind, sizeof(uint16_t), 1, plik);
+      fread(MorseCode+ind, sizeof(uint32_t), 1, plik);
 
       fread(CharCode+ind, sizeof(char), 1, plik);
       switch(ver)
@@ -591,7 +579,6 @@ bool DSP::TMorseTable::LoadFromFile(const std::string &Name)
 
   fclose(plik);
 
-  Dir_FileName = "";
   return true;
 }
 
@@ -680,7 +667,6 @@ void DSP::TMorseTable::NewTable(void)
 {
   //TSearchRec F;
   TMorseTable *pom;
-  std::string Dir_FileName;
   int ind_;
 
   pom=FirstTable;
@@ -704,10 +690,6 @@ void DSP::TMorseTable::NewTable(void)
 
   Current->FileName = Current->TableDescription;
   Current->FileName += ".mct";
-
-  Dir_FileName = Current->BaseDirectory;
-  Dir_FileName += "config/";
-  Dir_FileName += Current->FileName;
 
   /*
   while (FindFirst(Dir_FileName, faAnyFile, F)==0)
@@ -744,8 +726,6 @@ void DSP::TMorseTable::NewTable(void)
   }
   else
     SaveCurrent();
-
-  Dir_FileName = "";
 }
 
 void DSP::TMorseTable::SaveCurrent(void)

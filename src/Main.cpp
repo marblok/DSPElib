@@ -2,6 +2,8 @@
 
 #include <DSP_sockets.h>
 #include <DSP_lib.h>
+#include <DSP_modules_misc.h>
+
 //#include <DSP_AudioMixer.h>
 #include "Main.h"
 
@@ -2950,6 +2952,18 @@ int main(int argc, char*argv[])
   //  DSP::f::SetLogState(DSP_LS_console | DSP_LS_file);
   DSP::log.SetLogState(DSP::e::LogState::console | DSP::e::LogState::file);
   DSP::log.SetLogFileName("DSPElib_test_log.txt");
+
+  DSP::log << "test MORSEkey" << std::endl;
+  {
+    DSP::TMorseTable MorseTable;
+    MorseTable.LoadFromFile("../matlab/Polish.mct");
+
+    DSP::Clock_ptr MasterClock = DSP::Clock::CreateMasterClock();
+    DSP::u::MORSEkey morse_key(MasterClock);
+    morse_key.LoadCodeTable("../matlab/Polish.mct");
+
+    DSP::Clock::FreeClocks();
+  }
 
   #ifdef ALSA_support_H
     DSP::log << "test ALSA" << std::endl;
