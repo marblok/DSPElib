@@ -8,7 +8,9 @@ TODO::
 LAST DONE:
 
 CHANGES:
-- ver. 0.20.026 - <b>2022.04.14</b> Fixed: 
+- ver. 0.20.027 - <b>2022.04.21</b> Fixed: 
+  - not Main.o is not included in libDSPE.a 
+- ver. 0.20.026 - <b>2022.04.21</b> Fixed: 
   - fixed DSP::TMorseTable::LoadFromFile
   - DSP::TMorseTable::LoadFromFile and DSP::u::MORSEkey::LoadFromFile now read file based on full path to *.mct file
 - ver. 0.20.025 - <b>2022.04.14</b> Changed: 
