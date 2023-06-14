@@ -2526,8 +2526,7 @@ int test_SymbolMapper() {
   blocks["binary_stream"]->Output("out") >> blocks["file_bin"]->Input("in");
 
   blocks["SPconv"] = std::make_shared<DSP::u::Serial2Parallel>(BitClock, bits_per_symbol);
-  //blocks["mapper"] = std::make_shared<DSP::u::SymbolMapper>(DSP::e::ModulationType::ASK, bits_per_symbol);
-  blocks["mapper"] = std::make_shared<DSP::u::SymbolMapper>(DSP::e::ModulationType::PSK, bits_per_symbol);
+  blocks["mapper"] = std::make_shared<DSP::u::SymbolMapper>(DSP::e::ModulationType::ASK, bits_per_symbol);
   blocks["binary_stream"]->Output("out") >> blocks["SPconv"]->Input("in");
   blocks["SPconv"]->Output("out") >> blocks["mapper"]->Input("in");
   SymbolClock = blocks["mapper"]->GetOutputClock();
