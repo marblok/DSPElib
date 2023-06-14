@@ -10,30 +10,30 @@ LAST DONE:
 CHANGES:
 - ver. 0.20.028 - <b>2023.06.14</b> Fixed: 
   - fixed gray coding in DSP::u::SymbolMapper 
-- ver. 0.20.027 - <b>2022.04.21</b> Fixed: 
+- ver. 0.20.027 - <b>2023.04.21</b> Fixed: 
   - now Main.o is not included in libDSPE.a 
-- ver. 0.20.026 - <b>2022.04.21</b> Fixed: 
+- ver. 0.20.026 - <b>2023.04.21</b> Fixed: 
   - fixed DSP::TMorseTable::LoadFromFile
   - DSP::TMorseTable::LoadFromFile and DSP::u::MORSEkey::LoadFromFile now read file based on full path to *.mct file
-- ver. 0.20.025 - <b>2022.04.14</b> Changed: 
+- ver. 0.20.025 - <b>2023.04.14</b> Changed: 
   - removed "using namespace std"
   - fixed several Linux compatibility issues
-- ver. 0.20.023 - <b>2022.04.14</b> Added: 
+- ver. 0.20.023 - <b>2023.04.14</b> Added: 
   - added static methods TAudioMixer::GetNoOfWaveInDevices and TAudioMixer::GetNoOfWaveOutDevices
-- ver. 0.20.022 - <b>2022.04.04</b> Added: 
+- ver. 0.20.022 - <b>2023.04.04</b> Added: 
   - DSP::u::SymbolMapper - experimental support for QAM for even bits_per_symbol (Gray ordering) 
-- ver. 0.20.020 - <b>2022.04.04</b> Fixed: 
+- ver. 0.20.020 - <b>2023.04.04</b> Fixed: 
   - DSP::u::SymbolMapper - fixed support for phase rotation of DSP::e::ModulationType::ASK constelation 
-- ver. 0.20.019 - <b>2022.03.30</b> Fixed: 
+- ver. 0.20.019 - <b>2023.03.30</b> Fixed: 
   - DSP::u::Vacuum fix for AreInputsComplex = true: not all input lines were grouped in input "in"
-- ver. 0.20.018 - <b>2022.03.29</b> Changed: 
+- ver. 0.20.018 - <b>2023.03.29</b> Changed: 
   - Full support for Visual Studio 2019 (DSPE_lib.sln) for 32 and 64-bit architectures
-- ver. 0.20.017 - <b>2022.03.28</b> Changed: 
+- ver. 0.20.017 - <b>2023.03.28</b> Changed: 
   - Initital intergration for Visual Studio 2019 support
-- ver. 0.20.016 - <b>2022.03.23</b> Changed: 
+- ver. 0.20.016 - <b>2023.03.23</b> Changed: 
   - DSP::DOT_edge_colors: added separate colors table for edges which starts from blue color and then red.
     In most multiedge blocks first edge is for real part (blue) and second for imaginary part (red).
-- ver. 0.20.015 - <b>2022.03.18</b> Changed: 
+- ver. 0.20.015 - <b>2023.03.18</b> Changed: 
   - DSP::u::InputBuffer: added reset_buffer to WriteBuffer so buffer output will start from newly added data
 - ver. 0.20.014 - <b>2023.03.014/b> Changed: 
   - DSP::M_Ef and simmilar constants changed to DSP::M_E_f and simmilar; because of conflitcs with defines when _GNU_SOURCE is defined
