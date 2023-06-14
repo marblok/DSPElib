@@ -2526,7 +2526,8 @@ int test_SymbolMapper() {
   blocks["binary_stream"]->Output("out") >> blocks["file_bin"]->Input("in");
 
   blocks["SPconv"] = std::make_shared<DSP::u::Serial2Parallel>(BitClock, bits_per_symbol);
-  blocks["mapper"] = std::make_shared<DSP::u::SymbolMapper>(DSP::e::ModulationType::ASK, bits_per_symbol);
+  //blocks["mapper"] = std::make_shared<DSP::u::SymbolMapper>(DSP::e::ModulationType::ASK, bits_per_symbol);
+  blocks["mapper"] = std::make_shared<DSP::u::SymbolMapper>(DSP::e::ModulationType::PSK, bits_per_symbol);
   blocks["binary_stream"]->Output("out") >> blocks["SPconv"]->Input("in");
   blocks["SPconv"]->Output("out") >> blocks["mapper"]->Input("in");
   SymbolClock = blocks["mapper"]->GetOutputClock();
@@ -2953,6 +2954,10 @@ int main(int argc, char*argv[])
   DSP::log.SetLogState(DSP::e::LogState::console | DSP::e::LogState::file);
   DSP::log.SetLogFileName("DSPElib_test_log.txt");
 
+  DSP::log << "Starting SymbolMapper test" << std::endl;
+  test_SymbolMapper();
+  DSP::log << DSP::e::LogMode::pause << "Finished SymbolMapper test" << std::endl;
+
   DSP::log << "test MORSEkey" << std::endl;
   {
     DSP::TMorseTable MorseTable;
@@ -2996,10 +3001,6 @@ int main(int argc, char*argv[])
   DSP::log << DSP::e::LogMode::Error << "Finished test_sound_input" << std::endl;
 
 #endif // INCLUDE_DSPE_EXAMPLES
-
-  DSP::log << "Starting SymbolMapper test" << std::endl;
-  test_SymbolMapper();
-  DSP::log << DSP::e::LogMode::pause << "Finished SymbolMapper test" << std::endl;
 
   DSP::log << "Starting test_ZPSTC_cw_3" << std::endl;
   test_ZPSTC_cw_3();

@@ -1788,10 +1788,11 @@ unsigned int getConstellation(
 //          constellation[n].re = static_cast<DSP::Float>(cos(constellation_phase_offset+(DSP::M_PIx2*n)/M));
 //          constellation[n].im = static_cast<DSP::Float>(sin(constellation_phase_offset+(DSP::M_PIx2*n)/M));
 //        }
-        // Gray codding (start from LSB)
-        uint16_t mask = 0x0001;
-        uint16_t n = 0;
+        // // Gray codding (start from LSB)
+        // uint16_t mask = 0x0001;
+        unsigned int n = 0;
         for (unsigned int ind=0; ind < M; ind++) {
+          n = ind ^ (ind >> 1); // convert to gray coding
           constellation[ind].re = static_cast<DSP::Float>(cos(constellation_phase_offset+(DSP::M_PIx2*n)/DSP::Float(M)));
           constellation[ind].im = static_cast<DSP::Float>(sin(constellation_phase_offset+(DSP::M_PIx2*n)/DSP::Float(M)));
 
@@ -1799,12 +1800,13 @@ unsigned int getConstellation(
 //          ss << "constellation[" << ind << "]={" << std::setprecision(2) << constellation[ind].re << "," << constellation[ind].im << "}; n=" << n;
 //          DSP::f::InfoMessage(ss.str());
 
-          n ^= mask;
-          //mask <<= 1u;
-          mask = uint16_t(mask << 1);
-          if (mask == M) {
-            mask = 0x0001;
-          }
+          // n ^= mask;
+          // //mask <<= 1u;
+          // mask = uint16_t(mask << 1);
+          // if (n >= M) {
+          //   n = 0;
+          //   mask = 0x0001;
+          // }
         }
       }
       //! \TODO is_real should be set based on analysis of all constellation points
@@ -1818,9 +1820,11 @@ unsigned int getConstellation(
 
     case DSP::e::ModulationType::ASK: {
         constellation.resize(M);
-        for (unsigned int n=0; n < M; n++) {
-          constellation[n].re = static_cast<DSP::Float>(n)/static_cast<DSP::Float>(M-1);
-          constellation[n].im = 0;
+        unsigned int n;
+        for (unsigned int ind=0; ind < M; ind++) {
+          n = ind ^ (ind >> 1); // convert to gray coding
+          constellation[ind].re = static_cast<DSP::Float>(n)/static_cast<DSP::Float>(M-1);
+          constellation[ind].im = 0;
         }
         if (constellation_phase_offset != 0.0) {
           for (unsigned int ind=0; ind < M; ind++) {
