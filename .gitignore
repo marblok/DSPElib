@@ -97,3 +97,5 @@ examples/*.dot
 examples/DSPElib_examples.exe
 examples/DSPElib_examples_dbg.exe
 examples/DSPElib_examples.o
+examples/runtime_algorithm_change.exe
+examples/runtime_algorithm_change.o

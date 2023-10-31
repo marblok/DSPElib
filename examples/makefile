@@ -26,13 +26,18 @@ else #rls
 endif
 
 
-all: hello.exe echo.exe sound_input.exe multirate.exe callbacks.exe socket_server.exe socket_client.exe socket_server_2.exe socket_client_2.exe macro_example.exe asynchronous.exe asynchronous_CT.exe DSPElib_examples.exe
+all: hello.exe runtime_algorithm_change.exe echo.exe sound_input.exe multirate.exe callbacks.exe socket_server.exe socket_client.exe socket_server_2.exe socket_client_2.exe macro_example.exe asynchronous.exe asynchronous_CT.exe DSPElib_examples.exe
 #all: echo.exe  
 
 hello.o: $(SRC_DIR)/hello.cpp
 	$(CC) -DWIN32 -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/hello.cpp" -o "$(SRC_DIR)/hello.o"
 hello.exe: hello.o
 	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/hello.o" -o "$(SRC_DIR)/hello.exe" $(LINKER_FLAGS) -lDSPE -lwinmm
+
+runtime_algorithm_change.o: $(SRC_DIR)/runtime_algorithm_change.cpp
+	$(CC) -DWIN32 -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c "$(SRC_DIR)/runtime_algorithm_change.cpp" -o "$(SRC_DIR)/runtime_algorithm_change.o"
+runtime_algorithm_change.exe: runtime_algorithm_change.o
+	$(CC) -L"$(DSPELIB_DIR_ROOT)/$(TYPE)" "$(SRC_DIR)/runtime_algorithm_change.o" -o "$(SRC_DIR)/runtime_algorithm_change.exe" $(LINKER_FLAGS) -lDSPE -lwinmm
 
 echo.o: $(SRC_DIR)/echo.cpp
 	$(CC) -DWIN32 -I"$(DSPELIB_DIR_ROOT)/include" -I"$(DSPELIB_DIR_ROOT)/include/$(TYPE)" $(CFLAGS) -c $(SRC_DIR)/echo.cpp -o "$(SRC_DIR)/echo.o"
@@ -97,6 +102,7 @@ DSPElib_examples.exe: DSPElib_examples.o
 
 clean:
 	rm -f $(SRC_DIR)/hello.exe $(SRC_DIR)/hello.o 
+	rm -f $(SRC_DIR)/runtime_algorithm_change.exe $(SRC_DIR)/runtime_algorithm_change.o 
 	rm -f $(SRC_DIR)/echo.exe $(SRC_DIR)/echo.o 
 	rm -f $(SRC_DIR)/sound_input.exe $(SRC_DIR)/sound_input.o 
 	rm -f $(SRC_DIR)/asynchronous.exe $(SRC_DIR)/asynchronous.o
