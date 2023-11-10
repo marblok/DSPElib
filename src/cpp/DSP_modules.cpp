@@ -3631,9 +3631,9 @@ DSP::u::AdjustableDelay::AdjustableDelay(unsigned int max_delay_in, unsigned int
   std::vector<unsigned int> indexes;
 
   if (IsBufferCyclic == true)
-    SetName("Delay(cyclic)", false);
+    SetName("AdjustableDelay(cyclic)", false);
   else
-    SetName("Delay", false);
+    SetName("AdjustableDelay", false);
 
   if (InputsNo <= 0)
     InputsNo = 1;
@@ -3877,7 +3877,7 @@ void DSP::u::AdjustableDelay::InputExecute_with_cyclic_buffer(INPUT_EXECUTE_ARGS
 
     THIS->OutputBlocks[0]->EXECUTE_PTR(
         THIS->OutputBlocks[0], THIS->OutputBlocks_InputNo[0],
-        THIS->State[0][THIS->index[current_index]], block);
+        THIS->State[0][current_index], block);
   }
 
   // update buffer

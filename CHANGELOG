@@ -1,6 +1,4 @@
 TODO::
-- Add example with test of DSP::u::AdjustableDelay
-  + output difference between standard and cyclic buffer to check if both variants work the same
 - DSP::u::Zeroinserter => add variant with possibility to define number of inputs
 
   SOUND_support_t::get_wave_in_raw_buffer - zastąpić metodą zawierającą konwersję typu, ew. rozbudować konwersję w DSP::u::AudioInput
@@ -12,8 +10,9 @@ TODO::
 LAST DONE:
 
 CHANGES:
-- ver. 0.20.030 <b>2023.11.10</b> Added:
+- ver. 0.20.031 <b>2023.11.10</b> Added:
   - DSP::u::AdjustableDelay - delay block with programaticly controlable delay (betwee 0 and user defined max_delay).
+  - examples: echo.cpp - added adjustable delay block use.
 - ver. 0.20.029 <b>2023.11.10</b> Added:
   - DSP::Block::DefineStandardInputs
   - DSP::Component::DefineStandardOutputs
