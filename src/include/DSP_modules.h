@@ -927,6 +927,19 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
     bool DefineOutput(const std::string &Name, const unsigned int &OutputNo = 0);
     bool DefineOutput(const std::string &Name, const unsigned int &OutputNo_re, const unsigned int &OutputNo_im);
     bool DefineOutput(const std::string &Name, const std::vector<unsigned int> &Outputs);
+    //! Defines standard outputs
+    /*!
+    * AreOutputsComplex == false:
+      "out", "out.re" - all output lines
+      "out1", "out1.re", "out2", "out2.re", ... - all output lines separately
+    * AreOutputsComplex == true:
+      "out"  - all output lines
+      "out.re" - all even output lines
+      "out.im" - all odd output lines
+      "out1", "out1.re", "out1.im", - all complex output lines separately
+      "out2", "out2.re", "out2.im",... 
+    */
+    void DefineStandardOutputs(const bool &AreOutputsComplex = false);
     //! Deletes output definition
     /*! If Name.length() == 0 deletes all output definitions
      */
@@ -1360,6 +1373,20 @@ class DSP::Block : public virtual DSP::Component
     bool DefineInput(const std::string &Name, const unsigned int &InputNo = 0);
     bool DefineInput(const std::string &Name, const unsigned int &InputNo_re, const unsigned int &InputNo_im);
     bool DefineInput(const std::string &Name, const std::vector <unsigned int> &Inputs);
+    //! Defines standard inputs
+    /*!
+    * AreInputsComplex == false:
+      "in", "in.re" - all input lines
+      "in1", "in1.re", "in2", "in2.re", ... - all input lines separately
+    * AreInputsComplex == true:
+      "in"  - all input lines
+      "in.re" - all even input lines
+      "in.im" - all odd input lines
+      "in1", "in1.re", "in1.im", - all complex input lines separately
+      "in2", "in2.re", "in2.im",... 
+    */
+    void DefineStandardInputs(const bool &AreInputsComplex);
+
     //! Deletes input definition
     /*! If Name == NULL deletes all input definitions
      */
@@ -2395,11 +2422,13 @@ class DSP::u::RawDecimator  : public DSP::Block, public DSP::Source
     static bool OutputExecute(OUTPUT_EXECUTE_ARGS);
     static void InputExecute(INPUT_EXECUTE_ARGS);
 
+    void Init(bool IsInputComplex, DSP::Clock_ptr ParentClock, unsigned int M_in, unsigned int InputsNo);
   public:
     /*! \todo_later OutputClocks should be updated for each output
      * not only first
      */
     RawDecimator(DSP::Clock_ptr ParentClock, unsigned int M_in=2, unsigned int InputsNo=1);
+    RawDecimator(const bool &AreInputsComplex, DSP::Clock_ptr ParentClock, unsigned int M_in=2, unsigned int InputsNo=1);
     ~RawDecimator(void);
 };
 
@@ -2433,11 +2462,11 @@ class DSP::u::Zeroinserter  : public DSP::Block, public DSP::Source
     static void InputExecute_real(INPUT_EXECUTE_ARGS);
     static void InputExecute_cplx(INPUT_EXECUTE_ARGS);
 
-    void Init(bool IsInputComplex, DSP::Clock_ptr ParentClock, unsigned int L_in, bool Hold);
+    void Init(const bool &IsInputComplex, DSP::Clock_ptr ParentClock, unsigned int L_in, bool Hold);
 public:
     //if Hold == true, holds input value instead of inserting zeros
     Zeroinserter(DSP::Clock_ptr ParentClock, unsigned int L_in=2, bool Hold=false);
-    Zeroinserter(bool IsInputComplex, DSP::Clock_ptr ParentClock, unsigned int L_in=2, bool Hold=false);
+    Zeroinserter(const bool &IsInputComplex, DSP::Clock_ptr ParentClock, unsigned int L_in=2, bool Hold=false);
     ~Zeroinserter(void);
 };
 

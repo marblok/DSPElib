@@ -559,6 +559,57 @@ bool DSP::Component::DefineOutput(const std::string &Name, const std::vector<uns
   return true;
 }
 
+// Defines standard outputs
+/*
+* AreOutputsComplex == false:
+  "out", "out.re" - all output lines
+  "out1", "out1.re", "out2", "out2.re", ... - all output lines separately
+* AreOutputsComplex == true:
+  "out"  - all output lines
+  "out.re" - all even output lines
+  "out.im" - all odd output lines
+  "out1", "out1.re", "out1.im", - all complex output lines separately
+  "out2", "out2.re", "out2.im",... 
+*/
+void DSP::Component::DefineStandardOutputs(const bool &AreOutputsComplex) {
+  int unsigned ind;
+  std::string temp;
+  std::vector<unsigned int> inds;
+
+  inds.resize(NoOfOutputs);
+
+  if (AreOutputsComplex == false)  {
+    for (ind=0; ind < NoOfOutputs; ind++)
+    {
+      temp = "out" + std::to_string(ind+1);
+      DefineOutput(temp, ind);
+      temp = temp + ".re";
+      DefineOutput(temp, ind);
+
+      inds[ind]=ind;
+    }
+    DefineOutput("out", inds);
+  }
+  else {
+    for (ind=0; ind < NoOfOutputs; ind++)
+    {
+      temp = "out" + std::to_string(ind+1);
+      if (ind % 2 == 0) {
+        DefineOutput(temp, ind, ind+1);
+
+        temp = temp + ".re";
+        DefineOutput(temp, ind);
+      }
+      else {
+        temp = temp + ".im";
+        DefineOutput(temp, ind);
+      }
+      inds[ind]=ind;
+    }
+    DefineOutput("out", inds);
+  }
+}
+
 bool DSP::Block::UndefineInput(const std::string &Name)
 {
   unsigned int ind;
@@ -751,6 +802,57 @@ bool DSP::Block::DefineInput(const std::string &Name,
   DefinedInputs.push_back(std::move(tempIn));
 
   return true;
+}
+
+// Defines standard inputs
+/*
+* AreInputsComplex == false:
+  "in", "in.re" - all input lines
+  "in1", "in1.re", "in2", "in2.re", ... - all input lines separately
+* AreInputsComplex == true:
+  "in"  - all input lines
+  "in.re" - all even input lines
+  "in.im" - all odd input lines
+  "in1", "in1.re", "in1.im", - all complex input lines separately
+  "in2", "in2.re", "in2.im",... 
+*/
+void DSP::Block::DefineStandardInputs(const bool &AreInputsComplex) {
+  unsigned int ind;
+  std::string temp;
+  std::vector<unsigned int> inds;
+
+  inds.resize(NoOfInputs);
+
+  if (AreInputsComplex == false)  {
+    for (ind=0; ind < NoOfInputs; ind++)
+    {
+      temp = "in" + std::to_string(ind+1);
+      DefineInput(temp, ind);
+      temp = temp + ".re";
+      DefineInput(temp, ind);
+
+      inds[ind]=ind;
+    }
+    DefineInput("in", inds);
+  }
+  else {
+    for (ind=0; ind < NoOfInputs; ind++)
+    {
+      temp = "in" + std::to_string(ind+1);
+      if (ind % 2 == 0) {
+        DefineInput(temp, ind, ind+1);
+
+        temp = temp + ".re";
+        DefineInput(temp, ind);
+      }
+      else {
+        temp = temp + ".im";
+        DefineInput(temp, ind);
+      }
+      inds[ind]=ind;
+    }
+    DefineInput("in", inds);
+  }
 }
 
 DSP::output &DSP::Component::Output(const std::string &Name)
@@ -4967,28 +5069,37 @@ DSP::u::RawDecimator::RawDecimator(DSP::Clock_ptr ParentClock,
                   unsigned int InputsNo)
   : DSP::Block(), DSP::Source()
 {
-  unsigned int ind;
-  std::vector <unsigned int> inds;
-  std::string temp;
+  Init(false, ParentClock, M_in, InputsNo);
+}
 
+DSP::u::RawDecimator::RawDecimator(
+                  const bool &AreInputsComplex,
+                  DSP::Clock_ptr ParentClock,
+                  unsigned int M_in,
+                  unsigned int InputsNo)
+  : DSP::Block(), DSP::Source()
+{
+  Init(AreInputsComplex, ParentClock, M_in, InputsNo);
+}
 
+void DSP::u::RawDecimator::Init(bool AreInputsComplex, DSP::Clock_ptr ParentClock, unsigned int M_in, unsigned int InputsNo) {
   SetName("Raw decimator", false);
-  if (InputsNo == 0)
-    InputsNo=0;
-  SetNoOfOutputs(InputsNo);
-  SetNoOfInputs(InputsNo,false);
-  inds.resize(InputsNo);
-  for (ind=0; ind<InputsNo; ind++)
-  {
-    temp = "in" + std::to_string(ind+1);
-    DefineInput(temp, ind);
-    temp = "out" + std::to_string(ind+1);
-    DefineOutput(temp, ind);
-    inds[ind]=ind;
-  }
-  DefineInput("in", inds);
-  DefineOutput("out", inds);
 
+  if (InputsNo <= 0)
+    InputsNo = 1;
+  
+  if (AreInputsComplex == false)
+  {
+    SetNoOfOutputs(InputsNo);
+    SetNoOfInputs(InputsNo,false);
+  }
+  else
+  {
+    SetNoOfOutputs(2*InputsNo);
+    SetNoOfInputs(2*InputsNo,false);
+  }
+  DefineStandardInputs(AreInputsComplex);
+  DefineStandardOutputs(AreInputsComplex);
 
   if (M_in > 0)
     M=M_in;
@@ -4998,8 +5109,8 @@ DSP::u::RawDecimator::RawDecimator(DSP::Clock_ptr ParentClock,
   ClockGroups.AddInput2Group("input", Input("in"));
   ClockGroups.AddOutput2Group("output", Output("out"));
   ClockGroups.AddClockRelation("input", "output", 1, M);
+  //  L_factor=1; M_factor=M; //set basic decimation factor
   IsMultirate=true;
-//  L_factor=1; M_factor=M; //set basic decimation factor
 
   if (ParentClock != NULL)
   {
@@ -5014,7 +5125,7 @@ DSP::u::RawDecimator::RawDecimator(DSP::Clock_ptr ParentClock,
   State=new DSP::Float[NoOfInputs];
   IsReady=false; //Input value not yet received
   InnerCounter=0; //Input received would be stored as an output value
-  for (ind=0; ind<NoOfInputs; ind++)
+  for (unsigned int ind=0; ind<NoOfInputs; ind++)
   {
     State[ind]=0.0;
   }
@@ -5084,13 +5195,13 @@ DSP::u::Zeroinserter::Zeroinserter(DSP::Clock_ptr ParentClock, unsigned int L_in
   Init(false, ParentClock, L_in, Hold);
 };
 
-DSP::u::Zeroinserter::Zeroinserter(bool IsInputComplex, DSP::Clock_ptr ParentClock, unsigned int L_in, bool Hold)
+DSP::u::Zeroinserter::Zeroinserter(const bool &IsInputComplex, DSP::Clock_ptr ParentClock, unsigned int L_in, bool Hold)
   : DSP::Block(), DSP::Source()
 { //if Hold == true, holds input value instead of inserting zeros
   Init(IsInputComplex, ParentClock, L_in, Hold);
 };
 
-void DSP::u::Zeroinserter::Init(bool IsInputComplex, DSP::Clock_ptr ParentClock, unsigned int L_in, bool Hold)
+void DSP::u::Zeroinserter::Init(const bool &IsInputComplex, DSP::Clock_ptr ParentClock, unsigned int L_in, bool Hold)
 { //if Hold == true, holds input value instead of inserting zeros
   SetName("Zeroinserter", false);
 

@@ -11,7 +11,7 @@
 
 #define DSP_VER_MAJOR 0
 #define DSP_VER_MINOR 20
-#define DSP_VER_BUILD 28 // !!! without zeroes before, else this will be treated as octal number
+#define DSP_VER_BUILD 29 // !!! without zeroes before, else this will be treated as octal number
 #define DSP_VER_YEAR  2023
 #define DSP_VER       DSP_VER_MAJOR.DSP_VER_MINOR.DSP_VER_BUILD
 
@@ -53,6 +53,7 @@ struct DSP::libver
 
 //! Returns DSP Engine library version information
 /*! <b>Major library updates</b>
+ *  \note For the latest updated see file CHANGELOG.
  *
  *  \bug <b>2008.03.23</b> Check what will happen if all inputs are constant
  *    for blocks like DSP::u::PCCC. Those should work like sources and have clock defined.
