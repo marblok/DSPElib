@@ -3621,6 +3621,301 @@ void DSP::u::Delay::InputExecute_with_cyclic_buffer_multi(INPUT_EXECUTE_ARGS)
 }
 #undef THIS
 
+
+// Adjustable delay element implemented in processing mode
+// cannot separate processing in digital feedback loop !!!
+DSP::u::AdjustableDelay::AdjustableDelay(unsigned int max_delay_in, unsigned int initial_delay, unsigned int InputsNo, bool IsBufferCyclic) : DSP::Block()
+{
+  unsigned int ind;
+  std::string temp;
+  std::vector<unsigned int> indexes;
+
+  if (IsBufferCyclic == true)
+    SetName("Delay(cyclic)", false);
+  else
+    SetName("Delay", false);
+
+  if (InputsNo <= 0)
+    InputsNo = 1;
+  SetNoOfOutputs(InputsNo);
+  SetNoOfInputs(InputsNo, false);
+
+  DefineStandardInputs(false);
+  DefineStandardOutputs(false);
+
+  ClockGroups.AddInputs2Group("all", 0, NoOfInputs-1);
+  ClockGroups.AddOutputs2Group("all", 0, NoOfOutputs-1);
+
+  NoOfInputsProcessed=InitialNoOfInputsProcessed;
+
+  max_delay=max_delay_in;
+  new_delay = initial_delay;
+  current_delay = new_delay;
+
+  if (max_delay > 0)
+  {
+    State = new DSP::Float_ptr[NoOfInputs];
+    index = new unsigned int[NoOfInputs];
+    for (ind = 0; ind < NoOfInputs; ind++)
+    {
+      State[ind]=new DSP::Float[max_delay];
+      memset(State[ind], 0, sizeof(DSP::Float) * max_delay);
+      index[ind]=0;
+    }
+  }
+  else
+  {
+    State = NULL;
+    index = NULL;
+  }
+
+  if (InputsNo == 1)
+  {
+    Execute_ptr = &InputExecute;
+    if (IsBufferCyclic == true)
+      Execute_ptr = &InputExecute_with_cyclic_buffer;
+    if (max_delay == 0)
+      Execute_ptr = &InputExecute_D0;
+    if (max_delay == 1)
+      Execute_ptr = &InputExecute_D1;
+  }
+  else
+  {
+    Execute_ptr = &InputExecute_multi;
+    if (IsBufferCyclic == true)
+      Execute_ptr = &InputExecute_with_cyclic_buffer_multi;
+    if (max_delay == 0)
+      Execute_ptr = &InputExecute_D0_multi;
+    if (max_delay == 1)
+      Execute_ptr = &InputExecute_D1_multi;
+  }
+}
+
+DSP::u::AdjustableDelay::~AdjustableDelay(void)
+{
+  unsigned int ind;
+
+//  SetNoOfOutputs(0);
+  if (State != NULL)
+  {
+    for (ind = 0; ind < NoOfInputs; ind++)
+    {
+      if (State[ind] != NULL)
+      {
+        delete [] State[ind];
+        State[ind] = NULL;
+      }
+    }
+    delete [] State;
+    State = NULL;
+  }
+  if (index != NULL)
+  {
+    delete [] index;
+    index = NULL;
+  }
+}
+
+void DSP::u::AdjustableDelay::UpdateDelayIfNeeded(void) {
+  if (NoOfInputsProcessed == InitialNoOfInputsProcessed) {
+    current_delay = new_delay;
+  }
+  NoOfInputsProcessed++;
+
+  if (NoOfInputsProcessed == NoOfInputs) {
+    NoOfInputsProcessed = InitialNoOfInputsProcessed;
+  }
+}
+
+// Sets new value of the delay.
+/* Returns actually set delay (will differ from new_delay it is is out of range)
+*/
+unsigned int DSP::u::AdjustableDelay::SetDelay(unsigned int new_delay_in) {
+  if (new_delay_in <= max_delay)
+    new_delay = new_delay_in;
+  return new_delay;
+}
+// Returns current delay
+unsigned int DSP::u::AdjustableDelay::GetCurrentDelay(void) {
+  return current_delay;
+}
+
+#define  THIS  ((DSP::u::AdjustableDelay *)block)
+void DSP::u::AdjustableDelay::InputExecute_D0(INPUT_EXECUTE_ARGS)
+{
+  UNUSED_ARGUMENT(InputNo);
+  UNUSED_DEBUG_ARGUMENT(Caller);
+
+  // \note The delay cannot be adjusted
+  THIS->UpdateDelayIfNeeded();
+
+  THIS->OutputBlocks[0]->EXECUTE_PTR(
+      THIS->OutputBlocks[0], THIS->OutputBlocks_InputNo[0],
+      value, block);
+};
+
+void DSP::u::AdjustableDelay::InputExecute_D0_multi(INPUT_EXECUTE_ARGS)
+{
+  UNUSED_DEBUG_ARGUMENT(Caller);
+
+  // \note The delay cannot be adjusted
+  THIS->UpdateDelayIfNeeded();
+
+  THIS->OutputBlocks[InputNo]->EXECUTE_PTR(
+      THIS->OutputBlocks[InputNo], THIS->OutputBlocks_InputNo[InputNo],
+      value, block);
+};
+
+void DSP::u::AdjustableDelay::InputExecute_D1(INPUT_EXECUTE_ARGS)
+{
+  UNUSED_ARGUMENT(InputNo);
+  UNUSED_DEBUG_ARGUMENT(Caller);
+
+  THIS->UpdateDelayIfNeeded();
+
+  if (THIS->current_delay == 0) {
+    THIS->OutputBlocks[0]->EXECUTE_PTR(
+        THIS->OutputBlocks[0], THIS->OutputBlocks_InputNo[0],
+        value, block);
+  }
+  else {
+    THIS->OutputBlocks[0]->EXECUTE_PTR(
+        THIS->OutputBlocks[0], THIS->OutputBlocks_InputNo[0],
+        *(THIS->State[0]), block);
+  }
+
+  // update buffer
+  *(THIS->State[0])=value;
+};
+
+void DSP::u::AdjustableDelay::InputExecute_D1_multi(INPUT_EXECUTE_ARGS)
+{
+  UNUSED_DEBUG_ARGUMENT(Caller);
+
+  THIS->UpdateDelayIfNeeded();
+
+  if (THIS->current_delay == 0) {
+    THIS->OutputBlocks[InputNo]->EXECUTE_PTR(
+        THIS->OutputBlocks[InputNo], THIS->OutputBlocks_InputNo[InputNo],
+        value, block);
+  }
+  else {
+    THIS->OutputBlocks[InputNo]->EXECUTE_PTR(
+        THIS->OutputBlocks[InputNo], THIS->OutputBlocks_InputNo[InputNo],
+        *(THIS->State[InputNo]), block);
+  }
+
+  // update buffer
+  *(THIS->State[InputNo])=value;
+};
+
+void DSP::u::AdjustableDelay::InputExecute(INPUT_EXECUTE_ARGS)
+{
+  UNUSED_ARGUMENT(InputNo);
+  UNUSED_DEBUG_ARGUMENT(Caller);
+
+  THIS->UpdateDelayIfNeeded();
+
+  if (THIS->current_delay == 0) {
+    THIS->OutputBlocks[0]->EXECUTE_PTR(
+        THIS->OutputBlocks[0], THIS->OutputBlocks_InputNo[0],
+        value, block);
+  }
+  else {
+    THIS->OutputBlocks[0]->EXECUTE_PTR(
+        THIS->OutputBlocks[0], THIS->OutputBlocks_InputNo[0],
+        THIS->State[0][THIS->max_delay - THIS->current_delay], block);
+  }
+
+  // update buffer
+  memcpy(THIS->State[0], THIS->State[0]+1, sizeof(DSP::Float)*(THIS->max_delay-1));
+  THIS->State[0][THIS->max_delay-1]=value;
+};
+
+void DSP::u::AdjustableDelay::InputExecute_multi(INPUT_EXECUTE_ARGS)
+{
+  UNUSED_DEBUG_ARGUMENT(Caller);
+
+  THIS->UpdateDelayIfNeeded();
+
+  if (THIS->current_delay == 0) {
+    THIS->OutputBlocks[InputNo]->EXECUTE_PTR(
+        THIS->OutputBlocks[InputNo], THIS->OutputBlocks_InputNo[InputNo],
+        value, block);
+  }
+  else {
+    THIS->OutputBlocks[InputNo]->EXECUTE_PTR(
+        THIS->OutputBlocks[InputNo], THIS->OutputBlocks_InputNo[InputNo],
+        THIS->State[InputNo][THIS->max_delay - THIS->current_delay], block);
+  }
+
+  // update buffer
+  memcpy(THIS->State[InputNo], THIS->State[InputNo]+1, sizeof(DSP::Float)*(THIS->max_delay-1));
+  THIS->State[InputNo][THIS->max_delay-1]=value;
+};
+
+void DSP::u::AdjustableDelay::InputExecute_with_cyclic_buffer(INPUT_EXECUTE_ARGS)
+{
+  UNUSED_ARGUMENT(InputNo);
+  UNUSED_DEBUG_ARGUMENT(Caller);
+
+  THIS->UpdateDelayIfNeeded();
+
+  if (THIS->current_delay == 0) {
+    THIS->OutputBlocks[0]->EXECUTE_PTR(
+        THIS->OutputBlocks[0], THIS->OutputBlocks_InputNo[0],
+        value, block);
+  }
+  else {
+    // Calculate actual current_delay index
+    // THIS->index[0] points to max_delay
+    // (index[0] + max_delay) % max_delay == index[0] => delay <- max_delay
+    // (index[0] + max_delay -1) % max_delay => delay <- 1 = max_delay - (max_delay - 1)
+    // (index[0] + 1) % max_delay => delay <- max_delay - 1
+    unsigned int current_index = 
+        (THIS->index[0] + (THIS->max_delay - THIS->current_delay)) % THIS->max_delay;
+
+    THIS->OutputBlocks[0]->EXECUTE_PTR(
+        THIS->OutputBlocks[0], THIS->OutputBlocks_InputNo[0],
+        THIS->State[0][THIS->index[current_index]], block);
+  }
+
+  // update buffer
+  THIS->State[0][THIS->index[0]]=value;
+
+  THIS->index[0]++;
+  THIS->index[0] %= THIS->max_delay;
+};
+
+void DSP::u::AdjustableDelay::InputExecute_with_cyclic_buffer_multi(INPUT_EXECUTE_ARGS)
+{
+  UNUSED_DEBUG_ARGUMENT(Caller);
+
+  THIS->UpdateDelayIfNeeded();
+
+  if (THIS->current_delay == 0) {
+    THIS->OutputBlocks[InputNo]->EXECUTE_PTR(
+        THIS->OutputBlocks[InputNo], THIS->OutputBlocks_InputNo[InputNo],
+        value, block);
+  }
+  else {
+    // Calculate actual current_delay index
+    unsigned int current_index = 
+        (THIS->index[InputNo] + (THIS->max_delay - THIS->current_delay)) % THIS->max_delay;
+
+    THIS->OutputBlocks[InputNo]->EXECUTE_PTR(
+        THIS->OutputBlocks[InputNo], THIS->OutputBlocks_InputNo[InputNo],
+        THIS->State[InputNo][current_index], block);
+  }
+
+  // update buffer
+  THIS->State[InputNo][THIS->index[InputNo]]=value;
+
+  THIS->index[InputNo]++;
+  THIS->index[InputNo] %= THIS->max_delay;
+}
+#undef THIS
+
 /**************************************************/
 // addition node
 DSP::u::Addition::Addition(unsigned int NoOfRealInputs_in, unsigned int NoOfComplexInputs_in)

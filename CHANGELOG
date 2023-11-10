@@ -1,6 +1,7 @@
 TODO::
+- Add example with test of DSP::u::AdjustableDelay
+  + output difference between standard and cyclic buffer to check if both variants work the same
 - DSP::u::Zeroinserter => add variant with possibility to define number of inputs
-- ADD: DSP::u::ControledDelay(max_delay, initial_delay, ...)
 
   SOUND_support_t::get_wave_in_raw_buffer - zastąpić metodą zawierającą konwersję typu, ew. rozbudować konwersję w DSP::u::AudioInput
   - test socket support on Linux (test examples as there are have been noticed some problems with bind)
@@ -11,10 +12,12 @@ TODO::
 LAST DONE:
 
 CHANGES:
-- ver. 0.20.029
-  - added: DSP::Block::DefineStandardInputs
-  - added: DSP::Component::DefineStandardOutputs
-  - added: DSP::u::RawDecimator - added variant with AreInputsComplex parameter
+- ver. 0.20.030 <b>2023.11.10</b> Added:
+  - DSP::u::AdjustableDelay - delay block with programaticly controlable delay (betwee 0 and user defined max_delay).
+- ver. 0.20.029 <b>2023.11.10</b> Added:
+  - DSP::Block::DefineStandardInputs
+  - DSP::Component::DefineStandardOutputs
+  - DSP::u::RawDecimator - new variant with AreInputsComplex parameter
 - ver. 0.20.028 - <b>2023.06.14</b> Fixed: 
   - fixed gray coding in DSP::u::SymbolMapper 
 - ver. 0.20.027 - <b>2023.04.21</b> Fixed: 

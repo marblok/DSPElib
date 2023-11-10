@@ -1793,8 +1793,8 @@ unsigned int getConstellation(
         unsigned int n = 0;
         for (unsigned int ind=0; ind < M; ind++) {
           n = ind ^ (ind >> 1); // convert to gray coding
-          constellation[ind].re = static_cast<DSP::Float>(cos(constellation_phase_offset+(DSP::M_PIx2*n)/DSP::Float(M)));
-          constellation[ind].im = static_cast<DSP::Float>(sin(constellation_phase_offset+(DSP::M_PIx2*n)/DSP::Float(M)));
+          constellation[ind].re = static_cast<DSP::Float>(cos(constellation_phase_offset+(DSP::M_PIx2*DSP::Float(n))/DSP::Float(M)));
+          constellation[ind].im = static_cast<DSP::Float>(sin(constellation_phase_offset+(DSP::M_PIx2*DSP::Float(n))/DSP::Float(M)));
 
 //          stringstream ss;
 //          ss << "constellation[" << ind << "]={" << std::setprecision(2) << constellation[ind].re << "," << constellation[ind].im << "}; n=" << n;

@@ -11,7 +11,7 @@
 
 #define DSP_VER_MAJOR 0
 #define DSP_VER_MINOR 20
-#define DSP_VER_BUILD 29 // !!! without zeroes before, else this will be treated as octal number
+#define DSP_VER_BUILD 30 // !!! without zeroes before, else this will be treated as octal number
 #define DSP_VER_YEAR  2023
 #define DSP_VER       DSP_VER_MAJOR.DSP_VER_MINOR.DSP_VER_BUILD
 
@@ -588,8 +588,8 @@ std::string DSP::lib_version_string();
  *  but they have also inputs.
  *
  *  Basic block for separating input form output in feedback loops
- *  is the delay block DSP::u::LoopDelay. Note that there is also
- *  DSP::u::Delay block but it cannot be used in the feedback loop.
+ *  is the delay block DSP::u::LoopDelay. Note that there are also
+ *  DSP::u::Delay and DSP::u::AdjustableDelay blocks but they cannot be used in the feedback loop.
  *  However DSP::u::Delay should be used in all other cases
  *  because it is implemented in more efficient way than
  *  DSP::u::LoopDelay.
@@ -714,13 +714,13 @@ std::string DSP::lib_version_string();
  *   -# DSP::u::ABS calculates absolute value of real or complex sample
  *   -# DSP::u::Accumulator implements standard accumulator or accumulator with leakage
  *   -# DSP::u::Addition addition block (also weighted summation)
+ *   -# DSP::u::AdjustableDelay variant of DSP::u::Delay with programaticaly controlable delay (between 0 and user defined max_delay).
  *   -# DSP::u::Amplifier multiplies input value by given constant
  *   -# DSP::u::Angle calculates the phase of a complex sample
  *   -# DSP::u::CCPC CCPC - Cartesian coordinates to polar coordinates converter
  *   -# DSP::u::CMPO CMPO - complex mutual power operator
  *   -# DSP::u::Conjugation calculates complex conjugation
- *   -# DSP::u::CyclicDelay this block is OBSOLETE use DSP::u::Delay instead.
- *   -# DSP::u::Delay delay element implemented in processing block mode. Inefficient for large buffer (implemented using memcopy). See DSP::u::CyclicDelay.
+ *   -# DSP::u::Delay delay element implemented as processing block. For large delays cyclic buffer variant (IsBufferCyclic = true) is much more efficient.
  *   -# DSP::u::Differator Differator - first order backward difference operator
  *   -# DSP::u::FIR FIR filter implementation
  *   -# DSP::u::IIR IIR filter implementation

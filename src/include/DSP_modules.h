@@ -51,6 +51,7 @@ namespace DSP {
   namespace u {
     class Copy;
     class Delay;
+    class AdjustableDelay;
     class LoopDelay;
     class Splitter;
     class Amplifier;
@@ -2039,6 +2040,62 @@ class DSP::u::Delay : public DSP::Block
     virtual ~Delay(void);
 };
 
+//! Adjustable delay element implemented in processing mode
+/*! \warning Cannot separate processing in digital feedback loop !!!
+ *
+ * Inputs and Outputs names:
+ *   - Output:
+ *    -# "out" (vector of all outputs)
+ *    -# "out1", "out2", ...
+ *    -# "out.re" == "out1"
+ *    -# "out.im" == "out2"
+ *    .
+ *   - Input:
+ *    -# "in" (vector of all inputs)
+ *    -# "in1", "in2", ...
+ *    -# "in.re" == "in1"
+ *    -# "in.im" == "in2"
+ *    .
+ */
+class DSP::u::AdjustableDelay : public DSP::Block
+{
+  private:
+    unsigned int max_delay;
+    unsigned int current_delay;
+    unsigned int new_delay; //
+    DSP::Float **State;
+    //! current index in buffer
+    unsigned int *index;
+
+    //! Updates current_delay at the begining of the clock's cycle as well as NoOfInputsProcessed
+    void UpdateDelayIfNeeded(void);
+
+    //! version for Delay == 0
+    static void InputExecute_D0(INPUT_EXECUTE_ARGS);
+    static void InputExecute_D0_multi(INPUT_EXECUTE_ARGS);
+    //! version for Delay == 1
+    static void InputExecute_D1(INPUT_EXECUTE_ARGS);
+    static void InputExecute_D1_multi(INPUT_EXECUTE_ARGS);
+    //! version with memcpy
+    static void InputExecute(INPUT_EXECUTE_ARGS);
+    static void InputExecute_multi(INPUT_EXECUTE_ARGS);
+    //! version with cyclic buffer
+    static void InputExecute_with_cyclic_buffer(INPUT_EXECUTE_ARGS);
+    static void InputExecute_with_cyclic_buffer_multi(INPUT_EXECUTE_ARGS);
+  public:
+    //! Sets new value of the delay.
+    /*! Returns actually set delay (will differ from new_delay it is is out of range)
+    * delay value will be updated at the begining of new clock cycle 
+    * before that the GetCurrentDelay returns the previous delay value.
+    */
+    unsigned int SetDelay(unsigned int new_delay_in);
+    //! Returns current delay
+    unsigned int GetCurrentDelay(void);
+
+    //! DSP::u::AdjustableDelay block constructor
+    AdjustableDelay(unsigned int max_delay_in = 1, unsigned int initial_delay = 0, unsigned int InputsNo = 1, bool IsBufferCyclic = true);
+    virtual ~AdjustableDelay(void);
+};
 /**************************************************/
 //! Outputs input value to multiple outputs
 /*! Inputs and Outputs names:
