@@ -1163,7 +1163,7 @@ bool DSP::_connect_class::splitconnect(const DSP::output &output, const DSP::inp
       // +++++++++++++++++++++++++++++++++++++++++++++++++ //
       // AddLine(OUTauto)
       AutoSplitter = ((DSP::u::Splitter *)dest_block);
-      SplitterOutInd = AutoSplitter->AddOutputLine();
+      SplitterOutInd = AutoSplitter->AddOutputLine(true);
       // connect autosplitter new line ==> ANY
       AutoSplitter->SetOutput(SplitterOutInd,
                               source_output_block, source_output_block_input_no);
@@ -1265,7 +1265,7 @@ bool DSP::_connect_class::splitconnect(const DSP::output &output, const DSP::inp
       // AddLine(INauto, OUT)
       // +++++++++++++++++++++++++++++++++++++++++++++++++++ //
       // resize splitter
-      SplitterOutInd = ((DSP::u::Splitter *)(source_block->Convert2Block()))->AddOutputLine();
+      SplitterOutInd = ((DSP::u::Splitter *)(source_block->Convert2Block()))->AddOutputLine(true);
       // +++++++++++++++++++++++++++++++++++++++++++++++++++ //
       // connect autosplitter new line ==> OUT
       source_block->SetOutput(SplitterOutInd,
@@ -1288,7 +1288,7 @@ bool DSP::_connect_class::splitconnect(const DSP::output &output, const DSP::inp
       // AddLine(Auto, OUT)
       // +++++++++++++++++++++++++++++++++++++++++++++++++++ //
       // resize splitter
-      SplitterOutInd = ((DSP::u::Splitter *)source_output_block)->AddOutputLine();
+      SplitterOutInd = ((DSP::u::Splitter *)source_output_block)->AddOutputLine(true);
       // +++++++++++++++++++++++++++++++++++++++++++++++++++ //
       // connect autosplitter new line ==> OUT
       source_output_block->SetOutput(SplitterOutInd,
@@ -1348,7 +1348,7 @@ bool DSP::_connect_class::splitconnect(const DSP::output &output, const DSP::inp
       // resize splitter
       for (tmp_ind = 0; tmp_ind < dest_block->NoOfOutputs; tmp_ind++)
       {
-        SplitterOutInd = AutoSplitter->AddOutputLine();
+        SplitterOutInd = AutoSplitter->AddOutputLine(true);
         // +++++++++++++++++++++++++++++++++++++++++++++++++++ //
         // connect autosplitter new line ==> OUT
         AutoSplitter->SetOutput(SplitterOutInd,
@@ -1377,7 +1377,7 @@ bool DSP::_connect_class::splitconnect(const DSP::output &output, const DSP::inp
       // resize splitter
       for (tmp_ind = 0; tmp_ind < dest_block->NoOfOutputs; tmp_ind++)
       {
-        SplitterOutInd = AutoSplitter->AddOutputLine();
+        SplitterOutInd = AutoSplitter->AddOutputLine(true);
         // +++++++++++++++++++++++++++++++++++++++++++++++++++ //
         // connect autosplitter new line ==> OUT
         AutoSplitter->SetOutput(SplitterOutInd,
@@ -1407,7 +1407,7 @@ bool DSP::_connect_class::splitconnect(const DSP::output &output, const DSP::inp
       // +++++++++++++++++++++++++++++++++++++++++++++++++ //
       // AddLine(OUTauto)
       AutoSplitter = ((DSP::u::Splitter *)dest_block);
-      SplitterOutInd = AutoSplitter->AddOutputLine();
+      SplitterOutInd = AutoSplitter->AddOutputLine(true);
       // connect autosplitter new line ==> ANY
       AutoSplitter->SetOutput(SplitterOutInd,
                               source_output_block, source_output_block_input_no);
@@ -1896,7 +1896,7 @@ void DSP::Component::SetNoOfOutputs(unsigned int No, bool reset)
     {
       OutputClocks[ind] = NULL;
 
-      OutputBlocks[ind] = &DummyBlock;
+      OutputBlocks[ind] = &DSP::Block::DummyBlock;
       OutputBlocks_InputNo[ind] = 0;
     }
   }
@@ -1914,7 +1914,7 @@ void DSP::Component::SetNoOfOutputs(unsigned int No, bool reset)
       else
       {
         OutputClocks[ind] = NULL;
-        OutputBlocks[ind] = &DummyBlock;
+        OutputBlocks[ind] = &DSP::Block::DummyBlock;
         OutputBlocks_InputNo[ind] = 0;
       }
     }
@@ -1929,10 +1929,28 @@ void DSP::Component::SetNoOfOutputs(unsigned int No, bool reset)
   }
 }
 
-int DSP::Component::AddOutputLine(void)
+unsigned int DSP::Component::AddOutputLine(const bool &reuse_free_output)
 {
-  SetNoOfOutputs(NoOfOutputs+1, false);
-  return NoOfOutputs-1;
+  long int output_index = -1;
+
+  if (reuse_free_output == true) {
+    if (NoOfOutputs > 0) {
+      for (unsigned int ind=0; ind < NoOfOutputs; ind++)
+      {
+        if (OutputBlocks[ind] == &DSP::Block::DummyBlock) {
+          output_index = ind;
+          break;
+        }
+      }
+    }
+  }
+
+  if (output_index == -1) {
+    // add new output
+    SetNoOfOutputs(NoOfOutputs+1, false);
+    output_index = NoOfOutputs-1;
+  }
+  return (unsigned int)output_index;
 }
 
 
@@ -2626,7 +2644,7 @@ void DSP::Block::SetBlockInputClock(unsigned int InputNo, DSP::Clock_ptr InputCl
           for (ind=0; ind<NoOfOutputs; ind++)
           {
             if (OutputBlocks[ind] != NULL)
-              if (OutputBlocks[ind] != &DummyBlock)
+              if (OutputBlocks[ind] != &DSP::Block::DummyBlock)
                 OutputBlocks[ind]->SetBlockInputClock(OutputBlocks_InputNo[ind], NULL);
           }
         }
@@ -11257,7 +11275,7 @@ bool DSP::u::Copy::GetCopyOutput(unsigned int OutputNo, DSP::Block_ptr &output_b
 
   if (OutputNo < NoOfOutputs)
   {
-    if (OutputBlocks[OutputNo] != &DummyBlock)
+    if (OutputBlocks[OutputNo] != &DSP::Block::DummyBlock)
     {
       output_block = OutputBlocks[OutputNo];
       output_block_InputNo = OutputBlocks_InputNo[OutputNo];

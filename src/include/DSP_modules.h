@@ -868,9 +868,13 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
     void SetNoOfOutputs(unsigned int No, bool reset = true);
     //! Adds additional output
     /*! Returns index of added output.
-     *  Block connection is preserved.
+     *  Block connections are preserved.
+     * 
+     *  If reuse_free_output == true check if the block has any free unconnected outputs 
+     *  and return its index instead of adding new output line.
+     *  If there are no free outputs, new output line is added.
      */
-    int AddOutputLine(void);
+    unsigned int AddOutputLine(const bool &reuse_free_output = false);
 
 
     //! Should be set true if the block must be destroyed automatically
@@ -1563,7 +1567,7 @@ class DSP::Block : public virtual DSP::Component
         UNUSED_ARGUMENT(block);
       #else
         std::stringstream tekst;
-        if (block == &DummyBlock)
+        if (block == &DSP::Block::DummyBlock)
         {
           tekst << "WARNING: Unconnected output detected (" << Caller->GetName() << ")";
         }

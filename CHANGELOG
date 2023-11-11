@@ -1,4 +1,10 @@
 TODO::
+- BUG: When block connected to the output od the autosplitter is deleted number of autosplitter outputs is not reduced.
+  - the new block connected to the output connected to this autospliter generates new autospliter output
+  - [DONE: ver. 0.20.032] minimal correction: reuse unconnected autospliter outputs when new block is connected
+  - best correction: remove unconnected autospliter outputs when its output block is deleted (or its output is freed)
+    - TODO: create minimal example: source => two output blocks : delete one and check scheme for Noname blocks before reconnection
+    - NOTE: if the last output of autosplitter is cleared the autospliter block should be deleted also.
 - DSP::u::Zeroinserter => add variant with possibility to define number of inputs
 
   SOUND_support_t::get_wave_in_raw_buffer - zastąpić metodą zawierającą konwersję typu, ew. rozbudować konwersję w DSP::u::AudioInput
@@ -10,6 +16,10 @@ TODO::
 LAST DONE:
 
 CHANGES:
+- ver. 0.20.032 <b>2023.11.11</b> Fixed:
+  - DSP::Component::AddOutputLine - can now reuse free output line instead of adding new one
+    - This is minimal correction for the bug causing autospliter to have unconnected outputs after block deletion.
+      The unconnected output will now be reused on new connection.
 - ver. 0.20.031 <b>2023.11.10</b> Added:
   - DSP::u::AdjustableDelay - delay block with programaticly controlable delay (betwee 0 and user defined max_delay).
   - examples: echo.cpp - added adjustable delay block use.
