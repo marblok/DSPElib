@@ -873,6 +873,11 @@ class DSP::Component : public virtual DSP::name, public DSP::_connect_class
      *  If reuse_free_output == true check if the block has any free unconnected outputs 
      *  and return its index instead of adding new output line.
      *  If there are no free outputs, new output line is added.
+     *  Block connections are preserved.
+     * 
+     *  If reuse_free_output == true check if the block has any free unconnected outputs 
+     *  and return its index instead of adding new output line.
+     *  If there are no free outputs, new output line is added.
      */
     unsigned int AddOutputLine(const bool &reuse_free_output = false);
 

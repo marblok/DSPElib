@@ -1163,7 +1163,7 @@ bool DSP::_connect_class::splitconnect(const DSP::output &output, const DSP::inp
       // +++++++++++++++++++++++++++++++++++++++++++++++++ //
       // AddLine(OUTauto)
       AutoSplitter = ((DSP::u::Splitter *)dest_block);
-      SplitterOutInd = AutoSplitter->AddOutputLine(true);
+      SplitterOutInd = AutoSplitter->AddOutputLine(truetrue);
       // connect autosplitter new line ==> ANY
       AutoSplitter->SetOutput(SplitterOutInd,
                               source_output_block, source_output_block_input_no);
