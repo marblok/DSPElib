@@ -4887,6 +4887,7 @@ DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOf
   UserData_ptr = NULL;
   UserCallbackID = (CallbackIdentifier & DSP::CallbackID_mask);
 
+  // Set OutputBuffer inputs' clocks as equal to ParentClock
   if ((ParentClock != NULL) && (func_ptr != NULL))
   {
     if (NotificationsStep > 1)
@@ -4896,6 +4897,9 @@ DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOf
 
     RegisterForNotification(NotificationClock);
   }
+
+  for (unsigned int ind = 0; ind < NoOfInputs; ind++)
+    SetBlockInputClock(ind, ParentClock);
 
   Execute_ptr = &InputExecute;
 
@@ -4955,6 +4959,9 @@ DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOf
     RegisterForNotification(OutputClock);
   }
 
+  for (unsigned int ind = 0; ind < NoOfInputs; ind++)
+    SetBlockInputClock(ind, ParentClock);
+
   ///////////////////////////////////////////////
   OutputsValues.clear();
   OutputsValues.resize(NoOfOutputs, 0.0);
@@ -5005,6 +5012,9 @@ DSP::u::OutputBuffer::OutputBuffer(unsigned int BufferSize_in, unsigned int NoOf
     NotificationsStep = M_factor;
   else
     NotificationsStep = -1;
+
+  for (unsigned int ind = 0; ind < NoOfInputs; ind++)
+    SetBlockInputClock(ind, ParentClock);
 
   if (func_ptr != NULL)
   {

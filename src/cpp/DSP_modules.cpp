@@ -2658,7 +2658,12 @@ void DSP::Block::SetBlockInputClock(unsigned int InputNo, DSP::Clock_ptr InputCl
     #ifdef __DEBUG__
       if (InputClocks[InputNo] != NULL)
       {
-        DSP::log << DSP::e::LogMode::Error << "Input clock has been already set" << std::endl;
+        if (InputClocks[InputNo] != InputClock) {
+          DSP::log << DSP::e::LogMode::Error << GetName() << DSP::e::LogMode::second << "Different input clock has been already set to input number " << InputNo << std::endl;
+        }
+        // else {
+        //   DSP::log << DSP::e::LogMode::Info << GetName() << DSP::e::LogMode::second << "Input clock has been already set to the same value" << std::endl;
+        // }
       }
     #endif // __DEBUG__
 
