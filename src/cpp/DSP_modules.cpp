@@ -593,14 +593,15 @@ void DSP::Component::DefineStandardOutputs(const bool &AreOutputsComplex) {
   else {
     for (ind=0; ind < NoOfOutputs; ind++)
     {
-      temp = "out" + std::to_string(ind+1);
       if (ind % 2 == 0) {
+        temp = "out" + std::to_string(ind/2+1);
         DefineOutput(temp, ind, ind+1);
 
         temp = temp + ".re";
         DefineOutput(temp, ind);
       }
       else {
+        temp = "out" + std::to_string((ind-1)/2+1);
         temp = temp + ".im";
         DefineOutput(temp, ind);
       }
@@ -838,14 +839,15 @@ void DSP::Block::DefineStandardInputs(const bool &AreInputsComplex) {
   else {
     for (ind=0; ind < NoOfInputs; ind++)
     {
-      temp = "in" + std::to_string(ind+1);
       if (ind % 2 == 0) {
+        temp = "in" + std::to_string(ind/2+1);
         DefineInput(temp, ind, ind+1);
 
         temp = temp + ".re";
         DefineInput(temp, ind);
       }
       else {
+        temp = "in" + std::to_string((ind-1)/2+1);
         temp = temp + ".im";
         DefineInput(temp, ind);
       }
