@@ -5193,9 +5193,6 @@ DSP::u::Switch::~Switch(void)
 void DSP::u::Switch::Init(bool IsInputComplex,
     unsigned int InputsNo, unsigned int OutputsNo)
 {
-  unsigned int ind;
-  std::string temp;
-
   SetName("Switch", false);
 
   if (IsInputComplex == false)
@@ -5215,80 +5212,16 @@ void DSP::u::Switch::Init(bool IsInputComplex,
   LastInputInd=ValuesPerOutput*InputsNo-1; //index starts from 0
   InputSelectionInd = DSP::FO_NoInput;
   OutputSelectionInd = DSP::FO_NoOutput;
-  /*
-  if (UseSelectorInputs == true)
-  {
-    if ((InputsNo==1) || (OutputsNo==1))
-    {
-      SetNoOfInputs(ValuesPerOutput*InputsNo+1,false);
-      if (OutputsNo==1)
-      {
-        InputSelectionInd=ValuesPerOutput*InputsNo;
-        DefineOutput("input_selector", ValuesPerOutput*InputsNo);
-      }
-      else
-      {
-        OutputSelectionInd=ValuesPerOutput*InputsNo;
-        DefineOutput("output_selector", OutputSelectionInd);
-      }
-    }
-    else
-    {
-      InputSelectionInd=ValuesPerOutput*InputsNo;
-      OutputSelectionInd=ValuesPerOutput*InputsNo+1;
-      SetNoOfInputs(ValuesPerOutput*InputsNo+2,false);
-      DefineOutput("input_selector", InputSelectionInd);
-      DefineOutput("output_selector", OutputSelectionInd);
-    }
-  }
-  else
-  {
-*/
-    SetNoOfInputs(ValuesPerOutput*InputsNo,false);
-/*  } */
+
+  SetNoOfInputs(ValuesPerOutput*InputsNo,false);
+
   SelectedInputNo  = DSP::FO_NoInput;
   SelectedOutputNo = DSP::FO_NoOutput;
   MaxSelectedInputNo=InputsNo-1;
   MaxSelectedOutputNo=OutputsNo-1;
 
-  if (IsInputComplex == false)
-  {
-    for (ind=0; ind<InputsNo; ind++)
-    {
-      temp = "in" + std::to_string(ind+1);
-      DefineOutput(temp, ind);
-      temp = "in" + std::to_string(ind+1) + ".re";
-      DefineOutput(temp, ind);
-    }
-    for (ind=0; ind<OutputsNo; ind++)
-    {
-      temp = "out" + std::to_string(ind+1);
-      DefineOutput(temp, ind);
-      temp = "out" + std::to_string(ind+1) + ".re";
-      DefineOutput(temp, ind);
-    }
-  }
-  else
-  {
-    for (ind=0; ind<InputsNo; ind++)
-    {
-      temp = "in" + std::to_string(ind+1);
-      DefineOutput(temp, 2*ind, 2*ind+1);
-      temp = "in" + std::to_string(ind+1) + ".re";
-      DefineOutput(temp, 2*ind);
-      temp = "in" + std::to_string(ind+1) + ".im";
-      DefineOutput(temp, 2*ind+1);
-    }
-    for (ind=0; ind<OutputsNo; ind++)
-    {
-      temp = "out" + std::to_string(ind+1);
-      DefineOutput(temp, 2*ind, 2*ind+1);
-      temp = "out" + std::to_string(ind+1) + ".re";
-      DefineOutput(temp, 2*ind);
-      temp = "out" + std::to_string(ind+1) + ".im";
-      DefineOutput(temp, 2*ind+1);
-    }
-  }
+  DefineStandardInputs(IsInputComplex);
+  DefineStandardOutputs(IsInputComplex);
 
   ClockGroups.AddInputs2Group("all", 0, NoOfInputs-1);
   ClockGroups.AddOutputs2Group("all", 0, NoOfOutputs-1);

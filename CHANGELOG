@@ -1,4 +1,15 @@
 TODO::
+- BUG: When sources or multirate blocks are added after DSP::Clock::Execute have been called the can be out of sync with global and local clock cycles
+    resulting in error stating that there are no signal activated clock but there are still block that cannot be processed.
+    \note: Basic solution is to call DSP::Clock::Execute for number of global clock cycles that are an integer multiply of concerned local clock cycles,
+    so the added sources and blocks are in sync with local clock cycles. Nonetheless, it can be difficult to find the correct number of clock or it can be to high to be of practical use.
+    \todo: derive concept for adding new sources, blocks and clock with synch with current glocal clock cycle
+      - add virtual method of component: init based on clock cycle
+        - optionally generate warning of clock's cycle mismatch on block/compoment's creation
+      - check if created clocks operate based only on global clock cycle or on their own cycle counter
+      - consider adding clocks generation with selected clock cycle offset or funcion for setting clocks cycle offset after its creation
+        (can be useful in some multirate scenarios like polyphase structures)
+
 - BUG: When block connected to the output od the autosplitter is deleted number of autosplitter outputs is not reduced.
   - the new block connected to the output connected to this autospliter generates new autospliter output
   - [DONE: ver. 0.20.032] minimal correction: reuse unconnected autospliter outputs when new block is connected
@@ -6,6 +17,7 @@ TODO::
     - TODO: create minimal example: source => two output blocks : delete one and check scheme for Noname blocks before reconnection
     - NOTE: if the last output of autosplitter is cleared the autospliter block should be deleted also.
 - BUG (minor): DSP::Component::GetHtmlNodeLabel_DOTfile should not add '\\' before space (at least). New nodes drawing doend't need escaping (needs more tests)
+- BUG "Info(  Number of components): 1c" and similar print out numbers in hex (check switching: std::dec/std::hex)
 - DSP::u::Zeroinserter => add variant with possibility to define number of inputs
 
   SOUND_support_t::get_wave_in_raw_buffer - zastąpić metodą zawierającą konwersję typu, ew. rozbudować konwersję w DSP::u::AudioInput
@@ -17,6 +29,8 @@ TODO::
 LAST DONE:
 
 CHANGES:
+- ver. 0.20.035 <b>2023.11.28</b> Fixed:
+  - DSP::u::Switch - inputs were incorrectly defined as ouputs.
 - ver. 0.20.033 <b>2023.11.11</b> Fixed:
   - DSP::u::OutputBuffer - added setting OutputBuffer inputs' clocks (SetBlockInputClock) as equal to ParentClock to allow clock mismatch check when buffers ParentClock dows not match the inputs' clocks. 
     - PROBLEM: the ParentClock match to InputClock is not checked for DSP::u::OutputBuffer which might lead user to not notice that expected NotificationClock is incorectly selected.
