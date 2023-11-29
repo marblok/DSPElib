@@ -5246,74 +5246,48 @@ void DSP::u::Switch::Select(unsigned int InputIndex, unsigned int OutputIndex)
     */
 }
 
+#define THIS ((DSP::u::Switch *)block)
 void DSP::u::Switch::InputExecute(INPUT_EXECUTE_ARGS)
 {
   UNUSED_DEBUG_ARGUMENT(Caller);
 
-  /* \todo_later Consider processing Output as soon as SelectedInputs are avaiable
+  /* \todo_later Consider processing Output as soon as SelectedInputs are available
    * \todo_later Consider storing only SelectedInputs, the rest could be ignored
    *
    */
-  unsigned int index;
+  THIS->NoOfInputsProcessed++;
+  if (InputNo==0)
+    THIS->State[InputNo]=value;
+  THIS->NoOfInputsProcessed++;
 
-/*
-  if (InputNo > LastInputInd)
-  {
-    if (InputNo == InputSelectionInd)
-      SelectedInputNo=((int)(floor(value)));
-    if (InputNo == OutputSelectionInd)
-      SelectedOutputNo=((int)(floor(value)));
-  }
-  else
-  {
-*/
-    index=InputNo / ((DSP::u::Switch *)block)->ValuesPerOutput;
-    ((DSP::u::Switch *)block)->State[index]=value;
-/*  } */
-  ((DSP::u::Switch *)block)->NoOfInputsProcessed++;
+  if (THIS->NoOfInputsProcessed < THIS->NoOfInputs)
+    return;
+  THIS->NoOfInputsProcessed=THIS->InitialNoOfInputsProcessed;
 
-  if (((DSP::u::Switch *)block)->NoOfInputsProcessed == ((DSP::u::Switch *)block)->NoOfInputs)
+  if ((THIS->SelectedInputNo != DSP::FO_NoInput) && (THIS->SelectedOutputNo != DSP::FO_NoOutput))
   {
-/*
-   if (SelectedInputNo > MaxSelectedInputNo)
-     SelectedInputNo = MaxSelectedInputNo;
-   if (SelectedOutputNo > MaxSelectedOutputNo)
-     SelectedOutputNo = MaxSelectedOutputNo;
-   if (SelectedInputNo < MinSelectedIndexNo)
-     SelectedInputNo = MinSelectedIndexNo;
-   if (SelectedOutputNo < MinSelectedIndexNo)
-     SelectedOutputNo = MinSelectedIndexNo;
-*/
-    if ((((DSP::u::Switch *)block)->SelectedInputNo != DSP::FO_NoInput) && (((DSP::u::Switch *)block)->SelectedOutputNo != DSP::FO_NoOutput))
+    if (THIS->ValuesPerOutput == 1)
     {
-      if (((DSP::u::Switch *)block)->ValuesPerOutput == 1)
-      {
-//        OutputBlocks[SelectedOutputNo]->
-//          Execute(OutputBlocks_InputNo[SelectedOutputNo], State[SelectedInputNo], this);
-        ((DSP::u::Switch *)block)->OutputBlocks[((DSP::u::Switch *)block)->SelectedOutputNo]->EXECUTE_PTR(
-            ((DSP::u::Switch *)block)->OutputBlocks[((DSP::u::Switch *)block)->SelectedOutputNo],
-            ((DSP::u::Switch *)block)->OutputBlocks_InputNo[((DSP::u::Switch *)block)->SelectedOutputNo],
-            ((DSP::u::Switch *)block)->State[((DSP::u::Switch *)block)->SelectedInputNo], block);
-      }
-      else // if (ValuesPerOutput == 2)
-      {
-//        OutputBlocks[SelectedOutputNo*2]->
-//          Execute(OutputBlocks_InputNo[SelectedOutputNo*2], State[SelectedInputNo*2], this);
-        ((DSP::u::Switch *)block)->OutputBlocks[((DSP::u::Switch *)block)->SelectedOutputNo*2]->EXECUTE_PTR(
-            ((DSP::u::Switch *)block)->OutputBlocks[((DSP::u::Switch *)block)->SelectedOutputNo*2],
-            ((DSP::u::Switch *)block)->OutputBlocks_InputNo[((DSP::u::Switch *)block)->SelectedOutputNo*2],
-            ((DSP::u::Switch *)block)->State[((DSP::u::Switch *)block)->SelectedInputNo*2], block);
-//        OutputBlocks[SelectedOutputNo*2+1]->
-//          Execute(OutputBlocks_InputNo[SelectedOutputNo*2+1], State[SelectedInputNo*2+1], this);
-        ((DSP::u::Switch *)block)->OutputBlocks[((DSP::u::Switch *)block)->SelectedOutputNo*2+1]->EXECUTE_PTR(
-            ((DSP::u::Switch *)block)->OutputBlocks[((DSP::u::Switch *)block)->SelectedOutputNo*2+1],
-            ((DSP::u::Switch *)block)->OutputBlocks_InputNo[((DSP::u::Switch *)block)->SelectedOutputNo*2+1],
-            ((DSP::u::Switch *)block)->State[((DSP::u::Switch *)block)->SelectedInputNo*2+1], block);
-      }
-    } // otherwise simply ignore input (NO output)
-    ((DSP::u::Switch *)block)->NoOfInputsProcessed = ((DSP::u::Switch *)block)->InitialNoOfInputsProcessed;
-  }
+      THIS->OutputBlocks[THIS->SelectedOutputNo]->EXECUTE_PTR(
+          THIS->OutputBlocks[THIS->SelectedOutputNo],
+          THIS->OutputBlocks_InputNo[THIS->SelectedOutputNo],
+          THIS->State[THIS->SelectedInputNo], block);
+    }
+    else // if (ValuesPerOutput == 2)
+    {
+      THIS->OutputBlocks[THIS->SelectedOutputNo*2]->EXECUTE_PTR(
+          THIS->OutputBlocks[THIS->SelectedOutputNo*2],
+          THIS->OutputBlocks_InputNo[THIS->SelectedOutputNo*2],
+          THIS->State[THIS->SelectedInputNo*2], block);
+      THIS->OutputBlocks[THIS->SelectedOutputNo*2+1]->EXECUTE_PTR(
+          THIS->OutputBlocks[THIS->SelectedOutputNo*2+1],
+          THIS->OutputBlocks_InputNo[THIS->SelectedOutputNo*2+1],
+          THIS->State[THIS->SelectedInputNo*2+1], block);
+    }
+  } // otherwise simply ignore input (NO output)
+  THIS->NoOfInputsProcessed = THIS->InitialNoOfInputsProcessed;
 };
+#undef THIS
 
 /**************************************************/
 // Decimator without antialias filter

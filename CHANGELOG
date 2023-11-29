@@ -29,8 +29,10 @@ TODO::
 LAST DONE:
 
 CHANGES:
-- ver. 0.20.035 <b>2023.11.28</b> Fixed:
-  - DSP::u::Switch - inputs were incorrectly defined as ouputs.
+- ver. 0.20.036 <b>2023.11.29</b> Fixed:
+  - DSP::u::Switch - inputs were incorrectly defined as outputs + fix in input processing procedure.
+  - DSP::Component::DefineStandardOutputs - Names for complex outputs corrected
+  - DSP::Block::DefineStandardInputs - Names for complex inputs corrected
 - ver. 0.20.033 <b>2023.11.11</b> Fixed:
   - DSP::u::OutputBuffer - added setting OutputBuffer inputs' clocks (SetBlockInputClock) as equal to ParentClock to allow clock mismatch check when buffers ParentClock dows not match the inputs' clocks. 
     - PROBLEM: the ParentClock match to InputClock is not checked for DSP::u::OutputBuffer which might lead user to not notice that expected NotificationClock is incorectly selected.
