@@ -1,25 +1,29 @@
 # (View > Command Palette) => "Convert Indentation to Tabs"
 
-ifeq ($(VS_CFG),Windows32-Debug)
+ifndef Mbit
+	Mbit = 64
+endif
+
+ifeq ($(VS_CFG),Windows-Debug)
 	MAKEFILE = "src/Makefile.win"
 	MODE = Debug
-	COMFLAG = -m32
+	COMFLAG = -m$(Mbit)
 endif
-ifeq ($(VS_CFG),Windows64-Debug)
-	MAKEFILE = "src/Makefile.win"
-	MODE = Debug
-	COMFLAG = -m64
-endif
-ifeq ($(VS_CFG),Windows32-Release)
-	MAKEFILE = "src/Makefile.win"
-	MODE = Release
-	COMFLAG = -m32
-endif
-ifeq ($(VS_CFG),Windows64-Release)
+#ifeq ($(VS_CFG),Windows64-Debug)
+# 	MAKEFILE = "src/Makefile.win"
+#	MODE = Debug
+#	COMFLAG = -m64
+#endif
+ifeq ($(VS_CFG),Windows-Release)
 	MAKEFILE = "src/Makefile.win"
 	MODE = Release
-	COMFLAG = -m64
+	COMFLAG = -m$(Mbit)
 endif
+#ifeq ($(VS_CFG),Windows64-Release)
+#	MAKEFILE = "src/Makefile.win"
+#	MODE = Release
+#	COMFLAG = -m64
+#endif
 ifeq ($(VS_CFG),Linux-Debug)
 	MAKEFILE = "src/Makefile.linux"
 	MODE = Debug

@@ -2,7 +2,8 @@
     "configurations": [
         // For Makefile.main to work avoid spaces in "name"
         {
-            "name": "Windows64-Release",
+            // "name": "Windows64-Release",
+            "name": "Windows-Release",
             "includePath": [
                 "${workspaceFolder}/src/",
                 "${workspaceFolder}/src/include",
@@ -17,24 +18,25 @@
             "cppStandard": "c++11",
             "intelliSenseMode": "gcc-x64"
         },
+        // {
+        //     "name": "Windows32-Release",
+        //     "includePath": [
+        //         "${workspaceFolder}/src/",
+        //         "${workspaceFolder}/src/include",
+        //         "${workspaceFolder}/src/include/rls"
+        //     ],
+        //     "defines": [
+        //         "WIN32",
+        //         "__DEBUG__=0"
+        //     ],
+        //     //"compilerPath": "gcc.exe",
+        //     "cStandard": "c11",
+        //     "cppStandard": "c++11",
+        //     "intelliSenseMode": "gcc-x64"
+        // },
         {
-            "name": "Windows32-Release",
-            "includePath": [
-                "${workspaceFolder}/src/",
-                "${workspaceFolder}/src/include",
-                "${workspaceFolder}/src/include/rls"
-            ],
-            "defines": [
-                "WIN32",
-                "__DEBUG__=0"
-            ],
-            //"compilerPath": "gcc.exe",
-            "cStandard": "c11",
-            "cppStandard": "c++11",
-            "intelliSenseMode": "gcc-x64"
-        },
-        {
-            "name": "Windows32-Debug",
+            // "name": "Windows32-Debug",
+            "name": "Windows-Debug",
             "includePath": [
                 "${workspaceFolder}/src/",
                 "${workspaceFolder}/src/include",
@@ -50,23 +52,23 @@
             "cppStandard": "c++11",
             "intelliSenseMode": "gcc-x64"
         },
-        {
-            "name": "Windows64-Debug",
-            "includePath": [
-                "${workspaceFolder}/src/",
-                "${workspaceFolder}/src/include",
-                "${workspaceFolder}/src/include/dbg"
-            ],
-            "defines": [
-                "WIN32",
-                "__DEBUG__=1",
-                "INCLUDE_DSPE_EXAMPLES"
-            ],
-            //"compilerPath": "gcc.exe",
-            "cStandard": "c11",
-            "cppStandard": "c++11",
-            "intelliSenseMode": "gcc-x64"
-        },
+        // {
+        //     "name": "Windows64-Debug",
+        //     "includePath": [
+        //         "${workspaceFolder}/src/",
+        //         "${workspaceFolder}/src/include",
+        //         "${workspaceFolder}/src/include/dbg"
+        //     ],
+        //     "defines": [
+        //         "WIN32",
+        //         "__DEBUG__=1",
+        //         "INCLUDE_DSPE_EXAMPLES"
+        //     ],
+        //     //"compilerPath": "gcc.exe",
+        //     "cStandard": "c11",
+        //     "cppStandard": "c++11",
+        //     "intelliSenseMode": "gcc-x64"
+        // },
         // {
         //     "name": "Windows-Examples_DBG",
         //     "includePath": [

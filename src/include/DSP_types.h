@@ -18,6 +18,7 @@
 #include <vector>
 #include <string>
 #include <functional>
+#include <stdint.h>
 
 //---------------------------------------------------------------------------
 #include <DSP_setup.h>

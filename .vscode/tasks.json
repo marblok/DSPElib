@@ -6,9 +6,10 @@
     // ${command:cpptools.activeConfigName}
     "tasks": [
         {
-            "label": "Build DSPElib",
+            "label": "Build DSPElib x64",
             "type": "shell",
-            "command": "make build -f src/Makefile.main VS_CFG=${command:cpptools.activeConfigName}",
+            // "command": "make build -f src/Makefile.main VS_CFG=${command:cpptools.activeConfigName}",
+            "command": "make build -f src/Makefile.main Mbit=64 VS_CFG=${command:cpptools.activeConfigName}",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -20,7 +21,26 @@
                 "options": {
                     "cwd": "${workspaceFolder}",
                     "env": {"PATH":"c:/msys64/usr/bin;c:/msys64/mingw64/bin/;${env:PATH}"}
-                }, 
+                },
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Build DSPElib x86",
+            "type": "shell",
+            "command": "make build -f src/Makefile.main Mbit=32 VS_CFG=${command:cpptools.activeConfigName}",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true
+            },
+            "windows": {
+                "options": {
+                    "cwd": "${workspaceFolder}",
+                    "env": {"PATH":"c:/msys64/usr/bin;c:/msys64/mingw32/bin/;${env:PATH}"}
+                },
             },
             "problemMatcher": "$gcc"
         },
@@ -41,9 +61,9 @@
             "problemMatcher": "$gcc"
         },
         {
-            "label": "Install DSPElib",
+            "label": "Install DSPElib x64",
             "type": "shell",
-            "command": "make install_library -f src/Makefile.main VS_CFG=${command:cpptools.activeConfigName}",
+            "command": "make install_library -f src/Makefile.main Mbit=64 VS_CFG=${command:cpptools.activeConfigName}",
             "group": "build",
             "presentation": {
                 "echo": true
@@ -57,7 +77,23 @@
             "problemMatcher": "$gcc"
         },
         {
-            "label": "Build examples Windows",
+            "label": "Install DSPElib x86",
+            "type": "shell",
+            "command": "make install_library -f src/Makefile.main Mbit=32 VS_CFG=${command:cpptools.activeConfigName}",
+            "group": "build",
+            "presentation": {
+                "echo": true
+            },
+            "windows": {
+                "options": {
+                    "cwd": "${workspaceFolder}",
+                    "env": {"PATH":"c:/msys64/usr/bin;c:/msys64/mingw32/bin/;${env:PATH}"}
+                }, 
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Build examples Windows x64",
             "type": "shell",
             //"command": "make -f examples/makefile Mbit=64 SRC_DIR=examples DSPELIB_DIR_ROOT=../_DSPE_lib_minGW_/MinGW-W64_8.1.0",
             "command": "make -f examples/makefile Mbit=64 SRC_DIR=examples",
@@ -69,6 +105,22 @@
             "options": {
                 "cwd": "${workspaceFolder}",
                 "env": {"PATH":"c:/msys64/usr/bin;c:/msys64/mingw64/bin/;${env:PATH}"}
+            }, 
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "Build examples Windows x86",
+            "type": "shell",
+            //"command": "make -f examples/makefile Mbit=64 SRC_DIR=examples DSPELIB_DIR_ROOT=../_DSPE_lib_minGW_/MinGW-W64_8.1.0",
+            "command": "make -f examples/makefile Mbit=32 SRC_DIR=examples",
+            "group": "build",
+            "presentation": {
+                "echo": true
+            },
+            //"options": {"cwd" : "./examples"},
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {"PATH":"c:/msys64/usr/bin;c:/msys64/mingw32/bin/;${env:PATH}"}
             }, 
             "problemMatcher": "$gcc"
         },
